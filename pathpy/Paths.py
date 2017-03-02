@@ -18,6 +18,7 @@ import scipy.linalg as _la
 
 from pathpy.Log import *
 from pathpy.HigherOrderNetwork import HigherOrderNetwork
+from pathpy.DAG import DAG, CycleError
 
 
 class Paths:
@@ -435,6 +436,36 @@ class Paths:
         return p
     
 
+    @staticmethod
+    def fromDAG(dag):
+        """
+        Extracts pathway statistics from a directed acyclic graph.
+        For this, all paths between all roots (zero incoming links) 
+        and all leafs (zero outgoing link) will be constructed.
+        """        
+
+        # Try to topologically sort the graph if not already sorted
+        if dag.isSorted == False:
+            try: 
+                dag.topsort()
+            except CycleError:
+                pass
+        # issue error if graph contains cycles
+        if dag.isSorted == False:
+            Log.add('Cannot extract path statistics from a cyclic graph', Severity.ERROR)
+        else:
+            p = Paths()
+
+            # start at each root 
+            for s in dag.roots:                
+               paths = dag.constructPaths(s)
+               for d in paths:
+                   for x in paths[d]:
+                       p.addPathTuple(x)
+            return p
+
+
+
     def addPathTuple(self, path, expandSubPaths=True, frequency=(0,1)):
         """
         Adds a tuple of elements as a path. If the elements are not strings, 
@@ -466,7 +497,7 @@ class Paths:
                     for i in range(s, s+k+1):
                         subpath += (path_str[i],)
                     # add subpath weight to first component of occurrences                   
-                    self.paths[k][subpath] += (1, 0)
+                    self.paths[k][subpath] += (frequency[1], 0)
 
 
 
@@ -535,11 +566,14 @@ class Paths:
         p = Paths()
         for l in self.paths:
             for x in self.paths[l]:
+                # if this path ocurred as longest path
                 if self.paths[l][x][1]>0:
+                    # construct projected path
                     newP = ()
                     for v in x:
                         newP += (mapping[v],)
-                    p.addPathTuple(newP, expandSubPaths=True, frequency=self.paths[l][x][1])
+                    # add to new path object and expand sub paths 
+                    p.addPathTuple(newP, expandSubPaths=True, frequency=(0,self.paths[l][x][1]))
         return p
 
 
