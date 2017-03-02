@@ -548,7 +548,7 @@ class Paths:
                     contained = Paths.getContainedPaths(x, node_filter)                    
                     for s in contained:
                         if len(s)-1>=minLength and len(s)-1<=maxLength:
-                            p.addPathTuple(s, expandSubPaths=True, frequency=self.paths[l][x][1])
+                            p.addPathTuple(s, expandSubPaths=True, frequency=(0, self.paths[l][x][1]))
         return p
 
 
@@ -573,7 +573,7 @@ class Paths:
                     for v in x:
                         newP += (mapping[v],)
                     # add to new path object and expand sub paths 
-                    p.addPathTuple(newP, expandSubPaths=True, frequency=(0,self.paths[l][x][1]))
+                    p.addPathTuple(newP, expandSubPaths=True, frequency=(0, self.paths[l][x][1]))
         return p
 
 
@@ -591,7 +591,7 @@ class Paths:
             for the trigram a;b;c a path a->b->c of length two will be generated 
             as well as two subpaths a->b and b->c of length one
 
-        @weight weight: the weight (i.e. frequency) of the ngram
+        @weight pathFrequency: the number of occurrences (i.e. frequency) of the ngram
         """
 
         fields = ngram.rstrip().split(separator)
