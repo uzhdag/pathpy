@@ -547,7 +547,7 @@ class HigherOrderNetwork:
 
         higher_order_PR = _co.defaultdict( lambda: 0 )
 
-        n = len(self.nodes)
+        n = float(len(self.nodes))
 
         assert n>0, "Number of nodes is zero"
 
@@ -563,7 +563,7 @@ class HigherOrderNetwork:
         Q = _sparse.spdiags(row_sums.T, 0, *A.shape, format='csr')
         A = Q * A
 
-        p = _sp.array([1.0 / n] * n)
+        p = _sp.array([1.0 / n] * int(n))
         pr = p
        
         # Power iteration

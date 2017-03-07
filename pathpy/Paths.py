@@ -18,7 +18,7 @@ import scipy.linalg as _la
 
 from pathpy.Log import *
 from pathpy.HigherOrderNetwork import HigherOrderNetwork
-from pathpy.DAG import DAG, CycleError
+from pathpy.DAG import DAG
 
 
 class Paths:
