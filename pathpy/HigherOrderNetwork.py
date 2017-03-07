@@ -547,7 +547,7 @@ class HigherOrderNetwork:
 
         higher_order_PR = _co.defaultdict( lambda: 0 )
 
-        n = float(len(self.nodes))
+        n = len(self.nodes)
 
         assert n>0, "Number of nodes is zero"
 

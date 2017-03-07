@@ -152,3 +152,56 @@ print(paths)
 print("Test network has", paths.ObservationCount(), "(longest) time-respecting paths")
 assert paths.ObservationCount() == 10, "Extracted wrong number of time-respecting paths"
 assert paths.BetweennessPreference('e') == 1.2954618442383219
+
+
+############################
+# TEST DAG PATH EXTRACTION #
+############################
+
+dag = pp.DAG()
+dag.addEdge('a', 'b')
+dag.addEdge('a', 'c')
+dag.addEdge('c', 'b')
+dag.addEdge('b', 'e')
+dag.addEdge('b', 'f')
+dag.addEdge('f', 'g')
+dag.addEdge('c', 'g')
+
+dag.addEdge('h', 'i')
+dag.addEdge('h', 'j')
+
+dag.topsort()
+
+
+# For this DAG, the following five paths between the root and the leaves exist: 
+#   h -> i                  ( A -> B )
+#   h -> j                  ( A -> A )
+#   a -> b -> e             ( A -> B -> B )
+#   a -> c -> g             ( A -> A -> A )
+#   a -> b -> f -> g        ( A -> B -> B -> A )
+#   a -> c -> b -> e        ( A -> A -> B -> B )
+#   a -> c -> b -> f -> g   ( A -> A -> B -> B -> A )
+
+assert dag.isAcyclic==True, 'Error: Wrongly detected cycle in DAG'
+
+# Extract paths between nodes in DAG
+paths = pp.Paths.fromDAG(dag)
+assert paths.ObservationCount() == 7, 'Error: wrong number of paths in DAG'
+
+# project paths based on node mapping
+mapping = {'a': 'A', 'b': 'B', 'c': 'A', 'e': 'B', 'f': 'B', 'g': 'A', 'h': 'A','i': 'B', 'j': 'A' }
+paths_mapped1 = paths.projectPaths(mapping)
+
+# directly extract mapped paths
+paths_mapped2 = pp.Paths.fromDAG(dag, node_mapping = mapping)
+assert paths_mapped2.ObservationCount() == 7, 'Error: wrong number of paths in DAG'
+
+# Add a cycle to the graph
+dag.addEdge('b', 'c')
+dag.topsort()
+assert dag.edge_classes[('b', 'c')] == 'back' or dag.edge_classes[('c', 'b')] == 'back', 'Error: Did not detect back link'
+assert dag.isAcyclic == False, 'Error: Did not detect cycle'
+
+dag.makeAcyclic()
+assert ('b', 'c') not in dag.edges or ('c', 'b') not in dag.edges, 'Error: did not remove correct link'
+assert len(dag.edges) == 9, 'Error: makeAcyclic generated wrong number of links'

@@ -21,14 +21,6 @@ from pathpy.Log import Log
 from pathpy.Log import Severity
 
 
-class CycleError(Exception):
-    """
-    This exception is thrown whenever a a cycle is found 
-    in what is supposed to be a directed acyclic graph
-    """
-    pass
-
-
 class DAG(object):
     """
         Represents a directed acyclic graph (DAG) which 
@@ -43,7 +35,9 @@ class DAG(object):
 
         self.nodes = set()
         self.edges = set()
-        self.isSorted = False
+
+        ## Whether or not this graph is acyclic. None indicates that it is unknown
+        self.isAcyclic = None
 
         ## list of topologically sorted nodes
         self.sorting = []
@@ -62,62 +56,115 @@ class DAG(object):
 
         if edges != None:
             for e in edges:
-                self.addEdge(e[0], e[1], testAcyclic = False)
+                if e[0] != e[1]:
+                    self.addEdge(e[0], e[1])
+                else:
+                    Log.add('Warning: omitted self-loops', Severity.WARNING)
 
 
 
-    def constructPaths(self, v):
+    def constructPaths(self, v, node_mapping = {}):
         """
         Constructs all paths from node v to any leaf nodes
         """
         paths = _co.defaultdict( lambda: [] )
-        paths[v] = [ (v,) ]
+        if v not in node_mapping:
+            paths[v] = [ (v,) ]
+        else:
+            paths[v] = [ (node_mapping[v],) ]
 
         # set of unprocessed nodes
-        Q = set(v)
+        Q = set([v])
 
         while len(Q)>0:
             # take one unprocessed node
             x = Q.pop()
-
             # expand paths if it has successors
             if len(self.successors[x])>0:
                 for w in self.successors[x]:
                     for p in paths[x]:
-                        paths[w].append(p + (w,))
+                        if w not in node_mapping:
+                            paths[w].append(p + (w,))
+                        else:
+                            paths[w].append(p + (node_mapping[w],))
                     Q.add(w)
                 del paths[x]
 
         return paths
 
 
-    def dfs(self, v):
+    def dfs_visit(self, v, parent = None):
         """
-        dfs function for topological sorting of DAG
+        Recursively visits nodes in the graph, classifying 
+        edges as (1) tree, (2) forward, (3) back or (4) cross 
+        edges.
+
+        @param v: the node to be visited
+        @param parent: the parent of this node (None for nodes)
+            with no parents
         """
-        if v in self.tempmark:
-            raise CycleError()
-        if v in self.unmarked:
-            self.tempmark.add(v)
-            for w in self.successors[v]:
-                self.dfs(w)
-            self.unmarked.remove(v)
-            self.tempmark.discard(v)            
-            self.sorting.insert(0, v)
+        self.parent[v] = parent
+        self.count += 1 
+        self.start_time[v] = self.count
+        if parent:
+            self.edge_classes[(parent, v)] = 'tree'
+
+        for w in self.successors[v]:
+            if w not in self.parent: 
+                self.dfs_visit(w, v)
+            elif w not in self.finish_time:
+                self.edge_classes[(v,w)] = 'back'
+                self.isAcyclic = False
+            elif self.start_time[v] < self.start_time[w]:
+                self.edge_classes[(v,w)] = 'forward'
+            else:
+                self.edge_classes[(v,w)] = 'cross'
+        self.count += 1
+        self.finish_time[v] = self.count
+        self.sorting.append(v)
 
 
     def topsort(self):
         """
-        Sorts the nodes in the DAG topologically 
-        Raises a CycleError if the graph is not acyclic
-        """        
+        Performs a topological sorting of the graph, classifying 
+        all edges as (1) tree, (2) forward, (3) back or (4) cross 
+        edges in the process. 
+
+        see Cormen 2001 for details
+        """
+        self.parent = {}
+        self.start_time = {}
+        self.finish_time = {}
+        self.edge_classes = {}
         self.sorting = []
-        self.unmarked = list(self.nodes)
-        self.tempmark = set()
-        while len(self.unmarked)>0:
-            v = self.unmarked[0]
-            self.dfs(v)
-        self.isSorted = True
+        self.count = 0
+        self.isAcyclic = True
+        for v in self.nodes:
+            if v not in self.parent:
+                self.dfs_visit(v)
+        self.sorting.reverse()
+
+
+    def makeAcyclic(self):
+        """
+        Removes all backlinks from the graph to make it 
+        acyclic, then performs another topological sorting 
+        of the DAG
+        """
+
+        if self.isAcyclic==None:
+            self.topsort()
+        if self.isAcyclic == False:
+            # Remove all back links            
+            for e in list(self.edge_classes):
+                if self.edge_classes[e] == 'back':
+                    self.edges.remove(e)
+                    self.successors[e[0]].remove(e[1])
+                    self.predecessors[e[1]].remove(e[0])
+                    del self.edge_classes[e]
+            self.topsort()
+            assert self.isAcyclic, "Error: makeAcyclic did not generate acyclic graph!"
+
 
 
     def summary(self):
@@ -125,18 +172,12 @@ class DAG(object):
         Returns a string representation of this directed acyclic graph
         """
 
-        try:
-            if not self.isSorted:
-                self.topsort()
-        except CycleError:
-            Log.add('Warning: cycle detected', Severity.ERROR)
-
         summary = 'Directed Acyclic Graph'
         summary += '\n'        
         summary += 'Nodes:\t\t' +  str(len(self.nodes)) + '\n'
         summary += 'Links:\t\t' + str(len(self.edges)) + '\n'
-        summary += 'Acyclic:\t' +  str(self.isSorted) + '\n'
-        return summary
+        summary += 'Acyclic:\t' +  str(self.isAcyclic) + '\n'
+        return summary  
 
 
     def __str__(self):
@@ -146,7 +187,7 @@ class DAG(object):
         return self.summary()
 
 
-    def addEdge(self, source, target, testAcyclic=True):
+    def addEdge(self, source, target):
         """
         Adds a directed edge to the graph
         """
@@ -163,7 +204,7 @@ class DAG(object):
         self.edges.add((source, target))
         self.successors[source].add(target)
         self.predecessors[target].add(source)
-        self.isSorted = False
+        self.isAcyclic = None
 
 
     @staticmethod
@@ -190,8 +231,9 @@ class DAG(object):
             n = 1 
             while line:
                 fields = line.rstrip().split(sep)
-                try:                   
-                        edges.append((fields[0], fields[1]))
+                try:
+                    edges.append((fields[0], fields[1]))
+                    
                 except (IndexError, ValueError):
                     Log.add('Ignoring malformed data in line ' + str(n+1) + ': "' +  line.strip() + '"', Severity.WARNING)
                 line = f.readline()

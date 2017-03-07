@@ -437,7 +437,7 @@ class Paths:
     
 
     @staticmethod
-    def fromDAG(dag):
+    def fromDAG(dag, node_mapping = {}):
         """
         Extracts pathway statistics from a directed acyclic graph.
         For this, all paths between all roots (zero incoming links) 
@@ -445,23 +445,22 @@ class Paths:
         """        
 
         # Try to topologically sort the graph if not already sorted
-        if dag.isSorted == False:
-            try: 
-                dag.topsort()
-            except CycleError:
-                pass
+        if dag.isAcyclic == None:
+            dag.topsort()
         # issue error if graph contains cycles
-        if dag.isSorted == False:
+        if dag.isAcyclic == False:
             Log.add('Cannot extract path statistics from a cyclic graph', Severity.ERROR)
         else:
             p = Paths()
-
+            Log.add('Creating paths from directed acyclic graph', Severity.INFO)
             # start at each root 
             for s in dag.roots:                
-               paths = dag.constructPaths(s)
+               paths = dag.constructPaths(s, node_mapping)
                for d in paths:
                    for x in paths[d]:
-                       p.addPathTuple(x)
+                       p.addPathTuple(x, False, (0,1))
+            p.expandSubPaths()
+            Log.add('finished.', Severity.INFO)
             return p
 
 
