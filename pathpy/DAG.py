@@ -207,33 +207,7 @@ class DAG(object):
         self.edges.add((source, target))
         self.successors[source].add(target)
         self.predecessors[target].add(source)
-        self.isAcyclic = None
-
-
-    @staticmethod
-    def fromKEGGPathway(pathway, relationType='ECrel'):
-        """ 
-        Queries the KEGG pathway database and generates a 
-        graph using the specified relationship type.
-
-        @param pathway: KEGG pathway identifier, e.g. hsa00232 for Caffein metabolism :-)
-        @param relationType: type of the KEGG relation to extract. The following is from the KGML documentation:
-            ECrel: enzyme-enzyme relation, indicating two enzymes catalyzing successive reaction steps 
-            PPrel: protein-protein interaction, such as binding and modification 
-            GErel: gene expression interaction, indicating relation of transcription factor and target gene product 
-            PCrel: protein-compound interaction 
-        """ 
-        response = requests.post('http://rest.kegg.jp/get/' + pathway + '/kgml')
-        xmldoc = etree.fromstring(response.text)
-        edges = xmldoc.xpath("/pathway/relation[@type='" + relationType + "']")
-        dag = DAG()
-        for e in edges:
-            id1 = e.attrib["entry1"]
-            id2 = e.attrib["entry2"]
-            name1 = xmldoc.xpath("/pathway/entry[@id='"+id1+"']")[0].attrib["name"]
-            name2 = xmldoc.xpath("/pathway/entry[@id='"+id2+"']")[0].attrib["name"]
-            dag.addEdge(name1, name2)
-        return dag
+        self.isAcyclic = None   
 
 
     @staticmethod

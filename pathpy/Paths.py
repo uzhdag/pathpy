@@ -85,6 +85,20 @@ class Paths:
         return summary
 
 
+    def __add__(self, other):
+        """
+        Default operator +, which returns the sum of two Path objects
+        """
+        p_sum = Paths()
+        for l in self.paths:
+            for p in self.paths[l]:
+                p_sum.paths[l][p] = self.paths[l][p]
+        for l in other.paths:
+            for p in other.paths[l]:
+                p_sum.paths[l][p] += other.paths[l][p]
+        return p_sum
+
+
     def getSequence(self, stopchar='|'):
         """
         Returns a single sequence in which all 
