@@ -374,7 +374,7 @@ class MultiOrderModel:
         return maxAcceptedOrder
 
 
-    def testNetworkAssumption(self, paths, method='AIC'):
+    def testNetworkHypothesis(self, paths, method='AIC'):
         """
         Tests whether the assumption that paths are constrained
         to the (first-order) network topology is justified. 
@@ -389,14 +389,14 @@ class MultiOrderModel:
         test. We instead use the AIC or BIC.
         """
 
-        assert method == 'AIC' or method == 'BIC', 'Only AIC or BIC are supported as testing method'
+        assert method == 'AIC' or method == 'BIC', 'Expected AIC or BIC'
 
-        # omit paths of length zero
+        # count number of omitted paths with length zero
         sum = 0
         for p in paths.paths[0]:
             sum += paths.paths[0][p][1]
         if sum>0:
-            Log.add('Omitting ' + str(sum) + ' zero-length paths for test of network assumption', Severity.WARNING)
+            Log.add('Omitting ' + str(sum) + ' zero-length paths for test of network assumption', Severity.INFO)
         
         # log-likelihood and observation count of zero-order model
         L0, n0 = self.getLayerLikelihood(paths, l=0, considerLongerPaths=True, log=True, minL=1)
@@ -410,10 +410,11 @@ class MultiOrderModel:
         # degrees of freedom based on network assumption
         dof1 = self.layers[1].getDoF(assumption='paths')
 
-        Log.add('Log-Likelihood (k=0) = ' + str(L0))
-        Log.add('Degrees of freedom (k=0) = ' + str(dof0))
-        Log.add('Log-Likelihood (k=1) = ' + str(L1))
-        Log.add('Degrees of freedom (k=1) = ' + str(dof0 + dof1))
+        Log.add('Log-Likelihood (k=0) = ' + str(L0), Severity.INFO)
+        Log.add('Degrees of freedom (k=0) = ' + str(dof0), Severity.INFO)
+
+        Log.add('Log-Likelihood (k=1) = ' + str(L1), Severity.INFO)
+        Log.add('Degrees of freedom (k=1) = ' + str(dof0 + dof1), Severity.INFO)
         
         if method == 'AIC':
             x0 = 2 * dof0 - L0
