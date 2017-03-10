@@ -404,6 +404,10 @@ class MultiOrderModel:
         # log-likelihood and observation count of first-order model
         L1, n1 = self.getLayerLikelihood(paths, l=1, considerLongerPaths=True, log=True, minL=1)
 
+        # By definition, the number of observations for both models should be the total weighted degree of the 
+        # first-order network
+        assert n0==n1, Log.add('Error: Observation count for 0-order and 1-st order model do not match', Severity.ERROR)
+
         # degrees of freedom = |V|-1
         dof0 = self.layers[0].getDoF(assumption='ngrams')        
         
@@ -417,13 +421,12 @@ class MultiOrderModel:
         Log.add('Degrees of freedom (k=1) = ' + str(dof0 + dof1), Severity.INFO)
         
         if method == 'AIC':
-            x0 = 2 * dof0 - L0
-            x1 = 2 * (dof0 + dof1) - L1
+            ic0 = 2 * dof0 - 2 * L0
+            ic1 = 2 * (dof0 + dof1) - 2 * L1
         else:
-            x0 = _np.log(n0) * dof0 - 2 * L0
-            x1 = _np.log(n1) * (dof0 + dof1) - 2 * L1
+            ic0 = _np.log(n0) * dof0 - 2 * L0
+            ic1 = _np.log(n1) * (dof0 + dof1) - 2 * L1
 
-        if x0>x1:
-            return True
-        else:
-            return False
+        # if the AIC/BIC of the zero-order model is larger, then the network 
+        # hypothesis is justified!
+        return(ic0>ic1, ic0, ic1)
