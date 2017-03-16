@@ -1085,6 +1085,11 @@ class Paths:
         nodes = self.getNodes()
         for v in nodes:
             node_centralities[v] += 0
+       
+        if normalized:
+            m = max(node_centralities.values())
+            for v in nodes:
+                node_centralities[v] /= m
 
         return node_centralities
     
