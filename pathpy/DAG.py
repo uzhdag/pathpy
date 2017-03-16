@@ -10,6 +10,8 @@ import collections as _co
 import bisect as _bs
 import itertools as _iter
 
+import sys as _sys
+
 import numpy as _np 
 
 import scipy.sparse as _sparse
@@ -211,7 +213,7 @@ class DAG(object):
 
 
     @staticmethod
-    def readFile(filename, sep=','):
+    def readFile(filename, sep=',', maxlines=_sys.maxsize):
         """
         Reads a directed acyclic graph from a file
         containing an edge list of the form 
@@ -232,7 +234,7 @@ class DAG(object):
 
             line = f.readline()
             n = 1 
-            while line:
+            while line and n <= maxlines:
                 fields = line.rstrip().split(sep)
                 try:
                     edges.append((fields[0], fields[1]))

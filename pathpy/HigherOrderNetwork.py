@@ -258,7 +258,7 @@ class HigherOrderNetwork:
         if len(self.edges)>0:
             return sum(self.edges.values())
         else:
-            return (0,0)
+            return _np.array([0,0])
 
 
     def HigherOrderNodeToPath(self, node):

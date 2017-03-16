@@ -40,6 +40,8 @@ class MultiOrderModel:
         @param paths: the paths instance for which the model should be created 
         @param maxOrder: the maximum order of the multi-order model
         """
+
+        assert paths.maxSubPathLength>=maxOrder, 'Error: Construction of multi-order model with maximum order M requires sub path statistics up to length M'
         
         ## A dictionary containing the layers of HigherOrderNetworks, where 
         ## layers[k] contains the network of order k

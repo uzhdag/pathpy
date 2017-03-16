@@ -44,6 +44,15 @@ class Paths:
         ## The character used to separate nodes on paths
         self.separator = ','
 
+        ## This can be used to limit the calculation of sub path statistics 
+        ## to a given maximum length. This is useful, as the statistics of sub paths
+        ## of length k are only needed to fit a higher-order model with order k. Hence, 
+        ## if we know that the mdoel selection is limited to a given maximum order K, 
+        ## we can safely set the maximum sub path length to K. By default, sub paths of 
+        ## any length will be calculated. Note that, independent of the sub path calculation
+        ## longest path of any length will be considered in the likelihood calculation!
+        self.maxSubPathLength = _sys.maxsize
+
 
 
     def summary(self):
@@ -72,6 +81,8 @@ class Paths:
         summary = 'Number of paths (unique/sub paths/total):\t' +  str(lpsum) + ' (' + str(self.getUniquePaths()) + '/'+ str(spsum) + '/' + str(sum) + ')\n'
         summary += 'Nodes:\t\t\t\t' + str(len(nodes)) + '\n'
         summary += 'Edges:\t\t\t\t' + str(len(self.paths[1])) + '\n'
+        if self.maxSubPathLength<_sys.maxsize:
+            summary += 'Max sub path length:\t\t' + str(self.maxSubPathLength) + '\n'
         summary += 'Max. path length:\t\t' + str(maxL) + '\n'
         summary += 'Avg path length:\t\t' + str(avgL) + '\n'
         for k in self.paths:
@@ -154,7 +165,7 @@ class Paths:
         return self.summary()
 
 
-    def readEdges(filename=None, separator=',', weight = False, undirected=False, maxlines=_sys.maxsize, expandSubPaths=True):
+    def readEdges(filename=None, separator=',', weight = False, undirected=False, maxlines=_sys.maxsize, expandSubPaths=True, maxSubPathLength=_sys.maxsize):
         """
         Reads data from a file containing multiple lines of *edges* of the
         form "v,w,frequency,X" (where frequency is optional and X are arbitrary additional columns). The default separating 
@@ -164,6 +175,7 @@ class Paths:
         p = Paths()
 
         p.separator = separator
+        p.maxSubPathLength = _sys.maxsize
 
         with open(filename, 'r') as f:
             Log.add('Reading edge data ... ')
@@ -194,7 +206,7 @@ class Paths:
         return p
 
 
-    def readFile(filename=None, separator=',', pathFrequency = False, maxlines=_sys.maxsize, maxN=_sys.maxsize, expandSubPaths = True):
+    def readFile(filename=None, separator=',', pathFrequency = False, maxlines=_sys.maxsize, maxN=_sys.maxsize, expandSubPaths = True, maxSubPathLength=_sys.maxsize):
         """ 
         Reads path data from a file containing multiple lines of n-grams of the 
         form "a,b,c,d,frequency" (where frequency is optional). The default separating 
@@ -232,6 +244,7 @@ class Paths:
 
         p = Paths()
 
+        p.maxSubPathLength = maxSubPathLength
         p.separator = separator
         maxL = 0 
 
@@ -324,7 +337,10 @@ class Paths:
         for a four-gram a,b,c,d, the paths a->b, b->c, c->d of 
         length one and the paths a->b->c and b->c->d of length 
         two will be counted.
-        """             
+
+        This process will consider restrictions to the maximum 
+        sub path length defined in self.maxSubPathLength
+        """
 
         # nothing to see here ... 
         if len(self.paths)==0:
@@ -344,7 +360,7 @@ class Paths:
         for l in range(max(self.paths)):
                 self.paths[l] = self.paths[l]
 
-        # expand subpaths in all paths of any length ... 
+        # expand subpaths in paths of any length ... 
         for pathLength in self.paths:
             for path in self.paths[pathLength]:
                                 
@@ -352,8 +368,11 @@ class Paths:
                 # path, which is stored in the second entry of the numpy array
                 frequency = self.paths[pathLength][path][1]
 
-                # Generate all subpaths of length k for k = 0 to k = pathLength-1 (inclusive)
-                for k in range(0, pathLength):
+                # compute maximum length of sub paths to consider (maximum up to pathLength)
+                maxL = min(self.maxSubPathLength+1, pathLength)
+
+                # Generate all subpaths of length k for k = 0 to k = maxL-1 (inclusive)
+                for k in range(0, maxL):
                     # Generate subpaths of length k for all start indices s for s = 0 to s = pathLength-k (inclusive)
                     for s in range(0, pathLength-k+1):
                         # Add frequency as a subpath to *first* entry of occurrence counter
@@ -361,7 +380,7 @@ class Paths:
 
 
     @staticmethod
-    def fromTemporalNetwork(tempnet, delta=1, maxLength=_sys.maxsize):
+    def fromTemporalNetwork(tempnet, delta=1, maxLength=_sys.maxsize, maxSubPathLength=_sys.maxsize):
         """ Calculates the frequency of all time-respecting paths up to maximum length of maxLength, assuming 
         a maximum temporal distance of delta between consecutive time-stamped links on a path. 
         This (static) method returns an instance of the class Paths, which can subsequently be used to 
@@ -395,6 +414,7 @@ class Paths:
         # the number of occurrences of p as "real" path
         p = Paths()
 
+        p.maxSubPathLength = maxSubPathLength
         # a dictionary containing paths that can still be extended 
         # by future time-stamped links
         # candidates[t][v] is a set of paths which end at time t in node v
@@ -483,7 +503,7 @@ class Paths:
     
 
     @staticmethod
-    def fromDAG(dag, node_mapping = {}):
+    def fromDAG(dag, node_mapping = {}, maxSubPathLength=_sys.maxsize):
         """
         Extracts pathway statistics from a directed acyclic graph.
         For this, all paths between all roots (zero incoming links) 
@@ -498,6 +518,7 @@ class Paths:
             Log.add('Cannot extract path statistics from a cyclic graph', Severity.ERROR)
         else:
             p = Paths()
+            p.maxSubPathLength = maxSubPathLength
             Log.add('Creating paths from directed acyclic graph', Severity.INFO)
             # start at each root 
             for s in dag.roots:                
@@ -533,7 +554,10 @@ class Paths:
         self.paths[len(path)-1][path_str] += frequency
 
         if expandSubPaths:
-            for k in range(0, len(path_str)-1):
+
+            maxL = min(self.maxSubPathLength+1, len(path_str)-1)
+
+            for k in range(0, maxL):
                 for s in range(len(path_str)-k):
                     # for all start indices from 0 to n-k
 
@@ -541,7 +565,7 @@ class Paths:
                     # construct subpath
                     for i in range(s, s+k+1):
                         subpath += (path_str[i],)
-                    # add subpath weight to first component of occurrences                   
+                    # add subpath weight to first component of occurrences
                     self.paths[k][subpath] += (frequency[1], 0)
 
 
@@ -609,6 +633,7 @@ class Paths:
         @param mapping: a dictionary that maps nodes to the new labels
         """
         p = Paths()
+        p.maxSubPathLength = self.maxSubPathLength
         for l in self.paths:
             for x in self.paths[l]:
                 # if this path ocurred as longest path
@@ -651,7 +676,9 @@ class Paths:
             self.paths[len(path)-1][path] += (0, 1)
 
         if expandSubPaths:
-            for k in range(0, len(path)-1):
+            maxL = min(self.maxSubPathLength+1, len(path)-1)
+
+            for k in range(0,maxL):
                 for s in range(len(path)-k):
                     # for all start indices from 0 to n-k
 
