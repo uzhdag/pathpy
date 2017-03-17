@@ -58,13 +58,24 @@ class DAG(object):
 
         ## The dictionary of predecessors of each node
         self.predecessors = _co.defaultdict( lambda: set() )
-
+        self_loops = 0
+        redundant_edges = 0
         if edges != None:
             for e in edges:
-                if e[0] != e[1]:
+                redundant = False
+                selfLoop = False
+                if e[0] == e[1]:
+                    selfLoop = True
+                    self_loops += 1
+                if (e[0], e[1]) in self.edges:
+                    redundant = True
+                    redundant_edges += 1
+                if not selfLoop and not redundant:
                     self.addEdge(e[0], e[1])
-                else:
-                    Log.add('Warning: omitted self-loops', Severity.WARNING)
+            if self_loops>0:
+                Log.add('Warning: omitted ' + str(self_loops) + ' self-loops', Severity.WARNING)
+            if redundant_edges>0:
+                Log.add('Warning: omitted ' + str(redundant_edges) + ' redundant edges', Severity.WARNING)
 
 
 
@@ -159,17 +170,19 @@ class DAG(object):
 
         if self.isAcyclic==None:
             self.topsort()
+        removed_links = 0
         if self.isAcyclic == False:
             # Remove all back links            
             for e in list(self.edge_classes):
                 if self.edge_classes[e] == 'back':
                     self.edges.remove(e)
+                    removed_links += 1
                     self.successors[e[0]].remove(e[1])
                     self.predecessors[e[1]].remove(e[0])
                     del self.edge_classes[e]
             self.topsort()
             assert self.isAcyclic, "Error: makeAcyclic did not generate acyclic graph!"
-
+            Log.add('Removed ' + str(removed_links) + ' back links to make graph acyclic', Severity.INFO)
 
 
     def summary(self):
@@ -233,10 +246,10 @@ class DAG(object):
             Log.add('Reading edge list ...')
 
             line = f.readline()
-            n = 1 
+            n = 1           
             while line and n <= maxlines:
                 fields = line.rstrip().split(sep)
-                try:
+                try:                    
                     edges.append((fields[0], fields[1]))
                     
                 except (IndexError, ValueError):

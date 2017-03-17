@@ -954,21 +954,22 @@ class Paths:
             # use MLE estimation
             H_s = Paths.__Entropy(marginal_s)
             H_d = Paths.__Entropy(marginal_d)
-            H_ds = 0
+            #H_ds = 0
 
-            for s in range(len(marginal_s)):
-                p_ds = P_v[s,:]/_np.sum(P_v[s,:])
-                H_ds += marginal_s[s] * Paths.__Entropy(p_ds)
+            #for s in range(len(marginal_s)):
+            #    print('s = ' + str(s) + ': ' + str(_np.sum(P_v[s,:])))
+            #    p_ds = P_v[s,:]/_np.sum(P_v[s,:])
+            #    H_ds += marginal_s[s] * Paths.__Entropy(p_ds)
 
             # Alternative calculation (without explicit entropies)
             # build mask for non-zero elements
-            # row, col = np.nonzero(P_v)
-            # pv = P_v[(row,col)]
-            # marginal = np.outer(marginal_s, marginal_d)
-            # log_argument = np.divide( pv, marginal[(row,col)] )    
-            # I = np.dot( pv, np.log2(log_argument) )    
+            row, col = _np.nonzero(P_v)
+            pv = P_v[(row,col)]
+            marginal = _np.outer(marginal_s, marginal_d)
+            log_argument = _np.divide( pv, marginal[(row,col)] )    
+            I = _np.dot( pv, _np.log2(log_argument) )
 
-        I = H_d - H_ds
+        #I = H_d - H_ds
 
         if normalized:
             I =  I/_np.min([H_s, H_d])
