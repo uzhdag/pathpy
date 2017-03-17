@@ -170,7 +170,7 @@ class Paths:
         Reads data from a file containing multiple lines of *edges* of the
         form "v,w,frequency,X" (where frequency is optional and X are arbitrary additional columns). The default separating 
         character ',' can be changed. In order to calculate the statistics of paths of any length, 
-        by default all subpaths of length 1 (i.e. single nodes) contained in an edge will be considered.
+        by default all subpaths of length 0 (i.e. single nodes) contained in an edge will be considered.
         """
         p = Paths()
 
@@ -187,7 +187,7 @@ class Paths:
 
                 path = (fields[0],fields[1])
 
-                if weight:                    
+                if weight:
                     frequency = int(fields[2])
                 else:
                     frequency = 1
@@ -947,6 +947,8 @@ class Paths:
 
                 # add to conditional entropy
                 H_ds += p_s * Paths.__Entropy(p_ds, K_s, N_s, method='Miller')
+
+                I = H_d - H_ds
 
             #print('H(D|S) = ', H_ds)
 

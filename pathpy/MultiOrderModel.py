@@ -391,7 +391,7 @@ class MultiOrderModel:
         test. We instead use the AIC or BIC.
         """
 
-        assert method == 'AIC' or method == 'BIC', 'Expected AIC or BIC'
+        assert method == 'AIC' or method == 'BIC' or method == 'AICc', 'Expected method AIC, AICc or BIC'
 
         # count number of omitted paths with length zero
         sum = 0
@@ -425,10 +425,14 @@ class MultiOrderModel:
         if method == 'AIC':
             ic0 = 2 * dof0 - 2 * L0
             ic1 = 2 * (dof0 + dof1) - 2 * L1
-        else:
+        elif method == 'AICc':
+            assert n1 > dof0+dof1-2, 'Error: number of samples too small for model complexit'
+            ic0 = 2 * dof0 - 2 * L0 + (2*(dof0+1)*(dof0+2))/(n0-dof0-2)
+            ic1 = 2 * (dof0 + dof1) - 2 * L1 + (2*(dof0 + dof1 + 1)*(dof0 + dof1 + 2))/(n1 - (dof0 + dof1) - 2)
+        elif method == 'BIC':
             ic0 = _np.log(n0) * dof0 - 2 * L0
             ic1 = _np.log(n1) * (dof0 + dof1) - 2 * L1
 
-        # if the AIC/BIC of the zero-order model is larger, then the network 
-        # hypothesis is justified!
+        # if the AIC/AICc/BIC of the zero-order model is larger than that of the first-order model,
+        # we do not reject the network hypothesis
         return(ic0>ic1, ic0, ic1)
