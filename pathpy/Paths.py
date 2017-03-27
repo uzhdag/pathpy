@@ -97,6 +97,22 @@ class Paths:
         return summary
 
 
+    def getPathLengths(self):
+        """
+        Returns a dictionary containing the distribution of path lengths
+        in this Path object. In the returned dictionary, entry 
+        lengths[k] is a numpy.array x where 
+        x[0] is the number of sub paths with length k, and x[1]
+        is the number of (longest) paths with length k
+        """
+        lengths = _co.defaultdict( lambda: _np.array([0,0]) )
+
+        for k in self.paths:
+            for p in self.paths[k]:
+                lengths[k] += self.paths[k][p]
+        return lengths
+
+
     def __add__(self, other):
         """
         Default operator +, which returns the sum of two Path objects

@@ -7,6 +7,7 @@ Created on Fri Feb 20 11:59:22 2015
 """
 import pathpy as pp
 import pytest
+import numpy as np
 
 
 slow = pytest.mark.slow
@@ -159,6 +160,14 @@ def test_get_nodes(random_paths):
     rest = p.getNodes()
     expected = {'b', 'o', 'u', 'v', 'w', 'y'}
     assert rest == expected
+
+
+def test_get_path_lengths(path_from_ngram_file):
+    p = path_from_ngram_file
+    expected = { 0: [32, 0], 1: [26, 0], 2: [20, 0], 3: [14, 0], 4: [4,4], 5: [0,2] }
+    plengths = p.getPathLengths()
+    assert np.all([plengths[x] == expected[x] for x in expected])
+    assert np.all([plengths[x] == expected[x] for x in plengths])
 
 
 def test_dag_acyclic(dag_object):
