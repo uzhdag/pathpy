@@ -201,4 +201,11 @@ def test_dag_path_mapping(dag_object):
 
     mapping = {'a': 'A', 'b': 'B', 'c': 'A', 'e': 'B', 'f': 'B', 'g': 'A', 'h': 'A','i': 'B', 'j': 'A' }   
     paths_mapped2 = pp.Paths.fromDAG(dag, node_mapping = mapping)
+    assert paths_mapped2.paths[1][('A', 'B')][1] == 1
+    assert paths_mapped2.paths[1][('A', 'A')][1] == 1
+    assert paths_mapped2.paths[2][('A', 'B', 'B')][1] == 1
+    assert paths_mapped2.paths[2][('A', 'A', 'A')][1] == 1
+    assert paths_mapped2.paths[3][('A', 'B', 'B', 'A')][1] == 1
+    assert paths_mapped2.paths[3][('A', 'A', 'B', 'B')][1] == 1
+    assert paths_mapped2.paths[4][('A', 'A', 'B', 'B', 'A')][1] == 1
     assert paths_mapped2.ObservationCount() == 7    

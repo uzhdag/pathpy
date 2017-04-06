@@ -126,7 +126,10 @@ def temporal_network_object():
 @pytest.fixture()
 def dag_object():
     dag = pp.DAG()
-    # For this DAG, the following five paths between the root and the leaves exist: 
+    # For this DAG, the following five paths between the root and the leaves exist
+    # for the following mapping:
+    # mapping = {'a': 'A', 'b': 'B', 'c': 'A', 'e': 'B', 'f': 'B', 'g': 'A', 'h': 'A','i': 'B', 'j': 'A' }
+
     #   h -> i                  ( A -> B )
     #   h -> j                  ( A -> A )
     #   a -> b -> e             ( A -> B -> B )
