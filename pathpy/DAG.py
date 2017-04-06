@@ -191,7 +191,7 @@ class DAG(object):
         """
 
         summary = 'Directed Acyclic Graph'
-        summary += '\n'        
+        summary += '\n'
         summary += 'Nodes:\t\t' +  str(len(self.nodes)) + '\n'
         summary += 'Links:\t\t' + str(len(self.edges)) + '\n'
         summary += 'Acyclic:\t' +  str(self.isAcyclic) + '\n'
