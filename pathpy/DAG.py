@@ -226,7 +226,7 @@ class DAG(object):
 
 
     @staticmethod
-    def readFile(filename, sep=',', maxlines=_sys.maxsize):
+    def readFile(filename, sep=',', maxlines=_sys.maxsize, mapping=None):
         """
         Reads a directed acyclic graph from a file
         containing an edge list of the form 
@@ -243,14 +243,18 @@ class DAG(object):
         with open(filename, 'r') as f:
             edges = []                             
         
+            if mapping != None:
+                Log.add('Filtering mapped edges')
+
             Log.add('Reading edge list ...')
 
             line = f.readline()
             n = 1           
             while line and n <= maxlines:
                 fields = line.rstrip().split(sep)
-                try:                    
-                    edges.append((fields[0], fields[1]))
+                try:
+                    if mapping == None or (fields[0] in mapping and fields[1] in mapping):
+                        edges.append((fields[0], fields[1]))
                     
                 except (IndexError, ValueError):
                     Log.add('Ignoring malformed data in line ' + str(n+1) + ': "' +  line.strip() + '"', Severity.WARNING)
