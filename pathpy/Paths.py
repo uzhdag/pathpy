@@ -519,7 +519,7 @@ class Paths:
     
 
     @staticmethod
-    def fromDAG(dag, node_mapping = {}, maxSubPathLength=_sys.maxsize):
+    def fromDAG(dag, node_mapping = None, maxSubPathLength=_sys.maxsize):
         """
         Extracts pathway statistics from a directed acyclic graph.
         For this, all paths between all roots (zero incoming links) 
@@ -533,15 +533,25 @@ class Paths:
         if dag.isAcyclic == False:
             Log.add('Cannot extract path statistics from a cyclic graph', Severity.ERROR)
         else:
+            # path object which will hold the detected (projected) paths
             p = Paths()
             p.maxSubPathLength = maxSubPathLength
             Log.add('Creating paths from directed acyclic graph', Severity.INFO)
-            # start at each root 
-            for s in dag.roots:                
-               paths = dag.constructPaths(s, node_mapping)
-               for d in paths:
-                   for x in paths[d]:
-                       p.addPathTuple(x, False, (0,1))
+            n = 0
+
+            # construct all paths originating from root nodes
+            for s in dag.roots:
+                if n%100 == 0:
+                    Log.add('Processed ' + str(n) + '/' + str(len(dag.roots)) + ' root nodes', Severity.TIMING)
+                if node_mapping == None:
+                    paths = dag.constructPaths(s)
+                    # add detected paths to paths object
+                    for d in paths:
+                        for x in paths[d]:
+                            p.addPathTuple(x, expandSubPaths=False, frequency=(0,1))
+                else:
+                    paths = dag.constructMappedPaths(s, node_mapping, p)
+                n += 1
             p.expandSubPaths()
             Log.add('finished.', Severity.INFO)
             return p

@@ -78,35 +78,62 @@ class DAG(object):
                 Log.add('Warning: omitted ' + str(redundant_edges) + ' redundant edges', Severity.WARNING)
 
 
-
-    def constructPaths(self, v, node_mapping = {}):
+    def constructPaths(self, v):
         """
         Constructs all paths from node v to any leaf nodes
         """
-        paths = _co.defaultdict( lambda: [] )
-        if v not in node_mapping:
-            paths[v] = [ (v,) ]
-        else:
-            paths[v] = [ (node_mapping[v],) ]
+
+        # Collect temporary paths, indexed by the target node
+        temp_paths = _co.defaultdict( lambda: [] )
+        temp_paths[v] = [ (v,) ]
 
         # set of unprocessed nodes
         Q = set([v])
 
         while len(Q)>0:
             # take one unprocessed node
-            x = Q.pop()
-            # expand paths if it has successors
+            x = Q.pop()            
+
+            # successors of x expand all temporary 
+            # paths, currently ending in x
             if len(self.successors[x])>0:
                 for w in self.successors[x]:
-                    for p in paths[x]:
-                        if w not in node_mapping:
-                            paths[w].append(p + (w,))
-                        else:
-                            paths[w].append(p + (node_mapping[w],))
+                    for p in temp_paths[x]:
+                        temp_paths[w].append(p + (w,))
                     Q.add(w)
-                del paths[x]
+                del temp_paths[x]
 
-        return paths
+        return temp_paths
+
+
+
+    def constructMappedPaths(self, v, node_mapping, paths):
+        """
+        Constructs all paths from node v to any leaf nodes,
+        while applying a surjective projection function 
+        given in terms of a mapping. 
+        """
+
+        # (mapped) paths that can be continued
+        # for a given endpoint node (key)
+        continuable = _co.defaultdict( lambda: [] )
+        continuable[v] = [ (node_mapping[v],) ]
+
+        while len(continuable)>0:            
+            
+            # process one node for which path can possibly continued
+            x, cp  = continuable.popitem()
+
+            if len(self.successors[x])==0:
+                # x is a leaf, so any path ending in x are longest paths in the DAG
+                for p in cp:
+                    paths.addPathTuple(p, expandSubPaths=False, frequency=(0,1))
+
+            else:
+                # extend all paths to x by successors of x
+                for p in cp:
+                    for w in self.successors[x]:
+                        continuable[w].append(p + (node_mapping[w],))
 
 
     def dfs_visit(self, v, parent = None):
