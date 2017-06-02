@@ -320,6 +320,23 @@ class MultiOrderModel:
         return int(dof)    
 
 
+    def modelSize(self, maxOrder):
+        """
+        Returns the total number of non-zero 
+        transition matrix entries in all
+        model layers
+        """
+        if maxOrder == None:
+            maxOrder = self.maxOrder
+        assert maxOrder <= self.maxOrder, 'Error: maxOrder cannot be larger than maximum order of multi-order network'
+
+        size = 0
+        for i in range(0, maxOrder+1):
+           size += self.layers[i].modelSize()
+
+        return int(size)
+
+
     def likeliHoodRatioTest(self, paths, maxOrderNull=0, maxOrder=1, assumption='paths', significanceThreshold=0.01):
         """
         Performs a likelihood-ratio test between two multi-order models with given maximum orders, where maxOrderNull serves 

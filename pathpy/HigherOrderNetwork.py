@@ -277,6 +277,14 @@ class HigherOrderNetwork:
         else:
             return _np.array([0,0])
 
+    def modelSize(self):
+        """
+        Returns the number of non-zero elements in the adjacency matrix 
+        of the higher-order model.
+        """
+
+        return self.getAdjacencyMatrix().count_nonzero()
+
 
     def HigherOrderNodeToPath(self, node):
         """
@@ -574,19 +582,30 @@ class HigherOrderNetwork:
         # sum of outgoing node degrees
         row_sums = _sp.array(A.sum(axis=1)).flatten()
         
+        # replace non-zero entries x by 1/x
         row_sums[row_sums != 0] = 1.0 / row_sums[row_sums != 0]
+
+        # indices of zero entries in row_sums
         d = _sp.where(row_sums == 0)[0]
 
-        Q = _sparse.spdiags(row_sums.T, 0, *A.shape, format='csr')
-        A = Q * A
+        # create sparse matrix with row_sums as diagonal elements
+        Q = _sparse.spdiags(row_sums.T, 0, A.shape[0], A.shape[1], format='csr')
 
+        # with this, we have divided elements in non-zero rows in A by 1 over the row sum
+        Q = Q * A
+
+        # vector with n entries 1/n
         p = _sp.array([1.0 / n] * int(n))
+
         pr = p
        
         # Power iteration
         for i in range(maxIterations):
             last = pr
-            pr = alpha * (pr * A + sum(pr[d]) * p) + (1 - alpha) * p
+
+            # sum(pr[d]) is the sum of pageranks for nodes with zero out-degree
+            # sum(pr[d]) * p yields a vector with length n
+            pr = alpha * (pr * Q + sum(pr[d]) * p) + (1 - alpha) * p
 
             if _sp.absolute(pr - last).sum() < n * convergenceThres:
                 higher_order_PR = dict(zip(self.nodes, map(float, pr)))
