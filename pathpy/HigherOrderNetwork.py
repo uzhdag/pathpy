@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    pathpy is an OpenSource python package for the analysis of sequential data on pathways and temporal networks using higher- and multi order graphical models
+    pathpy is an OpenSource python package for the analysis of sequential data
+    on pathways and temporal networks using higher- and multi order graphical models
 
     Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
 
@@ -18,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     Contact the developer:
-    
+
     E-mail: ischoltes@ethz.ch
     Web:    http://www.ingoscholtes.net
 """
@@ -27,7 +28,7 @@ import collections as _co
 import bisect as _bs
 import itertools as _iter
 
-import numpy as _np 
+import numpy as _np
 
 import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
@@ -40,7 +41,7 @@ from pathpy.Log import Severity
 
 class EmptySCCError(Exception):
     """
-    This exception is thrown whenever a non-empty strongly 
+    This exception is thrown whenever a non-empty strongly
     connected component is needed, but we encounter an empty one
     """
     pass
@@ -48,8 +49,10 @@ class EmptySCCError(Exception):
 
 class HigherOrderNetwork:
     """
-    Instances of this class capture a k-th-order representation of path statistics. Path statistics 
-    can originate from pathway data, temporal networks, or from processes observed on top of a network topology.
+    Instances of this class capture a k-th-order representation
+    of path statistics. Path statistics can originate from pathway
+    data, temporal networks, or from processes observed on top
+    of a network topology.
     """
 
 
@@ -57,65 +60,74 @@ class HigherOrderNetwork:
         """
         Generates a k-th-order representation based on the given path statistics.
 
-        @param paths: An instance of class Paths, which contains the path statistics to be 
-            used in the generation of the k-th order representation 
+        @param paths: An instance of class Paths, which contains the path
+            statistics to be used in the generation of the k-th order
+            representation
 
-        @param k: The order of the network representation to generate. For the default case of 
-            k=1, the resulting representation corresponds to the usual (first-order) aggregate network, 
-            i.e. links connect nodes and link weights are given by the frequency of each interaction. For 
-            k>1, a k-th order node corresponds to a sequence of k nodes. The weight of a k-th order link 
-            captures the frequency of a path of length k.
+        @param k: The order of the network representation to generate.
+            For the default case of k=1, the resulting representation
+            corresponds to the usual (first-order) aggregate network,
+            i.e. links connect nodes and link weights are given by the
+            frequency of each interaction. For k>1, a k-th order node
+            corresponds to a sequence of k nodes. The weight of a k-th
+            order link captures the frequency of a path of length k.
 
-        @param separator: The separator character to be used in higher-order node names.
+        @param separator: The separator character to be used in
+            higher-order node names.
 
-        @param nullModel: For the default value False, link weights are generated based on the statistics of 
-            paths of length k in the underlying path statistics instance. If True, link weights are generated 
-            from the first-order model (k=1) based on the assumption of independent links (i.e. corresponding) 
-            to a first-order Markov model.
+        @param nullModel: For the default value False, link weights are
+            generated based on the statistics of paths of length k in the
+            underlying path statistics instance. If True, link weights are
+            generated from the first-order model (k=1) based on the assumption
+            of independent links (i.e. corresponding) to a first-order
+            Markov model.
 
-        @param method: specifies how the null model link weights in the k-th order model are calculated. 
-            For the default method='FirstOrderTransitions', the weight w('v_1-v_2-...v_k', 'v_2-...-v_k-v_k+1') of 
-            a k-order edge is set to the transition probability T['v_k', 'v_k+1'] in the first order network.
-            For method='KOrderPi' the entry pi['v1-...-v_k'] in the stationary distribution of the 
+        @param method: specifies how the null model link weights
+            in the k-th order model are calculated. For the default
+            method='FirstOrderTransitions', the weight
+            w('v_1-v_2-...v_k', 'v_2-...-v_k-v_k+1') of a k-order edge
+            is set to the transition probability T['v_k', 'v_k+1'] in the
+            first order network. For method='KOrderPi' the entry
+            pi['v1-...-v_k'] in the stationary distribution of the
             k-order network is used instead.
         """
 
-        assert nullModel == False or (nullModel and k>1)
+        assert nullModel == False or (nullModel and k > 1)
 
         assert method == 'FirstOrderTransitions' or method == 'KOrderPi', 'Error: unknown method to build null model'
 
-        assert len(paths.paths.keys())>0 and max(paths.paths.keys())>=k, 'Error: constructing a model of order k requires paths of at least length k'
-        
+        assert len(paths.paths.keys()) > 0 and max(paths.paths.keys()) >= k, 'Error: constructing a model of order k requires paths of at least length k'
+
         ## The order of this HigherOrderNetwork
         self.order = k
 
         ## The paths object used to generate this instance
         self.paths = paths
 
-        ## The nodes in this HigherOrderNetwork 
+        ## The nodes in this HigherOrderNetwork
         self.nodes = []
 
-        ## The separator character used to label higher-order nodes. 
+        ## The separator character used to label higher-order nodes.
         ## For separator '-', a second-order node will be 'a-b'.
         self.separator = separator
 
         ## A dictionary containing edges as well as edge weights
-        self.edges = _co.defaultdict( lambda: _np.array([0,0]) )
+        self.edges = _co.defaultdict(lambda: _np.array([0, 0]))
 
         ## A dictionary containing the sets of successors of all nodes
-        self.successors = _co.defaultdict( lambda: set() )
+        self.successors = _co.defaultdict(lambda: set())
 
         ## A dictionary containing the sets of predecessors of all nodes
-        self.predecessors = _co.defaultdict( lambda: set() )
+        self.predecessors = _co.defaultdict(lambda: set())
 
-        if k>1: 
+        if k > 1:
             # For k>1 we need the first-order network to generate the null model
             # and calculate the degrees of freedom
 
             # For a multi-order model, the first-order network is generated multiple times!
             # TODO: Make this more efficient
             g1 = HigherOrderNetwork(paths, k=1)
-            A = g1.getAdjacencyMatrix(includeSubPaths = True, weighted=False, transposed=True)
+            A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False, transposed=True)
 
         if not nullModel:
             # Calculate the frequency of all paths of
@@ -123,7 +135,7 @@ class HigherOrderNetwork:
             # edge weights accordingly
             for p in paths.paths[k]:
                 # For a 0-order model, we generate a dummy start node
-                if k==0: 
+                if k == 0:
                     v = 'start'
                     w = p[0]
                 else:
@@ -140,19 +152,20 @@ class HigherOrderNetwork:
                     self.nodes.append(w)
                 # as edge weights of the k-th order model, we sum the
                 # occurrence of paths of length k as subpath and longest path
-                self.edges[(v,w)] += paths.paths[k][p]
+                self.edges[(v, w)] += paths.paths[k][p]
                 self.successors[v].add(w)
                 self.predecessors[w].add(v)
 
-            # Note: For all sequences of length k which (i) have never been observed, but (ii) 
-            #       do actually represent paths of length k in the first-order network, we 
-            #       may want to include some 'escape' mechanism along the lines of (Cleary and Witten 1994)                        
+            # Note: For all sequences of length k which (i) have never been observed, but
+            #       (ii) do actually represent paths of length k in the first-order network,
+            #       we may want to include some 'escape' mechanism along the
+            #       lines of (Cleary and Witten 1994)
 
         else:
-            # generate the *expected* frequencies of all possible 
+            # generate the *expected* frequencies of all possible
             # paths based on independently occurring (first-order) links
-            
-            # generate all possible paths of length k 
+
+            # generate all possible paths of length k
             # based on edges in the first-order network
             possiblePaths = list(g1.edges.keys())
 
@@ -165,12 +178,12 @@ class HigherOrderNetwork:
                             E_new.append(p)
                 possiblePaths = E_new
 
-            # validate that the number of unique generated paths corresponds to the sum of entries in A**k            
+            # validate that the number of unique generated paths corresponds to the sum of entries in A**k
             assert (A**k).sum() == len(possiblePaths), 'Expected ' + str((A**k).sum()) + ' paths but got ' + str(len(possiblePaths))
-            
+
             if method == 'KOrderPi':
                 # compute stationary distribution of a random walker in the k-th order network
-                g_k = HigherOrderNetwork(paths, k=k, separator = separator, nullModel = False)
+                g_k = HigherOrderNetwork(paths, k=k, separator=separator, nullModel=False)
                 pi_k = HigherOrderNetwork.getLeadingEigenvector(g_k.getTransitionMatrix(includeSubPaths=True), normalized=True, lanczosVecs=lanczosVecs, maxiter=maxiter)
             else:
                 # A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=True, transposed=False)
@@ -178,11 +191,11 @@ class HigherOrderNetwork:
 
             # assign link weights in k-order null model
             for p in possiblePaths:
-                v = p[0]                      
+                v = p[0]
                 # add k-order nodes and edges
                 for l in range(1, k):
                     v = v + separator + p[l]
-                w = p[1]                            
+                w = p[1]
                 for l in range(2, k+1):
                     w = w + separator + p[l]
                 if v not in self.nodes:
@@ -193,13 +206,13 @@ class HigherOrderNetwork:
                 # NOTE: under the null model's assumption of independent events, we
                 # have P(B|A) = P(A ^ B)/P(A) = P(A)*P(B)/P(A) = P(B)
                 # In other words: we are encoding a k-1-order Markov process in a k-order
-                # Markov model and for the transition probabilities T_AB in the k-order model 
+                # Markov model and for the transition probabilities T_AB in the k-order model
                 # we simply have to set the k-1-order probabilities, i.e. T_AB = P(B)
-                
-                # Solution A: Use entries of stationary distribution, 
+
+                # Solution A: Use entries of stationary distribution,
                 # which give stationary visitation frequencies of k-order node w
                 if method == 'KOrderPi':
-                    self.edges[(v,w)] = _np.array( [ 0, pi_k[ g_k.nodes.index(w) ] ] )
+                    self.edges[(v, w)] = _np.array([0, pi_k[g_k.nodes.index(w)]])
 
                 # Solution B: Use relative edge weight in first-order network
                 # Note that A is *not* transposed
@@ -208,8 +221,8 @@ class HigherOrderNetwork:
                 # Solution C: Use transition probability in first-order network
                 # Note that T is transposed (!)
                 elif method == 'FirstOrderTransitions':
-                    p_vw = T[ ( g1.nodes.index(p[-1]), g1.nodes.index(p[-2]) ) ]
-                    self.edges[(v,w)] =  _np.array( [0, p_vw] )  
+                    p_vw = T[(g1.nodes.index(p[-1]), g1.nodes.index(p[-2]))]
+                    self.edges[(v, w)] = _np.array([0, p_vw])
 
                 # Solution D: calculate k-path weights based on entries of squared k-1-order adjacency matrix
 
@@ -217,42 +230,44 @@ class HigherOrderNetwork:
                 self.successors[v].add(w)
 
         # Compute degrees of freedom of models
-        if k==0:
-            # for a zero-order model, we just fit node probabilities (excluding the special 'start' node) 
-            # Since probabilities must sum to one, the effective degree of freedom is one less than the number of nodes
+        if k == 0:
+            # for a zero-order model, we just fit node probabilities
+            # (excluding the special 'start' node)
+            # Since probabilities must sum to one, the effective degree
+            # of freedom is one less than the number of nodes
             # This holds for both the paths and the ngrams model
             self.dof_paths = self.vcount() - 2
             self.dof_ngrams = self.vcount() - 2
         else:
             # for a first-order model, self is the first-order network
-            if k==1:
+            if k == 1:
                 g1 = self
-                A = g1.getAdjacencyMatrix(includeSubPaths = True, weighted=False, transposed=True)
-           
+                A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False, transposed=True)
+
             # Degrees of freedom in a higher-order ngram model
             s = g1.vcount()
 
             ## The degrees of freedom of the higher-order model, under the ngram assumption
             self.dof_ngrams = (s**k)*(s-1)
-                 
-            # For k>0, the degrees of freedom of a path-based model depend on 
+
+            # For k>0, the degrees of freedom of a path-based model depend on
             # the number of possible paths of length k in the first-order network.
-            # Since probabilities in each row must sum to one, the degrees 
-            # of freedom must be reduced by one for each k-order node 
+            # Since probabilities in each row must sum to one, the degrees
+            # of freedom must be reduced by one for each k-order node
             # that has at least one possible transition.
 
             # (A**k).sum() counts the number of different paths of exactly length k
-            # based on the first-order network, which corresponds to the number of 
-            # possible transitions in the transition matrix of a k-th order model. 
+            # based on the first-order network, which corresponds to the number of
+            # possible transitions in the transition matrix of a k-th order model.
             paths_k = (A**k).sum()
 
-            # For the degrees of freedom, we must additionally consider that 
-            # rows in the transition matrix must sum to one, i.e. we have to 
+            # For the degrees of freedom, we must additionally consider that
+            # rows in the transition matrix must sum to one, i.e. we have to
             # subtract one degree of freedom for every non-zero row in the (null-model)
-            # transition matrix. In other words, we subtract one for every path of length k-1 
+            # transition matrix. In other words, we subtract one for every path of length k-1
             # that can possibly be followed by at least one edge to a path of length k
 
-            # This can be calculated by counting the number of non-zero elements in the 
+            # This can be calculated by counting the number of non-zero elements in the
             # vector containing the row sums of A**k
             non_zero = _np.count_nonzero((A**k).sum(axis=0))
 
@@ -272,14 +287,14 @@ class HigherOrderNetwork:
 
     def totalEdgeWeight(self):
         """ Returns the sum of all edge weights """
-        if len(self.edges)>0:
+        if len(self.edges) > 0:
             return sum(self.edges.values())
         else:
-            return _np.array([0,0])
+            return _np.array([0, 0])
 
     def modelSize(self):
         """
-        Returns the number of non-zero elements in the adjacency matrix 
+        Returns the number of non-zero elements in the adjacency matrix
         of the higher-order model.
         """
 
@@ -289,8 +304,8 @@ class HigherOrderNetwork:
     def HigherOrderNodeToPath(self, node):
         """
         Helper function that transforms a node in a
-        higher-order network of order k into a corresponding 
-        path of length k-1. For a higher-order node 'a-b-c-d' 
+        higher-order network of order k into a corresponding
+        path of length k-1. For a higher-order node 'a-b-c-d'
         this function will return ('a','b','c','d')
 
         @param node: The higher-order node to be transformed to a path.
@@ -301,30 +316,31 @@ class HigherOrderNetwork:
 
     def pathToHigherOrderNodes(self, path, k=None):
         """
-        Helper function that transforms a path into a sequence of k-order nodes 
-        using the separator character of the HigherOrderNetwork instance 
+        Helper function that transforms a path into a sequence of k-order nodes
+        using the separator character of the HigherOrderNetwork instance
 
         Consider an example path (a,b,c,d) with a separator string '-'
         For k=1, the output will be the list of strings ['a', 'b', 'c', 'd']
         For k=2, the output will be the list of strings ['a-b', 'b-c', 'c-d']
         For k=3, the output will be the list of strings ['a-b-c', 'b-c-d']
-        etc. 
+        etc.
 
-        @param path: the path tuple to turn into a sequence of higher-order nodes 
+        @param path: the path tuple to turn into a sequence of higher-order nodes
 
-        @param k: the order of the representation to use (default: order of the HigherOrderNetwork instance)
+        @param k: the order of the representation to use (default: order of the
+            HigherOrderNetwork instance)
         """
         if k == None:
             k = self.order
-        assert len(path)>k, 'Error: Path must be longer than k'
+        assert len(path) > k, 'Error: Path must be longer than k'
 
-        if k == 0 and len(path)==1:
+        if k == 0 and len(path) == 1:
             return ['start', path[0]]
 
         nodes = []
-    
+
         for s in range(0, len(path)-k+1):
-            if s>len(path)-1 or s<0:
+            if s > len(path)-1 or s < 0:
                 print(path)
                 print(s)
                 print(k)
@@ -338,49 +354,49 @@ class HigherOrderNetwork:
 
     def getNodeNameMap(self):
         """
-        Returns a dictionary that can be used to map 
+        Returns a dictionary that can be used to map
         node nodes to matrix/vector indices
         """
 
         name_map = {}
-        for idx,v in enumerate(self.nodes):
+        for idx, v in enumerate(self.nodes):
             name_map[v] = idx
         return name_map
 
 
     def getDoF(self, assumption="paths"):
         """
-        Calculates the degrees of freedom (i.e. number of parameters) of 
+        Calculates the degrees of freedom (i.e. number of parameters) of
         this k-order model. Depending on the modeling assumptions, this either
-        corresponds to the number of paths of length k in the first-order network 
-        or to the number of all possible k-grams. The degrees of freedom of a model 
-        can be used to assess the model complexity when calculating, e.g., the 
+        corresponds to the number of paths of length k in the first-order network
+        or to the number of all possible k-grams. The degrees of freedom of a model
+        can be used to assess the model complexity when calculating, e.g., the
         Bayesian Information Criterion (BIC).
 
-        @param assumption: if set to 'paths', for the degree of freedon calculation in the BIC, 
-            only paths in the first-order network topology will be considered. This is 
+        @param assumption: if set to 'paths', for the degree of freedon calculation in the BIC,
+            only paths in the first-order network topology will be considered. This is
             needed whenever we are interested in a modeling of paths in a given network topology.
-            If set to 'ngrams' all possible n-grams will be considered, independent of whether they 
-            are valid paths in the first-order network or not. The 'ngrams' and the 'paths' assumption 
-            coincide if the first-order network is fully connected.
+            If set to 'ngrams' all possible n-grams will be considered, independent of whether they
+            are valid paths in the first-order network or not. The 'ngrams' 
+            and the 'paths' assumption coincide if the first-order network is fully connected.
         """
         assert assumption == 'paths' or assumption == 'ngrams', 'Error: Invalid assumption'
-        
-        if assumption == 'paths':            
+
+        if assumption == 'paths':
             return self.dof_paths
-        else:            
-            return self.dof_ngrams   
+        else:
+            return self.dof_ngrams
 
 
     def getDistanceMatrix(self):
         """
-        Calculates shortest path distances between all pairs of 
+        Calculates shortest path distances between all pairs of
         higher-order nodes using the Floyd-Warshall algorithm.
         """
 
         Log.add('Calculating distance matrix in higher-order network (k = ' + str(self.order) + ') ...', Severity.INFO)
 
-        dist = _co.defaultdict( lambda: _co.defaultdict( lambda: _np.inf ) )
+        dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
         for v in self.nodes:
             dist[v][v] = 0
@@ -401,19 +417,19 @@ class HigherOrderNetwork:
 
     def getShortestPaths(self):
         """
-        Calculates all shortest paths between all pairs of 
+        Calculates all shortest paths between all pairs of
         higher-order nodes using the Floyd-Warshall algorithm.
         """
-        
+
         Log.add('Calculating shortest paths in higher-order network (k = ' + str(self.order) + ') ...', Severity.INFO)
 
-        dist = _co.defaultdict( lambda: _co.defaultdict( lambda: _np.inf ) )
-        shortest_paths = _co.defaultdict( lambda: _co.defaultdict( lambda: set() ) )
+        dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
+        shortest_paths = _co.defaultdict(lambda: _co.defaultdict( lambda: set()))
 
         for e in self.edges:
             dist[e[0]][e[1]] = 1
             shortest_paths[e[0]][e[1]].add(e)
-       
+
         for v in self.nodes:
             for w in self.nodes:
                 if v != w:
@@ -428,7 +444,7 @@ class HigherOrderNetwork:
                             for p in list(shortest_paths[v][k]):
                                 for q in list(shortest_paths[k][w]):
                                     shortest_paths[v][w].add(p+q[1:])
-        
+
         for v in self.nodes:
             dist[v][v] = 0
             shortest_paths[v][v].add((v,))
@@ -440,15 +456,15 @@ class HigherOrderNetwork:
 
     def getDistanceMatrixFirstOrder(self):
         """
-        Projects a distance matrix from a higher-order to 
-        first-order nodes, while path lengths are calculated 
+        Projects a distance matrix from a higher-order to
+        first-order nodes, while path lengths are calculated
         based on the higher-order topology
         """
 
         dist = self.getDistanceMatrix()
-        dist_first = _co.defaultdict( lambda: _co.defaultdict( lambda: _np.inf ) )
+        dist_first = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
-        # calculate distances between first-order nodes based on distance in higher-order topology 
+        # calculate distances between first-order nodes based on distance in higher-order topology
         for vk in dist:
             for wk in dist[vk]:
                 v1 = self.HigherOrderNodeToPath(vk)[0]
@@ -460,25 +476,25 @@ class HigherOrderNetwork:
 
 
     def ClosenessCentrality(self):
-        """ 
+        """
         Calculates the closeness centralities of all nodes.
-        If the order of the higher-order network is larger than one 
-        centralities calculated based on the higher-order 
-        topology will automatically be projected back to first-order 
+        If the order of the higher-order network is larger than one
+        centralities calculated based on the higher-order
+        topology will automatically be projected back to first-order
         nodes.
         """
 
         dist_first = self.getDistanceMatrixFirstOrder()
-        node_centralities = _co.defaultdict( lambda: 0 )   
-        
-        Log.add('Calculating closeness centralities (k = ' + str(self.order) + ') ...', Severity.INFO)             
+        node_centralities = _co.defaultdict(lambda: 0)
+
+        Log.add('Calculating closeness centralities (k = ' + str(self.order) + ') ...', Severity.INFO)
 
         # calculate closeness values
         for v1 in dist_first:
             for w1 in dist_first[v1]:
                 if v1 != w1 and dist_first[v1][w1] < _np.inf:
                     node_centralities[v1] += 1.0 / dist_first[v1][w1]
-        
+
         # assign centrality zero to nodes not occurring on higher-order shortest paths
         nodes = self.paths.getNodes()
         for v in nodes:
@@ -486,23 +502,26 @@ class HigherOrderNetwork:
 
         Log.add('finished.', Severity.INFO)
 
-        return node_centralities    
+        return node_centralities
 
 
     def EvCent(self, projection='scaled', includeSubPaths=True):
         """
-        Calculates the eigenvector centralities of higher-order nodes. If 
+        Calculates the eigenvector centralities of higher-order nodes. If
         the order of the HigherOrderNetwork is larger than one, the centralities
-        will be projected to the first-order nodes. 
+        will be projected to the first-order nodes.
 
-        @param projection: Indicates how the projection from k-th-order nodes (v1, v2, ... , v{k-1})
-            shall be performed. For the method 'all', the eigenvector centrality of the higher-order node 
-            will be added to *all* first-order nodes on the path corresponding to the higher-order node. For 
-            the method 'last', the centrality of the higher-order node will only be assigned to *last* 
-            first-order node v{k-1}. For the method 'scaled' (default), the eigenvector centrality of higher-order 
-            nodes will be assigned proportionally to first-order nodes, i.e. each of the three nodes in the 
-            third-order node (a,b,c) will receive one third of the eigenvector centrality of (a,b,c).
-        @param includeSubPaths: whether or not to include subpath statistics in the calculation (default True)
+        @param projection: Indicates how the projection from k-th-order 
+            nodes (v1, v2, ... , v{k-1}) shall be performed. For the method 'all',
+            the eigenvector centrality of the higher-order node will be added to *all*
+            first-order nodes on the path corresponding to the higher-order node. For
+            the method 'last', the centrality of the higher-order node will only be 
+            assigned to *last* first-order node v{k-1}. For the method 'scaled' (default),
+            the eigenvector centrality of higher-order nodes will be assigned proportionally
+            to first-order nodes, i.e. each of the three nodes in the third-order node (a,b,c)
+            will receive one third of the eigenvector centrality of (a,b,c).
+        @param includeSubPaths: whether or not to include subpath statistics in the 
+            calculation (default True)
         """
         A = self.getAdjacencyMatrix(includeSubPaths=includeSubPaths, weighted=False, transposed=True)
 
