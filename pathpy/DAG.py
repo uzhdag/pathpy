@@ -80,7 +80,8 @@ class DAG(object):
             if self_loops > 0:
                 Log.add('Warning: omitted ' + str(self_loops) + ' self-loops', Severity.WARNING)
             if redundant_edges > 0:
-                Log.add('Warning: omitted ' + str(redundant_edges) + ' redundant edges', Severity.WARNING)
+                Log.add('Warning: omitted ' + str(redundant_edges) +
+                        ' redundant edges', Severity.WARNING)
 
 
     def constructPaths(self, v):
@@ -95,13 +96,13 @@ class DAG(object):
         # set of unprocessed nodes
         Q = set([v])
 
-        while len(Q) > 0:
+        while Q:
             # take one unprocessed node
             x = Q.pop()
 
             # successors of x expand all temporary
             # paths, currently ending in x
-            if len(self.successors[x]) > 0:
+            if self.successors[x]:
                 for w in self.successors[x]:
                     for p in temp_paths[x]:
                         temp_paths[w].append(p + (w,))
@@ -124,12 +125,12 @@ class DAG(object):
         continuable = _co.defaultdict(lambda: [])
         continuable[v] = [(node_mapping[v],)]
 
-        while len(continuable) > 0:
+        while continuable:
 
             # process one node for which path can possibly continued
             x, cp = continuable.popitem()
 
-            if len(self.successors[x]) == 0:
+            if not self.successors[x]:
                 # x is a leaf, so any path ending in x are longest paths in the DAG
                 for p in cp:
                     paths.addPathTuple(p, expandSubPaths=False, frequency=(0, 1))
@@ -214,7 +215,8 @@ class DAG(object):
                     del self.edge_classes[e]
             self.topsort()
             assert self.isAcyclic, "Error: makeAcyclic did not generate acyclic graph!"
-            Log.add('Removed ' + str(removed_links) + ' back links to make graph acyclic', Severity.INFO)
+            Log.add('Removed ' + str(removed_links) +
+                    ' back links to make graph acyclic', Severity.INFO)
 
 
     def summary(self):
@@ -290,7 +292,8 @@ class DAG(object):
                         edges.append((fields[0], fields[1]))
 
                 except (IndexError, ValueError):
-                    Log.add('Ignoring malformed data in line ' + str(n+1) + ': "' + line.strip() + '"', Severity.WARNING)
+                    Log.add('Ignoring malformed data in line ' + str(n+1) +
+                            ': "' + line.strip() + '"', Severity.WARNING)
                 line = f.readline()
                 n += 1
         # end of with open()
