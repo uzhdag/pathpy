@@ -110,7 +110,7 @@ class Paths:
             summary += 'Max sub path length:\t\t' + str(self.maxSubPathLength) + '\n'
         summary += 'Max. path length:\t\t' + str(maxL) + '\n'
         summary += 'Avg path length:\t\t' + str(avgL) + '\n'
-        for k in self.paths:
+        for k in sorted(self.paths):
             sum = 0
             spsum = 0
             lpsum = 0
@@ -1110,7 +1110,7 @@ class Paths:
                 for p in shortest_paths[s][d]:
                     for x in p[1:-1]:
                         if s != d != x:
-                            # print('node ' + x + ': ' + str(1.0 / len(shortest_paths[start][end])))             
+                            # print('node ' + x + ': ' + str(1.0 / len(shortest_paths[start][end])))
                             node_centralities[x] += 1.0 / len(shortest_paths[s][d])
                             # node_centralities[x] += 1.0
         if normalized:
