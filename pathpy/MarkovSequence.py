@@ -47,8 +47,7 @@ class MarkovSequence:
     """
 
     log = logging.getLogger('pathpy.MarkovSequence')
-    log.setLevel(logging.INFO)
-
+    
     def __init__(self, sequence):
         """
         Generates a Markov model for a sequence, given

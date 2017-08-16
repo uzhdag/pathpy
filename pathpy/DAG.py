@@ -36,7 +36,6 @@ class DAG(object):
     """
 
     log = logging.getLogger('pathpy.DAG')
-    log.setLevel(logging.INFO)
 
     def __init__(self, edges=None):
         """

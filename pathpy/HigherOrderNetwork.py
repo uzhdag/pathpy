@@ -53,8 +53,7 @@ class HigherOrderNetwork:
     of a network topology.
     """
 
-    log = logging.getLogger('pathpy.HigherOrderNetwork')
-    log.setLevel(logging.INFO)
+    log = logging.getLogger('pathpy.HigherOrderNetwork')    
 
     def __init__(self, paths, k=1, separator='-', nullModel=False, 
                     method='FirstOrderTransitions', lanczosVecs=15, maxiter=1000):

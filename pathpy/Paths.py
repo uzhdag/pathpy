@@ -50,13 +50,12 @@ class Paths:
     given maximum time difference delta.
     """
 
-    log = logging.getLogger('pathpy.Paths')
-    log.setLevel(logging.INFO)
+    log = logging.getLogger('pathpy')
 
     def __init__(self):
         """
         Creates an empty Paths object
-        """
+        """        
 
         ## A dictionary of paths that has the following structure:
         ## - paths[k] is a dictionary containing all paths of length k,

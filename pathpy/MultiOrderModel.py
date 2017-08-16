@@ -46,8 +46,7 @@ class MultiOrderModel:
         higher-order networks which collectively represent
         a multi-order model for path statistics. """
 
-    log = logging.getLogger('pathpy.MultiOrderModel')
-    log.setLevel(logging.INFO)
+    log = logging.getLogger('pathpy.MultiOrderModel')    
 
     def __init__(self, paths, maxOrder=1):
         """

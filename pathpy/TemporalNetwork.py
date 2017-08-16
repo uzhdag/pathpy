@@ -41,8 +41,7 @@ class TemporalNetwork:
        time difference between consecutive time-stamped edges.
     """
 
-    log = logging.getLogger('pathpy.TemporalNetwork')
-    log.setLevel(logging.INFO)
+    log = logging.getLogger('pathpy.TemporalNetwork')    
 
     def __init__(self, tedges = None):
         """
