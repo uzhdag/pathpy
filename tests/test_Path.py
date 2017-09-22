@@ -24,11 +24,10 @@
     Web:    http://www.ingoscholtes.net
 """
 
-
 import pathpy as pp
 import pytest
 import numpy as np
-
+from collections import Counter
 
 slow = pytest.mark.slow
 
@@ -86,8 +85,9 @@ def test_read_edges_undirected(path_from_edge_file_undirected):
 
 def test_get_sequence(path_from_ngram_file):
     """Test if the Paths.getSequence function works correctly"""
-    sequence = path_from_ngram_file.getSequence()
-    assert "".join(sequence) == 'dedab|dedab|dedab|dedab|abcdab|abcdab|', \
+    sequence_raw = "".join(path_from_ngram_file.getSequence())
+    sequence = Counter(sequence_raw.split('|'))
+    assert sequence == {'dedab': 4, 'abcdab': 2, '': 1}, \
         "Returned the wrong sequence"
 
 
@@ -161,8 +161,9 @@ def test_get_contained_paths():
 def test_filter_paths(path_from_ngram_file):
     p = path_from_ngram_file
     new_paths = p.filterPaths(node_filter=['a', 'b', 'c'])
-    expected_sequence = "ab|ab|ab|ab|ab|ab|abc|abc|"
-    new_sequence = ''.join(new_paths.getSequence())
+    expected_sequence = {'ab': 6, 'abc': 2, '': 1}
+    new_sequence_raw = ''.join(new_paths.getSequence())
+    new_sequence = Counter(new_sequence_raw.split('|'))
     assert new_sequence == expected_sequence
 
 
@@ -170,8 +171,9 @@ def test_project_paths(path_from_ngram_file):
     p = path_from_ngram_file
     mapping = {'a': 'x', 'b': 'x', 'c': 'y', 'd': 'y', 'e': 'y'}
     new_p = p.projectPaths(mapping=mapping)
-    new_sequence = ''.join(new_p.getSequence())
-    expected_sequence = "yyyxx|yyyxx|yyyxx|yyyxx|xxyyxx|xxyyxx|"
+    new_sequence_raw = ''.join(new_p.getSequence())
+    new_sequence = Counter(new_sequence_raw.split('|'))
+    expected_sequence = {'yyyxx': 4, 'xxyyxx': 2, '': 1}
     assert new_sequence == expected_sequence
 
 
@@ -184,7 +186,7 @@ def test_get_nodes(random_paths):
 
 def test_get_path_lengths(path_from_ngram_file):
     p = path_from_ngram_file
-    expected = { 0: [32, 0], 1: [26, 0], 2: [20, 0], 3: [14, 0], 4: [4,4], 5: [0,2] }
+    expected = {0: [32, 0], 1: [26, 0], 2: [20, 0], 3: [14, 0], 4: [4, 4], 5: [0, 2]}
     plengths = p.getPathLengths()
     assert np.all([plengths[x] == expected[x] for x in expected])
     assert np.all([plengths[x] == expected[x] for x in plengths])
@@ -193,7 +195,7 @@ def test_get_path_lengths(path_from_ngram_file):
 def test_dag_acyclic(dag_object):
     dag = dag_object
     dag.topsort()
-    assert dag.isAcyclic==True
+    assert dag.isAcyclic == True
 
     # Add cycle to the graph
     dag.addEdge('b', 'c')
@@ -219,8 +221,9 @@ def test_dag_path_mapping(dag_object):
     dag = dag_object
     dag.topsort()
 
-    mapping = {'a': 'A', 'b': 'B', 'c': 'A', 'e': 'B', 'f': 'B', 'g': 'A', 'h': 'A','i': 'B', 'j': 'A' }   
-    paths_mapped2 = pp.Paths.fromDAG(dag, node_mapping = mapping)
+    mapping = {'a': 'A', 'b': 'B', 'c': 'A', 'e': 'B', 'f': 'B', 'g': 'A', 'h': 'A',
+               'i': 'B', 'j': 'A'}
+    paths_mapped2 = pp.Paths.fromDAG(dag, node_mapping=mapping)
     assert paths_mapped2.paths[1][('A', 'B')][1] == 1
     assert paths_mapped2.paths[1][('A', 'A')][1] == 1
     assert paths_mapped2.paths[2][('A', 'B', 'B')][1] == 1
@@ -228,4 +231,4 @@ def test_dag_path_mapping(dag_object):
     assert paths_mapped2.paths[3][('A', 'B', 'B', 'A')][1] == 1
     assert paths_mapped2.paths[3][('A', 'A', 'B', 'B')][1] == 1
     assert paths_mapped2.paths[4][('A', 'A', 'B', 'B', 'A')][1] == 1
-    assert paths_mapped2.ObservationCount() == 7    
+    assert paths_mapped2.ObservationCount() == 7
