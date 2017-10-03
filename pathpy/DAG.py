@@ -248,13 +248,13 @@ class DAG(object):
 
         if source not in self.nodes:
             self.nodes.add(source)
-            self.roots.add(source)
-            self.leafs.discard(source)
+            self.roots.add(source)            
         if target not in self.nodes:
-            self.nodes.add(target)
-            self.roots.discard(target)
+            self.nodes.add(target)            
             self.leafs.add(target)
 
+        self.leafs.discard(source)
+        self.roots.discard(target)
         self.edges.add((source, target))
         self.successors[source].add(target)
         self.predecessors[target].add(source)

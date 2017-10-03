@@ -581,7 +581,7 @@ class Paths:
                         for x in paths[d]:
                             p.addPathTuple(x, expandSubPaths=False, frequency=(0, 1))
                 else:
-                    paths = dag.constructMappedPaths(s, node_mapping, p)
+                    dag.constructMappedPaths(s, node_mapping, p)
                 n += 1
             p.expandSubPaths()
             Log.add('finished.', Severity.INFO)
