@@ -25,9 +25,11 @@
 """
 
 import collections as _co
-import logging
 
 import sys as _sys
+
+from pathpy.Log import Log
+from pathpy.Log import Severity
 
 class DAG(object):
     """
@@ -35,7 +37,6 @@ class DAG(object):
         can be used to generate pathway statistics.
     """
 
-    log = logging.getLogger('pathpy.DAG')
 
     def __init__(self, edges=None):
         """
@@ -77,9 +78,10 @@ class DAG(object):
                 if not selfLoop and not redundant:
                     self.addEdge(e[0], e[1])
             if self_loops > 0:
-                DAG.log.warning('Omitted %d self-loops', self_loops)
+                Log.add('Warning: omitted ' + str(self_loops) + ' self-loops', Severity.WARNING)
             if redundant_edges > 0:
-                DAG.log.warning('Omitted %d redundant edges', redundant_edges)
+                Log.add('Warning: omitted ' + str(redundant_edges) +
+                        ' redundant edges', Severity.WARNING)
 
 
     def constructPaths(self, v):
@@ -212,8 +214,9 @@ class DAG(object):
                     self.predecessors[e[1]].remove(e[0])
                     del self.edge_classes[e]
             self.topsort()
-            assert self.isAcyclic, DAG.log.error("makeAcyclic did not generate acyclic graph!")
-            DAG.log.info('Removed %d back links to make graph acyclic', removed_links)
+            assert self.isAcyclic, "Error: makeAcyclic did not generate acyclic graph!"
+            Log.add('Removed ' + str(removed_links) +
+                    ' back links to make graph acyclic', Severity.INFO)
 
 
     def summary(self):
@@ -276,9 +279,9 @@ class DAG(object):
             edges = []
 
             if mapping != None:
-                DAG.log.info('Filtering mapped edges')
+                Log.add('Filtering mapped edges')
 
-            DAG.log.info('Reading edge list ...')
+            Log.add('Reading edge list ...')
 
             line = f.readline()
             n = 1
@@ -289,7 +292,8 @@ class DAG(object):
                         edges.append((fields[0], fields[1]))
 
                 except (IndexError, ValueError):
-                    DAG.log.warning('Ignoring malformed data in line %d: %s"', n+1, line.strip())
+                    Log.add('Ignoring malformed data in line ' + str(n+1) +
+                            ': "' + line.strip() + '"', Severity.WARNING)
                 line = f.readline()
                 n += 1
         # end of with open()

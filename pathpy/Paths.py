@@ -29,12 +29,12 @@ import collections as _co
 import bisect as _bs
 import sys as _sys
 import operator
-import logging
 
 import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
 import scipy.linalg as _la
 
+from pathpy.Log import *
 from pathpy.HigherOrderNetwork import HigherOrderNetwork
 from pathpy.DAG import DAG
 
@@ -50,8 +50,6 @@ class Paths:
     given maximum time difference delta.
     """
 
-    log = logging.getLogger('pathpy')
-
     def __init__(self):
         """
         Creates an empty Paths object
@@ -64,8 +62,7 @@ class Paths:
         #    (i,j) where i refers to the number of times p occurs as a
         #    subpath of a longer path, and j refers to the number of times p
         #    occurs as a *real* or *longest* path (i.e. not being a subpath
-        #    of a longer path)        
-
+        #    of a longer path)
         self.paths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.array([0, 0])))
 
         ## The character used to separate nodes on paths
@@ -86,44 +83,44 @@ class Paths:
         """
         Returns a string containing basic summary info of this Paths instance
         """
-        s = 0
+        sum = 0
         spsum = 0
         lpsum = 0
-        maxl = 0
+        maxL = 0
         avgL = 0
         nodes = set()
         for k in self.paths:
             for p in self.paths[k]:
-                s += self.paths[k][p].sum()
+                sum += self.paths[k][p].sum()
                 spsum += self.paths[k][p][0]
                 lpsum += self.paths[k][p][1]
                 avgL += self.paths[k][p][1] * k
                 for v in p:
                     nodes.add(v)
             if self.paths[k]:
-                maxl = max(maxl, k)
+                maxL = max(maxL, k)
         if lpsum > 0:
             avgL = avgL / lpsum
 
         summary = 'Number of paths (unique/sub paths/total):\t' +  str(lpsum) + \
-                  ' (' + str(self.getUniquePaths()) + '/'+ str(spsum) + '/' + str(s) + ')\n'
+                  ' (' + str(self.getUniquePaths()) + '/'+ str(spsum) + '/' + str(sum) + ')\n'
         summary += 'Nodes:\t\t\t\t' + str(len(nodes)) + '\n'
         summary += 'Edges:\t\t\t\t' + str(len(self.paths[1])) + '\n'
         if self.maxSubPathLength < _sys.maxsize:
             summary += 'Max sub path length:\t\t' + str(self.maxSubPathLength) + '\n'
-        summary += 'Max. path length:\t\t' + str(maxl) + '\n'
+        summary += 'Max. path length:\t\t' + str(maxL) + '\n'
         summary += 'Avg path length:\t\t' + str(avgL) + '\n'
         for k in sorted(self.paths):
-            s = 0
+            sum = 0
             spsum = 0
             lpsum = 0
             for p in self.paths[k]:
-                s += self.paths[k][p].sum()
+                sum += self.paths[k][p].sum()
                 spsum += self.paths[k][p][0]
                 lpsum += self.paths[k][p][1]
             summary += 'Paths of length k = ' + str(k) + '\t\t' + str(lpsum) + \
                        ' (' + str(self.getUniquePaths(l=k, considerLongerPaths=False)) + \
-                       '/' + str(spsum) + '/'+ str(s) +  ')\n'
+                       '/' + str(spsum) + '/'+ str(sum) +  ')\n'
         return summary
 
 
@@ -166,7 +163,7 @@ class Paths:
         @stopchar: The character used to separate paths
         """
 
-        Paths.log.debug('Concatenating paths to sequence ...')
+        Log.add('Concatenating paths to sequence ...')
 
         sequence = []
         for l in self.paths:
@@ -176,10 +173,10 @@ class Paths:
                     segment.append(s)
                 if not stopchar == '':
                     segment.append(stopchar)
-                for _ in range(self.paths[l][p][1]):
+                for f in range(self.paths[l][p][1]):
                     sequence += segment
 
-        Paths.log.debug('finished')
+        Log.add('finished')
         return sequence
 
 
@@ -189,7 +186,7 @@ class Paths:
 
         @param l: the (inclusive) maximum length up to which path shall be counted.
         """
-        unique_paths = 0
+        L = 0
         lmax = l
         if considerLongerPaths:
             if self.paths:
@@ -199,8 +196,8 @@ class Paths:
         for j in range(l, lmax+1):
             for p in self.paths[j]:
                 if self.paths[j][p][1] > 0:
-                    unique_paths += 1
-        return unique_paths
+                    L += 1
+        return L
 
 
     def __str__(self):
@@ -224,10 +221,10 @@ class Paths:
         p = Paths()
 
         p.separator = separator
-        p.maxSubPathLength = maxSubPathLength
+        p.maxSubPathLength = _sys.maxsize
 
         with open(filename, 'r') as f:
-            Paths.log.info('Reading edge data ... ')
+            Log.add('Reading edge data ... ')
             line = f.readline()
             n = 1
             while line and n <= maxlines:
@@ -250,7 +247,7 @@ class Paths:
 
         if expandSubPaths:
             p.expandSubPaths()
-        Paths.log.info('finished.')
+        Log.add('finished.')
 
         return p
 
@@ -299,7 +296,7 @@ class Paths:
         maxL = 0
 
         with open(filename, 'r') as f:
-            Paths.log.info('Reading ngram data ... ')
+            Log.add('Reading ngram data ... ')
             line = f.readline()
             n = 1
             while line and n <= maxlines:
@@ -334,10 +331,11 @@ class Paths:
                 line = f.readline()
                 n += 1
         # end of with open()
-        Paths.log.info('finished. Read %d paths with maximum length %d', n-1, maxL)
+        Log.add('finished. Read ' + str(n-1) + ' paths with maximum length ' + str(maxL))
 
         if expandSubPaths:
             p.expandSubPaths()
+        Log.add('finished.')
 
         return p
 
@@ -373,11 +371,11 @@ class Paths:
         (includes multiple observations for paths with a frequency weight)
         """
 
-        observation_count = 0
+        sum = 0
         for k in self.paths:
             for p in self.paths[k]:
-                observation_count += self.paths[k][p][1]
-        return observation_count
+                sum += self.paths[k][p][1]
+        return sum
 
 
     def expandSubPaths(self):
@@ -395,7 +393,7 @@ class Paths:
         if len(self.paths) == 0:
             return
 
-        Paths.log.info('Calculating sub path statistics ... ')
+        Log.add('Calculating sub path statistics ... ')
 
         # the expansion of all subpaths in paths with a maximum path length of maxL
         # neccessarily generates paths of *any* length up to MaxL.
@@ -425,7 +423,6 @@ class Paths:
                     for s in range(0, pathLength-k+1):
                         # Add frequency as a subpath to *first* entry of occurrence counter
                         self.paths[k][path[s:s+k+1]] += (frequency, 0)
-        Paths.log.info('finished')
 
 
     @staticmethod
@@ -452,9 +449,10 @@ class Paths:
         """
 
         if maxLength == _sys.maxsize:
-            Paths.log.info('Extracting time-respecting paths for delta = %d ...' , delta)
+            Log.add('Extracting time-respecting paths for delta = ' + str(delta) + ' ...')
         else:
-            Paths.log.info('Extracting time-respecting paths up to length %d for delta = %d ...', maxLength, delta)
+            Log.add('Extracting time-respecting paths up to length ' + str(maxLength) +
+                    ' for delta = ' + str(delta) + ' ...')
 
         # for dictionary p.paths paths[k] contains a list of all
         # time-respecting paths p with length k and paths[k][p] contains
@@ -546,6 +544,8 @@ class Paths:
         # expand sub paths of longest paths
         p.expandSubPaths()
 
+        Log.add('finished.')
+
         return p
 
 
@@ -562,18 +562,18 @@ class Paths:
             dag.topsort()
         # issue error if graph contains cycles
         if dag.isAcyclic == False:
-            Paths.log.error('Cannot extract path statistics from a cyclic graph')
+            Log.add('Cannot extract path statistics from a cyclic graph', Severity.ERROR)
         else:
             # path object which will hold the detected (projected) paths
             p = Paths()
             p.maxSubPathLength = maxSubPathLength
-            Paths.log.info('Creating paths from directed acyclic graph')
+            Log.add('Creating paths from directed acyclic graph', Severity.INFO)
             n = 0
 
             # construct all paths originating from root nodes
             for s in dag.roots:
                 if n%100 == 0:
-                    Paths.log.debug('Processed %d/%d root nodes', n, len(dag.roots))
+                    Log.add('Processed ' + str(n) + '/' + str(len(dag.roots)) + ' root nodes', Severity.TIMING)
                 if node_mapping == None:
                     paths = dag.constructPaths(s)
                     # add detected paths to paths object
@@ -584,6 +584,7 @@ class Paths:
                     dag.constructMappedPaths(s, node_mapping, p)
                 n += 1
             p.expandSubPaths()
+            Log.add('finished.', Severity.INFO)
             return p
 
 
@@ -625,6 +626,7 @@ class Paths:
                     self.paths[k][subpath] += (frequency[1], 0)
 
 
+
     def getContainedPaths(p, node_filter):
         """
         Returns the set of maximum-length sub-paths of the path p, which
@@ -650,7 +652,7 @@ class Paths:
         return contained_paths
 
 
-    def filterPaths(self, node_filter, minLength=0, maxLength=_sys.maxsize):
+    def filterPaths(self, node_filter, minLength=0, maxLength=sys.maxsize):
         """
         Returns a new paths object which contains only paths between nodes in a given
         filter set. For each of the paths in the current Paths object, the set of maximally
@@ -766,7 +768,7 @@ class Paths:
         gk = HigherOrderNetwork(self, k=k)
         gkn = HigherOrderNetwork(self, k=k, nullModel=True)
 
-        Paths.log.info('Calculating slow down factor ...')
+        Log.add('Calculating slow down factor ... ', Severity.INFO)
 
         # Build transition matrices
         Tk = gk.getTransitionMatrix()
@@ -780,11 +782,10 @@ class Paths:
         w2 = _sla.eigs(Tk, which="LM", k=2, ncv=lanczosVecs, return_eigenvectors=False, maxiter=maxiter)
         evals2_sorted = _np.sort(-_np.absolute(w2))
 
-        w2n = _sla.eigs(Tkn, which="LM", k=2, ncv=lanczosVecs, 
-            return_eigenvectors=False, maxiter=maxiter)
+        w2n = _sla.eigs(Tkn, which="LM", k=2, ncv=lanczosVecs, return_eigenvectors=False, maxiter=maxiter)
         evals2n_sorted = _np.sort(-_np.absolute(w2n))
 
-        Paths.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return _np.log(_np.abs(evals2n_sorted[1]))/_np.log(_np.abs(evals2_sorted[1]))
 
@@ -806,7 +807,7 @@ class Paths:
         gk = HigherOrderNetwork(self, k=k)
         g1 = HigherOrderNetwork(self, k=1)
 
-        Paths.log.info('Calculating entropy growth rate ratio ... ')
+        Log.add('Calculating entropy growth rate ratio ... ', Severity.INFO)
 
         # Compute entropy growth rate of observed transition matrix
         A = g1.getAdjacencyMatrix(weighted=False, transposed=True)
@@ -820,7 +821,7 @@ class Paths:
             # Here, K is the number of different k-paths that can exist based on the
             # observed edges
             K = (A**k).sum()
-            Paths.log.debug('K = %d', K)
+            print('K = ', K)
 
             # N is the number of observations used to estimate the transition probabilities
             # in the second-order network. This corresponds to the total edge weight in the
@@ -828,7 +829,7 @@ class Paths:
             N = 0
             for p in self.paths[k]:
                 N += self.paths[k][p].sum()
-            Paths.log.debug('N = %d', N)
+            print('N = ', N)
             Hk = _np.sum(Tk * Tk_pi) + (K-1)/(2*N)
         else:
             # simple MLE estimation
@@ -847,7 +848,7 @@ class Paths:
         Hk_n = -_np.sum(Tk_n * Tk_n_pi)
         Hk_n = _np.absolute(Hk_n)
 
-        Paths.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         # Return ratio
         return Hk/Hk_n
@@ -1052,7 +1053,7 @@ class Paths:
         """
         shortest_path_lengths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
-        Paths.log.info('Calculating distance matrix based on empirical paths ...')
+        Log.add('Calculating distance matrix based on empirical paths ...', Severity.INFO)
         # Node: no need to initialize shortest_path_lengths[v][v] = 0
         # since paths of length zero are contained in self.paths
 
@@ -1063,7 +1064,7 @@ class Paths:
                 if l < shortest_path_lengths[start][end]:
                     shortest_path_lengths[start][end] = l
 
-        Paths.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return shortest_path_lengths
 
@@ -1076,7 +1077,7 @@ class Paths:
         shortest_paths = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
         shortest_path_lengths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
-        Paths.log.info('Calculating shortest paths based on empirical paths ...')
+        Log.add('Calculating shortest paths based on empirical paths ...', Severity.INFO)
 
         for l in self.paths:
             for p in self.paths[l]:
@@ -1090,7 +1091,7 @@ class Paths:
                 elif l == shortest_path_lengths[s][d]:
                     shortest_paths[s][d].add(p)
 
-        Paths.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return shortest_paths
 
@@ -1151,7 +1152,6 @@ class Paths:
 
         return node_centralities
 
-
     def VisitationProbabilities(self):
         """
         Calculates the probabilities that randomly chosen paths
@@ -1161,7 +1161,7 @@ class Paths:
         captured by PageRank applied to a graphical abstraction of the paths.
         """
 
-        Paths.log.info('Calculating path visitation probabilities...')
+        Log.add('Calculating path visitation probabilities...', Severity.INFO)
 
         # entries capture the probability that a given node is visited on an arbitrary path
         # Note: this is identical to the subpath count of zero-length paths
@@ -1181,6 +1181,6 @@ class Paths:
         for v in visitation_probabilities:
             visitation_probabilities[v] /= visits
 
-        Paths.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return visitation_probabilities

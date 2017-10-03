@@ -27,7 +27,6 @@
 import collections as _co
 import bisect as _bs
 import itertools as _iter
-import logging
 
 import numpy as _np
 
@@ -35,6 +34,9 @@ import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
 import scipy.linalg as _la
 import scipy as _sp
+
+from pathpy.Log import Log
+from pathpy.Log import Severity
 
 
 class EmptySCCError(Exception):
@@ -53,7 +55,6 @@ class HigherOrderNetwork:
     of a network topology.
     """
 
-    log = logging.getLogger('pathpy.HigherOrderNetwork')    
 
     def __init__(self, paths, k=1, separator='-', nullModel=False, 
                     method='FirstOrderTransitions', lanczosVecs=15, maxiter=1000):
@@ -95,10 +96,10 @@ class HigherOrderNetwork:
         assert not nullModel or (nullModel and k > 1)
 
         assert method == 'FirstOrderTransitions' or method == 'KOrderPi', \
-            HigherOrderNetwork.log.error('Unknown method to build null model')
+            'Error: unknown method to build null model'
 
         assert paths.paths.keys() and max(paths.paths.keys()) >= k, \
-            HigherOrderNetwork.log.error('Constructing a model of order k requires paths of at least length k')
+            'Error: constructing a model of order k requires paths of at least length k'
 
         ## The order of this HigherOrderNetwork
         self.order = k
@@ -181,8 +182,8 @@ class HigherOrderNetwork:
                 possiblePaths = E_new
 
             # validate that the number of unique generated paths corresponds to the sum of entries in A**k
-            assert (A**k).sum() == len(possiblePaths), HigherOrderNetwork.log.error('Expected ' + str((A**k).sum()) + \
-                ' paths but got ' + str(len(possiblePaths)))
+            assert (A**k).sum() == len(possiblePaths), 'Expected ' + str((A**k).sum()) + \
+                ' paths but got ' + str(len(possiblePaths))
 
             if method == 'KOrderPi':
                 # compute stationary distribution of a random walker in the k-th order network
@@ -391,7 +392,8 @@ class HigherOrderNetwork:
         higher-order nodes using the Floyd-Warshall algorithm.
         """
 
-        HigherOrderNetwork.log.info('Calculating distance matrix in higher-order network (k = %d) ...', self.order)
+        Log.add('Calculating distance matrix in higher-order network (k = ' +
+                str(self.order) + ') ...', Severity.INFO)
 
         dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
@@ -407,7 +409,7 @@ class HigherOrderNetwork:
                     if dist[v][w] > dist[v][k] + dist[k][w]:
                         dist[v][w] = dist[v][k] + dist[k][w]
 
-        HigherOrderNetwork.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return dist
 
@@ -418,7 +420,8 @@ class HigherOrderNetwork:
         higher-order nodes using the Floyd-Warshall algorithm.
         """
 
-        HigherOrderNetwork.log.info('Calculating shortest paths in higher-order network (k = %d) ...', self.order)
+        Log.add('Calculating shortest paths in higher-order network (k = ' +
+                str(self.order) + ') ...', Severity.INFO)
 
         dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
         shortest_paths = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
@@ -446,7 +449,7 @@ class HigherOrderNetwork:
             dist[v][v] = 0
             shortest_paths[v][v].add((v,))
 
-        HigherOrderNetwork.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return shortest_paths
 
@@ -484,7 +487,7 @@ class HigherOrderNetwork:
         dist_first = self.getDistanceMatrixFirstOrder()
         node_centralities = _co.defaultdict(lambda: 0)
 
-        HigherOrderNetwork.log.info('Calculating closeness centralities (k = %d) ...', self.order)
+        Log.add('Calculating closeness centralities (k = ' + str(self.order) + ') ...', Severity.INFO)
 
         # calculate closeness values
         for v1 in dist_first:
@@ -497,7 +500,7 @@ class HigherOrderNetwork:
         for v in nodes:
             node_centralities[v] += 0
 
-        HigherOrderNetwork.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return node_centralities
 
@@ -556,7 +559,7 @@ class HigherOrderNetwork:
             for v in first_order_evcent:
                 first_order_evcent[v] /= sum(first_order_evcent.values())
 
-        HigherOrderNetwork.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return first_order_evcent
         return v
@@ -583,13 +586,13 @@ class HigherOrderNetwork:
 
         assert projection == 'all' or projection == 'last' or projection == 'first' or projection == 'scaled', 'Invalid projection method'
 
-        HigherOrderNetwork.log.info('Calculating PageRank in %d-th order network...', self.order)
+        Log.add('Calculating PageRank in ' + str(self.order) + '-th order network...', Severity.INFO)
 
         higher_order_PR = _co.defaultdict(lambda: 0)
 
         n = float(len(self.nodes))
 
-        assert n > 0, HigherOrderNetwork.log.error("Number of nodes is zero")
+        assert n > 0, "Number of nodes is zero"
 
         # entries A[s,t] give directed link s -> t
         A = self.getAdjacencyMatrix(includeSubPaths=includeSubPaths, weighted=False, transposed=False)
@@ -664,7 +667,7 @@ class HigherOrderNetwork:
         for v in nodes:
             first_order_PR[v] += 0
 
-        HigherOrderNetwork.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return first_order_PR
 
@@ -703,7 +706,7 @@ class HigherOrderNetwork:
 
         shortest_paths_firstorder = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
 
-        HigherOrderNetwork.log.info('Calculating betweenness centralities (k = %d) ...', self.order)
+        Log.add('Calculating betweenness centralities (k = ' + str(self.order) + ') ...', Severity.INFO)
 
         for sk in shortest_paths:
             for dk in shortest_paths:
@@ -738,7 +741,7 @@ class HigherOrderNetwork:
         for v in nodes:
             node_centralities[v] += 0
 
-        HigherOrderNetwork.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return node_centralities
 
@@ -930,10 +933,10 @@ class HigherOrderNetwork:
                 #print((s,t))
                 #print(D[self.nodes.index(s)])
                 #print(count)
-                assert D[self.nodes.index(s)] > 0, HigherOrderNetwork.log.error('Encountered zero out-degree for node %s while weight of link (%d, %d) is non-zero.', s, s, t)
+                assert D[self.nodes.index(s)] > 0, 'Encountered zero out-degree for node ' + str(s) + ' while weight of link (' + str(s) +  ', ' + str(t) + ') is non-zero.'
                 prob = count / D[self.nodes.index(s)]
                 if prob < 0 or prob > 1:
-                    HigherOrderNetwork.log.error('Encountered transition probability outside [0,1] range.')
+                    tn.Log.add('Encountered transition probability outside [0,1] range.', Severity.ERROR)
                     raise ValueError()
                 data.append(prob)
 
@@ -996,7 +999,7 @@ class HigherOrderNetwork:
         #NOTE to myself: most of the time goes for construction of the 2nd order
         #NOTE            null graph, then for the 2nd order null transition matrix
 
-        HigherOrderNetwork.log.info('Calculating eigenvalue gap ... ')
+        Log.add('Calculating eigenvalue gap ... ', Severity.INFO)
 
         # Build transition matrices
         T = self.getTransitionMatrix(includeSubPaths)
@@ -1008,7 +1011,7 @@ class HigherOrderNetwork:
         w2 = _sla.eigs(T, which="LM", k=2, ncv=lanczosVecs, return_eigenvectors=False, maxiter=maxiter)
         evals2_sorted = _np.sort(-_np.absolute(w2))
 
-        HigherOrderNetwork.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return _np.abs(evals2_sorted[1])
 
@@ -1088,7 +1091,7 @@ class HigherOrderNetwork:
             number of rows/columns of the Laplacian matrix.
         """
 
-        HigherOrderNetwork.log.info('Calculating algebraic connectivity ... ')
+        Log.add('Calculating algebraic connectivity ... ', Severity.INFO)
 
         L = self.getLaplacianMatrix()
         # NOTE: ncv sets additional auxiliary eigenvectors that are computed
@@ -1097,6 +1100,6 @@ class HigherOrderNetwork:
         w = _sla.eigs(L, which="SM", k=2, ncv=lanczosVecs, return_eigenvectors=False, maxiter=maxiter)
         evals_sorted = _np.sort(_np.absolute(w))
 
-        HigherOrderNetwork.log.info('finished.')
+        Log.add('finished.', Severity.INFO)
 
         return _np.abs(evals_sorted[1])

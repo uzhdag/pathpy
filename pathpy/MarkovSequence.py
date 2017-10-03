@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pathpy is an OpenSource python package for the analysis of sequential data 
-    on pathways and temporal networks using higher- and multi order graphical models
+    pathpy is an OpenSource python package for the analysis of sequential data on pathways and temporal networks using higher- and multi order graphical models
 
     Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
 
@@ -28,7 +27,6 @@ import numpy as _np
 import collections as _co
 import bisect as _bs
 import itertools as _iter
-import logging
 
 import scipy.sparse as _sparse
 import scipy.misc as _misc
@@ -37,17 +35,17 @@ import scipy.linalg as _la
 
 from scipy.stats import chi2
 
+from pathpy.Log import Log
+from pathpy.Log import Severity
+
 _np.seterr(all='warn')
 
 
 class MarkovSequence:
     """ Instances of this class can be used to fit
         standard higher-order Markov models for
-        sequences generated from concatenated paths
-    """
+        sequences generated from concatenated paths """
 
-    log = logging.getLogger('pathpy.MarkovSequence')
-    
     def __init__(self, sequence):
         """
         Generates a Markov model for a sequence, given
@@ -77,7 +75,7 @@ class MarkovSequence:
         # MLE fit of transition probabilities
         self.P[k] = _co.defaultdict( lambda:  _co.defaultdict( lambda: 0.0 )  )
 
-        MarkovSequence.log.info('Fitting Markov model with order k = %d', k)
+        Log.add('Fitting Markov model with order k = ' + str(k))
 
         # Generate initial memory prefix
         mem = (())
@@ -96,7 +94,7 @@ class MarkovSequence:
             S = float(sum(self.P[k][m].values()))
             for s in self.P[k][m]:
                 self.P[k][m][s] /= S
-        MarkovSequence.log.info('finished.')
+        Log.add('finished.')
 
 
     def getLikelihood(self, k=1, log=True):
