@@ -36,7 +36,6 @@ class DAG(object):
         can be used to generate pathway statistics.
     """
 
-
     def __init__(self, edges=None):
         """
         Constructs a directed acyclic graph from an edge list
@@ -77,11 +76,11 @@ class DAG(object):
                 if not has_self_loop and not is_redundant:
                     self.addEdge(e[0], e[1])
             if self_loops > 0:
-                Log.add('Warning: omitted ' + str(self_loops) + ' self-loops', Severity.WARNING)
+                Log.add('Warning: omitted ' + str(self_loops) + ' self-loops',
+                        Severity.WARNING)
             if redundant_edges > 0:
                 Log.add('Warning: omitted ' + str(redundant_edges) +
                         ' redundant edges', Severity.WARNING)
-
 
     def constructPaths(self, v):
         """
@@ -93,7 +92,7 @@ class DAG(object):
         temp_paths[v] = [(v,)]
 
         # set of unprocessed nodes
-        Q = set([v])
+        Q = {v}
 
         while Q:
             # take one unprocessed node
@@ -109,8 +108,6 @@ class DAG(object):
                 del temp_paths[x]
 
         return temp_paths
-
-
 
     def constructMappedPaths(self, v, node_mapping, paths):
         """
@@ -139,7 +136,6 @@ class DAG(object):
                 for p in cp:
                     for w in self.successors[x]:
                         continuable[w].append(p + (node_mapping[w],))
-
 
     def dfs_visit(self, v, parent=None):
         """
@@ -171,7 +167,6 @@ class DAG(object):
         self.finish_time[v] = self.count
         self.sorting.append(v)
 
-
     def topsort(self):
         """
         Performs a topological sorting of the graph, classifying
@@ -191,7 +186,6 @@ class DAG(object):
             if v not in self.parent:
                 self.dfs_visit(v)
         self.sorting.reverse()
-
 
     def makeAcyclic(self):
         """
@@ -217,7 +211,6 @@ class DAG(object):
             Log.add('Removed ' + str(removed_links) +
                     ' back links to make graph acyclic', Severity.INFO)
 
-
     def summary(self):
         """
         Returns a string representation of this directed acyclic graph
@@ -225,20 +218,18 @@ class DAG(object):
 
         summary = 'Directed Acyclic Graph'
         summary += '\n'
-        summary += 'Nodes:\t\t' +  str(len(self.nodes)) + '\n'
-        summary += 'Roots:\t\t' +  str(len(self.roots)) + '\n'
-        summary += 'Leaves:\t\t' +  str(len(self.leafs)) + '\n'
+        summary += 'Nodes:\t\t' + str(len(self.nodes)) + '\n'
+        summary += 'Roots:\t\t' + str(len(self.roots)) + '\n'
+        summary += 'Leaves:\t\t' + str(len(self.leafs)) + '\n'
         summary += 'Links:\t\t' + str(len(self.edges)) + '\n'
-        summary += 'Acyclic:\t' +  str(self.isAcyclic) + '\n'
+        summary += 'Acyclic:\t' + str(self.isAcyclic) + '\n'
         return summary
-
 
     def __str__(self):
         """
         Returns the default string representation of this object
         """
         return self.summary()
-
 
     def addEdge(self, source, target):
         """
@@ -258,7 +249,6 @@ class DAG(object):
         self.successors[source].add(target)
         self.predecessors[target].add(source)
         self.isAcyclic = None
-
 
     @staticmethod
     def readFile(filename, sep=',', maxlines=_sys.maxsize, mapping=None):
@@ -291,7 +281,7 @@ class DAG(object):
                         edges.append((fields[0], fields[1]))
 
                 except (IndexError, ValueError):
-                    Log.add('Ignoring malformed data in line ' + str(n+1) +
+                    Log.add('Ignoring malformed data in line ' + str(n + 1) +
                             ': "' + line.strip() + '"', Severity.WARNING)
                 line = f.readline()
                 n += 1
