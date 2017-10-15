@@ -26,8 +26,8 @@
 
 import collections as _co
 import logging
-
 import sys as _sys
+
 
 class DAG(object):
     """
@@ -64,17 +64,17 @@ class DAG(object):
         self.predecessors = _co.defaultdict(lambda: set())
         self_loops = 0
         redundant_edges = 0
-        if edges != None:
+        if edges is not None:
             for e in edges:
-                redundant = False
-                selfLoop = False
+                is_redundant = False
+                has_self_loop = False
                 if e[0] == e[1]:
-                    selfLoop = True
+                    has_self_loop = True
                     self_loops += 1
                 if (e[0], e[1]) in self.edges:
-                    redundant = True
+                    is_redundant = True
                     redundant_edges += 1
-                if not selfLoop and not redundant:
+                if not has_self_loop and not is_redundant:
                     self.addEdge(e[0], e[1])
             if self_loops > 0:
                 DAG.log.warning('Omitted %d self-loops', self_loops)
