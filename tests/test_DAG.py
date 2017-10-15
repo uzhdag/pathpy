@@ -1,27 +1,6 @@
 import pathpy as pp
 import pytest
 
-edges1 = [(1, 2), (1, 3), (2, 3)]
-types1 = ({1}, {2}, {3})
-
-edges2 = [(1, 2), (1, 3), (2, 3), (3, 7), (4, 2), (4, 5), (4, 6), (5, 7), (6, 5)]
-types2 = ({1, 4}, {2, 6, 3, 5}, {7})
-
-
-@pytest.mark.parametrize('edges, types', (
-        (edges1, types1),
-        (edges2, types2)
-))
-def test_add_edges(edges, types):
-    roots, neither, leafs = types
-    from pathpy import DAG
-
-    D = DAG(edges=edges)
-    assert D.leafs == leafs
-    assert D.roots == roots
-    assert neither not in leafs
-    assert neither not in roots
-
 
 @pytest.mark.parametrize('edge_list', (
         [(1, 2), (2, 3), (5, 2)],
@@ -73,3 +52,26 @@ def test_dag_path_mapping(dag_object):
     assert paths_mapped2.paths[3][('A', 'A', 'B', 'B')][1] == 1
     assert paths_mapped2.paths[4][('A', 'A', 'B', 'B', 'A')][1] == 1
     assert paths_mapped2.ObservationCount() == 7
+
+
+edges1, types1 = [(1, 2), (1, 3), (2, 3)], ({1}, {2}, {3})
+edges2 = [(1, 2), (1, 3), (2, 3), (3, 7), (4, 2), (4, 5), (4, 6), (5, 7), (6, 5)]
+types2 = ({1, 4}, {2, 6, 3, 5}, {7})
+edges3 = 2*[(1, 2), (1, 3), (2, 3), (3, 3)]  # self loop + redundant
+types3 = ({1}, {2}, {3})
+
+
+@pytest.mark.parametrize('edges, types', (
+        (edges1, types1),
+        (edges2, types2),
+        (edges3, types3)
+))
+def test_add_edges(edges, types):
+    roots, neither, leafs = types
+    from pathpy import DAG
+
+    D = DAG(edges=edges)
+    assert D.leafs == leafs
+    assert D.roots == roots
+    assert neither not in leafs
+    assert neither not in roots

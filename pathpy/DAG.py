@@ -76,11 +76,17 @@ class DAG(object):
                 if not has_self_loop and not is_redundant:
                     self.addEdge(e[0], e[1])
             if self_loops > 0:
-                Log.add('Warning: omitted ' + str(self_loops) + ' self-loops',
-                        Severity.WARNING)
+                Log.add('Warning: omitted %d self-loops' % self_loops, Severity.WARNING)
             if redundant_edges > 0:
-                Log.add('Warning: omitted ' + str(redundant_edges) +
-                        ' redundant edges', Severity.WARNING)
+                Log.add('Warning: omitted %d redundant edges' % redundant_edges,
+                        Severity.WARNING)
+
+        # placeholder properties for topological sort
+        self.parent = {}
+        self.start_time = {}
+        self.finish_time = {}
+        self.edge_classes = {}
+        self.top_sort_count = 0
 
     def constructPaths(self, v):
         """
@@ -148,8 +154,8 @@ class DAG(object):
             with no parents
         """
         self.parent[v] = parent
-        self.count += 1
-        self.start_time[v] = self.count
+        self.top_sort_count += 1
+        self.start_time[v] = self.top_sort_count
         if parent:
             self.edge_classes[(parent, v)] = 'tree'
 
@@ -163,8 +169,8 @@ class DAG(object):
                 self.edge_classes[(v, w)] = 'forward'
             else:
                 self.edge_classes[(v, w)] = 'cross'
-        self.count += 1
-        self.finish_time[v] = self.count
+        self.top_sort_count += 1
+        self.finish_time[v] = self.top_sort_count
         self.sorting.append(v)
 
     def topsort(self):
@@ -175,12 +181,12 @@ class DAG(object):
 
         see Cormen 2001 for details
         """
+        self.sorting = []
         self.parent = {}
         self.start_time = {}
         self.finish_time = {}
         self.edge_classes = {}
-        self.sorting = []
-        self.count = 0
+        self.top_sort_count = 0
         self.isAcyclic = True
         for v in self.nodes:
             if v not in self.parent:
@@ -267,7 +273,7 @@ class DAG(object):
         with open(filename, 'r') as f:
             edges = []
 
-            if mapping != None:
+            if mapping is not None:
                 Log.add('Filtering mapped edges')
 
             Log.add('Reading edge list ...')
