@@ -1,7 +1,6 @@
 import pathpy as pp
 import pytest
 
-
 edges1 = [(1, 2), (1, 3), (2, 3)]
 types1 = ({1}, {2}, {3})
 
