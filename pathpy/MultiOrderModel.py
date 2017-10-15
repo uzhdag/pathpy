@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pathpy is an OpenSource python package for the analysis of sequential data 
-    on pathways and temporal networks using higher- and multi order graphical models
+    pathpy is an OpenSource python package for the analysis of sequential data on pathways and temporal networks using higher- and multi order graphical models
 
     Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
 
@@ -28,7 +27,6 @@ import numpy as _np
 import collections as _co
 import bisect as _bs
 import itertools as _iter
-import logging
 
 import scipy.sparse as _sparse
 import scipy.misc as _misc
@@ -36,6 +34,8 @@ import scipy.sparse.linalg as _sla
 import scipy.linalg as _la
 from scipy.stats import chi2
 
+from pathpy.Log import Log
+from pathpy.Log import Severity
 from pathpy.HigherOrderNetwork import HigherOrderNetwork
 
 _np.seterr(all='warn')
@@ -46,7 +46,6 @@ class MultiOrderModel:
         higher-order networks which collectively represent
         a multi-order model for path statistics. """
 
-    log = logging.getLogger('pathpy.MultiOrderModel')    
 
     def __init__(self, paths, maxOrder=1):
         """
@@ -74,14 +73,14 @@ class MultiOrderModel:
         self.T = {}
 
         for k in range(maxOrder+1):
-            MultiOrderModel.log.info('Generating %d-th order network layer ...', k)
+            Log.add('Generating ' + str(k) + '-th order network layer ...')
             self.layers[k] = HigherOrderNetwork(paths, k, paths.separator, False)
 
             # compute transition matrices for all layers. In order to use the maximally
             # available statistics, we always use sub paths in the calculation
             self.T[k] = self.layers[k].getTransitionMatrix(includeSubPaths=True)
 
-        MultiOrderModel.log.info('finished.')
+        Log.add('finished.')
 
 
     def summary(self):
@@ -157,7 +156,7 @@ class MultiOrderModel:
             try:
                 f = n_ * _np.log(n_)-n_ + 0.5 * _np.log(2.0*_np.pi*n_)+1.0/(12.0*n_)-1/(360.0*n_**3.0)
             except Warning as w:
-                MultiOrderModel.log.warning('Factorial calculation for n = %d:%s', n, w)
+                Log.add('Factorial calculation for n = ' + str(n)+ ': ' + str(w), severity=Severity.WARNING)
 
         else:
             f = _np.log(_np.math.factorial(n))
@@ -315,7 +314,7 @@ class MultiOrderModel:
 
         # Sum degrees of freedom of all model layers up to maxOrder
         for i in range(0, maxOrder+1):
-            dof += self.layers[i].getDoF(assumption)
+           dof += self.layers[i].getDoF(assumption)
 
         return int(dof)
 
@@ -371,13 +370,13 @@ class MultiOrderModel:
         # we calculate the additional degrees of freedom in the alternative model
         dof_diff = self.getDegreesOfFreedom(maxOrder=maxOrder, assumption=assumption) - self.getDegreesOfFreedom(maxOrder=maxOrderNull, assumption=assumption)
 
-        MultiOrderModel.log.info('Likelihood ratio test for K_opt = %d, x = %f', maxOrder, x)
-        MultiOrderModel.log.info('Likelihood ratio test, d_1-d_0 = %d', dof_diff)
+        Log.add('Likelihood ratio test for K_opt = ' + str(maxOrder) + ', x = ' + str(x))
+        Log.add('Likelihood ratio test, d_1-d_0 = ' + str(dof_diff))
 
         # if the p-value is *below* the significance threshold, we reject the null hypothesis
         p = 1-chi2.cdf(x, dof_diff)
 
-        MultiOrderModel.log.info('Likelihood ratio test, p = %f', p)
+        Log.add('Likelihood ratio test, p = ' + str(p))
         return (p<significanceThreshold), p
 
 
@@ -429,7 +428,7 @@ class MultiOrderModel:
         for p in paths.paths[0]:
             sum += paths.paths[0][p][1]
         if sum>0:
-            MultiOrderModel.log.info('Omitting %d zero-length paths for test of network assumption', sum)
+            Log.add('Omitting ' + str(sum) + ' zero-length paths for test of network assumption', Severity.INFO)
         
         # log-likelihood and observation count of zero-order model
         L0, n0 = self.getLayerLikelihood(paths, l=0, considerLongerPaths=True, log=True, minL=1)
@@ -439,7 +438,7 @@ class MultiOrderModel:
 
         # By definition, the number of observations for both models should be the total weighted degree of the 
         # first-order network
-        assert n0==n1, MultiOrderModel.log.error('Observation count for 0-order and 1-st order model do not match')
+        assert n0==n1, Log.add('Error: Observation count for 0-order and 1-st order model do not match', Severity.ERROR)
 
         # degrees of freedom = |V|-1
         dof0 = self.layers[0].getDoF(assumption='ngrams')        
@@ -447,17 +446,17 @@ class MultiOrderModel:
         # degrees of freedom based on network assumption
         dof1 = self.layers[1].getDoF(assumption='paths')
 
-        MultiOrderModel.log.info('Log-Likelihood (k=0) = %f', L0)
-        MultiOrderModel.log.info('Degrees of freedom (k=0) = %d', dof0)
+        Log.add('Log-Likelihood (k=0) = ' + str(L0), Severity.INFO)
+        Log.add('Degrees of freedom (k=0) = ' + str(dof0), Severity.INFO)
 
-        MultiOrderModel.log.info('Log-Likelihood (k=1) = %f', L1)
-        MultiOrderModel.log.info('Degrees of freedom (k=1) = %d', dof0 + dof1)
+        Log.add('Log-Likelihood (k=1) = ' + str(L1), Severity.INFO)
+        Log.add('Degrees of freedom (k=1) = ' + str(dof0 + dof1), Severity.INFO)
         
         if method == 'AIC':
             ic0 = 2 * dof0 - 2 * L0
             ic1 = 2 * (dof0 + dof1) - 2 * L1
         elif method == 'AICc':
-            assert n1 > dof0+dof1-2, MultiOrderModel.log.error('Number of samples too small for model complexity')
+            assert n1 > dof0+dof1-2, 'Error: number of samples too small for model complexit'
             ic0 = 2 * dof0 - 2 * L0 + (2*(dof0+1)*(dof0+2))/(n0-dof0-2)
             ic1 = 2 * (dof0 + dof1) - 2 * L1 + (2*(dof0 + dof1 + 1)*(dof0 + dof1 + 2))/(n1 - (dof0 + dof1) - 2)
         elif method == 'BIC':

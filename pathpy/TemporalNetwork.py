@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pathpy is an OpenSource python package for the analysis of sequential data 
-    on pathways and temporal networks using higher- and multi order graphical models
+    pathpy is an OpenSource python package for the analysis of sequential data on pathways and temporal networks using higher- and multi order graphical models
 
     Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
 
@@ -29,8 +28,9 @@ import collections as _co
 import bisect as _bs
 import datetime as _dt
 import time as _t
-import logging
 
+from pathpy.Log import Log
+from pathpy.Log import Severity
 import pathpy.Paths
 
 
@@ -40,8 +40,6 @@ class TemporalNetwork:
        based on the time-respecting paths resulting from a given maximum
        time difference between consecutive time-stamped edges.
     """
-
-    log = logging.getLogger('pathpy.TemporalNetwork')    
 
     def __init__(self, tedges = None):
         """
@@ -81,7 +79,7 @@ class TemporalNetwork:
         nodes_seen = _co.defaultdict( lambda:False )
 
         if tedges is not None:
-            TemporalNetwork.log.info('Building index data structures ...')
+            Log.add('Building index data structures ...')
 
             for e in tedges:
                 self.activities_sets[e[0]].add(e[2])
@@ -95,12 +93,12 @@ class TemporalNetwork:
             self.tedges = tedges
             self.nodes = list(nodes_seen.keys())
 
-            TemporalNetwork.log.info('Sorting time stamps ...')
+            Log.add('Sorting time stamps ...')
 
             self.ordered_times = sorted(self.time.keys())
             for v in self.nodes:
                 self.activities[v] = sorted(self.activities_sets[v])
-            TemporalNetwork.log.info('finished.')
+            Log.add('finished.')
 
 
     @staticmethod
@@ -153,9 +151,9 @@ class TemporalNetwork:
             assert (source_ix >= 0 and target_ix >= 0), "Detected invalid header columns: %s" % header
 
             if time_ix<0:
-                TemporalNetwork.log.warning('No time stamps found in data, assuming consecutive links')
+                Log.add('No time stamps found in data, assuming consecutive links', Severity.WARNING)
         
-            TemporalNetwork.log.info('Reading time-stamped links ...')
+            Log.add('Reading time-stamped links ...')
 
             line = f.readline()
             n = 1 
@@ -176,9 +174,9 @@ class TemporalNetwork:
                         tedge = (fields[source_ix], fields[target_ix], t)
                         tedges.append(tedge)
                     else:
-                        TemporalNetwork.log.warning('Ignoring negative timestamp in line &d: %s', n+1, line.strip())
+                        Log.add('Ignoring negative timestamp in line ' + str(n+1) + ': "' + line.strip() + '"', Severity.WARNING)
                 except (IndexError, ValueError):
-                    TemporalNetwork.log.warning('Ignoring malformed data in line %d: %s', n+1, line.strip())
+                    Log.add('Ignoring malformed data in line ' + str(n+1) + ': "' +  line.strip() + '"', Severity.WARNING)
                 line = f.readline()
                 n += 1
         # end of with open()
@@ -188,21 +186,21 @@ class TemporalNetwork:
 
 
     def filterEdges(self, edge_filter):
-        """Filter time-stamped edges according to a given filter expression.
+        """Filter time-stamped edges according to a given filter expression. 
 
-        @param edge_filter: an arbitrary filter function of the form filter_func(v, w, time) that
-            returns True for time-stamped edges that shall pass the filter, and False for all edges that
+        @param edge_filter: an arbitrary filter function of the form filter_func(v, w, time) that 
+            returns True for time-stamped edges that shall pass the filter, and False for all edges that 
             shall be filtered out.
         """
 
-        TemporalNetwork.log.info('Starting filtering ...')
+        Log.add('Starting filtering ...', Severity.INFO)
         new_t_edges = []
 
         for (v,w,t) in self.tedges:
             if edge_filter(v,w,t):
                 new_t_edges.append((v,w,t))
 
-        TemporalNetwork.log.info('finished. Filtered out %d time-stamped edges.', self.ecount() - len(new_t_edges))
+        Log.add('finished. Filtered out ' + str(self.ecount() - len(new_t_edges)) + ' time-stamped edges.', Severity.INFO)
 
         return TemporalNetwork(tedges=new_t_edges)
 
