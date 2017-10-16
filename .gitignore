@@ -28,6 +28,10 @@ var/
 *.manifest
 *.spec
 
+# Sphinx Documentation
+docs/*
+sp_docs/_build/*
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -99,16 +103,7 @@ $RECYCLE.BIN/
 pyTempNets.v12.suo
 *.png
 *.TMP
-pyTempNet.egg-info/requires.txt
-pyTempNet.egg-info/SOURCES.txt
-pyTempNet.egg-info/dependency_links.txt
-pyTempNet.egg-info/requires.txt
 *.suo
-pyTempNet.egg-info/top_level.txt
-pyTempNet.egg-info/requires.txt
-pyTempNet.egg-info/requires.txt
-pyTempNet.egg-info/dependency_links.txt
-pyTempNet.egg-info/SOURCES.txt
 .idea/
 .eggs/
 prof/*
