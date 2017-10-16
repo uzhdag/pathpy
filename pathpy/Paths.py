@@ -26,13 +26,8 @@
 
 import numpy as _np
 import collections as _co
-import bisect as _bs
 import sys as _sys
-import operator
-
-import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
-import scipy.linalg as _la
 
 from pathpy.Log import *
 from pathpy.HigherOrderNetwork import HigherOrderNetwork
@@ -71,17 +66,20 @@ class Paths:
         ## This can be used to limit the calculation of sub path statistics
         ## to a given maximum length. This is useful, as the statistics of sub paths
         ## of length k are only needed to fit a higher-order model with order k. Hence,
-        ## if we know that the mdoel selection is limited to a given maximum order K,
+        ## if we know that the model selection is limited to a given maximum order K,
         ## we can safely set the maximum sub path length to K. By default, sub paths of
         ## any length will be calculated. Note that, independent of the sub path calculation
         ## longest path of any length will be considered in the likelihood calculation!
         self.maxSubPathLength = _sys.maxsize
 
 
-
     def summary(self):
         """
-        Returns a string containing basic summary info of this Paths instance
+
+        Returns
+        -------
+        str
+            Returns a string containing basic summary info of this Paths instance
         """
         sum = 0
         spsum = 0
@@ -125,12 +123,18 @@ class Paths:
 
 
     def getPathLengths(self):
-        """
-        Returns a dictionary containing the distribution of path lengths
-        in this Path object. In the returned dictionary, entry
-        lengths[k] is a numpy.array x where
-        x[0] is the number of sub paths with length k, and x[1]
-        is the number of (longest) paths with length k
+        """compute the length of all paths
+
+        Returns
+        -------
+        dict
+            Returns a dictionary containing the distribution of path lengths
+            in this Path object. In the returned dictionary, entry
+            lengths ``k`` is a ``numpy.array`` ``x`` where
+            ``x[0]`` is the number of sub paths with length ``k``, and ``x[1]``
+            is the number of (longest) paths with length ``k``
+
+
         """
         lengths = _co.defaultdict(lambda: _np.array([0, 0]))
 
@@ -142,7 +146,15 @@ class Paths:
 
     def __add__(self, other):
         """
-        Default operator +, which returns the sum of two Path objects
+
+        Parameters
+        ----------
+        other : Paths
+
+        Returns
+        -------
+        Paths
+            Default operator +, which returns the sum of two Path objects
         """
         p_sum = Paths()
         for l in self.paths:
@@ -156,15 +168,19 @@ class Paths:
 
     def getSequence(self, stopchar='|'):
         """
-        Returns a single sequence in which all
-        paths have been concatenated. Individual
-        paths are separated by a stop character.
 
-        @stopchar: The character used to separate paths
+        Parameters
+        ----------
+        stopchar : str
+            the character used to separate paths
+
+        Returns
+        -------
+        tuple:
+            Returns a single sequence in which all paths have been concatenated.
+            Individual paths are separated by a stop character.
         """
-
         Log.add('Concatenating paths to sequence ...')
-
         sequence = []
         for l in self.paths:
             for p in self.paths[l]:
@@ -181,10 +197,19 @@ class Paths:
 
 
     def getUniquePaths(self, l=0, considerLongerPaths=True):
-        """
-        Returns the number of unique paths of a given length l (and possibly longer)
+        """Returns the number of unique paths of a given length l (and possibly longer)
 
-        @param l: the (inclusive) maximum length up to which path shall be counted.
+        Parameters
+        ----------
+        l : int
+            the (inclusive) maximum length up to which path shall be counted.
+        considerLongerPaths : bool
+            TODO: add parameter description
+
+        Returns
+        -------
+        int
+            number of unique paths satisfying parameter ``l``
         """
         L = 0
         lmax = l
@@ -208,15 +233,38 @@ class Paths:
         return self.summary()
 
 
-    def readEdges(filename=None, separator=',', weight=False, undirected=False,
-                  maxlines=_sys.maxsize, expandSubPaths=True, maxSubPathLength=_sys.maxsize):
-        """
+    def readEdges(filename, separator=',', weight=False, undirected=False,
+                  maxlines=None, expandSubPaths=True, maxSubPathLength=None):
+        """Read path in edgelist format
+
         Reads data from a file containing multiple lines of *edges* of the
         form "v,w,frequency,X" (where frequency is optional and X are
         arbitrary additional columns). The default separating character ','
         can be changed. In order to calculate the statistics of paths of any length,
         by default all subpaths of length 0 (i.e. single nodes) contained in an edge
         will be considered.
+
+        Parameters
+        ----------
+        filename : str
+            path to edgelist file
+        separator : str
+            character separating the nodes
+        weight : bool
+            is a weight given? if ``True`` it is the last element in the edge
+            (i.e. ``a,b,2``)
+        undirected : bool
+            are the edges directed or undirected
+        maxlines : int
+            number of lines to read (useful to test large files)
+        expandSubPaths : bool
+        maxSubPathLength : int (default None)
+            maximum length for subpaths to consider, ``None`` means the entire file is read
+
+        Returns
+        -------
+        Paths
+            a ``Paths`` object obtained from the edgelist
         """
         p = Paths()
 
@@ -225,14 +273,10 @@ class Paths:
 
         with open(filename, 'r') as f:
             Log.add('Reading edge data ... ')
-            line = f.readline()
-            n = 1
-            while line and n <= maxlines:
+            for n, line in enumerate(f):
                 fields = line.rstrip().split(separator)
-                assert len(fields) >= 2, 'Error: malformed line: ' + line
-
+                assert len(fields) >= 2, 'Error: malformed line: {0}'.format(line)
                 path = (fields[0], fields[1])
-
                 if weight:
                     frequency = int(fields[2])
                 else:
@@ -241,10 +285,9 @@ class Paths:
                 if undirected:
                     reverse_path = (fields[1], fields[0])
                     p.paths[1][reverse_path] += (0, frequency)
-                line = f.readline()
-                n += 1
-        # end of with open()
 
+                if maxlines is not None and n >= maxlines:
+                    continue
         if expandSubPaths:
             p.expandSubPaths()
         Log.add('finished.')
@@ -252,44 +295,58 @@ class Paths:
         return p
 
 
-    def readFile(filename=None, separator=',', pathFrequency=False, maxlines=_sys.maxsize,
+    @classmethod
+    def readFile(cls, filename, separator=',', pathFrequency=False, maxlines=_sys.maxsize,
                  maxN=_sys.maxsize, expandSubPaths=True, maxSubPathLength=_sys.maxsize):
-        """
-        Reads path data from a file containing multiple lines of n-grams of the
-        form "a,b,c,d,frequency" (where frequency is optional). The default separating
-        character ',' can be changed. Each n-gram will be interpreted as a path of length n-1,
-        i.e. bigrams a,b are considered as path of length one, trigrams a,b,c as path of length two, etc.
-        In order to calculate the statistics of paths of any length, by default all subpaths of
-        length k < n-1 contained in an n-gram will be considered. I.e. for n=4 the four-gram a,b,c,d
-        will be considered as a single (longest) path of length n-1 = 3 and three subpaths
-        a->b, b->c, c->d of length k=1 and two subpaths a->b->c amd b->c->d of length k=2 will be
+        """Read path data in ngram format.
+
+        Reads path data from a file containing multiple lines of n-grams of the form
+        ``a,b,c,d,frequency`` (where frequency is optional).
+        The default separating character ',' can be changed. Each n-gram will be interpreted as a path of
+        length n-1, i.e. bigrams a,b are considered as path of length one, trigrams a,
+        b,c as path of length two, etc. In order to calculate the statistics of paths
+        of any length, by default all subpaths of length k < n-1 contained in an n-gram
+        will be considered. I.e. for n=4 the four-gram a,b,c,d will be considered as a
+        single (longest) path of length n-1 = 3 and three subpaths a->b, b->c, c->d of
+        length k=1 and two subpaths a->b->c amd b->c->d of length k=2 will be
         additionally counted.
 
-        @param filename: name of the n-gram file to read data from
+        Parameters
+        ----------
+        filename : str
+            path to the n-gram file to read the data from
+        separator : str
+            the character used to separate nodes on the path, i.e. using a
+            separator character of ';' n-grams are represented as ``a;b;c;...``
+        pathFrequency : bool
+            if set to ``True``, the last entry in each n-gram will be interpreted as
+            weight (i.e. frequency of the path), e.g. ``a,b,c,d,4`` means that four-gram
+            ``a,b,c,d`` has weight four. ``False`` by default, which means each path
+            occurrence is assigned a default weight of 1 (adding weights for multiple
+            occurrences).
+        maxlines : int
+            number of lines/n-grams to read, if left at None the whole file is read in.
+        maxN : int
+            The maximum n for the n-grams to read, i.e. setting maxN to 15 will ignore
+            all n-grams of length 16 and longer, which means that only paths up to length
+            n-1 are considered.
+        expandSubPaths : bool
+            by default all subpaths of the given n-grams are generated, i.e.
+            for an input file with a single trigram a;b;c a path a->b->c of length two
+            will be generated as well as two subpaths a->b and b->c of length one
+        maxSubPathLength : int
 
-        @param separator: the character used to separate nodes on the path, i.e. using a
-            separator character of ';' n-grams are represented as a;b;c;...
-
-        @param pathFrequency: if set to true, the last entry in each n-gram will be interpreted as
-            weight (i.e. frequency of the path), e.g. a,b,c,d,4 means that four-gram a,b,c,d has weight four.
-            False by default, which means each path occurrence is assigned a default weight of one (adding weights
-            of multiple occurrences).
-
-        @param maxlines: The maximum number of lines (i.e. ngrams) to read from the input file
-
-        @param maxN: The maximum n for the n-grams to read, i.e. setting maxN to 15 will ignore all n-grams of length
-            16 and longer, which means that only paths up to length n-1 are considered.
-
-        @param expandSubPaths: by default all subpaths of the given ngrams are generated, i.e.
-            for an input file with a single trigram a;b;c a path a->b->c of length two will be generated
-            as well as two subpaths a->b and b->c of length one
+        Returns
+        -------
+        Paths
+            a ``Paths`` object obtained from the n-grams file
         """
         assert filename is not "", 'Empty filename given'
 
         # If subpath expansion is applied, we keep the information how many times a path
         # has been observed as a subpath, and how many times as a "real" path
 
-        p = Paths()
+        p = cls()
 
         p.maxSubPathLength = maxSubPathLength
         p.separator = separator
