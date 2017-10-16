@@ -37,6 +37,12 @@ def test_dag_path_extraction(dag_object):
     assert paths.ObservationCount() == 7
 
 
+def test_dag_path_extraction_cyclic(dag_object: pp.DAG):
+    dag_object.addEdge('g', 'a')  # adds a cycle to the dag object
+    with pytest.raises(ValueError):
+        pp.Paths.fromDAG(dag_object)
+
+
 def test_dag_path_mapping(dag_object):
     dag = dag_object
     dag.topsort()
@@ -75,3 +81,4 @@ def test_add_edges(edges, types):
     assert D.roots == roots
     assert neither not in leafs
     assert neither not in roots
+

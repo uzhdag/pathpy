@@ -656,6 +656,7 @@ class Paths:
         # issue error if graph contains cycles
         if dag.isAcyclic is False:
             Log.add('Cannot extract path statistics from a cyclic graph', Severity.ERROR)
+            raise ValueError('Cannot extract path statistics from a cyclic graph')
         else:
             # path object which will hold the detected (projected) paths
             p = Paths()
