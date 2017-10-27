@@ -354,7 +354,7 @@ class HigherOrderNetwork:
     def getNodeNameMap(self):
         """
         Returns a dictionary that can be used to map
-        node nodes to matrix/vector indices
+        nodes to matrix/vector indices
         """
 
         name_map = {}
