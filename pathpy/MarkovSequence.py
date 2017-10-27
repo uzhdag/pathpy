@@ -108,7 +108,7 @@ class MarkovSequence:
 
         L = 0
 
-         # Generate initial prefix
+        # Generate initial prefix
         mem = (())
         for s in self.sequence[:k]:
             mem += (s,)
@@ -141,17 +141,18 @@ class MarkovSequence:
         s = len(self.states[1])
         n = len(self.sequence)-k
 
-        # the transition matrix of a first-order model with s states has s**2 entries, subject to the
-        # constraint that entries in each row must sum up to one (thus effectively reducing
-        # the degrees of freedom by a factor of s, i.e. we have s**2-s**1. Generalizing this to order k,
-        # we arrive at s**k * (s-1) = s**(k+1) - s**k derees of freedom
+        # the transition matrix of a first-order model with s states has s**2 entries,
+        # subject to the constraint that entries in each row must sum up to one (thus
+        # effectively reducing the degrees of freedom by a factor of s, i.e. we have
+        # s^2-s^1. Generalizing this to order k, we arrive at
+        # s^k * (s-1) = s^(k+1)-s^k degrees of freedom
         bic = _np.log(n) * (s**k - s**m) * (s-1) - 2.0 * (L_k-L_m)
 
         return bic
 
 
     def getAIC(self, k=1, m=1):
-        """ Returns the Aikake Information Criterion
+        """ Returns the Akaike Information Criterion
             assuming a k-th order Markov model """
 
         if k not in self.P:
@@ -175,7 +176,9 @@ class MarkovSequence:
         """ Estimates the optimal order of a Markov model
             based on Likelihood, BIC or AIC """
 
-        assert method == 'BIC' or method == 'AIC' or method == 'Likelihood', "Error: Expecting method 'AIC', 'BIC' or 'Likelihood'"
+        if method not in {'BIC', 'AIC', 'Likelihood'}:
+            msg = "Expecting method 'AIC', 'BIC' or 'Likelihood', got '%s'" % method
+            raise ValueError(msg)
 
         values = []
         orders = []

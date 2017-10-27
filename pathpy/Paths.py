@@ -26,17 +26,11 @@
 
 import numpy as _np
 import collections as _co
-import bisect as _bs
 import sys as _sys
-import operator
-
-import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
-import scipy.linalg as _la
 
-from pathpy.Log import *
+from pathpy.Log import Log, Severity
 from pathpy.HigherOrderNetwork import HigherOrderNetwork
-from pathpy.DAG import DAG
 
 
 class Paths:
@@ -53,84 +47,114 @@ class Paths:
     def __init__(self):
         """
         Creates an empty Paths object
-        """        
+        """
 
-        ## A dictionary of paths that has the following structure:
-        ## - paths[k] is a dictionary containing all paths of length k,
+        # A dictionary of paths that has the following structure:
+        # - paths[k] is a dictionary containing all paths of length k,
         #    indexed by a path tuple p = (u,v,w,...)
-        ## - for each tuple p of length k, paths[k][p] contains a tuple
+        # - for each tuple p of length k, paths[k][p] contains a tuple
         #    (i,j) where i refers to the number of times p occurs as a
         #    subpath of a longer path, and j refers to the number of times p
         #    occurs as a *real* or *longest* path (i.e. not being a subpath
         #    of a longer path)
         self.paths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.array([0, 0])))
 
-        ## The character used to separate nodes on paths
+        # The character used to separate nodes on paths
         self.separator = ','
 
-        ## This can be used to limit the calculation of sub path statistics
-        ## to a given maximum length. This is useful, as the statistics of sub paths
-        ## of length k are only needed to fit a higher-order model with order k. Hence,
-        ## if we know that the mdoel selection is limited to a given maximum order K,
-        ## we can safely set the maximum sub path length to K. By default, sub paths of
-        ## any length will be calculated. Note that, independent of the sub path calculation
-        ## longest path of any length will be considered in the likelihood calculation!
+        # This can be used to limit the calculation of sub path statistics to a given
+        # maximum length. This is useful, as the statistics of sub paths of length k
+        # are only needed to fit a higher-order model with order k. Hence, if we know
+        # that the model selection is limited to a given maximum order K, we can safely
+        #  set the maximum sub path length to K. By default, sub paths of any length
+        # will be calculated. Note that, independent of the sub path calculation
+        # longest path of any length will be considered in the likelihood calculation!
         self.maxSubPathLength = _sys.maxsize
-
 
 
     def summary(self):
         """
-        Returns a string containing basic summary info of this Paths instance
+
+        Returns
+        -------
+        str
+            Returns a string containing basic summary info of this Paths instance
         """
-        sum = 0
-        spsum = 0
-        lpsum = 0
-        maxL = 0
-        avgL = 0
+        total_paths = 0
+        sub_path_sum = 0
+        l_path_sum = 0
+        max_path_length = 0
+        average_length = 0
         nodes = set()
         for k in self.paths:
             for p in self.paths[k]:
-                sum += self.paths[k][p].sum()
-                spsum += self.paths[k][p][0]
-                lpsum += self.paths[k][p][1]
-                avgL += self.paths[k][p][1] * k
+                total_paths += self.paths[k][p].sum()
+                sub_path_sum += self.paths[k][p][0]
+                l_path_sum += self.paths[k][p][1]
+                average_length += self.paths[k][p][1] * k
                 for v in p:
                     nodes.add(v)
-            if self.paths[k]:
-                maxL = max(maxL, k)
-        if lpsum > 0:
-            avgL = avgL / lpsum
+            if len(self.paths[k]) > 0:
+                max_path_length = max(max_path_length, k)
+        if l_path_sum > 0:
+            average_length = average_length / l_path_sum
 
-        summary = 'Number of paths (unique/sub paths/total):\t' +  str(lpsum) + \
-                  ' (' + str(self.getUniquePaths()) + '/'+ str(spsum) + '/' + str(sum) + ')\n'
-        summary += 'Nodes:\t\t\t\t' + str(len(nodes)) + '\n'
-        summary += 'Edges:\t\t\t\t' + str(len(self.paths[1])) + '\n'
-        if self.maxSubPathLength < _sys.maxsize:
-            summary += 'Max sub path length:\t\t' + str(self.maxSubPathLength) + '\n'
-        summary += 'Max. path length:\t\t' + str(maxL) + '\n'
-        summary += 'Avg path length:\t\t' + str(avgL) + '\n'
+        summary_fmt = (
+            "Number of paths (unique/sub paths/total):\t "
+            "{lpsum} ({unique_paths}/{spsum}/{total_paths})\n"
+            "Nodes:\t\t\t\t{len_nodes} \n"
+            "Edges:\t\t\t\t{len_first_path}\n"
+            "Max. path length:\t\t{maxL}\n"
+            "Avg path length:\t\t{avgL} \n"
+        )
+
+        k_path_info_fmt = 'Paths of length k = {k}\t\t{lpsum} ' \
+                          '({unique_paths_longer}/{spsum}/{total_paths})\n'
+
+        summary_info = {
+            "lpsum": l_path_sum,
+            "unique_paths": self.getUniquePaths(),
+            "spsum": sub_path_sum,
+            "total_paths": total_paths,
+            "len_nodes": len(nodes),
+            "len_first_path": len(self.paths[1]),
+            "maxL": max_path_length,
+            "avgL": average_length
+        }
+
+        summary = summary_fmt.format(**summary_info)
+
         for k in sorted(self.paths):
-            sum = 0
-            spsum = 0
-            lpsum = 0
+            total_paths = 0
+            sub_path_sum = 0
+            l_path = 0
             for p in self.paths[k]:
-                sum += self.paths[k][p].sum()
-                spsum += self.paths[k][p][0]
-                lpsum += self.paths[k][p][1]
-            summary += 'Paths of length k = ' + str(k) + '\t\t' + str(lpsum) + \
-                       ' (' + str(self.getUniquePaths(l=k, considerLongerPaths=False)) + \
-                       '/' + str(spsum) + '/'+ str(sum) +  ')\n'
+                total_paths += self.paths[k][p].sum()
+                sub_path_sum += self.paths[k][p][0]
+                l_path += self.paths[k][p][1]
+
+            unique_paths = self.getUniquePaths(l=k, considerLongerPaths=False)
+            k_info = k_path_info_fmt.format(
+                k=k, lpsum=l_path, spsum=sub_path_sum, total_paths=total_paths,
+                unique_paths_longer=unique_paths
+            )
+            summary += k_info
+
         return summary
 
-
     def getPathLengths(self):
-        """
-        Returns a dictionary containing the distribution of path lengths
-        in this Path object. In the returned dictionary, entry
-        lengths[k] is a numpy.array x where
-        x[0] is the number of sub paths with length k, and x[1]
-        is the number of (longest) paths with length k
+        """compute the length of all paths
+
+        Returns
+        -------
+        dict
+            Returns a dictionary containing the distribution of path lengths
+            in this Path object. In the returned dictionary, entry
+            lengths ``k`` is a ``numpy.array`` ``x`` where
+            ``x[0]`` is the number of sub paths with length ``k``, and ``x[1]``
+            is the number of (longest) paths with length ``k``
+
+
         """
         lengths = _co.defaultdict(lambda: _np.array([0, 0]))
 
@@ -139,10 +163,17 @@ class Paths:
                 lengths[k] += self.paths[k][p]
         return lengths
 
-
     def __add__(self, other):
         """
-        Default operator +, which returns the sum of two Path objects
+
+        Parameters
+        ----------
+        other : Paths
+
+        Returns
+        -------
+        Paths
+            Default operator +, which returns the sum of two Path objects
         """
         p_sum = Paths()
         for l in self.paths:
@@ -153,18 +184,21 @@ class Paths:
                 p_sum.paths[l][p] += other.paths[l][p]
         return p_sum
 
-
     def getSequence(self, stopchar='|'):
         """
-        Returns a single sequence in which all
-        paths have been concatenated. Individual
-        paths are separated by a stop character.
 
-        @stopchar: The character used to separate paths
+        Parameters
+        ----------
+        stopchar : str
+            the character used to separate paths
+
+        Returns
+        -------
+        tuple:
+            Returns a single sequence in which all paths have been concatenated.
+            Individual paths are separated by a stop character.
         """
-
         Log.add('Concatenating paths to sequence ...')
-
         sequence = []
         for l in self.paths:
             for p in self.paths[l]:
@@ -179,12 +213,20 @@ class Paths:
         Log.add('finished')
         return sequence
 
-
     def getUniquePaths(self, l=0, considerLongerPaths=True):
-        """
-        Returns the number of unique paths of a given length l (and possibly longer)
+        """Returns the number of unique paths of a given length l (and possibly longer)
 
-        @param l: the (inclusive) maximum length up to which path shall be counted.
+        Parameters
+        ----------
+        l : int
+            the (inclusive) maximum length up to which path shall be counted.
+        considerLongerPaths : bool
+            TODO: add parameter description
+
+        Returns
+        -------
+        int
+            number of unique paths satisfying parameter ``l``
         """
         L = 0
         lmax = l
@@ -199,7 +241,6 @@ class Paths:
                     L += 1
         return L
 
-
     def __str__(self):
         """
         Returns the default string representation of
@@ -208,15 +249,38 @@ class Paths:
         return self.summary()
 
 
-    def readEdges(filename=None, separator=',', weight=False, undirected=False,
-                  maxlines=_sys.maxsize, expandSubPaths=True, maxSubPathLength=_sys.maxsize):
-        """
+    def readEdges(filename, separator=',', weight=False, undirected=False,
+                  maxlines=None, expandSubPaths=True, maxSubPathLength=None):
+        """Read path in edgelist format
+
         Reads data from a file containing multiple lines of *edges* of the
         form "v,w,frequency,X" (where frequency is optional and X are
         arbitrary additional columns). The default separating character ','
         can be changed. In order to calculate the statistics of paths of any length,
         by default all subpaths of length 0 (i.e. single nodes) contained in an edge
         will be considered.
+
+        Parameters
+        ----------
+        filename : str
+            path to edgelist file
+        separator : str
+            character separating the nodes
+        weight : bool
+            is a weight given? if ``True`` it is the last element in the edge
+            (i.e. ``a,b,2``)
+        undirected : bool
+            are the edges directed or undirected
+        maxlines : int
+            number of lines to read (useful to test large files)
+        expandSubPaths : bool
+        maxSubPathLength : int (default None)
+            maximum length for subpaths to consider, ``None`` means the entire file is read
+
+        Returns
+        -------
+        Paths
+            a ``Paths`` object obtained from the edgelist
         """
         p = Paths()
 
@@ -225,14 +289,10 @@ class Paths:
 
         with open(filename, 'r') as f:
             Log.add('Reading edge data ... ')
-            line = f.readline()
-            n = 1
-            while line and n <= maxlines:
+            for n, line in enumerate(f):
                 fields = line.rstrip().split(separator)
-                assert len(fields) >= 2, 'Error: malformed line: ' + line
-
+                assert len(fields) >= 2, 'Error: malformed line: {0}'.format(line)
                 path = (fields[0], fields[1])
-
                 if weight:
                     frequency = int(fields[2])
                 else:
@@ -241,10 +301,9 @@ class Paths:
                 if undirected:
                     reverse_path = (fields[1], fields[0])
                     p.paths[1][reverse_path] += (0, frequency)
-                line = f.readline()
-                n += 1
-        # end of with open()
 
+                if maxlines is not None and n >= maxlines:
+                    continue
         if expandSubPaths:
             p.expandSubPaths()
         Log.add('finished.')
@@ -252,44 +311,58 @@ class Paths:
         return p
 
 
-    def readFile(filename=None, separator=',', pathFrequency=False, maxlines=_sys.maxsize,
+    @classmethod
+    def readFile(cls, filename, separator=',', pathFrequency=False, maxlines=_sys.maxsize,
                  maxN=_sys.maxsize, expandSubPaths=True, maxSubPathLength=_sys.maxsize):
-        """
-        Reads path data from a file containing multiple lines of n-grams of the
-        form "a,b,c,d,frequency" (where frequency is optional). The default separating
-        character ',' can be changed. Each n-gram will be interpreted as a path of length n-1,
-        i.e. bigrams a,b are considered as path of length one, trigrams a,b,c as path of length two, etc.
-        In order to calculate the statistics of paths of any length, by default all subpaths of
-        length k < n-1 contained in an n-gram will be considered. I.e. for n=4 the four-gram a,b,c,d
-        will be considered as a single (longest) path of length n-1 = 3 and three subpaths
-        a->b, b->c, c->d of length k=1 and two subpaths a->b->c amd b->c->d of length k=2 will be
+        """Read path data in ngram format.
+
+        Reads path data from a file containing multiple lines of n-grams of the form
+        ``a,b,c,d,frequency`` (where frequency is optional).
+        The default separating character ',' can be changed. Each n-gram will be interpreted as a path of
+        length n-1, i.e. bigrams a,b are considered as path of length one, trigrams a,
+        b,c as path of length two, etc. In order to calculate the statistics of paths
+        of any length, by default all subpaths of length k < n-1 contained in an n-gram
+        will be considered. I.e. for n=4 the four-gram a,b,c,d will be considered as a
+        single (longest) path of length n-1 = 3 and three subpaths a->b, b->c, c->d of
+        length k=1 and two subpaths a->b->c amd b->c->d of length k=2 will be
         additionally counted.
 
-        @param filename: name of the n-gram file to read data from
+        Parameters
+        ----------
+        filename : str
+            path to the n-gram file to read the data from
+        separator : str
+            the character used to separate nodes on the path, i.e. using a
+            separator character of ';' n-grams are represented as ``a;b;c;...``
+        pathFrequency : bool
+            if set to ``True``, the last entry in each n-gram will be interpreted as
+            weight (i.e. frequency of the path), e.g. ``a,b,c,d,4`` means that four-gram
+            ``a,b,c,d`` has weight four. ``False`` by default, which means each path
+            occurrence is assigned a default weight of 1 (adding weights for multiple
+            occurrences).
+        maxlines : int
+            number of lines/n-grams to read, if left at None the whole file is read in.
+        maxN : int
+            The maximum n for the n-grams to read, i.e. setting maxN to 15 will ignore
+            all n-grams of length 16 and longer, which means that only paths up to length
+            n-1 are considered.
+        expandSubPaths : bool
+            by default all subpaths of the given n-grams are generated, i.e.
+            for an input file with a single trigram a;b;c a path a->b->c of length two
+            will be generated as well as two subpaths a->b and b->c of length one
+        maxSubPathLength : int
 
-        @param separator: the character used to separate nodes on the path, i.e. using a
-            separator character of ';' n-grams are represented as a;b;c;...
-
-        @param pathFrequency: if set to true, the last entry in each n-gram will be interpreted as
-            weight (i.e. frequency of the path), e.g. a,b,c,d,4 means that four-gram a,b,c,d has weight four.
-            False by default, which means each path occurrence is assigned a default weight of one (adding weights
-            of multiple occurrences).
-
-        @param maxlines: The maximum number of lines (i.e. ngrams) to read from the input file
-
-        @param maxN: The maximum n for the n-grams to read, i.e. setting maxN to 15 will ignore all n-grams of length
-            16 and longer, which means that only paths up to length n-1 are considered.
-
-        @param expandSubPaths: by default all subpaths of the given ngrams are generated, i.e.
-            for an input file with a single trigram a;b;c a path a->b->c of length two will be generated
-            as well as two subpaths a->b and b->c of length one
+        Returns
+        -------
+        Paths
+            a ``Paths`` object obtained from the n-grams file
         """
         assert filename is not "", 'Empty filename given'
 
         # If subpath expansion is applied, we keep the information how many times a path
         # has been observed as a subpath, and how many times as a "real" path
 
-        p = Paths()
+        p = cls()
 
         p.maxSubPathLength = maxSubPathLength
         p.separator = separator
@@ -339,7 +412,6 @@ class Paths:
 
         return p
 
-
     def writeFile(self, filename, separator=','):
         """
         Writes path statistics data to a file.
@@ -363,7 +435,6 @@ class Paths:
                         line += str(self.paths[l][p][1])
                         f.write(line+'\n')
         f.close()
-
 
     def ObservationCount(self):
         """
@@ -396,10 +467,10 @@ class Paths:
         Log.add('Calculating sub path statistics ... ')
 
         # the expansion of all subpaths in paths with a maximum path length of maxL
-        # neccessarily generates paths of *any* length up to MaxL.
+        # necessarily generates paths of *any* length up to MaxL.
         # Forcing the generation of all these indices here, prevents us
         # from mutating indices during subpath creation. The fact that indices are
-        # immutable allows us to use efficient iterators and prevent unncessary copying
+        # immutable allows us to use efficient iterators and prevent unnecessarily copying
 
         # Thanks to the use of defaultdict, the following trick will prevent us from
         # repeatedly testing whether l already exists as a key
@@ -414,38 +485,58 @@ class Paths:
                 # path, which is stored in the second entry of the numpy array
                 frequency = self.paths[pathLength][path][1]
 
-                # compute maximum length of sub paths to consider (maximum up to pathLength)
+                # compute maximum length of sub paths to consider
+                # (maximum up to pathLength)
                 maxL = min(self.maxSubPathLength+1, pathLength)
 
                 # Generate all subpaths of length k for k = 0 to k = maxL-1 (inclusive)
                 for k in range(0, maxL):
-                    # Generate subpaths of length k for all start indices s for s = 0 to s = pathLength-k (inclusive)
+                    # Generate subpaths of length k for all start indices s
+                    # for s = 0 to s = pathLength-k (inclusive)
                     for s in range(0, pathLength-k+1):
-                        # Add frequency as a subpath to *first* entry of occurrence counter
+                        # Add frequency as a subpath to *first* entry of occurrence
+                        # counter
                         self.paths[k][path[s:s+k+1]] += (frequency, 0)
 
 
     @staticmethod
-    def fromTemporalNetwork(tempnet, delta=1, maxLength=_sys.maxsize, maxSubPathLength=_sys.maxsize):
-        """ Calculates the frequency of all time-respecting paths up to maximum length of maxLength, assuming
-        a maximum temporal distance of delta between consecutive time-stamped links on a path.
-        This (static) method returns an instance of the class Paths, which can subsequently be used to
-        generate higher-order network representations based on the path statistics.
+    def fromTemporalNetwork(tempnet, delta=1, maxLength=_sys.maxsize,
+                            maxSubPathLength=_sys.maxsize):
+        """create from a temporal network a Paths object
+        Calculates the frequency of all time-respecting paths up to maximum length
+        of maxLength, assuming a maximum temporal distance of delta between consecutive
+        time-stamped links on a path. This (static) method returns an instance of the
+        class Paths, which can subsequently be used to generate higher-order network
+        representations based on the path statistics.
 
-        @param delta: Indicates the maximum temporal distance up to which time-stamped links will be
-        considered to contribute to time-respecting paths. For (u,v;3) and (v,w;7) a time-respecting path (u,v)->(v,w)
-        will be inferred for all 0 < delta <= 4, while no time-respecting path will be inferred for all delta > 4.
-        If the max time diff is not set specifically, the default value of delta=1 will be used, meaning that a
-        time-respecting path u -> v -> w will only be inferred if there are *directly consecutive* time-stamped
-        links (u,v;t) (v,w;t+1). Every time-stamped edge is further considered a path of length one, i.e. for maxLength=1
-        this function will simply return the statistics of time-stamped edges.
+        Parameters
+        ----------
 
-        @param maxLength: Indicates the maximum length up to which time-respecting paths should be calculated,
-             which can be limited due to computational efficiency. A value of k will generate all time-respecting paths
-             consisting of up to k time-stamped links. Note that generating a multi-order model with a maximum order of k
-             requires to extract time-respecting paths with *at least* length k. If a limitation of the maxLength is not
-             required for computational reasons, this parameter should not be set (as it will change the statistics of
-             paths)
+        tempnet : pytest.TemporalNetwork
+        delta : int
+            Indicates the maximum temporal distance up to which time-stamped
+            links will be considered to contribute to time-respecting paths.
+            For (u, v;3) and (v,w;7) a time-respecting path (u,v)->(v,w) will be inferred
+            for all 0 < delta <= 4, while no time-respecting path will be inferred for all
+            delta > 4. If the max time diff is not set specifically, the default value of
+            delta=1 will be used, meaning that a time-respecting path u -> v -> w will
+            only be inferred if there are *directly consecutive* time-stamped links
+            (u,v;t) (v,w;t+1). Every time-stamped edge is further considered a path of
+            length one, i.e. for maxLength=1 this function will simply return the
+            statistics of time-stamped edges.
+        maxLength : int
+            Indicates the maximum length up to which time-respecting paths should be
+            calculated, which can be limited due to computational efficiency.
+            A value of k will generate all time-respecting paths consisting of up to k
+            time-stamped links. Note that generating a multi-order model with a maximum
+            order of k requires to extract time-respecting paths with *at least* length k.
+            If a limitation of the maxLength is not required for computational reasons,
+            this parameter should not be set (as it will change the statistics of paths)
+        maxSubPathLength : int
+
+        Returns
+        -------
+        Paths
         """
 
         if maxLength == _sys.maxsize:
@@ -467,8 +558,8 @@ class Paths:
         # candidates[t][v] is a set of paths which end at time t in node v
         candidates = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
 
-        # Note that here we only extract **longest** time-respecting paths, as we will use
-        # the expandSubpaths function later to calculate statistics of shorter paths anyway
+        # Note that here we only extract **longest** time-respecting paths, since we will
+        # use later the expandSubpaths function to calculate statistics of shorter paths
 
         # set of longest time-respecting paths (i.e. those paths which are
         # NOT sub path of a longer time-respecting path)
@@ -484,21 +575,23 @@ class Paths:
                 # check whether this edge extends existing candidates
                 for t_prev in list(candidates):
                     # time stamp of candidate has to be in [t-delta, t) ...
-                    if t_prev >= t-delta and t_prev < t:
+                    if t-delta <= t_prev < t:
                         # ... and last node has to be e[0] ...
                         if e[0] in candidates[t_prev]:
                             for c in list(candidates[t_prev][e[0]]):
 
-                                # c is path (p_0, p_1, ...) which ends in node e[0] at time t_prev
+                                # c is path (p_0, p_1, ...) which ends in node e[0] at
+                                # time t_prev
                                 new_path = c + ((e[0], e[1], t),)
 
-                                # we now know that (e[0], e[1]) is not the root of a new longest path
-                                # as it continues a previous path c
+                                # we now know that (e[0], e[1]) is not the root of a
+                                # new longest path as it continues a previous path c
                                 root = False
 
-                                # if c has previously been considered a longest path, we discard it
-                                # from the list of longest paths. We also add the extended path as
-                                # a new longest path (possible removing it later if it is further extended)
+                                # if c has previously been considered a longest path,
+                                # we discard it from the list of longest paths. We also
+                                # add the extended path as a new longest path
+                                # (possible removing it later if it is further extended)
                                 longest_paths.discard(c)
                                 longest_paths.add(new_path)
 
@@ -515,7 +608,8 @@ class Paths:
                 # we start a new longest path
                 if root:
                     longest_paths.add(((e[0], e[1], t), ))
-                    # add edge as candidate path of length one that can be extended by future edges
+                    # add edge as candidate path of length one that can be extended by
+                    # future edges
                     if maxLength > 1:
                         candidates[t][e[1]].add(((e[0], e[1], t), ))
 
@@ -529,7 +623,7 @@ class Paths:
 
         # once we reached the last time stamp, add all candidates
         # as longest paths
-        #for t_prev in candidates:
+        # for t_prev in candidates:
         #    for x in candidates[t_prev]:
         #        for p in candidates[t_prev][x]:
         #            longest_paths.add(p)
@@ -548,7 +642,6 @@ class Paths:
 
         return p
 
-
     @staticmethod
     def fromDAG(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):
         """
@@ -558,11 +651,12 @@ class Paths:
         """
 
         # Try to topologically sort the graph if not already sorted
-        if dag.isAcyclic == None:
+        if dag.isAcyclic is None:
             dag.topsort()
         # issue error if graph contains cycles
-        if dag.isAcyclic == False:
+        if dag.isAcyclic is False:
             Log.add('Cannot extract path statistics from a cyclic graph', Severity.ERROR)
+            raise ValueError('Cannot extract path statistics from a cyclic graph')
         else:
             # path object which will hold the detected (projected) paths
             p = Paths()
@@ -572,9 +666,9 @@ class Paths:
 
             # construct all paths originating from root nodes
             for s in dag.roots:
-                if n%100 == 0:
+                if n % 100 == 0:
                     Log.add('Processed ' + str(n) + '/' + str(len(dag.roots)) + ' root nodes', Severity.TIMING)
-                if node_mapping == None:
+                if node_mapping is None:
                     paths = dag.constructPaths(s)
                     # add detected paths to paths object
                     for d in paths:
@@ -586,8 +680,6 @@ class Paths:
             p.expandSubPaths()
             Log.add('finished.', Severity.INFO)
             return p
-
-
 
     def addPathTuple(self, path, expandSubPaths=True, frequency=(0, 1)):
         """
@@ -652,7 +744,7 @@ class Paths:
         return contained_paths
 
 
-    def filterPaths(self, node_filter, minLength=0, maxLength=sys.maxsize):
+    def filterPaths(self, node_filter, minLength=0, maxLength=_sys.maxsize):
         """
         Returns a new paths object which contains only paths between nodes in a given
         filter set. For each of the paths in the current Paths object, the set of maximally
@@ -762,8 +854,8 @@ class Paths:
 
         assert k > 1, 'Slow-down factor can only be calculated for orders larger than one'
 
-        #NOTE to myself: most of the time goes for construction of the 2nd order
-        #NOTE            null graph, then for the 2nd order null transition matrix
+        # NOTE to myself: most of the time goes for construction of the 2nd order
+        # NOTE            null graph, then for the 2nd order null transition matrix
 
         gk = HigherOrderNetwork(self, k=k)
         gkn = HigherOrderNetwork(self, k=k, nullModel=True)
@@ -964,10 +1056,10 @@ class Paths:
             # total number of samples, i.e. observed two-paths
             N = _np.sum(B_v)
 
-            #print('N = ', N)
-            #print('B = ', B_v)
-            #print('marginal_s = ', marginal_s)
-            #print('marginal_d = ', marginal_d)
+            # print('N = ', N)
+            # print('B = ', B_v)
+            # print('marginal_s = ', marginal_s)
+            # print('marginal_d = ', marginal_d)
 
             # marginal entropy H(S)
             H_s = Paths.__Entropy(marginal_s, len(marginal_s), N, method='Miller')
@@ -977,7 +1069,7 @@ class Paths:
 
             H_d = Paths.__Entropy(marginal_d, len(marginal_d), N, method='Miller')
 
-            #print('H(D) = ', H_d)
+            # print('H(D) = ', H_d)
             # we need the conditional entropy H(D|S)
 
             H_ds = 0
@@ -986,17 +1078,17 @@ class Paths:
                 # number of two paths s -> v -> * observed in the data
                 N_s = _np.sum(B_v[s, :])
 
-                #print('N(s=' + str(s) + ') = ' +  str(N_s))
+                # print('N(s=' + str(s) + ') = ' +  str(N_s))
 
                 # probabilities of all destinations, given the particular source s
                 p_ds = B_v[s, :]/_np.sum(B_v[s, :])
 
-                #print('P(D|S=' + str(s) + ') = '+ str(p_ds))
+                # print('P(D|S=' + str(s) + ') = '+ str(p_ds))
 
                 # number of possible destinations d
                 K_s = len(p_ds)
 
-                #print('K(s=' + str(s) + ') = ' +  str(K_s))
+                # print('K(s=' + str(s) + ') = ' +  str(K_s))
 
                 # marginal_s[s] is the overall probability of source s
                 p_s = marginal_s[s]
@@ -1006,15 +1098,15 @@ class Paths:
 
                 I = H_d - H_ds
 
-            #print('H(D|S) = ', H_ds)
+            # print('H(D|S) = ', H_ds)
 
         else:
             # use MLE estimation
             H_s = Paths.__Entropy(marginal_s)
             H_d = Paths.__Entropy(marginal_d)
-            #H_ds = 0
+            # H_ds = 0
 
-            #for s in range(len(marginal_s)):
+            # for s in range(len(marginal_s)):
             #    print('s = ' + str(s) + ': ' + str(_np.sum(P_v[s,:])))
             #    p_ds = P_v[s,:]/_np.sum(P_v[s,:])
             #    H_ds += marginal_s[s] * Paths.__Entropy(p_ds)
@@ -1027,7 +1119,7 @@ class Paths:
             log_argument = _np.divide(pv, marginal[(row, col)])
             I = _np.dot(pv, _np.log2(log_argument))
 
-        #I = H_d - H_ds
+        # I = H_d - H_ds
 
         if normalized:
             I = I/_np.min([H_s, H_d])

@@ -25,18 +25,16 @@
 """
 
 import collections as _co
-
 import sys as _sys
-
 from pathpy.Log import Log
 from pathpy.Log import Severity
+
 
 class DAG(object):
     """
         Represents a directed acyclic graph (DAG) which
         can be used to generate pathway statistics.
     """
-
 
     def __init__(self, edges=None):
         """
@@ -65,24 +63,30 @@ class DAG(object):
         self.predecessors = _co.defaultdict(lambda: set())
         self_loops = 0
         redundant_edges = 0
-        if edges != None:
+        if edges is not None:
             for e in edges:
-                redundant = False
-                selfLoop = False
+                is_redundant = False
+                has_self_loop = False
                 if e[0] == e[1]:
-                    selfLoop = True
+                    has_self_loop = True
                     self_loops += 1
                 if (e[0], e[1]) in self.edges:
-                    redundant = True
+                    is_redundant = True
                     redundant_edges += 1
-                if not selfLoop and not redundant:
+                if not has_self_loop and not is_redundant:
                     self.addEdge(e[0], e[1])
             if self_loops > 0:
-                Log.add('Warning: omitted ' + str(self_loops) + ' self-loops', Severity.WARNING)
+                Log.add('Warning: omitted %d self-loops' % self_loops, Severity.WARNING)
             if redundant_edges > 0:
-                Log.add('Warning: omitted ' + str(redundant_edges) +
-                        ' redundant edges', Severity.WARNING)
+                Log.add('Warning: omitted %d redundant edges' % redundant_edges,
+                        Severity.WARNING)
 
+        # placeholder properties for topological sort
+        self.parent = {}
+        self.start_time = {}
+        self.finish_time = {}
+        self.edge_classes = {}
+        self.top_sort_count = 0
 
     def constructPaths(self, v):
         """
@@ -94,7 +98,7 @@ class DAG(object):
         temp_paths[v] = [(v,)]
 
         # set of unprocessed nodes
-        Q = set([v])
+        Q = {v}
 
         while Q:
             # take one unprocessed node
@@ -110,8 +114,6 @@ class DAG(object):
                 del temp_paths[x]
 
         return temp_paths
-
-
 
     def constructMappedPaths(self, v, node_mapping, paths):
         """
@@ -141,7 +143,6 @@ class DAG(object):
                     for w in self.successors[x]:
                         continuable[w].append(p + (node_mapping[w],))
 
-
     def dfs_visit(self, v, parent=None):
         """
         Recursively visits nodes in the graph, classifying
@@ -153,8 +154,8 @@ class DAG(object):
             with no parents
         """
         self.parent[v] = parent
-        self.count += 1
-        self.start_time[v] = self.count
+        self.top_sort_count += 1
+        self.start_time[v] = self.top_sort_count
         if parent:
             self.edge_classes[(parent, v)] = 'tree'
 
@@ -168,10 +169,9 @@ class DAG(object):
                 self.edge_classes[(v, w)] = 'forward'
             else:
                 self.edge_classes[(v, w)] = 'cross'
-        self.count += 1
-        self.finish_time[v] = self.count
+        self.top_sort_count += 1
+        self.finish_time[v] = self.top_sort_count
         self.sorting.append(v)
-
 
     def topsort(self):
         """
@@ -181,18 +181,17 @@ class DAG(object):
 
         see Cormen 2001 for details
         """
+        self.sorting = []
         self.parent = {}
         self.start_time = {}
         self.finish_time = {}
         self.edge_classes = {}
-        self.sorting = []
-        self.count = 0
+        self.top_sort_count = 0
         self.isAcyclic = True
         for v in self.nodes:
             if v not in self.parent:
                 self.dfs_visit(v)
         self.sorting.reverse()
-
 
     def makeAcyclic(self):
         """
@@ -218,7 +217,6 @@ class DAG(object):
             Log.add('Removed ' + str(removed_links) +
                     ' back links to make graph acyclic', Severity.INFO)
 
-
     def summary(self):
         """
         Returns a string representation of this directed acyclic graph
@@ -226,20 +224,18 @@ class DAG(object):
 
         summary = 'Directed Acyclic Graph'
         summary += '\n'
-        summary += 'Nodes:\t\t' +  str(len(self.nodes)) + '\n'
-        summary += 'Roots:\t\t' +  str(len(self.roots)) + '\n'
-        summary += 'Leaves:\t\t' +  str(len(self.leafs)) + '\n'
+        summary += 'Nodes:\t\t' + str(len(self.nodes)) + '\n'
+        summary += 'Roots:\t\t' + str(len(self.roots)) + '\n'
+        summary += 'Leaves:\t\t' + str(len(self.leafs)) + '\n'
         summary += 'Links:\t\t' + str(len(self.edges)) + '\n'
-        summary += 'Acyclic:\t' +  str(self.isAcyclic) + '\n'
+        summary += 'Acyclic:\t' + str(self.isAcyclic) + '\n'
         return summary
-
 
     def __str__(self):
         """
         Returns the default string representation of this object
         """
         return self.summary()
-
 
     def addEdge(self, source, target):
         """
@@ -248,9 +244,9 @@ class DAG(object):
 
         if source not in self.nodes:
             self.nodes.add(source)
-            self.roots.add(source)            
+            self.roots.add(source)
         if target not in self.nodes:
-            self.nodes.add(target)            
+            self.nodes.add(target)
             self.leafs.add(target)
 
         self.leafs.discard(source)
@@ -259,7 +255,6 @@ class DAG(object):
         self.successors[source].add(target)
         self.predecessors[target].add(source)
         self.isAcyclic = None
-
 
     @staticmethod
     def readFile(filename, sep=',', maxlines=_sys.maxsize, mapping=None):
@@ -278,7 +273,7 @@ class DAG(object):
         with open(filename, 'r') as f:
             edges = []
 
-            if mapping != None:
+            if mapping is not None:
                 Log.add('Filtering mapped edges')
 
             Log.add('Reading edge list ...')
@@ -292,7 +287,7 @@ class DAG(object):
                         edges.append((fields[0], fields[1]))
 
                 except (IndexError, ValueError):
-                    Log.add('Ignoring malformed data in line ' + str(n+1) +
+                    Log.add('Ignoring malformed data in line ' + str(n + 1) +
                             ': "' + line.strip() + '"', Severity.WARNING)
                 line = f.readline()
                 n += 1

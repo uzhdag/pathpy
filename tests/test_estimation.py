@@ -31,8 +31,8 @@ def test_estimate_order_1():
         paths.addPath('a,c,e')
 
     m = pp.MultiOrderModel(paths, maxOrder=2)
-    assert m.estimateOrder(
-        paths) == 1, "Error, wrongly detected higher-order correlations"
+    assert m.estimateOrder(paths) == 1, \
+        "Error, wrongly detected higher-order correlations"
 
 
 def test_estimate_order_2():
@@ -58,6 +58,8 @@ def test_estimate_order_2():
         "Error, wrongly detected higher-order correlations"
     assert ms.estimateOrder(maxOrder=2, method='AIC') == 1, \
         "Error, wrongly detected higher-order correlations"
+    with pytest.raises(ValueError):
+        ms.estimateOrder(maxOrder=2, method='NotImplemented')
 
     g1 = pp.HigherOrderNetwork(paths, k=1)
     assert g1.vcount() == 5, \
@@ -80,13 +82,13 @@ def test_estimate_order_2():
 
 def test_estimate_order_strongly_connected():
     """
-    Example with single strongly connected component in first- 
+    Example with single strongly connected component in first-
     and two connected components in second-order network
     """
     paths = pp.Paths()
 
-    ngram_list = ['a,b,c', 'b,c,b', 'c,b,a', 
-                  'b,a,b', 'e,b,f', 'b,f,b', 
+    ngram_list = ['a,b,c', 'b,c,b', 'c,b,a',
+                  'b,a,b', 'e,b,f', 'b,f,b',
                   'f,b,e', 'b,e,b']
 
     for ngram in ngram_list:
@@ -254,6 +256,7 @@ def test_entropy_growth_rate_ratio_mle(random_paths):
     mle_ratio = p.getEntropyGrowthRateRatio(method="MLE")
     mle_expected = 0.10515408343772015
     assert mle_ratio == pytest.approx(mle_expected)
+
 
 @slow
 def test_entropy_growth_rate_ratio_miller(random_paths):
