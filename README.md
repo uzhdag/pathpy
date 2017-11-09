@@ -18,13 +18,13 @@ abstraction of such data is justified, or whether higher-order network abstracti
 
 The theoretical foundation of this package, **higher-order network models**, has been developed in the following research works:
 
-1. I Scholtes: [When is a network a network? Multi-Order Graphical Model Selection in Pathways and Temporal Networks](https://arxiv.org/abs/1702.05499), arXiv:1702.05499
+1. I Scholtes: [When is a network a network? Multi-Order Graphical Model Selection in Pathways and Temporal Networks](http://dl.acm.org/citation.cfm?id=3098145), In KDD'17 - Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, Halifax, Nova Scotia, Canada, August 13-17, 2017
 2. I Scholtes, N Wider, A Garas: [Higher-Order Aggregate Networks in the Analysis of Temporal Networks: Path structures and centralities](http://dx.doi.org/10.1140/epjb/e2016-60663-0), The European Physical Journal B, 89:61, March 2016
 3. I Scholtes, N Wider, R Pfitzner, A Garas, CJ Tessone, F Schweitzer: [Causality-driven slow-down and speed-up of diffusion in non-Markovian temporal networks](http://www.nature.com/ncomms/2014/140924/ncomms6024/full/ncomms6024.html), Nature Communications, 5, September 2014
 4. R Pfitzner, I Scholtes, A Garas, CJ Tessone, F Schweitzer: [Betweenness preference: Quantifying correlations in the topological dynamics of temporal networks](http://journals.aps.org/prl/abstract/10.1103/PhysRevLett.110.198701), Phys Rev Lett, 110(19), 198701, May 2013
 
 `pathpy` extends this approach towards **multi-layer graphical models** that capture temporal correlations in pathways at multiple length scales simultaneously. An illustrative example for
-a collection of pathways (left) and a multi-order graphical representation of these pathways is shown below. All mathematical details of the framework can be found in this [recent research paper](https://arxiv.org/abs/1702.05499).
+a collection of pathways (left) and a multi-order graphical representation of these pathways is shown below. All mathematical details of the framework can be found in this [recent research paper](http://dl.acm.org/citation.cfm?id=3098145).
 
 <img src="https://github.com/IngoScholtes/pathpy/blob/master/multiorder.png" width="500" alt="Illustration of Multi-Order Model" />
 
