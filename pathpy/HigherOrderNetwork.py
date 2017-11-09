@@ -115,7 +115,7 @@ class HigherOrderNetwork:
         self.separator = separator
 
         ## A dictionary containing edges as well as edge weights
-        self.edges = _co.defaultdict(lambda: _np.array([0, 0]))
+        self.edges = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         ## A dictionary containing the sets of successors of all nodes
         self.successors = _co.defaultdict(lambda: set())

@@ -5,5 +5,6 @@ from .HigherOrderNetwork import *
 from .MultiOrderModel import *
 from .MarkovSequence import *
 from .DAG import *
+from .PathExtraction import *
 
 import pathpy.Log as Log
