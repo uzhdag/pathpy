@@ -1085,8 +1085,8 @@ class Paths:
             for p in self.paths[l]:
                 for v in p:
                     # count occurrences in longest paths only!
-                    visitation_probabilities[v] += float(self.paths[l][p][1])
-                    visits += float(self.paths[l][p][1])
+                    visitation_probabilities[v] += self.paths[l][p][1]
+                    visits += self.paths[l][p][1]
 
         for v in visitation_probabilities:
             visitation_probabilities[v] /= visits
