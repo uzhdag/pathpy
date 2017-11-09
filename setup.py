@@ -1,5 +1,5 @@
-"""A python package for the analysis of sequential data on pathways and temporal networks from the perspective of higher-order network models.
-
+"""
+An OpenSource python package for the analysis of time series data on networks using higher- and multi order graphical models.
 See: https://packaging.python.org/en/latest/distributing.html
 """
 
@@ -29,7 +29,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.2.dag',
 
-    description='A python package for the analysis of sequential data on pathways and temporal networks from the perspective of higher-order network models.',
+    description='An OpenSource python package for the analysis of time series data on networks using higher- and multi order graphical models.',
     long_description=long_description,
 
     # The project's main homepage.
