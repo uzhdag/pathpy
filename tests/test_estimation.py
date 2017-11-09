@@ -162,7 +162,7 @@ def test_slow_down_factor_random(random_paths):
     slow_down_factor = paths.getSlowDownFactor()
     expected = 4.05
     assert slow_down_factor == pytest.approx(expected, rel=1e-2), \
-        "Got %f slowdown factor expected %f +- 1e-2" % (slow_down_factor, expected)
+        "Got slowdown factor %f but expected %f +- 1e-2" % (slow_down_factor, expected)
 
 
 def test_get_distance_matrix_temporal(temporal_network_object):

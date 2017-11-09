@@ -32,10 +32,7 @@ slow = pytest.mark.slow
 def test_degrees(path_from_edge_file):
     hon_1 = pp.HigherOrderNetwork(path_from_edge_file, k=1)
     node_map = hon_1.getNodeNameMap()
-    expected_degrees = {'1': 52, '2' : 0, '3': 2, '5': 5}
-    d = hon_1.degrees()
-    degrees = {}
-    for v in node_map:
-        degrees[v] = d[node_map[v]]
-    assert degrees == expected_degrees, \
+    expected_degrees = {'1': 52, '2' : 0, '3': 2, '5': 5}    
+    for v in hon_1.nodes:
+        assert expected_degrees[v] == hon_1.outweights[v][1], \
         "Wrong degree calculation in HigherOrderNetwork"

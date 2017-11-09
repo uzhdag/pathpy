@@ -120,6 +120,18 @@ class HigherOrderNetwork:
         ## A dictionary containing the sets of successors of all nodes
         self.successors = _co.defaultdict(lambda: set())
 
+        ## A dictionary containing the in-degrees of all nodes
+        self.indegrees = _co.defaultdict(lambda: _np.array([0., 0.]))
+
+        ## A dictionary containing the weighted in-degrees of all nodes
+        self.inweights= _co.defaultdict(lambda: _np.array([0., 0.]))
+
+        ## A dictionary containing the in-degrees of all nodes
+        self.outdegrees = _co.defaultdict(lambda: _np.array([0., 0.]))
+
+        ## A dictionary containing the weighted out-degrees of all nodes
+        self.outweights= _co.defaultdict(lambda: _np.array([0., 0.]))
+
         ## A dictionary containing the sets of predecessors of all nodes
         self.predecessors = _co.defaultdict(lambda: set())
 
@@ -158,6 +170,10 @@ class HigherOrderNetwork:
                 self.edges[(v, w)] += paths.paths[k][p]
                 self.successors[v].add(w)
                 self.predecessors[w].add(v)
+                self.indegrees[w] = len(self.predecessors[w])
+                self.inweights[w] += paths.paths[k][p]
+                self.outdegrees[v] = len(self.successors[v])
+                self.outweights[v] += paths.paths[k][p]
 
             # Note: For all sequences of length k which (i) have never been observed, but
             #       (ii) do actually represent paths of length k in the first-order network,
@@ -233,6 +249,10 @@ class HigherOrderNetwork:
 
                 # Note: Solution B and C are equivalent
                 self.successors[v].add(w)
+                self.indegrees[w] = len(self.predecessors[w])
+                self.inweights[w] += self.edges[(v, w)]
+                self.outdegrees[v] = len(self.successors[v])
+                self.outweights[v] += self.edges[(v, w)]
 
         # Compute degrees of freedom of models
         if k == 0:
@@ -838,33 +858,6 @@ class HigherOrderNetwork:
         return self.summary()
 
 
-    def degrees(self, includeSubPaths=True, weighted=True, mode="OUT"):
-        """
-        Returns the (weighted) degrees of nodes in the higher-order network
-
-        @param weighted: If true, calculates the sum of weights for each node. If false, the
-            number of links is calculated
-
-        @param mode: either "IN", "OUT", or "TOTAL"
-        """
-        degrees = [0]*self.vcount()
-        for v in self.nodes:
-            for u, w in self.edges:
-                if (mode == "OUT" and u == v) or (mode == "IN" and w == v) or (mode == "TOTAL" and (u == v or w == v)):
-                    if weighted:
-                        if includeSubPaths:
-                            degrees[self.nodes.index(v)] += self.edges[(u, w)].sum()
-                        else:
-                            degrees[self.nodes.index(v)] += self.edges[(u, w)][1]
-                    else:
-                        if includeSubPaths:
-                            degrees[self.nodes.index(v)] += 1
-                        else:
-                            if self.edges[(u, w)][1] > 0:
-                                degrees[self.nodes.index(v)] += 1
-        return degrees
-
-
     def getAdjacencyMatrix(self, includeSubPaths=True, weighted=True, transposed=False):
         """
         Returns a sparse adjacency matrix of the higher-order network. By default, the entry
@@ -918,7 +911,12 @@ class HigherOrderNetwork:
         row = []
         col = []
         data = []
-        D = self.degrees(includeSubPaths=includeSubPaths, weighted=True, mode='OUT')
+        # calculate weighted out-degrees (with or without subpaths)
+        if includeSubPaths:
+            D = [ self.outweights[x].sum() for x in self.nodes]
+        else:
+            D = [ self.outweights[x][1] for x in self.nodes]
+                
         for (s, t) in self.edges:
             # either s->t has been observed as a longest path, or we are interested in subpaths as well
 
@@ -930,9 +928,6 @@ class HigherOrderNetwork:
                     count = self.edges[(s, t)].sum()
                 else:
                     count = self.edges[(s, t)][1]
-                #print((s,t))
-                #print(D[self.nodes.index(s)])
-                #print(count)
                 assert D[self.nodes.index(s)] > 0, 'Encountered zero out-degree for node ' + str(s) + ' while weight of link (' + str(s) +  ', ' + str(t) + ') is non-zero.'
                 prob = count / D[self.nodes.index(s)]
                 if prob < 0 or prob > 1:
