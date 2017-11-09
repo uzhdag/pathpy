@@ -24,6 +24,8 @@ The theoretical foundation of this package, **higher-order network models**, was
 An illustrative example for a collection of paths (left) and a multi-order graphical representation is shown below. 
 All mathematical details of the framework can be found in this [recent research paper](http://dl.acm.org/citation.cfm?id=3098145).
 
+[![Watch promotional video](https://img.youtube.com/vi/CxJkVrD2ZlM/0.jpg)](https://www.youtube.com/watch?v=CxJkVrD2ZlM)
+
 <img src="https://github.com/IngoScholtes/pathpy/blob/master/multiorder.png" width="500" alt="Illustration of Multi-Order Model" />
 
 # Download and installation
