@@ -101,7 +101,6 @@ def test_summary_multi_order_model(random_paths):
 
 
 def test_get_shortest_paths(path_from_ngram_file):
-    path_from_ngram_file.getShortestPaths()
     paths_dict = path_from_ngram_file.getShortestPaths()
     expected_paths = {('d', 'a'): {('d', 'a')},
                       ('b', 'd'): {('b', 'c', 'd')},
