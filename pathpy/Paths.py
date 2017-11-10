@@ -94,7 +94,7 @@ class Paths:
                 average_length += self.paths[k][p][1] * k
                 for v in p:
                     nodes.add(v)
-            if len(self.paths[k]) > 0:
+            if self.paths[k]:
                 max_path_length = max(max_path_length, k)
         if l_path_sum > 0:
             average_length = average_length / l_path_sum
@@ -206,13 +206,14 @@ class Paths:
                 segment = []
                 for s in p:
                     segment.append(s)
-                if not stopchar == '':
+                if stopchar != '':
                     segment.append(stopchar)
                 for f in range(int(self.paths[l][p][1])):
                     sequence += segment
 
         Log.add('finished')
         return sequence
+
 
     def getUniquePaths(self, l=0, considerLongerPaths=True):
         """Returns the number of unique paths of a given length l (and possibly longer)
@@ -260,9 +261,12 @@ class Paths:
             nodes.add(p[0])
         return nodes
 
+
+    @staticmethod
     def readEdges(filename, separator=',', weight=False, undirected=False,
                   maxlines=None, expandSubPaths=True, maxSubPathLength=None):
-        """Read path in edgelist format
+        """
+        Read path in edgelist format
 
         Reads data from a file containing multiple lines of *edges* of the
         form "v,w,frequency,X" (where frequency is optional and X are
@@ -368,7 +372,7 @@ class Paths:
         Paths
             a ``Paths`` object obtained from the n-grams file
         """
-        assert filename is not "", 'Empty filename given'
+        assert filename != "", 'Empty filename given'
 
         # If subpath expansion is applied, we keep the information how many times a path
         # has been observed as a subpath, and how many times as a "real" path
@@ -391,7 +395,7 @@ class Paths:
                     for i in range(0, len(fields)-1):
                         # Omit empty fields
                         v = fields[i].strip()
-                        if len(v) > 0:
+                        if v:
                             path += (v,)
                     frequency = float(fields[len(fields)-1])
                     if len(path) <= maxN:
@@ -404,7 +408,7 @@ class Paths:
                     for i in range(0, len(fields)):
                         # Omit empty fields
                         v = fields[i].strip()
-                        if len(v) > 0:
+                        if v:
                             path += (v,)
                     if len(path) <= maxN:
                         p.paths[len(path)-1][path] += (0, 1)
@@ -455,11 +459,11 @@ class Paths:
         (includes multiple observations for paths with a frequency weight)
         """
 
-        sum = 0
+        OCount = 0
         for k in self.paths:
             for p in self.paths[k]:
-                sum += self.paths[k][p][1]
-        return sum
+                OCount += self.paths[k][p][1]
+        return OCount
 
 
     def expandSubPaths(self):
@@ -474,7 +478,7 @@ class Paths:
         """
 
         # nothing to see here ...
-        if len(self.paths) == 0:
+        if not self.paths:
             return
 
         Log.add('Calculating sub path statistics ... ')
@@ -524,7 +528,7 @@ class Paths:
             (first component) and longest path (second component). Default is (0,1).
         """
 
-        assert len(path) > 0, 'Error: paths needs to contain at least one element'
+        assert path, 'Error: paths needs to contain at least one element'
 
         if type(path[0]) == str:
             path_str = path
@@ -593,7 +597,7 @@ class Paths:
                     else:
                         self.paths[k][subpath] += (1, 0)
 
-
+    @staticmethod
     def getContainedPaths(p, node_filter):
         """
         Returns the set of maximum-length sub-paths of the path p, which
@@ -610,10 +614,10 @@ class Paths:
             if p[k] in node_filter:
                 current_path += (p[k],)
             else:
-                if len(current_path) > 0:
+                if current_path:
                     contained_paths.append(current_path)
                     current_path = ()
-        if len(current_path) > 0:
+        if current_path:
             contained_paths.append(current_path)
 
         return contained_paths

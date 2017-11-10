@@ -25,7 +25,6 @@
 """
 
 import collections as _co
-import sys as _sys
 
 import numpy as _np
 import scipy.sparse as _sparse
@@ -33,16 +32,15 @@ import scipy.sparse.linalg as _sla
 import scipy.linalg as _la
 import scipy as _sp
 
-import pathpy.Paths as _Paths
 from pathpy.Log import Log as _Log
 from pathpy.Log import Severity as _Severity
 
 
 class HigherOrderMeasures:
     """
-    This class can be used to calculate path statistics based on 
+    This class can be used to calculate path statistics based on
     origin-destination data available for a known network topology.
-    The path statistics generated from such data will be based on 
+    The path statistics generated from such data will be based on
     the assumption that each observed path from an origin to a destination
     node follows a shortest path in the network topology.
     """
@@ -79,6 +77,7 @@ class HigherOrderMeasures:
         return node_centralities
 
 
+    @staticmethod
     def BetweennessCentrality(network, normalized=False):
         """
         Calculates the betweenness centralities of all nodes.
@@ -194,7 +193,6 @@ class HigherOrderMeasures:
         _Log.add('finished.', _Severity.INFO)
 
         return first_order_evcent
-        return v
 
 
 

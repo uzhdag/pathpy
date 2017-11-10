@@ -297,13 +297,13 @@ class PathMeasures:
         if method == 'MLE':
             idx = _np.nonzero(prob)
             return -_np.inner(_np.log2(prob[idx]), prob[idx])
-        elif method == 'Miller':
+        if method == 'Miller':
             assert K != None and N != None
             if N == 0:
                 return 0
-            else:
-                idx = _np.nonzero(prob)
-                return -_np.inner(_np.log2(prob[idx]), prob[idx]) + (K-1)/(2*N)
+
+            idx = _np.nonzero(prob)
+            return -_np.inner(_np.log2(prob[idx]), prob[idx]) + (K-1)/(2*N)
 
 
     @staticmethod
@@ -325,7 +325,7 @@ class PathMeasures:
         assert method == 'MLE' or method == 'Miller'
 
         # If the network is empty, just return zero
-        if len(paths.getNodes()) == 0:
+        if not paths.getNodes():
             return 0.0
 
         # First create the betweenness preference matrix (equation (2) of the paper)

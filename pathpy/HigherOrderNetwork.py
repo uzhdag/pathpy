@@ -56,8 +56,8 @@ class HigherOrderNetwork:
     """
 
 
-    def __init__(self, paths, k=1, separator='-', nullModel=False, 
-                    method='FirstOrderTransitions', lanczosVecs=15, maxiter=1000):
+    def __init__(self, paths, k=1, separator='-', nullModel=False,
+        method='FirstOrderTransitions', lanczosVecs=15, maxiter=1000):
         """
         Generates a k-th-order representation based on the given path statistics.
 
@@ -124,13 +124,13 @@ class HigherOrderNetwork:
         self.indegrees = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         ## A dictionary containing the weighted in-degrees of all nodes
-        self.inweights= _co.defaultdict(lambda: _np.array([0., 0.]))
+        self.inweights = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         ## A dictionary containing the in-degrees of all nodes
         self.outdegrees = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         ## A dictionary containing the weighted out-degrees of all nodes
-        self.outweights= _co.defaultdict(lambda: _np.array([0., 0.]))
+        self.outweights = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         ## A dictionary containing the sets of predecessors of all nodes
         self.predecessors = _co.defaultdict(lambda: set())
@@ -204,8 +204,8 @@ class HigherOrderNetwork:
             if method == 'KOrderPi':
                 # compute stationary distribution of a random walker in the k-th order network
                 g_k = HigherOrderNetwork(paths, k=k, separator=separator, nullModel=False)
-                pi_k = HigherOrderNetwork.getLeadingEigenvector(g_k.getTransitionMatrix(includeSubPaths=True), 
-                                normalized=True, lanczosVecs=lanczosVecs, maxiter=maxiter)
+                pi_k = HigherOrderNetwork.getLeadingEigenvector(g_k.getTransitionMatrix(includeSubPaths=True),
+                                                                normalized=True, lanczosVecs=lanczosVecs, maxiter=maxiter)
             else:
                 # A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=True, transposed=False)
                 T = g1.getTransitionMatrix(includeSubPaths=True)

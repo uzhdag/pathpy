@@ -24,20 +24,11 @@
     Web:    http://www.ingoscholtes.net
 """
 
-import numpy as _np
 import collections as _co
-import bisect as _bs
-import itertools as _iter
 
-import scipy.sparse as _sparse
-import scipy.misc as _misc
-import scipy.sparse.linalg as _sla
-import scipy.linalg as _la
-
-from scipy.stats import chi2
+import numpy as _np
 
 from pathpy.Log import Log
-from pathpy.Log import Severity
 
 _np.seterr(all='warn')
 
@@ -71,10 +62,10 @@ class MarkovSequence:
 
         # TODO: Add support for k=0
 
-        assert len(self.sequence)>0, "Error: Empty sequence"
+        assert self.sequence, "Error: Empty sequence"
 
         # MLE fit of transition probabilities
-        self.P[k] = _co.defaultdict( lambda:  _co.defaultdict( lambda: 0.0 )  )
+        self.P[k] = _co.defaultdict(lambda: _co.defaultdict(lambda: 0.0))
 
         Log.add('Fitting Markov model with order k = ' + str(k))
 
@@ -122,8 +113,8 @@ class MarkovSequence:
 
         if log:
             return L
-        else:
-            return _np.exp(L)
+
+        return _np.exp(L)
 
 
     def getBIC(self, k=1, m=1):
@@ -166,7 +157,6 @@ class MarkovSequence:
         L_m = self.getLikelihood(m, log=True)
 
         s = len(self.states[1])
-        n = len(self.sequence)
 
         aic = 2 * (s**k - s**m) * (s-1) - 2.0 * (L_k - L_m)
 
@@ -205,6 +195,6 @@ class MarkovSequence:
 
             # return order at which likelihood is maximized
             return orders[_np.argmax(values)]
-        else:
-            # return order at which BIC/AIC are minimized
-            return orders[_np.argmin(values)]
+
+        # return order at which BIC/AIC are minimized
+        return orders[_np.argmin(values)]

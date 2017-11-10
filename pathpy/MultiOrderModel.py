@@ -59,8 +59,8 @@ class MultiOrderModel:
         """
 
         assert paths.maxSubPathLength>=maxOrder, 'Error: Construction of multi-order model with maximum order M requires sub path statistics up to length M'
-        
-        ## A dictionary containing the layers of HigherOrderNetworks, where 
+
+        ## A dictionary containing the layers of HigherOrderNetworks, where
         ## layers[k] contains the network of order k
         self.layers = {}
 
@@ -129,19 +129,19 @@ class MultiOrderModel:
 
             # each line contains uniqueID physicalID [name]
             file.write('{0} {1} "{2}"\n'.format(v_ix+1, first_layer_map[v_path[-1]]+1, v))
-    
+
         file.write('*Links\n'.format(self.layers[1].vcount()))
         for e in self.layers[layer].edges:
             source = e[0]
             target = e[1]
 
             # Get source and target paths
-            source_p = self.layers[layer].HigherOrderNodeToPath(source)            
+            source_p = self.layers[layer].HigherOrderNodeToPath(source)
             source_t = self.layers[layer].HigherOrderNodeToPath(target)
 
             source_ix = name_map[source]
             target_ix = name_map[target]
-            
+
             # Get edge weight
             w_st = self.layers[layer].edges[e][1]
 
@@ -381,7 +381,7 @@ class MultiOrderModel:
 
     def modelSize(self, maxOrder):
         """
-        Returns the total number of non-zero 
+        Returns the total number of non-zero
         transition matrix entries in all
         model layers
         """
@@ -391,7 +391,7 @@ class MultiOrderModel:
 
         size = 0
         for i in range(0, maxOrder+1):
-           size += self.layers[i].modelSize()
+            size += self.layers[i].modelSize()
 
         return int(size)
 

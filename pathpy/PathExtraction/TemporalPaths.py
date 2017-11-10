@@ -39,7 +39,7 @@ class TemporalPaths:
 
     @staticmethod
     def extract(tempnet, delta=1, maxLength=_sys.maxsize,
-                            maxSubPathLength=_sys.maxsize):
+        maxSubPathLength=_sys.maxsize):
         """create from a temporal network a Paths object
         Calculates the frequency of all time-respecting paths up to maximum length
         of maxLength, assuming a maximum temporal distance of delta between consecutive
