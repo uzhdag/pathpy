@@ -102,32 +102,49 @@ class PathMeasures:
 
 
     @staticmethod
-    def VisitationProbabilities(paths):
+    def NodeTraversals(paths):
         """
-        Calculates the probabilities that randomly chosen paths
-        pass through nodes. If 5 out of 100 paths (of any length) contain
-        node v, it will be assigned a value of 0.05. This measure can be
-        interpreted as path-based ground truth for the notion of importance
-        captured by PageRank applied to a graphical abstraction of the paths.
+        Calculates the number of times any path
+        traverses each of the nodes.
         """
 
-        _Log.add('Calculating path visitation probabilities...', _Severity.INFO)
+        _Log.add('Calculating node traversals...', _Severity.INFO)
+
+        # entries capture the number of times nodes are "visited by paths"
+        # Note: this is identical to the subpath count of zero-length paths
+        node_traversals = _co.defaultdict(lambda: 0)
+
+        for p in paths.paths[0]:
+            node_traversals[p[0]] += paths.paths[0][p].sum()
+
+        _Log.add('finished.', _Severity.INFO)
+
+        return node_traversals
+
+
+    @staticmethod
+    def VisitationProbabilities(paths):
+        """
+        Calculates the probabilities that a randomly chosen path
+        passes through each of the nodes. If 5 out of 100 paths (of any length)
+        traverse node v, node v will be assigned a visitation probability of 0.05. 
+        This measure can be interpreted as ground truth for the notion 
+        of importance captured by PageRank applied to a graphical abstraction 
+        of the paths.
+        """
+
+        _Log.add('Calculating visitation probabilities...', _Severity.INFO)
 
         # entries capture the probability that a given node is visited on an arbitrary path
         # Note: this is identical to the subpath count of zero-length paths
         # (i.e. the relative frequencies of nodes across all pathways)
-        visitation_probabilities = _co.defaultdict(lambda: 0)
+        visitation_probabilities = PathMeasures.NodeTraversals(paths)
 
         # total number of visits
         visits = 0.0
-
-        for l in paths.paths:
-            for p in paths.paths[l]:
-                for v in p:
-                    # count occurrences in longest paths only!
-                    visitation_probabilities[v] += paths.paths[l][p][1]
-                    visits += paths.paths[l][p][1]
-
+        for v in visitation_probabilities:
+            visits += visitation_probabilities[v]
+        
         for v in visitation_probabilities:
             visitation_probabilities[v] /= visits
 
