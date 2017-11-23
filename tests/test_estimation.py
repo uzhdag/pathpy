@@ -118,12 +118,13 @@ def test_temp_net_extraction(temporal_network_object):
     assert paths.ObservationCount() == 10, \
         "Extracted wrong number of time-respecting paths"
 
+
 def test_betweenness_preference_empty():
     t = pp.TemporalNetwork()
     paths = pp.PathExtraction.TemporalPaths.extract(t, delta=3)
     assert len(paths.getNodes()) == 0
 
-    betweenness_pref = pp.Measures.PathMeasures.BetweennessPreference(paths, 'e', method='MLE')
+    betweenness_pref = pp.PathMeasures.BetweennessPreference(paths, 'e', method='MLE')
     expected = 0.0
     assert betweenness_pref == pytest.approx(expected)
 
@@ -133,7 +134,7 @@ def test_betweenness_preference_mle(temporal_network_object):
 
     # Extract (time-respecting) paths
     paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
-    betweenness_pref = pp.Measures.PathMeasures.BetweennessPreference(paths, 'e', method='MLE')
+    betweenness_pref = pp.PathMeasures.BetweennessPreference(paths, 'e', method='MLE')
     expected = 1.2954618442383219
     assert betweenness_pref == pytest.approx(expected)
 
@@ -142,7 +143,7 @@ def test_betweenness_preference_miller(temporal_network_object):
     t = temporal_network_object
     paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
 
-    betweenness_pref = pp.Measures.PathMeasures.BetweennessPreference(paths, 'e', method='Miller')
+    betweenness_pref = pp.PathMeasures.BetweennessPreference(paths, 'e', method='Miller')
     expected = 0.99546184423832196
     assert betweenness_pref == pytest.approx(expected)
 
@@ -151,14 +152,14 @@ def test_betweenness_preference_normalized(temporal_network_object):
     t = temporal_network_object
     paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
     # test normalize
-    betweenness_pref_norm = pp.Measures.PathMeasures.BetweennessPreference(paths, 'e', normalized=True)
+    betweenness_pref_norm = pp.PathMeasures.BetweennessPreference(paths, 'e', normalized=True)
     expected_norm = 1
     assert betweenness_pref_norm == pytest.approx(expected_norm)
 
 
 def test_slow_down_factor_random(random_paths):
     paths = random_paths(90, 90)
-    slow_down_factor = pp.Measures.PathMeasures.getSlowDownFactor(paths)
+    slow_down_factor = pp.PathMeasures.getSlowDownFactor(paths)
     expected = 4.05
     assert slow_down_factor == pytest.approx(expected, rel=1e-2), \
         "Got slowdown factor %f but expected %f +- 1e-2" % (slow_down_factor, expected)
@@ -204,7 +205,7 @@ def test_get_distance_matrix_empty():
 
 def test_betweenness_centrality(path_from_ngram_file):
     p = path_from_ngram_file
-    betweenness_centrality = pp.Measures.PathMeasures.BetweennessCentrality(p, normalized=False)
+    betweenness_centrality = pp.PathMeasures.BetweennessCentrality(p, normalized=False)
     betweenness = {n: c for n, c in betweenness_centrality.items()}
     expected = {'b': 2.0, 'a': 3.0, 'e': 0, 'c': 3.0, 'd': 5.0}
     assert betweenness == expected
@@ -212,7 +213,7 @@ def test_betweenness_centrality(path_from_ngram_file):
 
 def test_betweenness_centrality_norm(path_from_ngram_file):
     p = path_from_ngram_file
-    betweenness_centrality = pp.Measures.PathMeasures.BetweennessCentrality(p, normalized=True)
+    betweenness_centrality = pp.PathMeasures.BetweennessCentrality(p, normalized=True)
     betweenness = max(c for c in betweenness_centrality.values())
     expected_norm_max = 1
     assert pytest.approx(betweenness) == expected_norm_max
@@ -220,7 +221,7 @@ def test_betweenness_centrality_norm(path_from_ngram_file):
 
 def test_closeness_centrality(path_from_ngram_file):
     p = path_from_ngram_file
-    closeness_centrality = pp.Measures.PathMeasures.ClosenessCentrality(p, normalized=False)
+    closeness_centrality = pp.PathMeasures.ClosenessCentrality(p, normalized=False)
     closeness_sum = sum(c for c in closeness_centrality.values())
     expected_sum = 9.833333333333332
     assert closeness_sum == pytest.approx(expected_sum)
@@ -232,7 +233,7 @@ def test_closeness_centrality(path_from_ngram_file):
 
 def test_closeness_centrality_norm(path_from_ngram_file):
     p = path_from_ngram_file
-    closeness_centrality = pp.Measures.PathMeasures.ClosenessCentrality(p, normalized=True)
+    closeness_centrality = pp.PathMeasures.ClosenessCentrality(p, normalized=True)
     closeness_max = max(c for c in closeness_centrality.values())
     expected_max = 1
     assert closeness_max == pytest.approx(expected_max)
@@ -240,7 +241,7 @@ def test_closeness_centrality_norm(path_from_ngram_file):
 
 def test_visitation_probabilities(path_from_ngram_file):
     p = path_from_ngram_file
-    v_prob = pp.Measures.PathMeasures.VisitationProbabilities(p)
+    v_prob = pp.PathMeasures.VisitationProbabilities(p)
     prob_sum = sum(p for p in v_prob.values())
     assert prob_sum == pytest.approx(1)
 
@@ -252,7 +253,7 @@ def test_visitation_probabilities(path_from_ngram_file):
 @slow
 def test_entropy_growth_rate_ratio_mle(random_paths):
     p = random_paths(100, 500)
-    mle_ratio =pp.Measures.PathMeasures.getEntropyGrowthRateRatio(p, method="MLE")
+    mle_ratio =pp.PathMeasures.getEntropyGrowthRateRatio(p, method="MLE")
     mle_expected = 0.10515408343772015
     assert mle_ratio == pytest.approx(mle_expected)
 
@@ -260,6 +261,6 @@ def test_entropy_growth_rate_ratio_mle(random_paths):
 @slow
 def test_entropy_growth_rate_ratio_miller(random_paths):
     p = random_paths(100, 500)
-    miller_ratio =pp.Measures.PathMeasures.getEntropyGrowthRateRatio(p, method="Miller")
+    miller_ratio =pp.PathMeasures.getEntropyGrowthRateRatio(p, method="Miller")
     miller_expected = 0.6765478705937058
     assert miller_ratio == pytest.approx(miller_expected)
