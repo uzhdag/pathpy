@@ -487,21 +487,21 @@ class Paths:
 
         # expand subpaths in paths of any length ...
         for pathLength in self.paths:
-            for path in self.paths[pathLength]:
+            for path, value in self.paths[pathLength].items():
 
                 # The frequency is given by the number of occurrences as longest
                 # path, which is stored in the second entry of the numpy array
-                frequency = self.paths[pathLength][path][1]
+                frequency = value[1]
 
                 # compute maximum length of sub paths to consider
                 # (maximum up to pathLength)
                 maxL = min(self.maxSubPathLength+1, pathLength)
 
                 # Generate all subpaths of length k for k = 0 to k = maxL-1 (inclusive)
-                for k in range(0, maxL):
+                for k in range(maxL):
                     # Generate subpaths of length k for all start indices s
                     # for s = 0 to s = pathLength-k (inclusive)
-                    for s in range(0, pathLength-k+1):
+                    for s in range(pathLength-k+1):
                         # Add frequency as a subpath to *first* entry of occurrence
                         # counter
                         self.paths[k][path[s:s+k+1]] += (frequency, 0)
