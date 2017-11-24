@@ -722,3 +722,11 @@ class Paths:
         Log.add('finished.', Severity.INFO)
 
         return shortest_paths
+
+
+    def diameter(self):
+        """
+        Return the maximal path length.
+        """
+        return len(self.paths) - 1
+    

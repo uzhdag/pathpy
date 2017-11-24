@@ -6,6 +6,6 @@ from .MultiOrderModel import *
 from .MarkovSequence import *
 from .DAG import *
 from .PathExtraction import *
-from .measures import *
+from .Measures import *
 
 import pathpy.Log as Log
