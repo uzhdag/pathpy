@@ -331,14 +331,19 @@ class MultiOrderModel:
                         #   P(a-b-c-d-e) = P(e|c-d) * P(d|b-c) * P(c|a-b) * [ P(b|a) * P(a) ]
 
                         # First multiply the transitions in the l-th order model ...
+                        transition_matrix = self.T[l]
+                        nodes_ = self.layers[l].nodes
+                        factor_ = paths.paths[k][p][1]
                         for s in range(len(nodes)-1):
                             # print((nodes[s], nodes[s+1]))
                             # print(T[model.nodes.index(nodes[s+1]), model.nodes.index(nodes[s])])
-                            L += _np.log(self.T[l][self.layers[l].nodes.index(nodes[s+1]), self.layers[l].nodes.index(nodes[s])]) * paths.paths[k][p][1]
+                            L += _np.log(transition_matrix[nodes_.index(nodes[s+1]), nodes_.index(nodes[s])]) * factor_
+                            
 
                         # ... then multiply additional transition probabilities for the prefix ...
-                        for k_ in range(0, l):
-                            L += _np.log(self.T[k_][self.layers[k_].nodes.index(transitions[k_][1]), self.layers[k_].nodes.index(transitions[k_][0])]) * paths.paths[k][p][1]
+                        for k_ in range(l):
+                            L += _np.log(self.T[k_][self.layers[k_].nodes.index(transitions[k_][1]), self.layers[k_].nodes.index(transitions[k_][0])]) * factor_
+                         
 
             if n == 0:
                 L = 0

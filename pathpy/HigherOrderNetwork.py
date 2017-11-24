@@ -148,32 +148,38 @@ class HigherOrderNetwork:
             # Calculate the frequency of all paths of
             # length k, generate k-order nodes and set
             # edge weights accordingly
-            for p in paths.paths[k]:
+            node_set = set()
+            iterator = paths.paths[k].items()
+
+            if k==0:
                 # For a 0-order model, we generate a dummy start node
-                if k == 0:
-                    v = 'start'
-                    w = p[0]
-                else:
+                node_set.add('start')
+                for key, val in iterator:
+                    w = key[0]
+                    node_set.add(w)
+                    self.edges[('start',w)] += val
+                    self.successors['start'].add(w)
+                    self.predecessors[w].add('start')
+                    self.indegrees[w] = len(self.predecessors[w])
+                    self.inweights[w] += val
+                    self.outdegrees['start'] = len(self.successors['start'])
+                    self.outweights['start'] += val
+            else:
+                for key, val in iterator:
                     # Generate names of k-order nodes v and w
-                    v = p[0]
-                    for l in range(1, k):
-                        v = v + separator + p[l]
-                    w = p[1]
-                    for l in range(2, k+1):
-                        w = w + separator + p[l]
-                if v not in self.nodes:
-                    self.nodes.append(v)
-                if w not in self.nodes:
-                    self.nodes.append(w)
-                # as edge weights of the k-th order model, we sum the
-                # occurrence of paths of length k as subpath and longest path
-                self.edges[(v, w)] += paths.paths[k][p]
-                self.successors[v].add(w)
-                self.predecessors[w].add(v)
-                self.indegrees[w] = len(self.predecessors[w])
-                self.inweights[w] += paths.paths[k][p]
-                self.outdegrees[v] = len(self.successors[v])
-                self.outweights[v] += paths.paths[k][p]
+                    v = separator.join(key[0:-1]) 
+                    w = separator.join(key[1:])
+                    node_set.add(v)
+                    node_set.add(w)
+                    self.edges[(v,w)] += val
+                    self.successors[v].add(w)
+                    self.predecessors[w].add(v)
+                    self.indegrees[w] = len(self.predecessors[w])
+                    self.inweights[w] += val
+                    self.outdegrees[v] = len(self.successors[v])
+                    self.outweights[v] += val
+
+            self.nodes = list(node_set)
 
             # Note: For all sequences of length k which (i) have never been observed, but
             #       (ii) do actually represent paths of length k in the first-order network,
@@ -360,19 +366,7 @@ class HigherOrderNetwork:
         if k == 0 and len(path) == 1:
             return ['start', path[0]]
 
-        nodes = []
-
-        for s in range(0, len(path)-k+1):
-            if s > len(path)-1 or s < 0:
-                print(path)
-                print(s)
-                print(k)
-            v = path[s]
-            for l in range(1, k):
-                v = v + self.separator + path[s+l]
-            nodes.append(v)
-
-        return nodes
+        return [self.separator.join(path[n:n+k]) for n in range(len(path)-k+1)]
 
 
     def getNodeNameMap(self):
