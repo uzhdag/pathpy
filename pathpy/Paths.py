@@ -80,24 +80,24 @@ class Paths:
         str
             Returns a string containing basic summary info of this Paths instance
         """
-        total_paths = 0
-        sub_path_sum = 0
-        l_path_sum = 0
+        total_paths = []
+        sub_path_sum = []
+        l_path_sum = []
         max_path_length = 0
         average_length = 0
-        nodes = set()
         for k in self.paths:
-            for p in self.paths[k]:
-                total_paths += self.paths[k][p].sum()
-                sub_path_sum += self.paths[k][p][0]
-                l_path_sum += self.paths[k][p][1]
-                average_length += self.paths[k][p][1] * k
-                for v in p:
-                    nodes.add(v)
-            if self.paths[k]:
+            paths_ = self.paths[k]
+            values_ = _np.array(list(paths_.values()))
+            v0 = _np.sum(values_[:,0])
+            v1 = _np.sum(values_[:,1])
+            total_paths += [v0 + v1]
+            sub_path_sum += [v0]
+            l_path_sum += [v1]
+            average_length += v1 * k
+            if len(paths_)>0:
                 max_path_length = max(max_path_length, k)
-        if l_path_sum > 0:
-            average_length = average_length / l_path_sum
+        if _np.sum(l_path_sum) > 0:
+            average_length = average_length / _np.sum(l_path_sum)
 
         summary_fmt = (
             "Total path count: \t\t{lpsum} \n"
@@ -112,11 +112,11 @@ class Paths:
                           '[ {unique_paths_longer} / {spsum} / {total_paths} ]\n'
 
         summary_info = {
-            "lpsum": l_path_sum,
+            "lpsum": _np.sum(l_path_sum),
             "unique_paths": self.getUniquePaths(),
-            "spsum": sub_path_sum,
-            "total_paths": total_paths,
-            "len_nodes": len(nodes),
+            "spsum": _np.sum(sub_path_sum),
+            "total_paths": _np.sum(total_paths),
+            "len_nodes": len(self.paths[0]),
             "len_first_path": len(self.paths[1]),
             "maxL": max_path_length,
             "avgL": average_length
@@ -125,18 +125,9 @@ class Paths:
         summary = summary_fmt.format(**summary_info)
 
         for k in sorted(self.paths):
-            total_paths = 0
-            sub_path_sum = 0
-            l_path = 0
-            for p in self.paths[k]:
-                total_paths += self.paths[k][p].sum()
-                sub_path_sum += self.paths[k][p][0]
-                l_path += self.paths[k][p][1]
-
-            unique_paths = self.getUniquePaths(l=k, considerLongerPaths=False)
             k_info = k_path_info_fmt.format(
-                k=k, lpsum=l_path, spsum=sub_path_sum, total_paths=total_paths,
-                unique_paths_longer=unique_paths
+                k=k, lpsum=l_path_sum[k], spsum=sub_path_sum[k], total_paths=total_paths[k],
+                unique_paths_longer=self.getUniquePaths(l=k, considerLongerPaths=False)
             )
             summary += k_info
 
