@@ -39,6 +39,8 @@ from pathpy.Log import Log
 from pathpy.Log import Severity
 from pathpy.HigherOrderNetwork import HigherOrderNetwork
 
+import pathpy
+
 _np.seterr(all='warn')
 
 
@@ -73,16 +75,46 @@ class MultiOrderModel:
         ## a dictionary of transition matrices for all layers of the model
         self.T = {}
 
-        for k in range(maxOrder+1):
-            Log.add('Generating ' + str(k) + '-th order network layer ...')
-            self.layers[k] = HigherOrderNetwork(paths, k, paths.separator, False)
 
-            # compute transition matrices for all layers. In order to use the maximally
-            # available statistics, we always use sub paths in the calculation
-            self.T[k] = self.layers[k].getTransitionMatrix(includeSubPaths=True)
+        if pathpy.ENABLE_MULTICORE_SUPPORT:
 
-        Log.add('finished.')
+            try:
+                import pathos as _pa
+            except ImportError:
+                Log.add('Error while importing module "pathos"')
+                return
 
+            def parallel(k):
+                Log.add('Generating ' + str(k) + '-th order network layer ...')
+                layer = HigherOrderNetwork(paths, k, paths.separator, False)
+
+                # compute transition matrices for all layers. In order to use the maximally
+                # available statistics, we always use sub paths in the calculation
+                T = layer.getTransitionMatrix(includeSubPaths=True)
+
+                Log.add('Generating ' + str(k) + '-th order network layer ... finished')
+                return [k, layer, T]
+
+            pool = _pa.multiprocessing.ProcessPool()
+            results = pool.map(parallel, range(maxOrder+1))
+
+            # save results
+            for k, layer, T in results:
+                self.layers[k] = layer
+                self.T[k] = T
+
+        else:
+
+            for k in range(maxOrder+1):
+                Log.add('Generating ' + str(k) + '-th order network layer ...')
+                self.layers[k] = HigherOrderNetwork(paths, k, paths.separator, False)
+
+                # compute transition matrices for all layers. In order to use the maximally
+                # available statistics, we always use sub paths in the calculation
+                self.T[k] = self.layers[k].getTransitionMatrix(includeSubPaths=True)
+
+            Log.add('finished.')
+        
 
     def summary(self):
         """
