@@ -560,33 +560,26 @@ class Paths:
         @param frequency: the number of occurrences (i.e. frequency) of the ngram
         """
 
-        fields = ngram.rstrip().split(separator)
-        path = ()
-        for i in range(0, len(fields)):
-            path += (fields[i],)
+        path = tuple(ngram.split(separator))
+        pathLength = len(path) - 1
 
         # add the occurrences as *longest* path to the second component of the numpy array
         if frequency != None:
-            self.paths[len(path)-1][path] += (0, frequency)
+            self.paths[pathLength][path] += (0, frequency)
         else:
-            self.paths[len(path)-1][path] += (0, 1)
+            self.paths[pathLength][path] += (0, 1)
 
         if expandSubPaths:
             maxL = min(self.maxSubPathLength+1, len(path)-1)
+            if frequency != None:                        
+                for k in range(maxL):
+                    for s in range(pathLength-k+1):
+                        self.paths[k][path[s:s+k+1]] += (frequency, 0)
+            else:
+                for k in range(maxL):
+                    for s in range(pathLength-k+1):
+                        self.paths[k][path[s:s+k+1]] += (1, 0)
 
-            for k in range(0, maxL):
-                for s in range(len(path)-k):
-                    # for all start indices from 0 to n-k
-
-                    subpath = ()
-                    # construct subpath
-                    for i in range(s, s+k+1):
-                        subpath += (path[i],)
-                    # add subpath weight to first component of occurrences
-                    if frequency != None:
-                        self.paths[k][subpath] += (frequency, 0)
-                    else:
-                        self.paths[k][subpath] += (1, 0)
 
     @staticmethod
     def getContainedPaths(p, node_filter):
