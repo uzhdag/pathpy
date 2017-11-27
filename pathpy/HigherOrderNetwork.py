@@ -114,26 +114,35 @@ class HigherOrderNetwork:
         ## For separator '-', a second-order node will be 'a-b'.
         self.separator = separator
 
-        ## A dictionary containing edges as well as edge weights
-        self.edges = _co.defaultdict(lambda: _np.array([0., 0.]))
-
         ## A dictionary containing the sets of successors of all nodes
         self.successors = _co.defaultdict(lambda: set())
 
-        ## A dictionary containing the in-degrees of all nodes
-        self.indegrees = _co.defaultdict(lambda: _np.array([0., 0.]))
-
-        ## A dictionary containing the weighted in-degrees of all nodes
-        self.inweights = _co.defaultdict(lambda: _np.array([0., 0.]))
-
-        ## A dictionary containing the in-degrees of all nodes
-        self.outdegrees = _co.defaultdict(lambda: _np.array([0., 0.]))
-
-        ## A dictionary containing the weighted out-degrees of all nodes
-        self.outweights = _co.defaultdict(lambda: _np.array([0., 0.]))
-
         ## A dictionary containing the sets of predecessors of all nodes
         self.predecessors = _co.defaultdict(lambda: set())
+
+        ## A dictionary containing the out-degrees of all nodes
+        self.outdegrees = _co.defaultdict(lambda: 0.0)
+
+        ## A dictionary containing the in-degrees of all nodes
+        self.indegrees = _co.defaultdict(lambda: 0.0)
+
+        # NOTE: edge weights, as well as in- and out weights of nodes are 
+        # numpy arrays consisting of two weight components [w0, w1]. w0 
+        # counts the weight of an edge based on its occurrence in a subpaths 
+        # while w1 counts the weight of an edge based on its occurrence in 
+        # a longest path. As an illustrating example, consider the single 
+        # path a -> b -> c. In the first-order network, the weights of edges 
+        # (a,b) and (b,c) are both (1,0). In the second-order network, the 
+        # weight of edge (a-b, b-c) is (0,1).
+
+        ## A dictionary containing edges as well as edge weights
+        self.edges = _co.defaultdict(lambda: _np.array([0., 0.]))
+
+        ## A dictionary containing the weighted in-degrees of all nodes
+        self.inweights = _co.defaultdict(lambda: _np.array([0., 0.]))        
+
+        ## A dictionary containing the weighted out-degrees of all nodes
+        self.outweights = _co.defaultdict(lambda: _np.array([0., 0.]))        
 
         if k > 1:
             # For k>1 we need the first-order network to generate the null model
