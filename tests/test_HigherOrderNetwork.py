@@ -26,13 +26,61 @@
 
 import pathpy as pp
 import pytest
+import numpy as np
+
 
 slow = pytest.mark.slow
 
+
 def test_degrees(path_from_edge_file):
     hon_1 = pp.HigherOrderNetwork(path_from_edge_file, k=1)
-    node_map = hon_1.getNodeNameMap()
-    expected_degrees = {'1': 52, '2' : 0, '3': 2, '5': 5}    
+    expected_degrees = {'1': 52, '2' : 0, '3': 2, '5': 5}
     for v in hon_1.nodes:
         assert expected_degrees[v] == hon_1.outweights[v][1], \
         "Wrong degree calculation in HigherOrderNetwork"
+
+
+def test_distance_matrix(path_from_edge_file):
+    p = path_from_edge_file
+    hon = pp.HigherOrderNetwork(paths=p, k=1)
+    d_matrix = hon.getDistanceMatrix()
+    distances = []
+    for source in sorted(d_matrix):
+        for target in sorted(d_matrix[source]):
+            distance = d_matrix[source][target]
+            if distance < 1e6:
+                distances.append(d_matrix[source][target])
+
+    assert np.sum(distances) == 8
+    assert np.min(distances) == 0
+    assert np.max(distances) == 2
+
+
+def test_distance_matrix_equal_across_objects(random_paths):
+    p = random_paths(40, 20)
+    hon1 = pp.HigherOrderNetwork(paths=p, k=1)
+    hon2 = pp.HigherOrderNetwork(paths=p, k=1)
+    d_matrix1 = hon1.getDistanceMatrix()
+    d_matrix2 = hon2.getDistanceMatrix()
+    assert d_matrix1 == d_matrix2
+
+
+def test_distance_matrix_large(random_paths):
+    # p = random_paths(10, 20, num_nodes=40)
+    p = random_paths(7, 20, num_nodes=9)
+    hon = pp.HigherOrderNetwork(paths=p, k=1)
+    d_matrix = hon.getDistanceMatrix()
+    np_mat = np.zeros(shape=(9, 9))
+    distances = []
+    for i, source in enumerate(sorted(d_matrix)):
+        for j, target in enumerate(sorted(d_matrix[source])):
+            distance = d_matrix[source][target]
+            if distance < 1e16:
+                distances.append(d_matrix[source][target])
+            np_mat[i, j] = distance
+    print(np_mat)
+
+    assert np.min(distances) == 0
+    assert len(distances) == 217
+    assert np.max(distances) == 2
+    assert np.sum(distances) == 2918

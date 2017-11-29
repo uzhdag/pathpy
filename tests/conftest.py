@@ -46,10 +46,13 @@ def path_from_edge_file_undirected():
     return path
 
 
-def generate_random_path(size, rnd_seed):
+def generate_random_path(size, rnd_seed, num_nodes=None):
     """Generate a Path with random path sequences"""
-    import string
-    node_set = string.ascii_lowercase
+    if num_nodes is None:
+        import string
+        node_set = string.ascii_lowercase
+    else:
+        node_set = [str(x) for x in range(num_nodes)]
 
     def random_ngram(p_len, nodes):
         num_elements = len(nodes)
