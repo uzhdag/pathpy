@@ -430,9 +430,9 @@ class HigherOrderNetwork:
         for e in self.edges:
             dist[e[0]][e[1]] = 1
 
-        for v in self.nodes:
-            for w in self.nodes:
-                for k in self.nodes:
+        for k in self.nodes:
+            for v in self.nodes:
+                for w in self.nodes:
                     if dist[v][w] > dist[v][k] + dist[k][w]:
                         dist[v][w] = dist[v][k] + dist[k][w]
 

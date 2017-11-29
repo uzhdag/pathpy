@@ -57,30 +57,30 @@ def test_distance_matrix(path_from_edge_file):
 
 
 def test_distance_matrix_equal_across_objects(random_paths):
-    p = random_paths(40, 20)
-    hon1 = pp.HigherOrderNetwork(paths=p, k=1)
-    hon2 = pp.HigherOrderNetwork(paths=p, k=1)
+    p1 = random_paths(40, 20, num_nodes=9)
+    p2 = random_paths(40, 20, num_nodes=9)
+    hon1 = pp.HigherOrderNetwork(paths=p1, k=1)
+    hon2 = pp.HigherOrderNetwork(paths=p2, k=1)
     d_matrix1 = hon1.getDistanceMatrix()
     d_matrix2 = hon2.getDistanceMatrix()
     assert d_matrix1 == d_matrix2
 
 
-def test_distance_matrix_large(random_paths):
-    # p = random_paths(10, 20, num_nodes=40)
-    p = random_paths(7, 20, num_nodes=9)
+@pytest.mark.parametrize('paths,n_nodes,k,e_var,e_sum', (
+        (7, 9, 1, 0.7911428035, 123),
+        (20, 9, 1, 0.310318549, 112),
+        (60, 20, 1, 0.2941, 588),
+))
+def test_distance_matrix_large(random_paths, paths, n_nodes, k, e_var, e_sum):
+    p = random_paths(paths, 20, num_nodes=n_nodes)
     hon = pp.HigherOrderNetwork(paths=p, k=1)
     d_matrix = hon.getDistanceMatrix()
-    np_mat = np.zeros(shape=(9, 9))
     distances = []
     for i, source in enumerate(sorted(d_matrix)):
         for j, target in enumerate(sorted(d_matrix[source])):
             distance = d_matrix[source][target]
             if distance < 1e16:
                 distances.append(d_matrix[source][target])
-            np_mat[i, j] = distance
-    print(np_mat)
 
-    assert np.min(distances) == 0
-    assert len(distances) == 217
-    assert np.max(distances) == 2
-    assert np.sum(distances) == 2918
+    assert np.var(distances) == pytest.approx(e_var)
+    assert np.sum(distances) == e_sum
