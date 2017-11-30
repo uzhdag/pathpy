@@ -457,10 +457,10 @@ class HigherOrderNetwork:
             dist[e[0]][e[1]] = 1
             shortest_paths[e[0]][e[1]].add(e)
 
-        for v in self.nodes:
-            for w in self.nodes:
-                if v != w:
-                    for k in self.nodes:
+        for k in self.nodes:
+            for v in self.nodes:
+                for w in self.nodes:
+                    if v != w:
                         if dist[v][w] > dist[v][k] + dist[k][w]:
                             dist[v][w] = dist[v][k] + dist[k][w]
                             shortest_paths[v][w] = set()

@@ -84,3 +84,25 @@ def test_distance_matrix_large(random_paths, paths, n_nodes, k, e_var, e_sum):
 
     assert np.var(distances) == pytest.approx(e_var)
     assert np.sum(distances) == e_sum
+
+
+def test_shortest_path_length(random_paths):
+    N = 10
+    p = random_paths(20, 10, N)
+    hon = pp.HigherOrderNetwork(p, k=1)
+    shortest_paths = hon.getShortestPaths()
+    distances = np.zeros(shape=(N, N))
+    for i, source in enumerate(sorted(shortest_paths)):
+        for j, target in enumerate(sorted(shortest_paths[source])):
+            distances[i][j] = len(shortest_paths[source][target])
+    assert np.mean(distances) == 1.47
+    assert np.var(distances) == pytest.approx(0.4891)
+    assert np.max(distances) == 4
+
+
+def test_node_name_map(random_paths):
+    p = random_paths(20, 10, 20)
+    hon = pp.HigherOrderNetwork(p, k=1)
+    node_map = hon.getNodeNameMap()
+    # TODO: this is just an idea of how the mapping could be unique
+    assert node_map == {str(i): i+1 for i in range(20)}
