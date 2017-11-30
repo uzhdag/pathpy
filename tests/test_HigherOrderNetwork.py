@@ -32,6 +32,28 @@ import numpy as np
 slow = pytest.mark.slow
 
 
+def dict_of_dicts_to_matrix(network, max_val=1e9, agg=None):
+    """return a numpy matrix representation fo the given dict of dicts
+    optionally apply an aggregator function"""
+    N = len(network)
+    matrix = np.zeros(shape=(N, N))
+    for i, source in enumerate(sorted(network)):
+        for j, target in enumerate(sorted(network[source])):
+            values = network[source][target]
+            if agg:
+                value = agg(values)
+            else:
+                value = values
+            matrix[i, j] = value if value < max_val else 0
+
+    return matrix
+
+
+def test_summary(path_from_edge_file):
+    hon_1 = pp.HigherOrderNetwork(path_from_edge_file, k=1)
+    print(hon_1)
+
+
 def test_degrees(path_from_edge_file):
     hon_1 = pp.HigherOrderNetwork(path_from_edge_file, k=1)
     expected_degrees = {'1': 52, '2' : 0, '3': 2, '5': 5}
@@ -40,23 +62,20 @@ def test_degrees(path_from_edge_file):
         "Wrong degree calculation in HigherOrderNetwork"
 
 
-def test_distance_matrix(path_from_edge_file):
+def test_distance_matrix_from_file(path_from_edge_file):
     p = path_from_edge_file
     hon = pp.HigherOrderNetwork(paths=p, k=1)
     d_matrix = hon.getDistanceMatrix()
-    distances = []
-    for source in sorted(d_matrix):
-        for target in sorted(d_matrix[source]):
-            distance = d_matrix[source][target]
-            if distance < 1e6:
-                distances.append(d_matrix[source][target])
 
-    assert np.sum(distances) == 8
-    assert np.min(distances) == 0
-    assert np.max(distances) == 2
+    np_matrix = dict_of_dicts_to_matrix(d_matrix)
+    assert np.sum(np_matrix) == 8
+    assert np.min(np_matrix) == 0
+    assert np.max(np_matrix) == 2
 
 
 def test_distance_matrix_equal_across_objects(random_paths):
+    """test that the distance matrix is the same if constructed from to path objects with
+    the same paths but different instances"""
     p1 = random_paths(40, 20, num_nodes=9)
     p2 = random_paths(40, 20, num_nodes=9)
     hon1 = pp.HigherOrderNetwork(paths=p1, k=1)
@@ -66,38 +85,54 @@ def test_distance_matrix_equal_across_objects(random_paths):
     assert d_matrix1 == d_matrix2
 
 
-@pytest.mark.parametrize('paths,n_nodes,k,e_var,e_sum', (
-        (7, 9, 1, 0.7911428035, 123),
-        (20, 9, 1, 0.310318549, 112),
+@pytest.mark.parametrize('paths, n_nodes, k, e_var, e_sum', (
+        (7, 9, 1, 0.96570645, 123),
         (60, 20, 1, 0.2941, 588),
+        (7, 9, 2, 2.69493, 314),
 ))
-def test_distance_matrix_large(random_paths, paths, n_nodes, k, e_var, e_sum):
+def test_distance_matrix(random_paths, paths, n_nodes, k, e_var, e_sum):
     p = random_paths(paths, 20, num_nodes=n_nodes)
-    hon = pp.HigherOrderNetwork(paths=p, k=1)
+    hon = pp.HigherOrderNetwork(paths=p, k=k)
     d_matrix = hon.getDistanceMatrix()
-    distances = []
-    for i, source in enumerate(sorted(d_matrix)):
-        for j, target in enumerate(sorted(d_matrix[source])):
-            distance = d_matrix[source][target]
-            if distance < 1e16:
-                distances.append(d_matrix[source][target])
 
-    assert np.var(distances) == pytest.approx(e_var)
-    assert np.sum(distances) == e_sum
+    np_matrix = dict_of_dicts_to_matrix(d_matrix)
+
+    assert np.var(np_matrix) == pytest.approx(e_var)
+    assert np.sum(np_matrix) == e_sum
 
 
-def test_shortest_path_length(random_paths):
-    N = 10
-    p = random_paths(20, 10, N)
-    hon = pp.HigherOrderNetwork(p, k=1)
+@pytest.mark.parametrize('paths, k_order, num_nodes, s_mean, s_var, s_max', (
+        (20, 1, 10, 1.47, 0.4891, 4),
+        (20, 2, 10, 0.693877, 0.42556342, 2)
+))
+def test_shortest_path_length(random_paths, paths, k_order, num_nodes, s_mean, s_var, s_max):
+    p = random_paths(paths, 10, num_nodes=num_nodes)
+    hon = pp.HigherOrderNetwork(p, k=k_order)
+
     shortest_paths = hon.getShortestPaths()
-    distances = np.zeros(shape=(N, N))
-    for i, source in enumerate(sorted(shortest_paths)):
-        for j, target in enumerate(sorted(shortest_paths[source])):
-            distances[i][j] = len(shortest_paths[source][target])
-    assert np.mean(distances) == 1.47
-    assert np.var(distances) == pytest.approx(0.4891)
-    assert np.max(distances) == 4
+
+    distances = dict_of_dicts_to_matrix(shortest_paths, agg=len)
+    assert np.mean(distances) == pytest.approx(s_mean)
+    assert np.var(distances) == pytest.approx(s_var)
+    assert np.max(distances) == s_max
+
+
+def test_shortest_paths_eq_distance(random_paths):
+    p = random_paths(20, 10, num_nodes=10)
+    hon = pp.HigherOrderNetwork(p, k=1)
+
+    shortest_paths = hon.getShortestPaths()
+    distances = hon.getDistanceMatrix()
+
+    paths_matrix = dict_of_dicts_to_matrix(shortest_paths, agg=len)
+    distance_matrix = dict_of_dicts_to_matrix(distances)
+
+    # remove self-node from paths_matrix
+    paths_matrix -= np.identity(len(hon.nodes))
+
+    print(distance_matrix - paths_matrix)
+    assert paths_matrix.sum() == distance_matrix.sum()
+    assert np.allclose(paths_matrix, distance_matrix)
 
 
 def test_node_name_map(random_paths):
@@ -106,3 +141,23 @@ def test_node_name_map(random_paths):
     node_map = hon.getNodeNameMap()
     # TODO: this is just an idea of how the mapping could be unique
     assert node_map == {str(i): i+1 for i in range(20)}
+
+
+
+@pytest.mark.parametrize('paths, k_order, num_nodes, s_sum, s_mean', (
+        (20, 1, 10, 130, 1.3),
+        (20, 2, 10, 97, 0.0549887),
+))
+def test_get_adjacency_matrix(random_paths, paths, k_order, num_nodes, s_sum, s_mean):
+    p = random_paths(paths, 10, num_nodes)
+    hon = pp.HigherOrderNetwork(p, k=k_order)
+    adj = hon.getAdjacencyMatrix()
+    assert adj.sum() == s_sum
+    assert adj.mean() == pytest.approx(s_mean)
+
+
+
+
+
+
+
