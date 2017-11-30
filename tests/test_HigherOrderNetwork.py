@@ -117,24 +117,6 @@ def test_shortest_path_length(random_paths, paths, k_order, num_nodes, s_mean, s
     assert np.max(distances) == s_max
 
 
-def test_shortest_paths_eq_distance(random_paths):
-    p = random_paths(20, 10, num_nodes=10)
-    hon = pp.HigherOrderNetwork(p, k=1)
-
-    shortest_paths = hon.getShortestPaths()
-    distances = hon.getDistanceMatrix()
-
-    paths_matrix = dict_of_dicts_to_matrix(shortest_paths, agg=len)
-    distance_matrix = dict_of_dicts_to_matrix(distances)
-
-    # remove self-node from paths_matrix
-    paths_matrix -= np.identity(len(hon.nodes))
-
-    print(distance_matrix - paths_matrix)
-    assert paths_matrix.sum() == distance_matrix.sum()
-    assert np.allclose(paths_matrix, distance_matrix)
-
-
 def test_node_name_map(random_paths):
     p = random_paths(20, 10, 20)
     hon = pp.HigherOrderNetwork(p, k=1)
