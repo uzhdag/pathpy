@@ -86,8 +86,8 @@ def test_distance_matrix_equal_across_objects(random_paths):
 
 
 @pytest.mark.parametrize('paths, n_nodes, k, e_var, e_sum', (
-        (7, 9, 1, 0.96570645, 123),
-        (60, 20, 1, 0.2941, 588),
+        (7, 9, 1, 1.015394, 121),
+        (60, 20, 1, 0.346694, 577),
         (7, 9, 2, 2.69493, 314),
 ))
 def test_distance_matrix(random_paths, paths, n_nodes, k, e_var, e_sum):
@@ -117,13 +117,13 @@ def test_shortest_path_length(random_paths, paths, k_order, num_nodes, s_mean, s
     assert np.max(distances) == s_max
 
 
+@pytest.mark.xfail
 def test_node_name_map(random_paths):
     p = random_paths(20, 10, 20)
     hon = pp.HigherOrderNetwork(p, k=1)
     node_map = hon.getNodeNameMap()
     # TODO: this is just an idea of how the mapping could be unique
     assert node_map == {str(i): i+1 for i in range(20)}
-
 
 
 @pytest.mark.parametrize('paths, k_order, num_nodes, s_sum, s_mean', (
@@ -138,8 +138,57 @@ def test_get_adjacency_matrix(random_paths, paths, k_order, num_nodes, s_sum, s_
     assert adj.mean() == pytest.approx(s_mean)
 
 
+def test_laplacian_matrix(random_paths):
+    paths = random_paths(30, 10, 5)
+    hon = pp.HigherOrderNetwork(paths, k=1)
+    L = hon.getLaplacianMatrix().toarray()
+    assert np.trace(L) > 0
+    assert np.tril(L, k=-1).sum() < 0
+    assert np.triu(L, k=1).sum() < 0
 
 
+@pytest.mark.parametrize('k', (1, 2, 3))
+def test_transition_probability(random_paths, k):
+    paths = random_paths(10, 10, 3)
+    hon = pp.HigherOrderNetwork(paths, k=k)
+    T = hon.getTransitionMatrix(includeSubPaths=True).toarray()
+    num_nodes = len(hon.nodes)
+    # count nodes only at head of edge
+    # these will have a column of 0 since they are absorbing
+    # and therefore the sum of probabilities will be the number of nodes
+    # minus the absorbing set
+    head_nodes = {e[1] for e in hon.edges}
+    tail_nodes = {e[0] for e in hon.edges}
+    only_head = head_nodes - tail_nodes
+    num_transitions = num_nodes - len(only_head)
+    assert T.sum() == pytest.approx(num_transitions)
+    assert np.all(T <= 1), "not all probabilities are smaller then 1"
+    assert np.all(T >= 0), "not all probabilities are positive"
 
 
+@pytest.mark.parametrize('num_nodes', (5, 8, 10))
+@pytest.mark.parametrize('paths', (10, 20, 50))
+def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nodes):
+    """test that the distance matrix of k=1 is equal to
+    getDistanceMatrixFirstOrder"""
+    p = random_paths(paths, 10, num_nodes)
+    hon = pp.HigherOrderNetwork(p, k=1)
+    dist = hon.getDistanceMatrixFirstOrder()
+    dist_alt = hon.getDistanceMatrix()
+    m = dict_of_dicts_to_matrix(dist)
+    m_alt = dict_of_dicts_to_matrix(dist_alt)
+    assert np.allclose(m, m_alt)
 
+
+# @pytest.mark.parametrize('k', (1, 2, 3))
+# @pytest.mark.parametrize('num_nodes', (5, 8, 10))
+# @pytest.mark.parametrize('paths', (10, 20, 50))
+def test_distance_matrix_first_order(random_paths):
+    """test that the distance matrix of k=1 is equal to
+    getDistanceMatrixFirstOrder"""
+    p = random_paths(30, 10, 5)
+    hon = pp.HigherOrderNetwork(p, k=2)
+    dist = hon.getDistanceMatrixFirstOrder()
+    m = dict_of_dicts_to_matrix(dist)
+    print(m)
+    assert 0
