@@ -424,11 +424,13 @@ class HigherOrderNetwork:
 
         dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
-        for v in self.nodes:
-            dist[v][v] = 0
-
+        # assign first the default weight of 1
         for e in self.edges:
             dist[e[0]][e[1]] = 1
+
+        # set all self-loop edges to 0
+        for v in self.nodes:
+            dist[v][v] = 0
 
         for k in self.nodes:
             for v in self.nodes:
