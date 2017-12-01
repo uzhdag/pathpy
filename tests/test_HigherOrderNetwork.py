@@ -32,9 +32,9 @@ import numpy as np
 slow = pytest.mark.slow
 
 
-def dict_of_dicts_to_matrix(network, max_val=1e9, agg=None):
+def dict_of_dicts_to_matrix(network, max_val=np.inf, agg=None):
     """return a numpy matrix representation fo the given dict of dicts
-    optionally apply an aggregator function"""
+    optionally apply an aggregator function and set a maximum value"""
     N = len(network)
     matrix = np.zeros(shape=(N, N))
     for i, source in enumerate(sorted(network)):
@@ -44,7 +44,7 @@ def dict_of_dicts_to_matrix(network, max_val=1e9, agg=None):
                 value = agg(values)
             else:
                 value = values
-            matrix[i, j] = value if value < max_val else 0
+            matrix[i, j] = value if max_val and (value < max_val) else 0
 
     return matrix
 
@@ -56,10 +56,10 @@ def test_summary(path_from_edge_file):
 
 def test_degrees(path_from_edge_file):
     hon_1 = pp.HigherOrderNetwork(path_from_edge_file, k=1)
-    expected_degrees = {'1': 52, '2' : 0, '3': 2, '5': 5}
+    expected_degrees = {'1': 52, '2': 0, '3': 2, '5': 5}
     for v in hon_1.nodes:
         assert expected_degrees[v] == hon_1.outweights[v][1], \
-        "Wrong degree calculation in HigherOrderNetwork"
+            "Wrong degree calculation in HigherOrderNetwork"
 
 
 def test_distance_matrix_from_file(path_from_edge_file):
@@ -101,13 +101,13 @@ def test_distance_matrix(random_paths, paths, n_nodes, k, e_var, e_sum):
     assert np.sum(np_matrix) == e_sum
 
 
-@pytest.mark.parametrize('paths, k_order, num_nodes, s_mean, s_var, s_max', (
+@pytest.mark.parametrize('paths, k, num_nodes, s_mean, s_var, s_max', (
         (20, 1, 10, 1.47, 0.4891, 4),
         (20, 2, 10, 0.693877, 0.42556342, 2)
 ))
-def test_shortest_path_length(random_paths, paths, k_order, num_nodes, s_mean, s_var, s_max):
+def test_shortest_path_length(random_paths, paths, k, num_nodes, s_mean, s_var, s_max):
     p = random_paths(paths, 10, num_nodes=num_nodes)
-    hon = pp.HigherOrderNetwork(p, k=k_order)
+    hon = pp.HigherOrderNetwork(p, k=k)
 
     shortest_paths = hon.getShortestPaths()
 
@@ -180,15 +180,17 @@ def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nod
     assert np.allclose(m, m_alt)
 
 
-# @pytest.mark.parametrize('k', (1, 2, 3))
-# @pytest.mark.parametrize('num_nodes', (5, 8, 10))
-# @pytest.mark.parametrize('paths', (10, 20, 50))
-def test_distance_matrix_first_order(random_paths):
-    """test that the distance matrix of k=1 is equal to
-    getDistanceMatrixFirstOrder"""
-    p = random_paths(30, 10, 5)
-    hon = pp.HigherOrderNetwork(p, k=2)
-    dist = hon.getDistanceMatrixFirstOrder()
-    m = dict_of_dicts_to_matrix(dist)
-    print(m)
-    assert 0
+@pytest.mark.parametrize('k', (1, 2, 3))
+@pytest.mark.parametrize('num_nodes', (5, 10))
+@pytest.mark.parametrize('paths', (10, 50))
+def test_distance_matrix_first_order(random_paths, k, num_nodes, paths):
+    p = random_paths(paths, 10, num_nodes)
+    hon_k, hon_1 = pp.HigherOrderNetwork(p, k=k), pp.HigherOrderNetwork(p, k=1)
+    dist_k, dist_1 = hon_k.getDistanceMatrixFirstOrder(), hon_1.getDistanceMatrix()
+    m_k = dict_of_dicts_to_matrix(dist_k, max_val=None)
+    m_1 = dict_of_dicts_to_matrix(dist_1, max_val=None)
+    assert m_1.shape == m_k.shape, \
+        "the shape of the k order distance matrix is not consistent with the number of " \
+        "nodes at order 1"
+    assert np.all(m_k >= m_1), \
+        "not all distances at order k are at least as long as at order 1"
