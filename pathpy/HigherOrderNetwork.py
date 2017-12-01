@@ -151,6 +151,7 @@ class HigherOrderNetwork:
             # For a multi-order model, the first-order network is generated multiple times!
             # TODO: Make this more efficient
             g1 = HigherOrderNetwork(paths, k=1)
+            g1_node_mapping = g1.getNodeNameMap()
             A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False, transposed=True)
 
         if not nullModel:
@@ -221,6 +222,7 @@ class HigherOrderNetwork:
                 g_k = HigherOrderNetwork(paths, k=k, separator=separator, nullModel=False)
                 pi_k = HigherOrderNetwork.getLeadingEigenvector(g_k.getTransitionMatrix(includeSubPaths=True),
                                                                 normalized=True, lanczosVecs=lanczosVecs, maxiter=maxiter)
+                gk_node_mapping = g_k.getNodeNameMap()
             else:
                 # A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=True, transposed=False)
                 T = g1.getTransitionMatrix(includeSubPaths=True)
@@ -248,7 +250,8 @@ class HigherOrderNetwork:
                 # Solution A: Use entries of stationary distribution,
                 # which give stationary visitation frequencies of k-order node w
                 if method == 'KOrderPi':
-                    self.edges[(v, w)] = _np.array([0, pi_k[g_k.nodes.index(w)]])
+                    w_coordinate = gk_node_mapping[w]
+                    self.edges[(v, w)] = _np.array([0, pi_k[w_coordinate]])
 
                 # Solution B: Use relative edge weight in first-order network
                 # Note that A is *not* transposed
@@ -257,7 +260,8 @@ class HigherOrderNetwork:
                 # Solution C: Use transition probability in first-order network
                 # Note that T is transposed (!)
                 elif method == 'FirstOrderTransitions':
-                    p_vw = T[(g1.nodes.index(p[-1]), g1.nodes.index(p[-2]))]
+                    v_i, w_i = g1_node_mapping[p[-1]], g1_node_mapping[p[-2]]
+                    p_vw = T[v_i, w_i]
                     self.edges[(v, w)] = _np.array([0, p_vw])
 
                 # Solution D: calculate k-path weights based on entries of squared k-1-order adjacency matrix
@@ -629,14 +633,16 @@ class HigherOrderNetwork:
         col = []
         data = []
 
+        node_to_coord = self.getNodeNameMap()
+
         if transposed:
             for s, t in self.edges:
-                row.append(self.nodes.index(t))
-                col.append(self.nodes.index(s))
+                row.append(node_to_coord[t])
+                col.append(node_to_coord[s])
         else:
             for s, t in self.edges:
-                row.append(self.nodes.index(s))
-                col.append(self.nodes.index(t))
+                row.append(node_to_coord[s])
+                col.append(node_to_coord[t])
 
         # create array with non-zero entries
         if not weighted:
