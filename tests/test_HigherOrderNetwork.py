@@ -143,13 +143,12 @@ def test_shortest_path_length(random_paths, paths, k, num_nodes, s_mean, s_var, 
     assert np.max(distances) == s_max
 
 
-@pytest.mark.xfail
 def test_node_name_map(random_paths):
     p = random_paths(20, 10, 20)
     hon = pp.HigherOrderNetwork(p, k=1)
     node_map = hon.getNodeNameMap()
-    # TODO: this is just an idea of how the mapping could be unique
-    assert node_map == {str(i): i+1 for i in range(20)}
+
+    assert set(node_map) == set(hon.nodes)
 
 
 @pytest.mark.parametrize('paths, k_order, sub, num_nodes, s_sum, s_mean', (

@@ -188,7 +188,7 @@ class HigherOrderNetwork:
                     self.outdegrees[v] = len(self.successors[v])
                     self.outweights[v] += val
 
-            self.nodes = list(node_set)
+            self.nodes = list(sorted(node_set))
 
             # Note: For all sequences of length k which (i) have never been observed, but
             #       (ii) do actually represent paths of length k in the first-order network,
@@ -383,11 +383,7 @@ class HigherOrderNetwork:
         Returns a dictionary that can be used to map
         nodes to matrix/vector indices
         """
-
-        name_map = {}
-        for idx, v in enumerate(self.nodes):
-            name_map[v] = idx
-        return name_map
+        return {v: idx for idx, v in enumerate(self.nodes)}
 
 
     def getDoF(self, assumption="paths"):
@@ -667,32 +663,42 @@ class HigherOrderNetwork:
         data = []
         # calculate weighted out-degrees (with or without subpaths)
         if includeSubPaths:
-            D = [ self.outweights[x].sum() for x in self.nodes]
+            D = {n: w.sum() for n, w in self.outweights.items()}
         else:
-            D = [ self.outweights[x][1] for x in self.nodes]
-                
-        for (s, t) in self.edges:
-            # either s->t has been observed as a longest path, or we are interested in subpaths as well
+            D = {n: w[1] for n, w in self.outweights.items()}
 
-            # the following makes sure that we do not accidentially consider zero-weight edges (automatically added by default_dic)
-            if (self.edges[(s, t)][1] > 0) or (includeSubPaths and self.edges[(s, t)][0] > 0):
-                row.append(self.nodes.index(t))
-                col.append(self.nodes.index(s))
+        node_to_coord = self.getNodeNameMap()
+
+        for (s, t) in self.edges:
+            # either s->t has been observed as a longest path, or we are interested in
+            # subpaths as well
+
+            # the following makes sure that we do not accidentally consider zero-weight
+            # edges (automatically added by default_dic)
+            unique_weight = self.edges[(s, t)][1]
+            subpath_weight = self.edges[(s, t)][0]
+            is_valid = (unique_weight > 0 or (includeSubPaths and subpath_weight > 0))
+            if is_valid:
+                row.append(node_to_coord[t])
+                col.append(node_to_coord[s])
                 if includeSubPaths:
                     count = self.edges[(s, t)].sum()
                 else:
                     count = self.edges[(s, t)][1]
-                assert D[self.nodes.index(s)] > 0, 'Encountered zero out-degree for node ' + str(s) + ' while weight of link (' + str(s) +  ', ' + str(t) + ') is non-zero.'
-                prob = count / D[self.nodes.index(s)]
+                assert D[s] > 0, \
+                    'Encountered zero out-degree for node "{s}" ' \
+                    'while weight of link ({s}, {t}) is non-zero.'.format(s=s, t=t)
+                prob = count / D[s]
                 if prob < 0 or prob > 1:  # pragma: no cover
-                    Log.add('Encountered transition probability outside [0,1] range.', Severity.ERROR)
-                    raise ValueError()
+                    raise ValueError('Encountered transition probability {p} outside '
+                                     '[0,1] range.'.format(p=prob))
                 data.append(prob)
 
         data = _np.array(data)
         data = data.reshape(data.size,)
 
-        return _sparse.coo_matrix((data, (row, col)), shape=(self.vcount(), self.vcount())).tocsr()
+        shape = self.vcount(), self.vcount()
+        return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
 
     @staticmethod
