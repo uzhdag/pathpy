@@ -684,8 +684,8 @@ class HigherOrderNetwork:
                     count = self.edges[(s, t)][1]
                 assert D[self.nodes.index(s)] > 0, 'Encountered zero out-degree for node ' + str(s) + ' while weight of link (' + str(s) +  ', ' + str(t) + ') is non-zero.'
                 prob = count / D[self.nodes.index(s)]
-                if prob < 0 or prob > 1:
-                    tn.Log.add('Encountered transition probability outside [0,1] range.', Severity.ERROR)
+                if prob < 0 or prob > 1:  # pragma: no cover
+                    Log.add('Encountered transition probability outside [0,1] range.', Severity.ERROR)
                     raise ValueError()
                 data.append(prob)
 
@@ -710,7 +710,7 @@ class HigherOrderNetwork:
             number of rows/columns of the Laplacian matrix.
         """
 
-        if _sparse.issparse(A) == False:
+        if not _sparse.issparse(A):  # pragma: no cover
             raise TypeError("A must be a sparse matrix")
 
         # NOTE: ncv sets additional auxiliary eigenvectors that are computed

@@ -63,7 +63,7 @@ class Log:
 
 
     @staticmethod
-    def setMinSeverity(severity):
+    def setMinSeverity(severity):  # pragma: no cover
         """ Sets the minimum sveerity level a message
         needs to have in order to be recorded in the output stream.
         By default, any message which has a severity of at least
@@ -74,7 +74,7 @@ class Log:
 
 
     @staticmethod
-    def setOutputStream(stream):
+    def setOutputStream(stream):  # pragma: no cover
         """ Sets the output stream to which all messages will be
             written. By default, this is sys.stdout, but it can be
             changed in order to redirect the log to a logfile.
@@ -83,7 +83,7 @@ class Log:
 
 
     @staticmethod
-    def add(msg, severity=Severity.INFO):
+    def add(msg, severity=Severity.INFO):  # pragma: no cover
         """ Adds a message with the given severity to the log. This message will be written
             to the log output stream, which by default is sys.stdout. A newline character
             will be added to the message by default.

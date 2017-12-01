@@ -54,6 +54,32 @@ def test_summary(path_from_edge_file):
     print(hon_1)
 
 
+@pytest.mark.parametrize('k, n_nodes, expected', (
+        (1, 10, np.array([121., 9.])),
+        (2, 10, np.array([91., 6.]))
+))
+def test_edge_weight(random_paths, k, n_nodes, expected):
+    p = random_paths(20, 10, n_nodes)
+    hon_1 = pp.HigherOrderNetwork(p, k=k)
+    assert np.allclose(hon_1.totalEdgeWeight(), expected)
+
+
+@pytest.mark.parametrize('k, n_nodes, expected', (
+        (1, 10, 44),
+        (2, 10, 46),
+        (3, 10, 36),
+        (4, 10, 27),
+        (5, 10, 19),
+        (6, 10, 12)
+))
+def test_model_size(random_paths, k, n_nodes, expected):
+    p = random_paths(20, 10, n_nodes)
+    hon_1 = pp.HigherOrderNetwork(p, k=k)
+    assert np.allclose(hon_1.modelSize(), expected)
+
+
+
+
 def test_degrees(path_from_edge_file):
     hon_1 = pp.HigherOrderNetwork(path_from_edge_file, k=1)
     expected_degrees = {'1': 52, '2': 0, '3': 2, '5': 5}
@@ -126,14 +152,16 @@ def test_node_name_map(random_paths):
     assert node_map == {str(i): i+1 for i in range(20)}
 
 
-@pytest.mark.parametrize('paths, k_order, num_nodes, s_sum, s_mean', (
-        (20, 1, 10, 130, 1.3),
-        (20, 2, 10, 97, 0.0549887),
+@pytest.mark.parametrize('paths, k_order, sub, num_nodes, s_sum, s_mean', (
+        (20, 1, True, 10, 130, 1.3),
+        (20, 2, True, 10, 97, 0.0549887),
+        (20, 1, False, 10, 9, 0.09),
+        (20, 2, False, 10, 6, 0.0034013605)
 ))
-def test_get_adjacency_matrix(random_paths, paths, k_order, num_nodes, s_sum, s_mean):
+def test_get_adjacency_matrix(random_paths, paths, k_order, sub, num_nodes, s_sum, s_mean):
     p = random_paths(paths, 10, num_nodes)
     hon = pp.HigherOrderNetwork(p, k=k_order)
-    adj = hon.getAdjacencyMatrix()
+    adj = hon.getAdjacencyMatrix(includeSubPaths=sub)
     assert adj.sum() == s_sum
     assert adj.mean() == pytest.approx(s_mean)
 
@@ -147,21 +175,17 @@ def test_laplacian_matrix(random_paths):
     assert np.triu(L, k=1).sum() < 0
 
 
-@pytest.mark.parametrize('k', (1, 2, 3))
-def test_transition_probability(random_paths, k):
-    paths = random_paths(10, 10, 3)
+@pytest.mark.parametrize('sub', (True, False))
+@pytest.mark.parametrize('k', (1, 2, 5))
+def test_transition_probability(random_paths, k, sub):
+    paths = random_paths(30, 45, 14)
     hon = pp.HigherOrderNetwork(paths, k=k)
-    T = hon.getTransitionMatrix(includeSubPaths=True).toarray()
-    num_nodes = len(hon.nodes)
-    # count nodes only at head of edge
-    # these will have a column of 0 since they are absorbing
-    # and therefore the sum of probabilities will be the number of nodes
-    # minus the absorbing set
-    head_nodes = {e[1] for e in hon.edges}
-    tail_nodes = {e[0] for e in hon.edges}
-    only_head = head_nodes - tail_nodes
-    num_transitions = num_nodes - len(only_head)
-    assert T.sum() == pytest.approx(num_transitions)
+    T = hon.getTransitionMatrix(includeSubPaths=sub).toarray()
+    if sub:
+        transitions = sum(w.sum() > 0 for w in hon.outweights.values())
+    else:
+        transitions = sum(x[1] > 0 for x in hon.outweights.values())
+    assert T.sum() == pytest.approx(transitions)
     assert np.all(T <= 1), "not all probabilities are smaller then 1"
     assert np.all(T >= 0), "not all probabilities are positive"
 
@@ -182,9 +206,8 @@ def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nod
 
 @pytest.mark.parametrize('k', (1, 2, 3))
 @pytest.mark.parametrize('num_nodes', (5, 10))
-@pytest.mark.parametrize('paths', (10, 50))
-def test_distance_matrix_first_order(random_paths, k, num_nodes, paths):
-    p = random_paths(paths, 10, num_nodes)
+def test_distance_matrix_first_order(random_paths, k, num_nodes):
+    p = random_paths(40, 10, num_nodes)
     hon_k, hon_1 = pp.HigherOrderNetwork(p, k=k), pp.HigherOrderNetwork(p, k=1)
     dist_k, dist_1 = hon_k.getDistanceMatrixFirstOrder(), hon_1.getDistanceMatrix()
     m_k = dict_of_dicts_to_matrix(dist_k, max_val=None)
@@ -194,3 +217,4 @@ def test_distance_matrix_first_order(random_paths, k, num_nodes, paths):
         "nodes at order 1"
     assert np.all(m_k >= m_1), \
         "not all distances at order k are at least as long as at order 1"
+

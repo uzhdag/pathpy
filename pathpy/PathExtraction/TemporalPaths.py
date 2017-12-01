@@ -77,9 +77,9 @@ class TemporalPaths:
         Paths
         """
 
-        if maxLength == _sys.maxsize:
+        if maxLength == _sys.maxsize:  # pragma: no cover
             _Log.add('Extracting time-respecting paths for delta = ' + str(delta) + ' ...')
-        else:
+        else:  # pragma: no cover
             _Log.add('Extracting time-respecting paths up to length ' + str(maxLength) +
                     ' for delta = ' + str(delta) + ' ...')
 
