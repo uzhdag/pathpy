@@ -25,21 +25,12 @@
 """
 
 import numpy as _np
-import collections as _co
-import bisect as _bs
-import itertools as _iter
-
-import scipy.sparse as _sparse
-import scipy.misc as _misc
-import scipy.sparse.linalg as _sla
-import scipy.linalg as _la
 from scipy.stats import chi2
 
+import pathpy
+from pathpy.HigherOrderNetwork import HigherOrderNetwork
 from pathpy.Log import Log
 from pathpy.Log import Severity
-from pathpy.HigherOrderNetwork import HigherOrderNetwork
-
-import pathpy
 
 _np.seterr(all='warn')
 

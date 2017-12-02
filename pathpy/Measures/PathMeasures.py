@@ -25,12 +25,10 @@
 """
 
 import collections as _co
-import sys as _sys
 
 import numpy as _np
 import scipy.sparse.linalg as _sla
 
-import pathpy.Paths as _Paths
 import pathpy.HigherOrderNetwork as _HigherOrderNetwork
 from pathpy.Log import Log as _Log
 from pathpy.Log import Severity as _Severity

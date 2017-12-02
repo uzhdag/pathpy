@@ -110,10 +110,10 @@ class HigherOrderNetwork:
         self.separator = separator
 
         ## A dictionary containing the sets of successors of all nodes
-        self.successors = _co.defaultdict(lambda: set())
+        self.successors = _co.defaultdict(set)
 
         ## A dictionary containing the sets of predecessors of all nodes
-        self.predecessors = _co.defaultdict(lambda: set())
+        self.predecessors = _co.defaultdict(set)
 
         ## A dictionary containing the out-degrees of all nodes
         self.outdegrees = _co.defaultdict(lambda: 0.0)
@@ -121,13 +121,13 @@ class HigherOrderNetwork:
         ## A dictionary containing the in-degrees of all nodes
         self.indegrees = _co.defaultdict(lambda: 0.0)
 
-        # NOTE: edge weights, as well as in- and out weights of nodes are 
-        # numpy arrays consisting of two weight components [w0, w1]. w0 
-        # counts the weight of an edge based on its occurrence in a subpaths 
-        # while w1 counts the weight of an edge based on its occurrence in 
-        # a longest path. As an illustrating example, consider the single 
-        # path a -> b -> c. In the first-order network, the weights of edges 
-        # (a,b) and (b,c) are both (1,0). In the second-order network, the 
+        # NOTE: edge weights, as well as in- and out weights of nodes are
+        # numpy arrays consisting of two weight components [w0, w1]. w0
+        # counts the weight of an edge based on its occurrence in a subpaths
+        # while w1 counts the weight of an edge based on its occurrence in
+        # a longest path. As an illustrating example, consider the single
+        # path a -> b -> c. In the first-order network, the weights of edges
+        # (a,b) and (b,c) are both (1,0). In the second-order network, the
         # weight of edge (a-b, b-c) is (0,1).
 
         ## A dictionary containing edges as well as edge weights
@@ -461,7 +461,7 @@ class HigherOrderNetwork:
                 str(self.order) + ') ...', Severity.INFO)
 
         dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
-        shortest_paths = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
+        shortest_paths = _co.defaultdict(lambda: _co.defaultdict(set))
 
         for e in self.edges:
             dist[e[0]][e[1]] = 1
@@ -556,7 +556,7 @@ class HigherOrderNetwork:
             onstack[v] = True
 
             for w in self.successors[v]:
-                if indices[w] == None:
+                if indices[w] is None:
                     strong_connect(w)
                     lowlink[v] = min(lowlink[v], lowlink[w])
                 elif onstack[w]:
@@ -574,11 +574,11 @@ class HigherOrderNetwork:
             return component
 
         # Get largest strongly connected component
-        components = _co.defaultdict(lambda: set())
+        components = _co.defaultdict(set)
         max_size = 0
         max_head = None
         for v in self.nodes:
-            if indices[v] == None:
+            if indices[v] is None:
                 components[v] = strong_connect(v)
                 if len(components[v]) > max_size:
                     max_head = v
@@ -601,12 +601,13 @@ class HigherOrderNetwork:
         Returns a string containing basic summary statistics
         of this higher-order graphical model instance
         """
-        summary_fmt = ('Graphical model of order k = {order}\n'
-                       '\n'
-                       'Nodes:\t\t\t\t{vcount}\n'
-                       'Links:\t\t\t\t{ecount}\n'
-                       'Total weight (sub/longest):\t{sub_w}/{uni_w}\n'
-                       )
+        summary_fmt = (
+            'Graphical model of order k = {order}\n' 
+            '\n'
+            'Nodes:\t\t\t\t{vcount}\n'
+            'Links:\t\t\t\t{ecount}\n'
+            'Total weight (sub/longest):\t{sub_w}/{uni_w}\n'
+            )
         summary = summary_fmt.format(
             order=self.order, vcount=self.vcount(), ecount=self.ecount(),
             sub_w=self.totalEdgeWeight()[0], uni_w=self.totalEdgeWeight()[1]
