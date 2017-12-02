@@ -49,17 +49,8 @@ def test_estimate_order_2():
         paths.addPath('b,c,e')
 
     m = pp.MultiOrderModel(paths, maxOrder=2)
-    assert m.estimateOrder(
-        paths) == 2, "Error, did not detect second-order correlations"
-
-    x = list(map(str, _np.random.choice(range(10), 100000)))
-    ms = pp.MarkovSequence(x)
-    assert ms.estimateOrder(maxOrder=2, method='BIC') == 1, \
-        "Error, wrongly detected higher-order correlations"
-    assert ms.estimateOrder(maxOrder=2, method='AIC') == 1, \
-        "Error, wrongly detected higher-order correlations"
-    with pytest.raises(ValueError):
-        ms.estimateOrder(maxOrder=2, method='NotImplemented')
+    assert m.estimateOrder(paths) == 2, \
+        "Error, did not detect second-order correlations"
 
     g1 = pp.HigherOrderNetwork(paths, k=1)
     assert g1.vcount() == 5, \
@@ -78,6 +69,16 @@ def test_estimate_order_2():
         "Error, wrong number of nodes in giant connected component"
     assert g2.ecount() == 0, \
         "Error, wrong number of links in giant connected component"
+
+
+@pytest.mark.parametrize('method', ('BIC', 'AIC'))
+def test_markov_sequence(method):
+    _np.random.seed(90)
+    x = list(map(str, _np.random.choice(range(10), 1000)))
+    ms = pp.MarkovSequence(x)
+    detected_order = ms.estimateOrder(maxOrder=4, method=method)
+    assert detected_order == 1, \
+        "Error, wrongly detected higher-order correlations"
 
 
 def test_estimate_order_strongly_connected():
@@ -261,6 +262,6 @@ def test_entropy_growth_rate_ratio_mle(random_paths):
 @slow
 def test_entropy_growth_rate_ratio_miller(random_paths):
     p = random_paths(100, 500)
-    miller_ratio =pp.PathMeasures.getEntropyGrowthRateRatio(p, method="Miller")
+    miller_ratio = pp.PathMeasures.getEntropyGrowthRateRatio(p, method="Miller")
     miller_expected = 0.6765478705937058
     assert miller_ratio == pytest.approx(miller_expected)

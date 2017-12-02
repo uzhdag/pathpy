@@ -27,6 +27,7 @@
 import pathpy as pp
 import pytest
 import numpy as np
+import itertools
 
 
 slow = pytest.mark.slow
@@ -35,8 +36,9 @@ slow = pytest.mark.slow
 def dict_of_dicts_to_matrix(network, max_val=np.inf, agg=None):
     """return a numpy matrix representation fo the given dict of dicts
     optionally apply an aggregator function and set a maximum value"""
-    N = len(network)
+    N = max(max(len(x) for x in network.values()), len(network))
     matrix = np.zeros(shape=(N, N))
+    print(sorted(network))
     for i, source in enumerate(sorted(network)):
         for j, target in enumerate(sorted(network[source])):
             values = network[source][target]
@@ -44,7 +46,10 @@ def dict_of_dicts_to_matrix(network, max_val=np.inf, agg=None):
                 value = agg(values)
             else:
                 value = values
-            matrix[i, j] = value if max_val and (value < max_val) else 0
+
+            if max_val is not None and value >= max_val:
+                value = 0
+            matrix[i, j] = value
 
     return matrix
 
@@ -203,17 +208,23 @@ def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nod
     assert np.allclose(m, m_alt)
 
 
-@pytest.mark.parametrize('k', (1, 2, 3))
-@pytest.mark.parametrize('num_nodes', (5, 10))
-def test_distance_matrix_first_order(random_paths, k, num_nodes):
-    p = random_paths(40, 10, num_nodes)
+@pytest.mark.parametrize('paths, n_nodes, k, e_sum', (
+        (7, 9, 1, 79),
+        (60, 20, 1, 613),
+        (10, 9, 2, 161),  # creates problems
+))
+def test_distance_matrix_first_order(random_paths, n_nodes, k, paths, e_sum):
+    p = random_paths(paths, 10, n_nodes)
     hon_k, hon_1 = pp.HigherOrderNetwork(p, k=k), pp.HigherOrderNetwork(p, k=1)
-    dist_k, dist_1 = hon_k.getDistanceMatrixFirstOrder(), hon_1.getDistanceMatrix()
-    m_k = dict_of_dicts_to_matrix(dist_k, max_val=None)
-    m_1 = dict_of_dicts_to_matrix(dist_1, max_val=None)
-    assert m_1.shape == m_k.shape, \
-        "the shape of the k order distance matrix is not consistent with the number of " \
-        "nodes at order 1"
-    assert np.all(m_k >= m_1), \
-        "not all distances at order k are at least as long as at order 1"
+    dist_k = hon_k.getDistanceMatrixFirstOrder()
+    dist_1 = hon_1.getDistanceMatrix()
+    total_distance = 0
+    for source, target in itertools.product(hon_1.nodes, hon_1.nodes):
+        dist_st = dist_k[source][target]
+        assert dist_1[source][target] <= dist_k[source][target], \
+            "not all distances at order k are at least as long as at order 1"
+        if dist_st < np.inf:
+            total_distance += dist_st
+
+    assert total_distance == e_sum
 
