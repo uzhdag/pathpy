@@ -25,15 +25,11 @@
 """
 
 import collections as _co
-import bisect as _bs
-import itertools as _iter
 
 import numpy as _np
 
 import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
-import scipy.linalg as _la
-import scipy as _sp
 
 from pathpy.Log import Log
 from pathpy.Log import Severity

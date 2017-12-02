@@ -304,9 +304,10 @@ class DAG(object):
                     if mapping is None or (fields[0] in mapping and fields[1] in mapping):
                         edges.append((fields[0], fields[1]))
 
-                except (IndexError, ValueError):
-                    Log.add('Ignoring malformed data in line ' + str(n + 1) +
-                            ': "' + line.strip() + '"', Severity.WARNING)
+                except (IndexError, ValueError):  # pragma: no cover
+                    msg = 'Ignoring malformed data in line {n}: ' \
+                          '"{line}"'.format(n=(n+1), line=line.strip())
+                    Log.add(msg, Severity.WARNING)
                 line = f.readline()
                 n += 1
         # end of with open()
