@@ -167,7 +167,7 @@ class MarkovSequence:
         """ Estimates the optimal order of a Markov model
             based on Likelihood, BIC or AIC """
 
-        if method not in {'BIC', 'AIC', 'Likelihood'}:
+        if method not in {'BIC', 'AIC', 'Likelihood'}:  # pragma: no cover
             msg = "Expecting method 'AIC', 'BIC' or 'Likelihood', got '%s'" % method
             raise ValueError(msg)
 

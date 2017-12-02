@@ -40,6 +40,18 @@ def test_write_file(tmpdir, random_paths):
     assert expected_paths == read_back_paths
 
 
+@pytest.mark.parametrize('maxN', (2, 90))
+@pytest.mark.parametrize('max_line', (90, 3))
+@pytest.mark.parametrize('freq', (True, False))
+def test_write_file(tmpdir, random_paths, max_line, freq, maxN):
+    dir_path = tmpdir.mkdir("sub").join("test.edges")
+    p = random_paths(30, 50)
+
+    p.writeFile(dir_path.strpath)
+    p2 = pp.Paths.readFile(dir_path.strpath, pathFrequency=freq,
+                           maxlines=max_line, maxN=maxN)
+
+
 def test_read_edges_import(path_from_edge_file):
     """test if the Paths.readEdges functions works"""
     levels = list(path_from_edge_file.paths.keys())
@@ -172,3 +184,15 @@ def test_get_path_lengths(path_from_ngram_file):
     assert np.all([plengths[x] == expected[x] for x in plengths])
 
 
+def test_diameter(random_paths):
+    p = random_paths(3, 9)
+    assert p.diameter() == 5
+
+
+def test_path_addition(random_paths):
+    p1 = random_paths(20, 0, 5)
+    p2 = random_paths(20, 0, 5)
+
+    p12 = p1 + p2
+
+    assert p12.getNodes() == (set(p1.getNodes()) | set(p2.getNodes()))

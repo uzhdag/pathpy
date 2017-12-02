@@ -77,3 +77,9 @@ def test_inter_path_times(temporal_network_object):
 
 def test_temporal_summary(temporal_network_object):
     print(temporal_network_object)
+
+
+def test_export_tikz_unfolded_network(temporal_network_object, tmpdir):
+    t = temporal_network_object
+    file_path = tmpdir.mkdir("sub").join("multi_order_state")
+    t.exportUnfoldedNetwork(file_path)

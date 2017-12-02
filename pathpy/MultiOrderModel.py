@@ -66,16 +66,15 @@ class MultiOrderModel:
         ## a dictionary of transition matrices for all layers of the model
         self.T = {}
 
-
         if pathpy.ENABLE_MULTICORE_SUPPORT:
-
             try:
                 import pathos as _pa
-            except ImportError:
-                Log.add('Error while importing module "pathos"')
-                return
+            except ImportError:  # pragma: no cover
+                raise ImportError('Error while importing module "pathos",'
+                                  'to use the parallel feature "pathos" '
+                                  'needs to be installed')
 
-            def parallel(k):
+            def parallel(k):  # pragma: no cover
                 Log.add('Generating ' + str(k) + '-th order network layer ...')
                 layer = HigherOrderNetwork(paths, k, paths.separator, False)
 
@@ -95,7 +94,6 @@ class MultiOrderModel:
                 self.T[k] = T
 
         else:
-
             for k in range(maxOrder+1):
                 Log.add('Generating ' + str(k) + '-th order network layer ...')
                 self.layers[k] = HigherOrderNetwork(paths, k, paths.separator, False)
@@ -105,7 +103,7 @@ class MultiOrderModel:
                 self.T[k] = self.layers[k].getTransitionMatrix(includeSubPaths=True)
 
             Log.add('finished.')
-        
+
 
     def summary(self):
         """
@@ -121,10 +119,10 @@ class MultiOrderModel:
 
     def saveStateFile(self, filename, layer=None):
         """
-        Saves the multi-order model in state file format 
+        Saves the multi-order model in state file format
         suitable to be used with InfoMap
 
-        @param layer: if none, all layers will be export. If set to k, only 
+        @param layer: if none, all layers will be export. If set to k, only
             the k-th layer of the model will be exported.
         """
 
@@ -226,7 +224,7 @@ class MultiOrderModel:
 
 
 
-    def factorial(self, n, log=True):
+    def factorial(self, n, log=True):  # pragma: no cover
         """
         Caclulates (or approximates) the (log of the) factorial n!. The function applies Stirling's approximation if n>20.
 
@@ -361,12 +359,12 @@ class MultiOrderModel:
                             # print((nodes[s], nodes[s+1]))
                             # print(T[model.nodes.index(nodes[s+1]), model.nodes.index(nodes[s])])
                             L += _np.log(transition_matrix[nodes_.index(nodes[s+1]), nodes_.index(nodes[s])]) * factor_
-                            
+
 
                         # ... then multiply additional transition probabilities for the prefix ...
                         for k_ in range(l):
                             L += _np.log(self.T[k_][self.layers[k_].nodes.index(transitions[k_][1]), self.layers[k_].nodes.index(transitions[k_][0])]) * factor_
-                         
+
 
             if n == 0:
                 L = 0
@@ -497,15 +495,15 @@ class MultiOrderModel:
     def testNetworkHypothesis(self, paths, method='AIC'):
         """
         Tests whether the assumption that paths are constrained
-        to the (first-order) network topology is justified. 
-        Roughly speaking, this test yields true if the gain in 
-        explanatory power that is due to the network topology 
+        to the (first-order) network topology is justified.
+        Roughly speaking, this test yields true if the gain in
+        explanatory power that is due to the network topology
         justifies the additional model complexity.
 
-        The decision will be made based on a comparison between the zero- 
-        and the first-order layer of the model. Different from the multi-order 
+        The decision will be made based on a comparison between the zero-
+        and the first-order layer of the model. Different from the multi-order
         model selection method implemented in estimateOrder and likelihoodRatioTest,
-        here we do *not* consider nested models, so we cannot use a likelihood ratio 
+        here we do *not* consider nested models, so we cannot use a likelihood ratio
         test. We instead use the AIC or BIC.
         """
 
@@ -517,20 +515,20 @@ class MultiOrderModel:
             sum += paths.paths[0][p][1]
         if sum>0:
             Log.add('Omitting ' + str(sum) + ' zero-length paths for test of network assumption', Severity.INFO)
-        
+
         # log-likelihood and observation count of zero-order model
         L0, n0 = self.getLayerLikelihood(paths, l=0, considerLongerPaths=True, log=True, minL=1)
 
         # log-likelihood and observation count of first-order model
         L1, n1 = self.getLayerLikelihood(paths, l=1, considerLongerPaths=True, log=True, minL=1)
 
-        # By definition, the number of observations for both models should be the total weighted degree of the 
+        # By definition, the number of observations for both models should be the total weighted degree of the
         # first-order network
         assert n0==n1, Log.add('Error: Observation count for 0-order and 1-st order model do not match', Severity.ERROR)
 
         # degrees of freedom = |V|-1
-        dof0 = self.layers[0].getDoF(assumption='ngrams')        
-        
+        dof0 = self.layers[0].getDoF(assumption='ngrams')
+
         # degrees of freedom based on network assumption
         dof1 = self.layers[1].getDoF(assumption='paths')
 
@@ -539,7 +537,7 @@ class MultiOrderModel:
 
         Log.add('Log-Likelihood (k=1) = ' + str(L1), Severity.INFO)
         Log.add('Degrees of freedom (k=1) = ' + str(dof0 + dof1), Severity.INFO)
-        
+
         if method == 'AIC':
             ic0 = 2 * dof0 - 2 * L0
             ic1 = 2 * (dof0 + dof1) - 2 * L1

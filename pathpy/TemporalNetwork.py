@@ -150,7 +150,7 @@ class TemporalNetwork:
 
             assert (source_ix >= 0 and target_ix >= 0), "Detected invalid header columns: %s" % header
 
-            if time_ix < 0:
+            if time_ix < 0:  # pragma: no cover
                 Log.add('No time stamps found in data, assuming consecutive links', Severity.WARNING)
 
             Log.add('Reading time-stamped links ...')
@@ -174,9 +174,9 @@ class TemporalNetwork:
                     if t >= 0:
                         tedge = (fields[source_ix], fields[target_ix], t)
                         tedges.append(tedge)
-                    else:
+                    else:  # pragma: no cover
                         Log.add('Ignoring negative timestamp in line ' + str(n+1) + ': "' + line.strip() + '"', Severity.WARNING)
-                except (IndexError, ValueError):
+                except (IndexError, ValueError):  # pragma: no cover
                     Log.add('Ignoring malformed data in line ' + str(n+1) + ': "' +  line.strip() + '"', Severity.WARNING)
                 line = f.readline()
                 n += 1
@@ -339,7 +339,7 @@ class TemporalNetwork:
         @param l: the length of the sequence to be generated (i.e. the number of time-stamped links.
             For the default value l=0, the length of the generated shuffled temporal network will be
             equal to that of the original temporal network.
-        @param with_replacement: Whether or not the sampling should be 
+        @param with_replacement: Whether or not the sampling should be
             with replacement (default False)
         """
 
