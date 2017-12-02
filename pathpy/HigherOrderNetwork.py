@@ -250,8 +250,11 @@ class HigherOrderNetwork:
                 # Solution A: Use entries of stationary distribution,
                 # which give stationary visitation frequencies of k-order node w
                 if method == 'KOrderPi':
-                    w_coordinate = gk_node_mapping[w]
-                    self.edges[(v, w)] = _np.array([0, pi_k[w_coordinate]])
+                    if w in gk_node_mapping:
+                        w_coordinate = gk_node_mapping[w]
+                        eigen_value = pi_k[w_coordinate]
+                        if _np.abs(_np.imag(eigen_value)) < 1e-16:
+                            self.edges[(v, w)] = _np.array([0, _np.real(eigen_value)])
 
                 # Solution B: Use relative edge weight in first-order network
                 # Note that A is *not* transposed
