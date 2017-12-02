@@ -54,6 +54,14 @@ def dict_of_dicts_to_matrix(network, max_val=np.inf, agg=None):
     return matrix
 
 
+@pytest.mark.parametrize('null_model', (True, False))
+@pytest.mark.parametrize('k', (3,))
+def test_init_k_order_pi(random_paths, k, null_model):
+    p = random_paths(90, 0, 10)
+    hon = pp.HigherOrderNetwork(p, method='KOrderPi', k=k, nullModel=null_model)
+    assert len(hon.nodes) <= 10**k
+
+
 def test_summary(path_from_edge_file):
     hon_1 = pp.HigherOrderNetwork(path_from_edge_file, k=1)
     print(hon_1)

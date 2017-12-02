@@ -256,6 +256,24 @@ class DAG(object):
         self.predecessors[target].add(source)
         self.isAcyclic = None
 
+
+    def writeFile(self, filename, sep=','):
+        """Writes a dag as an adjaceny list to file
+
+        Parameters
+        ----------
+        filename
+        sep
+
+        Returns
+        -------
+        dag
+        """
+        with open(filename, 'w') as file:
+            for edge in self.edges:
+                file.write(sep.join(edge)+'\n')
+
+
     @staticmethod
     def readFile(filename, sep=',', maxlines=_sys.maxsize, mapping=None):
         """
@@ -294,3 +312,4 @@ class DAG(object):
         # end of with open()
 
         return DAG(edges=edges)
+

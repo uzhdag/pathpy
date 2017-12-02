@@ -8,7 +8,8 @@ import pytest
         list(zip(range(8), range(2, 10))) + list(zip(range(8), range(8)))  # self-loops
 ))
 def test_dag_init(edge_list):
-    pp.DAG(edges=edge_list)
+    dag = pp.DAG(edges=edge_list)
+    print(dag)
 
 
 def test_dag_acyclic(dag_object):
@@ -82,3 +83,17 @@ def test_add_edges(edges, types):
     assert neither not in leafs
     assert neither not in roots
 
+
+def test_dag_io(dag_object, tmpdir):
+    file_path = tmpdir.mkdir("sub").join("test.edges")
+    dag_orig = dag_object
+    dag_orig.topsort()
+
+    dag_orig.writeFile(file_path)
+    dag_back = pp.DAG.readFile(file_path)
+    assert set(dag_back.edges) == set(dag_orig.edges)
+
+    # filter out nodes not in the mapping
+    mapping = {'a': 'A', 'b': 'B', 'c': 'A'}
+    dag_back_map = pp.DAG.readFile(file_path, mapping=mapping)
+    assert dag_back_map.nodes == {'a', 'b', 'c'}
