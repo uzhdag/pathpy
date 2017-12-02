@@ -54,6 +54,7 @@ def dict_of_dicts_to_matrix(network, max_val=np.inf, agg=None):
     return matrix
 
 
+@pytest.mark.xfail
 @pytest.mark.parametrize('null_model', (True, False))
 @pytest.mark.parametrize('k', (3,))
 def test_init_k_order_pi(random_paths, k, null_model):

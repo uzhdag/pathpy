@@ -51,9 +51,8 @@ class HigherOrderNetwork:
     of a network topology.
     """
 
-
     def __init__(self, paths, k=1, separator='-', nullModel=False,
-        method='FirstOrderTransitions', lanczosVecs=15, maxiter=1000):
+                 method='FirstOrderTransitions', lanczosVecs=15, maxiter=1000):
         """
         Generates a k-th-order representation based on the given path statistics.
 
@@ -135,20 +134,22 @@ class HigherOrderNetwork:
         self.edges = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         ## A dictionary containing the weighted in-degrees of all nodes
-        self.inweights = _co.defaultdict(lambda: _np.array([0., 0.]))        
+        self.inweights = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         ## A dictionary containing the weighted out-degrees of all nodes
-        self.outweights = _co.defaultdict(lambda: _np.array([0., 0.]))        
+        self.outweights = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         if k > 1:
             # For k>1 we need the first-order network to generate the null model
             # and calculate the degrees of freedom
 
-            # For a multi-order model, the first-order network is generated multiple times!
+            # For a multi-order model, the first-order network is generated multiple
+            # times!
             # TODO: Make this more efficient
             g1 = HigherOrderNetwork(paths, k=1)
             g1_node_mapping = g1.getNodeNameMap()
-            A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False, transposed=True)
+            A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False,
+                                      transposed=True)
 
         if not nullModel:
             # Calculate the frequency of all paths of
@@ -157,13 +158,13 @@ class HigherOrderNetwork:
             node_set = set()
             iterator = paths.paths[k].items()
 
-            if k==0:
+            if k == 0:
                 # For a 0-order model, we generate a dummy start node
                 node_set.add('start')
                 for key, val in iterator:
                     w = key[0]
                     node_set.add(w)
-                    self.edges[('start',w)] += val
+                    self.edges[('start', w)] += val
                     self.successors['start'].add(w)
                     self.predecessors[w].add('start')
                     self.indegrees[w] = len(self.predecessors[w])
@@ -173,11 +174,11 @@ class HigherOrderNetwork:
             else:
                 for key, val in iterator:
                     # Generate names of k-order nodes v and w
-                    v = separator.join(key[0:-1]) 
+                    v = separator.join(key[0:-1])
                     w = separator.join(key[1:])
                     node_set.add(v)
                     node_set.add(w)
-                    self.edges[(v,w)] += val
+                    self.edges[(v, w)] += val
                     self.successors[v].add(w)
                     self.predecessors[w].add(v)
                     self.indegrees[w] = len(self.predecessors[w])
@@ -188,8 +189,8 @@ class HigherOrderNetwork:
             self.nodes = list(sorted(node_set))
 
             # Note: For all sequences of length k which (i) have never been observed, but
-            #       (ii) do actually represent paths of length k in the first-order network,
-            #       we may want to include some 'escape' mechanism along the
+            #       (ii) do actually represent paths of length k in the first-order
+            #       network, we may want to include some 'escape' mechanism along the
             #       lines of (Cleary and Witten 1994)
 
         else:
@@ -200,7 +201,7 @@ class HigherOrderNetwork:
             # based on edges in the first-order network
             possiblePaths = list(g1.edges.keys())
 
-            for _ in range(k-1):
+            for _ in range(k - 1):
                 E_new = list()
                 for e1 in possiblePaths:
                     for e2 in g1.edges:
@@ -209,18 +210,27 @@ class HigherOrderNetwork:
                             E_new.append(p)
                 possiblePaths = E_new
 
-            # validate that the number of unique generated paths corresponds to the sum of entries in A**k
-            assert (A**k).sum() == len(possiblePaths), 'Expected ' + str((A**k).sum()) + \
-                ' paths but got ' + str(len(possiblePaths))
+            # validate that the number of unique generated paths corresponds to the sum
+            # of entries in A**k
+            A_sum = _np.sum(A**k)
+            assert A_sum == len(possiblePaths), \
+                'Expected {ak} paths but got {re}'.format(ak=A_sum, re=len(possiblePaths))
 
             if method == 'KOrderPi':
-                # compute stationary distribution of a random walker in the k-th order network
+                # compute stationary distribution of a random walker in the k-th order
+                # network
                 g_k = HigherOrderNetwork(paths, k=k, separator=separator, nullModel=False)
-                pi_k = HigherOrderNetwork.getLeadingEigenvector(g_k.getTransitionMatrix(includeSubPaths=True),
-                                                                normalized=True, lanczosVecs=lanczosVecs, maxiter=maxiter)
+                transition_m = g_k.getTransitionMatrix(includeSubPaths=True)
+                pi_k = HigherOrderNetwork.getLeadingEigenvector(
+                    transition_m,
+                    normalized=True,
+                    lanczosVecs=lanczosVecs,
+                    maxiter=maxiter
+                )
                 gk_node_mapping = g_k.getNodeNameMap()
             else:
-                # A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=True, transposed=False)
+                # A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=True,
+                # transposed=False)
                 T = g1.getTransitionMatrix(includeSubPaths=True)
 
             # assign link weights in k-order null model
@@ -230,7 +240,7 @@ class HigherOrderNetwork:
                 for l in range(1, k):
                     v = v + separator + p[l]
                 w = p[1]
-                for l in range(2, k+1):
+                for l in range(2, k + 1):
                     w = w + separator + p[l]
                 if v not in self.nodes:
                     self.nodes.append(v)
@@ -240,7 +250,8 @@ class HigherOrderNetwork:
                 # NOTE: under the null model's assumption of independent events, we
                 # have P(B|A) = P(A ^ B)/P(A) = P(A)*P(B)/P(A) = P(B)
                 # In other words: we are encoding a k-1-order Markov process in a k-order
-                # Markov model and for the transition probabilities T_AB in the k-order model
+                # Markov model and for the transition probabilities T_AB in the k-order
+                #  model
                 # we simply have to set the k-1-order probabilities, i.e. T_AB = P(B)
 
                 # Solution A: Use entries of stationary distribution,
@@ -251,7 +262,8 @@ class HigherOrderNetwork:
 
                 # Solution B: Use relative edge weight in first-order network
                 # Note that A is *not* transposed
-                # self.edges[(v,w)] = A[(g1.nodes.index(p[-2]),g1.nodes.index(p[-1]))] / A.sum()
+                # self.edges[(v,w)] = A[(g1.nodes.index(p[-2]),g1.nodes.index(p[-1]))]
+                # / A.sum()
 
                 # Solution C: Use transition probability in first-order network
                 # Note that T is transposed (!)
@@ -260,7 +272,8 @@ class HigherOrderNetwork:
                     p_vw = T[v_i, w_i]
                     self.edges[(v, w)] = _np.array([0, p_vw])
 
-                # Solution D: calculate k-path weights based on entries of squared k-1-order adjacency matrix
+                # Solution D: calculate k-path weights based on entries of squared
+                # k-1-order adjacency matrix
 
                 # Note: Solution B and C are equivalent
                 self.successors[v].add(w)
@@ -282,13 +295,15 @@ class HigherOrderNetwork:
             # for a first-order model, self is the first-order network
             if k == 1:
                 g1 = self
-                A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False, transposed=True)
+                A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False,
+                                          transposed=True)
 
             # Degrees of freedom in a higher-order ngram model
             s = g1.vcount()
 
-            ## The degrees of freedom of the higher-order model, under the ngram assumption
-            self.dof_ngrams = (s**k)*(s-1)
+            # The degrees of freedom of the higher-order model, under the ngram
+            # assumption
+            self.dof_ngrams = (s ** k) * (s - 1)
 
             # For k>0, the degrees of freedom of a path-based model depend on
             # the number of possible paths of length k in the first-order network.
@@ -299,31 +314,30 @@ class HigherOrderNetwork:
             # (A**k).sum() counts the number of different paths of exactly length k
             # based on the first-order network, which corresponds to the number of
             # possible transitions in the transition matrix of a k-th order model.
-            paths_k = (A**k).sum()
+            paths_k = (A ** k).sum()
 
             # For the degrees of freedom, we must additionally consider that
             # rows in the transition matrix must sum to one, i.e. we have to
             # subtract one degree of freedom for every non-zero row in the (null-model)
-            # transition matrix. In other words, we subtract one for every path of length k-1
+            # transition matrix. In other words, we subtract one for every path of
+            # length k-1
             # that can possibly be followed by at least one edge to a path of length k
 
             # This can be calculated by counting the number of non-zero elements in the
             # vector containing the row sums of A**k
-            non_zero = _np.count_nonzero((A**k).sum(axis=0))
+            non_zero = _np.count_nonzero((A ** k).sum(axis=0))
 
-            ## The degrees of freedom of the higher-order model, under the paths assumption
+            ## The degrees of freedom of the higher-order model, under the paths
+            # assumption
             self.dof_paths = paths_k - non_zero
-
 
     def vcount(self):
         """ Returns the number of nodes """
         return len(self.nodes)
 
-
     def ecount(self):
         """ Returns the number of links """
         return len(self.edges)
-
 
     def totalEdgeWeight(self):
         """ Returns the sum of all edge weights """
@@ -331,14 +345,12 @@ class HigherOrderNetwork:
             return sum(self.edges.values())
         return _np.array([0, 0])
 
-
     def modelSize(self):
         """
         Returns the number of non-zero elements in the adjacency matrix
         of the higher-order model.
         """
         return self.getAdjacencyMatrix().count_nonzero()
-
 
     def HigherOrderNodeToPath(self, node):
         """
@@ -350,7 +362,6 @@ class HigherOrderNetwork:
         @param node: The higher-order node to be transformed to a path.
         """
         return tuple(node.split(self.separator))
-
 
     def pathToHigherOrderNodes(self, path, k=None):
         """
@@ -375,8 +386,7 @@ class HigherOrderNetwork:
         if k == 0 and len(path) == 1:
             return ['start', path[0]]
 
-        return [self.separator.join(path[n:n+k]) for n in range(len(path)-k+1)]
-
+        return [self.separator.join(path[n:n + k]) for n in range(len(path) - k + 1)]
 
     def getNodeNameMap(self):
         """
@@ -384,7 +394,6 @@ class HigherOrderNetwork:
         nodes to matrix/vector indices
         """
         return {v: idx for idx, v in enumerate(self.nodes)}
-
 
     def getDoF(self, assumption="paths"):
         """
@@ -395,19 +404,23 @@ class HigherOrderNetwork:
         can be used to assess the model complexity when calculating, e.g., the
         Bayesian Information Criterion (BIC).
 
-        @param assumption: if set to 'paths', for the degree of freedon calculation in the BIC,
+        @param assumption: if set to 'paths', for the degree of freedon calculation in
+        the BIC,
             only paths in the first-order network topology will be considered. This is
-            needed whenever we are interested in a modeling of paths in a given network topology.
-            If set to 'ngrams' all possible n-grams will be considered, independent of whether they
+            needed whenever we are interested in a modeling of paths in a given network
+            topology.
+            If set to 'ngrams' all possible n-grams will be considered, independent of
+            whether they
             are valid paths in the first-order network or not. The 'ngrams'
-            and the 'paths' assumption coincide if the first-order network is fully connected.
+            and the 'paths' assumption coincide if the first-order network is fully
+            connected.
         """
-        assert assumption == 'paths' or assumption == 'ngrams', 'Error: Invalid assumption'
+        assert assumption == 'paths' or assumption == 'ngrams', 'Error: Invalid ' \
+                                                                'assumption'
 
         if assumption == 'paths':
             return self.dof_paths
         return self.dof_ngrams
-
 
     def getDistanceMatrix(self):
         """
@@ -438,7 +451,6 @@ class HigherOrderNetwork:
 
         return dist
 
-
     def getShortestPaths(self):
         """
         Calculates all shortest paths between all pairs of
@@ -464,11 +476,11 @@ class HigherOrderNetwork:
                             shortest_paths[v][w] = set()
                             for p in list(shortest_paths[v][k]):
                                 for q in list(shortest_paths[k][w]):
-                                    shortest_paths[v][w].add(p+q[1:])
+                                    shortest_paths[v][w].add(p + q[1:])
                         elif dist[v][w] == dist[v][k] + dist[k][w]:
                             for p in list(shortest_paths[v][k]):
                                 for q in list(shortest_paths[k][w]):
-                                    shortest_paths[v][w].add(p+q[1:])
+                                    shortest_paths[v][w].add(p + q[1:])
 
         for v in self.nodes:
             dist[v][v] = 0
@@ -477,7 +489,6 @@ class HigherOrderNetwork:
         Log.add('finished.', Severity.INFO)
 
         return shortest_paths
-
 
     def getDistanceMatrixFirstOrder(self):
         """
@@ -489,16 +500,16 @@ class HigherOrderNetwork:
         dist = self.getDistanceMatrix()
         dist_first = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
-        # calculate distances between first-order nodes based on distance in higher-order topology
+        # calculate distances between first-order nodes based on distance in
+        # higher-order topology
         for vk in dist:
             for wk in dist[vk]:
                 v1 = self.HigherOrderNodeToPath(vk)[0]
                 w1 = self.HigherOrderNodeToPath(wk)[-1]
-                if dist[vk][wk] + self.order-1 < dist_first[v1][w1]:
+                if dist[vk][wk] + self.order - 1 < dist_first[v1][w1]:
                     dist_first[v1][w1] = dist[vk][wk] + self.order - 1
 
         return dist_first
-
 
     def HigherOrderPathToFirstOrder(self, path):
         """
@@ -514,8 +525,7 @@ class HigherOrderNetwork:
         p1 = self.HigherOrderNodeToPath(path[0])
         for x in path[1:]:
             p1 += (self.HigherOrderNodeToPath(x)[-1],)
-        return p1    
-
+        return p1
 
     def reduceToGCC(self):
         """
@@ -586,20 +596,22 @@ class HigherOrderNetwork:
             if v not in scc or w not in scc:
                 del self.edges[(v, w)]
 
-
     def summary(self):
         """
         Returns a string containing basic summary statistics
         of this higher-order graphical model instance
         """
-
-        summary = 'Graphical model of order k = ' + str(self.order)
-        summary += '\n'
-        summary += 'Nodes:\t\t\t\t' +  str(self.vcount()) + '\n'
-        summary += 'Links:\t\t\t\t' + str(self.ecount()) + '\n'
-        summary += 'Total weight (sub/longest):\t' + str(self.totalEdgeWeight()[0]) + '/' + str(self.totalEdgeWeight()[1]) + '\n'
+        summary_fmt = ('Graphical model of order k = {order}\n'
+                       '\n'
+                       'Nodes:\t\t\t\t{vcount}\n'
+                       'Links:\t\t\t\t{ecount}\n'
+                       'Total weight (sub/longest):\t{sub_w}/{uni_w}\n'
+                       )
+        summary = summary_fmt.format(
+            order=self.order, vcount=self.vcount(), ecount=self.ecount(),
+            sub_w=self.totalEdgeWeight()[0], uni_w=self.totalEdgeWeight()[1]
+        )
         return summary
-
 
     def __str__(self):
         """
@@ -608,12 +620,11 @@ class HigherOrderNetwork:
         """
         return self.summary()
 
-
     def getAdjacencyMatrix(self, includeSubPaths=True, weighted=True, transposed=False):
         """
-        Returns a sparse adjacency matrix of the higher-order network. By default, the entry
-            corresponding to a directed link source -> target is stored in row s and column t
-            and can be accessed via A[s,t].
+        Returns a sparse adjacency matrix of the higher-order network. By default,
+        the entry corresponding to a directed link source -> target is stored in row s and
+        column t and can be accessed via A[s,t].
 
         @param includeSubPaths: if set to True, the returned adjacency matrix will
             account for the occurrence of links of order k (i.e. paths of length k-1)
@@ -649,7 +660,8 @@ class HigherOrderNetwork:
             else:
                 data = _np.array([float(x[1]) for x in self.edges.values()])
 
-        return _sparse.coo_matrix((data, (row, col)), shape=(self.vcount(), self.vcount())).tocsr()
+        shape = (self.vcount(), self.vcount())
+        return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
 
     def getTransitionMatrix(self, includeSubPaths=True):
@@ -697,11 +709,10 @@ class HigherOrderNetwork:
                 data.append(prob)
 
         data = _np.array(data)
-        data = data.reshape(data.size,)
+        data = data.reshape(data.size, )
 
         shape = self.vcount(), self.vcount()
         return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
-
 
     @staticmethod
     def getLeadingEigenvector(A, normalized=True, lanczosVecs=15, maxiter=1000):
@@ -713,9 +724,9 @@ class HigherOrderNetwork:
             calculation of eigenvectors and eigenvalues. This maps to the ncv parameter
             of scipy's underlying function eigs.
         @param maxiter: scaling factor for the number of iterations to be used in the
-            approximate calculation of eigenvectors and eigenvalues. The number of iterations
-            passed to scipy's underlying eigs function will be n*maxiter where n is the
-            number of rows/columns of the Laplacian matrix.
+            approximate calculation of eigenvectors and eigenvalues. The number of
+            iterations passed to scipy's underlying eigs function will be n*maxiter
+            where n is the number of rows/columns of the Laplacian matrix.
         """
 
         if not _sparse.issparse(A):  # pragma: no cover
@@ -725,11 +736,10 @@ class HigherOrderNetwork:
         # NOTE: in order to be more confident to find the one with the largest
         # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
         w, pi = _sla.eigs(A, k=1, which="LM", ncv=lanczosVecs, maxiter=maxiter)
-        pi = pi.reshape(pi.size,)
+        pi = pi.reshape(pi.size, )
         if normalized:
             pi /= sum(pi)
         return pi
-
 
     def getLaplacianMatrix(self, includeSubPaths=True):
         """
@@ -739,7 +749,7 @@ class HigherOrderNetwork:
             calculation of matrix weights
         """
 
-        T = self.getTransitionMatrix(includeSubPaths)
-        I = _sparse.identity(self.vcount())
+        transition_matrix = self.getTransitionMatrix(includeSubPaths)
+        identity_matrix = _sparse.identity(self.vcount())
 
-        return I-T
+        return identity_matrix - transition_matrix
