@@ -274,7 +274,7 @@ class HigherOrderMeasures:
             if projection == 'all':
                 # assign PR of higher-order node to all first-order nodes
                 for x in p:
-                    first_order_PR[x] += higher_order_PR[v]
+                    first_order_PR[x] += higher_order_PR[v] / len(p)
             elif projection == 'scaled':
                 for x in p:
                     # each node on e.g. a 4-th-order path a-b-c-d receives one fourth of the
