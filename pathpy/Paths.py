@@ -222,10 +222,7 @@ class Paths:
         L = 0.0
         lmax = l
         if considerLongerPaths:
-            if self.paths:
-                lmax = max(self.paths)
-            else:
-                lmax = 0
+            lmax = max(self.paths) if self.paths else 0
         for j in range(l, lmax+1):
             for p in self.paths[j]:
                 if self.paths[j][p][1] > 0:
@@ -297,17 +294,16 @@ class Paths:
                 fields = line.rstrip().split(separator)
                 assert len(fields) >= 2, 'Error: malformed line: {0}'.format(line)
                 path = (fields[0], fields[1])
-                if weight:
-                    frequency = int(fields[2])
-                else:
-                    frequency = 1
+
+                frequency = int(fields[2]) if weight else 1
+
                 p.paths[1][path] += (0, frequency)
                 if undirected:
                     reverse_path = (fields[1], fields[0])
                     p.paths[1][reverse_path] += (0, frequency)
 
                 if maxlines is not None and n >= maxlines:
-                    continue
+                    break
         if expandSubPaths:
             p.expandSubPaths()
         Log.add('finished.')
@@ -519,10 +515,7 @@ class Paths:
 
         assert path, 'Error: paths needs to contain at least one element'
 
-        if type(path[0]) == str:
-            path_str = path
-        else:
-            path_str = tuple(map(str, path))
+        path_str = path if isinstance(path, str) else tuple(map(str, path))
 
         self.paths[len(path)-1][path_str] += frequency
 
@@ -569,7 +562,7 @@ class Paths:
 
         if expandSubPaths:
             maxL = min(self.maxSubPathLength+1, len(path)-1)
-            if frequency != None:                        
+            if frequency != None:
                 for k in range(maxL):
                     for s in range(pathLength-k+1):
                         self.paths[k][path[s:s+k+1]] += (frequency, 0)
@@ -711,4 +704,4 @@ class Paths:
         Return the maximal path length.
         """
         return len(self.paths) - 1
-    
+

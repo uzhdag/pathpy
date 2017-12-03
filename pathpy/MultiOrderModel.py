@@ -199,9 +199,9 @@ class MultiOrderModel:
 
         @log: Whether or not to return the log likelihood (default: True)
         """
-        if maxOrder == None:
-            maxOrder = self.maxOrder
-        assert maxOrder <= self.maxOrder, 'Error: maxOrder cannot be larger than maximum order of multi-order network'
+        maxOrder = self.maxOrder if maxOrder is None else maxOrder
+        assert maxOrder <= self.maxOrder, \
+            'Error: maxOrder cannot be larger than maximum order of multi-order network'
 
         # add log-likelihoods of multiple model layers,
         # assuming that paths are independent
@@ -217,10 +217,7 @@ class MultiOrderModel:
             L += p
         assert L <= 0, 'Log-Likelihood out of bounds'
 
-        if log:
-            return L
-        else:
-            return _np.exp(L)
+        return L if log else _np.exp(L)
 
 
 
@@ -369,10 +366,10 @@ class MultiOrderModel:
             if n == 0:
                 L = 0
         if log:
-            assert L<=0, 'Log-Likelihood out of bounds'
+            assert L <= 0, 'Log-Likelihood out of bounds'
             return L, n
         else:
-            assert L>=0 and L<=1, 'Likelihood out of bounds'
+            assert 0 <= L <= 1, 'Likelihood out of bounds'
             return _np.exp(L), n
 
 
@@ -411,9 +408,9 @@ class MultiOrderModel:
         transition matrix entries in all
         model layers
         """
-        if maxOrder == None:
-            maxOrder = self.maxOrder
-        assert maxOrder <= self.maxOrder, 'Error: maxOrder cannot be larger than maximum order of multi-order network'
+        maxOrder = self.maxOrder if maxOrder is None else maxOrder
+        assert maxOrder <= self.maxOrder, \
+            'Error: maxOrder cannot be larger than maximum order of multi-order network'
 
         size = 0
         for i in range(0, maxOrder+1):

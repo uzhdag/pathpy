@@ -35,14 +35,13 @@ def path_from_ngram_file():
 def path_from_edge_file():
     file_path = os.path.join(test_data_dir, 'edge_frequency.edge')
     path = pp.Paths.readEdges(file_path, weight=True)
-
     return path
 
 
 @pytest.fixture()
 def path_from_edge_file_undirected():
     file_path = os.path.join(test_data_dir, 'edge_frequency.edge')
-    path = pp.Paths.readEdges(file_path, weight=True, undirected=True)
+    path = pp.Paths.readEdges(file_path, weight=True, undirected=True, maxlines=5)
     return path
 
 

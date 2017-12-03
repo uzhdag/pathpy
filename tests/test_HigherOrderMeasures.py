@@ -77,3 +77,16 @@ def test_pagerank_centrality(random_paths, sub, proj, k, e_sum, e_var):
     assert values.var() == pytest.approx(e_var)
 
 
+@pytest.mark.parametrize('k, sub, e_gap', (
+        (2, False, 1e-9),
+        (1, False, 1e-5),
+        (2, True, 1),
+))
+def test_eigen_value_gap(random_paths, k, sub, e_gap):
+    p = random_paths(90, 0, 20)
+    hon = pp.HigherOrderNetwork(p, k=k)
+    np.random.seed(0)
+    eigen_gap = HigherOrderMeasures.getEigenValueGap(hon, includeSubPaths=sub)
+    assert eigen_gap < e_gap
+
+
