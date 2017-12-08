@@ -188,7 +188,8 @@ class TemporalNetwork:
 
     def filterEdges(self, edge_filter):
         """
-        Filter time-stamped edges according to a given filter expression.
+        Filter time-stamped edges according to a given filter expression. This can be used, e.g., 
+        to create time slice networks by filtering edges within certain time windows.
 
         @param edge_filter: an arbitrary filter function of the form
             filter_func(v, w, time) that returns True for time-stamped edges that shall pass the
@@ -207,15 +208,15 @@ class TemporalNetwork:
         return TemporalNetwork(tedges=new_t_edges)
 
 
-    def addEdge(self, source, target, ts):
+    def addEdge(self, source, target, ts, directed=True):
         """
-        Adds a directed time-stamped edge (source,target;time) to the temporal network.
-        To add an undirected time-stamped link (u,v;t) at time t, please call
-        addEdge(u,v;t) and addEdge(v,u;t).
+        Adds a time-stamped edge (source,target;time) to the temporal network.
+        Unless specified otherwise, time-stamped edges are assumed to be directed.        
 
         @param source: name of the source node of a directed, time-stamped link
         @param target: name of the target node of a directed, time-stamped link
         @param ts: (integer) time-stamp of the time-stamped link
+        @param directed: whether or not to create a directed edge (default True)
         """
         e = (source, target, ts)
         self.tedges.append(e)
@@ -235,6 +236,10 @@ class TemporalNetwork:
 
         # Reorder time stamps
         self.ordered_times = sorted(self.time.keys())
+
+        # make edge undirected by adding another directed edge
+        if not directed:
+            self.addEdge(target, source, ts)
 
 
     def vcount(self):
@@ -330,40 +335,86 @@ class TemporalNetwork:
         return self.summary()
 
 
-    def ShuffleEdges(self, l=0, with_replacement=False):
+    def ShuffleEdges(self, l=0, with_replacement=False, window_splits = None, maintain_undirected = True):
         """
         Generates a shuffled version of the temporal network in which edge statistics (i.e.
-        the frequencies of time-stamped edges) are preserved, while all order correlations are
-        destroyed. The shuffling procedure randomly reshuffles the time-stamps of links.
+        the frequencies of time-stamped edges) and inter-event time statistics are preserved, 
+        while all order correlations are destroyed by randomly reshuffling the time stamps of links.
 
-        @param l: the length of the sequence to be generated (i.e. the number of time-stamped links.
-            For the default value l=0, the length of the generated shuffled temporal network will be
-            equal to that of the original temporal network.
-        @param with_replacement: Whether or not the sampling should be
-            with replacement (default False)
+        @param l: the length of the sequence to be generated (i.e. the number of time-stamped links to be 
+            generated ber shuffling time window, see below).
+            For the default value l=0, the length of the original temporal network is used.
+        @param with_replacement: Whether or not the sampling of new time-stamped edges should be with 
+            replacement (default False). If False, the exact edge frequencies and inter-event time 
+            statistics in the original network will be preserved.
+        @param window_splits: a list of time stamps that separate shuffling windows. E.g. specifying 
+            window_splits = [7,14,21] will separately shuffle edges within intervals 
+            [min_timestamp,7], (7,14], (14,21], (21,max_timestamp] (default None).
+            The number of edges l to generate applies separately for each time window. For l=0, the original 
+            number of edges in each time window will be used. 
+        @param maintain_undirected: if True, two directed edges (a,b,t) (b,a,t) ocurring at the same time 
+            will be treated as a single undirected edge, i.e. both are reassigned to a different time stamp 
+            at once (default True). This ensures that undirected edges are preserved as atomic objects.
         """
 
         tedges = []
 
-        timestamps = [e[2] for e in self.tedges]
-        edges = list(self.tedges)
+        if window_splits == None:
+            window_splits = [max(self.time)]
+        else:
+            window_splits.append(max(self.time))
 
-        if l == 0:
-            l = len(self.tedges)
-        for i in range(l):
-            if with_replacement:
-            # Pick random link
-                edge = edges[_np.random.randint(0, len(edges))]
-                # Pick random time stamp
-                time = timestamps[_np.random.randint(0, len(timestamps))]
-            else:
-                # Pick random link
-                edge = edges.pop(_np.random.randint(0, len(edges)))
-            # Pick random time stamp
-                time = timestamps.pop(_np.random.randint(0, len(timestamps)))
+        window_min = min(self.time)-1
+        for window_max in window_splits:
 
-            # Generate new time-stamped link
-            tedges.append((edge[0], edge[1], time))
+            timestamps = [] 
+            edges = []
+            for e in self.tedges:
+                if e[2] > window_min and e[2] <= window_max:
+                    timestamps.append(e[2])
+                    edges.append(e)
+
+            if l == 0:
+                l = len(edges)
+            if with_replacement: # sample l edges with replacement
+                for i in range(l):               
+                    # Pick random link
+                    edge = edges[_np.random.randint(0, len(edges))]
+                    # Pick random time stamp
+                    time = timestamps[_np.random.randint(0, len(timestamps))]            
+                # Generate new time-stamped link
+                tedges.append((edge[0], edge[1], time))
+            else: # shuffle edges while avoiding multiple identical edges at same time stamp
+                while edges:
+                    # Pick random link                    
+                    edge = edges.pop(_np.random.randint(0, len(edges)))
+
+                    # Pick random time stamp
+                    time = timestamps.pop(_np.random.randint(0, len(timestamps)))
+                    rewired = False
+                    
+                    # for undirected edges, rewire both directed edges at once
+                    if maintain_undirected and (edge[1], edge[0], edge[2]) in edges:                        
+
+                        # check whether one of the time-stamped edges already exists
+                        if (edge[0], edge[1], time) not in tedges and (edge[1], edge[0], time) not in tedges:
+                            tedges.append((edge[0], edge[1], time))
+                            tedges.append((edge[1], edge[0], time))
+                            edges.remove((edge[1], edge[0], edge[2]))
+                            rewired = True
+                    
+                    # rewire a single directed edge individually
+                    elif (edge[0], edge[1], time) not in tedges:
+                        tedges.append((edge[0], edge[1], time))
+                        rewired = True
+                    
+                    # edge could not be rewired to the chosen time stamp, so reappend both 
+                    # to the list for future sampling
+                    if not rewired:
+                        edges.append(edge)
+                        timestamps.append(time)
+            
+            window_min = window_max
 
         # Generate temporal network
         t = TemporalNetwork(tedges=tedges)
@@ -373,12 +424,20 @@ class TemporalNetwork:
         return t
 
 
-    def exportUnfoldedNetwork(self, filename):
+    def exportUnfoldedNetwork(self, filename, dag=True, angle=20, layer_dist='0.3cm', split_directions=True):
         """
         Generates a tex file that can be compiled to a time-unfolded
         representation of the temporal network.
 
         @param filename: the name of the tex file to be generated.
+        @param dag: whether or not to draw the unfolded network as a directed acyclic graph, in which a link (v,w,t)
+            connects node-time elements (v_t, w_t+1) (default True). If False, a simple sequence of links will be generated.
+        @param layer_dist: LaTex distance parameter string specifying the distance between adjacent node-time elements (default '0.3cm')
+        @param angle: the angle of curved edges
+        @param split_directions: whether or not the curve angle of edges shall be split depending on direction (default True)
+            If this is set to True, arrows from left to right bend upwards, while arrows from right to left bend downwards
+            This helps readability in temporal networks with multiple edges per time step. For temporal networks with single edges
+            per time, False is recommended.
         """
 
         import os as _os
@@ -412,23 +471,46 @@ class TemporalNetwork:
             last = n
 
         output.append("\\setcounter{a}{0}\n")
-        output.append("\\foreach \\number in {"+ str(min(self.ordered_times))+ ",...," + str(max(self.ordered_times)+1) + "}{\n")
+        if dag:
+            output.append("\\foreach \\number in {"+ str(min(self.ordered_times))+ ",...," + str(max(self.ordered_times)+1) + "}{\n")
+        else:
+            output.append("\\foreach \\number in {"+ str(min(self.ordered_times))+ ",...," + str(max(self.ordered_times)) + "}{\n")
         output.append("\\setcounter{a}{\\number}\n")
         output.append("\\addtocounter{a}{-1}\n")
         output.append("\\pgfmathparse{\\thea}\n")
 
         for n in  _np.sort(self.nodes):
-            output.append("\\node[v,below=0.3cm of " + n + "-\\pgfmathresult]     (" + n + "-\\number) {};\n")
+            output.append("\\node[v,below=" + layer_dist + " of " + n + "-\\pgfmathresult]     (" + n + "-\\number) {};\n")
         output.append("\\node[lbl,left=0.5cm of " + _np.sort(self.nodes)[0] + "-\\number]    (col-\\pgfmathresult) {$t=$\\number};\n")
-        output.append("}\n")
+        output.append("}\n")        
         output.append("\\path[->,thick]\n")
         i = 1
-
+        # draw only directed edges
         for ts in self.ordered_times:
             for edge in self.time[ts]:
-                output.append("(" + edge[0] + "-" + str(ts) + ") edge (" + edge[1] + "-" + str(ts + 1) + ")\n")
+                if dag:
+                    output.append("(" + edge[0] + "-" + str(ts) + ") edge (" + edge[1] + "-" + str(ts + 1) + ")\n")
+                else:
+                    if (edge[1], edge[0], ts) not in self.time[ts]:                        
+                        bend_direction = 'right'
+                        if not split_directions and edge[0] < edge[1]:
+                            bend_direction = 'left'
+                        output.append("(" + edge[0] + "-" + str(ts) + ") edge[bend " + bend_direction + "=" + str(angle) + "] (" + edge[1] + "-" + str(ts) + ")\n")
                 i += 1
         output.append(";\n")
+
+        # separately draw undirected edges if we don't output a DAG
+        if not dag:
+            output.append("\\path[-,thick]\n")
+            for ts in self.ordered_times:
+                for edge in self.time[ts]:
+                    if (edge[1], edge[0], ts) in self.time[ts]:
+                        # admittedly, this is an ugly trick: I avoid keeping state on which of the directed edges 
+                        # has been drawn already as an undirected edge, by simply drawing them twice in the same way :-)
+                        s = max(edge[0], edge[1])
+                        t = min(edge[0], edge[1])
+                        output.append("(" + s + "-" + str(ts) + ") edge[bend right=" + str(angle) + "] (" + t + "-" + str(ts) + ")\n")
+            output.append(";\n")
         output.append(
             """\\end{tikzpicture}
             \\end{center}
