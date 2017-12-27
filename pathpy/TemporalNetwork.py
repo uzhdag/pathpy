@@ -104,7 +104,7 @@ class TemporalNetwork:
 
 
     @staticmethod
-    def readFile(filename, sep=',', timestampformat="%Y-%m-%d %H:%M", maxlines=_sys.maxsize):
+    def readFile(filename, sep=',', maxlines=_sys.maxsize):
         """
             Reads time-stamped links from a file and returns a new instance
             of the class TemporalNetwork. The file is assumed to have a header
@@ -452,22 +452,23 @@ class TemporalNetwork:
         output.append('\\setlength\\PreviewBorder{5pt}%\n')
         output.append('\\usetikzlibrary{arrows}\n')
         output.append('\\usetikzlibrary{positioning}\n')
+        output.append('\\renewcommand{\\familydefault}{\\sfdefault}\n')
         output.append('\\begin{document}\n')
         output.append('\\begin{center}\n')
         output.append('\\newcounter{a}\n')
-        output.append("\\begin{tikzpicture}[->,>=stealth',auto,scale=0.5, every node/.style={scale=0.9}]\n")
+        output.append("\\begin{tikzpicture}[->,>=stealth',auto,scale=1, every node/.style={scale=1}]\n")
         output.append("\\tikzstyle{node} = [fill=lightgray,text=black,circle]\n")
-        output.append("\\tikzstyle{v} = [fill=black,text=white,circle]\n")
+        output.append("\\tikzstyle{v} = [fill=lightgray,draw=black,text=white,circle,minimum size=0.5cm]\n")
         output.append("\\tikzstyle{dst} = [fill=lightgray,text=black,circle]\n")
-        output.append("\\tikzstyle{lbl} = [fill=white,text=black,circle]\n")
+        output.append("\\tikzstyle{lbl} = [text=black,circle]\n")
 
         last = ''
 
         for n in _np.sort(self.nodes):
             if last == '':
-                output.append("\\node[lbl]                     (" + n + "-0)   {$" + n + "$};\n")
+                output.append("\\node[lbl]                     (" + n + "-0)   {\\bf \\Huge " + n + "};\n")
             else:
-                output.append("\\node[lbl,right=0.5cm of "+last+"-0] (" + n + "-0)   {$" + n + "$};\n")
+                output.append("\\node[lbl,right=0.4cm of "+last+"-0] (" + n + "-0)   {\\bf \\Huge " + n + "};\n")
             last = n
 
         output.append("\\setcounter{a}{0}\n")
@@ -481,9 +482,9 @@ class TemporalNetwork:
 
         for n in  _np.sort(self.nodes):
             output.append("\\node[v,below=" + layer_dist + " of " + n + "-\\pgfmathresult]     (" + n + "-\\number) {};\n")
-        output.append("\\node[lbl,left=0.5cm of " + _np.sort(self.nodes)[0] + "-\\number]    (col-\\pgfmathresult) {$t=$\\number};\n")
+        output.append("\\node[lbl,left=0.4cm of " + _np.sort(self.nodes)[0] + "-\\number]    (col-\\pgfmathresult) {\\selectfont{\\bf \\Huge \\number}};\n")
         output.append("}\n")        
-        output.append("\\path[->,thick]\n")
+        output.append("\\path[->,line width=2pt]\n")
         i = 1
         # draw only directed edges
         for ts in self.ordered_times:
@@ -501,7 +502,7 @@ class TemporalNetwork:
 
         # separately draw undirected edges if we don't output a DAG
         if not dag:
-            output.append("\\path[-,thick]\n")
+            output.append("\\path[-,line width=2pt]\n")
             for ts in self.ordered_times:
                 for edge in self.time[ts]:
                     if (edge[1], edge[0], ts) in self.time[ts]:
