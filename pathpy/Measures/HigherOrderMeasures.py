@@ -197,7 +197,7 @@ class HigherOrderMeasures:
 
 
     @staticmethod
-    def PageRank(network, alpha=0.85, maxIterations=100, convergenceThres=1.0e-6, projection='scaled', includeSubPaths=True):
+    def PageRank(network, alpha=0.85, maxIterations=100, convergenceThres=1.0e-6, projection='scaled', includeSubPaths=True, weighted = False):
         """
         Calculates the PageRank of higher-order nodes based on a
         power iteration. If the order of the higher-order network is larger than one,
@@ -226,7 +226,7 @@ class HigherOrderMeasures:
         assert n > 0, "Number of nodes is zero"
 
         # entries A[s,t] give directed link s -> t
-        A = network.getAdjacencyMatrix(includeSubPaths=includeSubPaths, weighted=False, transposed=False)
+        A = network.getAdjacencyMatrix(includeSubPaths=includeSubPaths, weighted=weighted, transposed=False)
 
         # sum of outgoing node degrees
         row_sums = _sp.array(A.sum(axis=1)).flatten()
