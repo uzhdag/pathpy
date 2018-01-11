@@ -83,7 +83,7 @@ class Paths:
         l_path_sum = []
         max_path_length = 0
         average_length = 0
-        for k in self.paths:
+        for k in sorted(self.paths):
             paths_ = self.paths[k]
             values_ = _np.array(list(paths_.values()))
             v0 = _np.sum(values_[:,0])
