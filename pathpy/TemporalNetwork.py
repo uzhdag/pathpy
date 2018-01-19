@@ -235,7 +235,9 @@ class TemporalNetwork:
             self.activities[source].sort()
 
         # Reorder time stamps
-        self.ordered_times = sorted(self.time.keys())
+        index = _bs.bisect_left(self.ordered_times, ts)
+        self.ordered_times.insert(index, ts)
+        #self.ordered_times = sorted(self.time.keys())
 
         # make edge undirected by adding another directed edge
         if not directed:
