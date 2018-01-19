@@ -233,10 +233,10 @@ class PathMeasures:
             for p in paths.paths[k]:
                 N += paths.paths[k][p].sum()
             print('N = ', N)
-            Hk = _np.sum(Tk * Tk_pi) + (K-1)/(2*N)
+            Hk = - _np.sum(Tk * Tk_pi) + (K-1)/(2*N)
         else:
             # simple MLE estimation
-            Hk = -_np.sum(Tk * Tk_pi)
+            Hk = - _np.sum(Tk * Tk_pi)
 
         Hk = _np.absolute(Hk)
 
