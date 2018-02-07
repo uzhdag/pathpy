@@ -104,7 +104,7 @@ class TemporalNetwork:
 
 
     @staticmethod
-    def readFile(filename, sep=',', maxlines=_sys.maxsize):
+    def readFile(filename, sep=',', timestampformat='%Y-%m-%d %H:%M' maxlines=_sys.maxsize):
         """
             Reads time-stamped links from a file and returns a new instance
             of the class TemporalNetwork. The file is assumed to have a header
