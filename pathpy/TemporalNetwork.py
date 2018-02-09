@@ -379,15 +379,16 @@ class TemporalNetwork:
             if l == 0:
                 l = len(edges)
             if with_replacement: # sample l edges with replacement
-                for i in range(l):               
+                for i in range(l):
                     # Pick random link
                     edge = edges[_np.random.randint(0, len(edges))]
                     # Pick random time stamp
                     time = timestamps[_np.random.randint(0, len(timestamps))]            
-                # Generate new time-stamped link
-                tedges.append((edge[0], edge[1], time))
+                    # Generate new time-stamped link
+                    tedges.append((edge[0], edge[1], time))
             else: # shuffle edges while avoiding multiple identical edges at same time stamp
-                while edges:
+                i = 0
+                while i<l:
                     # Pick random link                    
                     edge = edges.pop(_np.random.randint(0, len(edges)))
 
@@ -396,7 +397,7 @@ class TemporalNetwork:
                     rewired = False
                     
                     # for undirected edges, rewire both directed edges at once
-                    if maintain_undirected and (edge[1], edge[0], edge[2]) in edges:                        
+                    if maintain_undirected and (edge[1], edge[0], edge[2]) in edges:
 
                         # check whether one of the time-stamped edges already exists
                         if (edge[0], edge[1], time) not in tedges and (edge[1], edge[0], time) not in tedges:
@@ -415,6 +416,8 @@ class TemporalNetwork:
                     if not rewired:
                         edges.append(edge)
                         timestamps.append(time)
+                    else:
+                        i += 1
             
             window_min = window_max
 

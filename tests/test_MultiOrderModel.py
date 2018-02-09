@@ -40,7 +40,7 @@ def test_test_network_hypothesis(random_paths, k, method):
 
 @pytest.mark.parametrize('k', (1, 2, 3))
 def test_write_state_file(random_paths, k, tmpdir):
-    file_path = tmpdir.mkdir("sub").join("multi_order_state")
+    file_path = str(tmpdir.mkdir("sub").join("multi_order_state"))
     p = random_paths(20, 40, 6)
     multi = pp.MultiOrderModel(p, maxOrder=k)
 

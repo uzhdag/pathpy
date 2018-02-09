@@ -48,11 +48,13 @@ def test_get_interpath_times(temporal_network_object):
 
 def test_shuffle_edges(temporal_network_object):
     t = temporal_network_object
+    
     np.random.seed(90)
     t1 = t.ShuffleEdges(with_replacement=True)
     times1 = len(t1.tedges)
     expected1 = len(t.tedges)
     assert times1 == expected1
+    
     np.random.seed(90)
     t2 = t.ShuffleEdges(l=4, with_replacement=False)
     edges2 = len(t2.tedges)
@@ -81,5 +83,5 @@ def test_temporal_summary(temporal_network_object):
 
 def test_export_tikz_unfolded_network(temporal_network_object, tmpdir):
     t = temporal_network_object
-    file_path = tmpdir.mkdir("sub").join("multi_order_state")
+    file_path = str(tmpdir.mkdir("sub").join("multi_order_state"))
     t.exportUnfoldedNetwork(file_path)

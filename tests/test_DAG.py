@@ -85,7 +85,7 @@ def test_add_edges(edges, types):
 
 
 def test_dag_io(dag_object, tmpdir):
-    file_path = tmpdir.mkdir("sub").join("test.edges")
+    file_path = str(tmpdir.mkdir("sub").join("test.edges"))
     dag_orig = dag_object
     dag_orig.makeAcyclic()
 

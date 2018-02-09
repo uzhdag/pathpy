@@ -26,7 +26,7 @@
 
 import sys as _sys
 
-import pathpy.Paths as _Paths
+from pathpy.Paths import Paths as _Paths
 from pathpy.Log import Log as _Log
 from pathpy.Log import Severity as _Severity
 
