@@ -88,7 +88,6 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
-
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
@@ -108,3 +107,8 @@ pyTempNets.v12.suo
 .eggs/
 prof/*
 *.swp
+
+# Visual Studio Code
+# ==================
+
+.vscode/
