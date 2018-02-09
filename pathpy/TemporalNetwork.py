@@ -104,7 +104,7 @@ class TemporalNetwork:
 
 
     @staticmethod
-    def readFile(filename, sep=',', maxlines=_sys.maxsize):
+    def readFile(filename, sep=',', timestampformat='%Y-%m-%d %H:%M', maxlines=_sys.maxsize):
         """
             Reads time-stamped links from a file and returns a new instance
             of the class TemporalNetwork. The file is assumed to have a header
@@ -211,7 +211,7 @@ class TemporalNetwork:
     def addEdge(self, source, target, ts, directed=True):
         """
         Adds a time-stamped edge (source,target;time) to the temporal network.
-        Unless specified otherwise, time-stamped edges are assumed to be directed.        
+        Unless specified otherwise, time-stamped edges are assumed to be directed.
 
         @param source: name of the source node of a directed, time-stamped link
         @param target: name of the target node of a directed, time-stamped link
