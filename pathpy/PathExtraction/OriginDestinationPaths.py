@@ -63,10 +63,11 @@ class OriginDestinationPaths:
         # observed weight times
         _Log.add('Starting origin destination path calculation ...')
         for (o, d, w) in origin_destination_list:            
-            assert o in network.nodes and d in network.nodes, 'Error: could not find origin or destination node in network'            
+            assert o in network.nodes, 'Error: could not find node ' + str(o) + ' in network' 
+            assert d in network.nodes, 'Error: could not find node ' + str(d) + ' in network' 
             sp = list(shortest_paths[o][d])
             num_paths = len(sp)
-            if distribute_weight:
+            if distribute_weight and num_paths > 1:
                 # to avoid introducing false correlations that are not justified by the available data,
                 # the (integer) weight of an origin destination pair can be distributed among all possible shortest paths
                 # between a pair of nodes, while constraining the weight of shortest paths to integers.
@@ -103,7 +104,7 @@ class OriginDestinationPaths:
             line = f.readline()
             while line:
                 fields = line.rstrip().split(separator)
-                origin_destination_list.append((fields[0], fields[1], float(fields[2])))
+                origin_destination_list.append((fields[0].strip(), fields[1].strip(), float(fields[2].strip())))
                 line = f.readline()
         _Log.add('Finished.')
 
