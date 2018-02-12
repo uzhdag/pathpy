@@ -34,6 +34,8 @@ import numpy as _np
 from pathpy.Log import Log
 from pathpy.Log import Severity
 
+import sqlite3
+
 
 class TemporalNetwork:
     """
@@ -102,6 +104,45 @@ class TemporalNetwork:
                 self.activities[v] = sorted(self.activities_sets[v])
             Log.add('finished.')
 
+
+    @staticmethod
+    def fromSQLite(cursor, timestampformat='%Y-%m-%d %H:%M'):
+        """
+            Reads time-stamped links from an SQLite cursor and returns a new instance
+            of the class TemporalNetwork. The cursor is assumed to refer to a table that 
+            minimally has three columns
+
+                source target time
+
+            and where each row refers to a directed link. Since columns are accessed by name, 
+            this function requires that a row factory object is set for the SQLite connection prior 
+            to generating the cursor, i.e. the user should set 
+
+                con.row_factory = sqlite3.Row
+
+            Time stamps can be simple integers, or strings to be converted to UNIX time stamps 
+            via a custom timestamp format. For this, the python function datetime.strptime will be used.
+
+            @param cursor: The SQLite cursor to fetch rows
+            @param timestampformat: used to convert string timestamps to UNIX timestamps.
+                This parameter is ignored, if the timestamps are digit types (like a simple int).
+        """
+
+        tedges = []
+        for row in cursor:
+            # r = sqlite3.Row(row)
+            timestamp = row['time']
+            assert isinstance(timestamp, int) or isinstance(timestamp, str), 'Error: pathpy only supports integer or string timestamps'
+            # if the timestamp is a number, we use this
+            if isinstance(timestamp, int):
+                t = timestamp
+            else:
+                # if it is a string, we use the timestamp format to convert it to a UNIX timestamp
+                x = _dt.datetime.strptime(timestamp, timestampformat)
+                t = int(_t.mktime(x.timetuple()))
+            tedges.append((row['source'], row['target'], t))
+
+        return TemporalNetwork(tedges=tedges)
 
     @staticmethod
     def readFile(filename, sep=',', timestampformat='%Y-%m-%d %H:%M', maxlines=_sys.maxsize):
