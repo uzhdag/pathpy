@@ -114,14 +114,15 @@ class TemporalNetwork:
 
                 source target time
 
-            and where each row refers to a directed link. Since columns are accessed by name, 
-            this function requires that a row factory object is set for the SQLite connection prior 
-            to generating the cursor, i.e. the user should set 
+            and where each row refers to a directed link. Time stamps can be integers,
+            or strings to be converted to UNIX time stamps via a custom timestamp format. 
+            For this, the python function datetime.strptime will be used.
 
-                con.row_factory = sqlite3.Row
+            Important: Since columns are accessed by name this function requires that a 
+            row factory object is set for the SQLite connection prior to cursor creation, 
+            i.e. you should set
 
-            Time stamps can be simple integers, or strings to be converted to UNIX time stamps 
-            via a custom timestamp format. For this, the python function datetime.strptime will be used.
+                connection.row_factory = sqlite3.Row
 
             @param cursor: The SQLite cursor to fetch rows
             @param timestampformat: used to convert string timestamps to UNIX timestamps.
@@ -129,6 +130,9 @@ class TemporalNetwork:
         """
 
         tedges = []
+        
+        assert cursor.connection.row_factory, 'Cannot access columns by name. Please set connection.row_factory = sqlite3.Row before creating DB cursor.'
+
         for row in cursor:
             # r = sqlite3.Row(row)
             timestamp = row['time']
