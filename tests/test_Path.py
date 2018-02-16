@@ -218,7 +218,9 @@ def test_path_multiplication(random_paths, factor):
     assert sum(sum_inplace.paths[2][TEST_PATH]) == sum(p.paths[2][TEST_PATH]) * factor
 
     # simple multiplication
-    mult_paths = factor * p
+    rmult_paths = factor * p
+    mult_paths = p * factor
+    assert sum(rmult_paths.paths[2][TEST_PATH]) == sum(mult_paths.paths[2][TEST_PATH])
 
     assert sum(mult_paths.paths[2][TEST_PATH]) == sum(sum_paths.paths[2][TEST_PATH])
 
