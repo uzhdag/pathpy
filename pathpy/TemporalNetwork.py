@@ -49,9 +49,9 @@ class TemporalNetwork:
         """
         Constructor that generates a temporal network instance.
 
-        @param tedges: an optional list of (possibly unordered time-stamped) links
-            from which to construct a temporal network instance. For the default value None
-            an empty temporal network will be created.
+        @param tedges: an optional list of directed time-stamped edges
+            from which to construct a temporal network instance. For the 
+            default value None an empty temporal network will be created.
         """
 
         ## A list of time-stamped edges of this temporal network
@@ -106,7 +106,7 @@ class TemporalNetwork:
 
 
     @staticmethod
-    def fromSQLite(cursor, timestampformat='%Y-%m-%d %H:%M'):
+    def fromSQLite(cursor, directed = True, timestampformat='%Y-%m-%d %H:%M'):
         """
             Reads time-stamped links from an SQLite cursor and returns a new instance
             of the class TemporalNetwork. The cursor is assumed to refer to a table that 
@@ -133,6 +133,12 @@ class TemporalNetwork:
         
         assert cursor.connection.row_factory, 'Cannot access columns by name. Please set connection.row_factory = sqlite3.Row before creating DB cursor.'
 
+
+        if not directed:
+            Log.add('Retrieving undirected time-stamped links ...')
+        else:
+            Log.add('Retrieving directed time-stamped links ...')
+
         for row in cursor:
             # r = sqlite3.Row(row)
             timestamp = row['time']
@@ -145,11 +151,15 @@ class TemporalNetwork:
                 x = _dt.datetime.strptime(timestamp, timestampformat)
                 t = int(_t.mktime(x.timetuple()))
             tedges.append((row['source'], row['target'], t))
+            if not directed:
+                tedges.append((row['target'], row['source'], t))
 
         return TemporalNetwork(tedges=tedges)
 
+
+
     @staticmethod
-    def readFile(filename, sep=',', timestampformat='%Y-%m-%d %H:%M', maxlines=_sys.maxsize):
+    def readFile(filename, sep=',', directed = True, timestampformat='%Y-%m-%d %H:%M:%S', maxlines=_sys.maxsize):
         """
             Reads time-stamped links from a file and returns a new instance
             of the class TemporalNetwork. The file is assumed to have a header
@@ -165,11 +175,13 @@ class TemporalNetwork:
             integers, or strings to be converted to UNIX time stamps via a custom timestamp format.
             For this, the python function datetime.strptime will be used.
 
-            @param sep: the character that separates columns
             @param filename: path of the file to read from
+            @param sep: the character that separates columns (default ',')
+            @param directed: whether to read edges as directed (default True)            
             @param timestampformat: used to convert string timestamps to UNIX timestamps.
-                This parameter is ignored, if the timestamps are digit types (like a simple int).
-            @param maxlines: limit reading of file to certain number of lines, default sys.maxsize
+                This parameter is ignored, if timestamps are digit types (like a simple int).
+                The default is '%Y-%m-%d %H:%M'
+            @param maxlines: limit reading of file to a given number of lines (default sys.maxsize)
         """
         assert (filename != ''), 'Empty filename given'
 
@@ -198,7 +210,10 @@ class TemporalNetwork:
             if time_ix < 0:  # pragma: no cover
                 Log.add('No time stamps found in data, assuming consecutive links', Severity.WARNING)
 
-            Log.add('Reading time-stamped links ...')
+            if not directed:
+                Log.add('Reading undirected time-stamped links ...')
+            else:
+                Log.add('Reading directed time-stamped links ...')
 
             line = f.readline()
             n = 1
@@ -219,6 +234,8 @@ class TemporalNetwork:
                     if t >= 0:
                         tedge = (fields[source_ix], fields[target_ix], t)
                         tedges.append(tedge)
+                        if not directed:
+                            tedges.append((fields[target_ix], fields[source_ix], t))
                     else:  # pragma: no cover
                         Log.add('Ignoring negative timestamp in line ' + str(n+1) + ': "' + line.strip() + '"', Severity.WARNING)
                 except (IndexError, ValueError):  # pragma: no cover
