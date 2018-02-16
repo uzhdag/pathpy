@@ -191,8 +191,41 @@ def test_diameter(random_paths):
 
 def test_path_addition(random_paths):
     p1 = random_paths(20, 0, 5)
-    p2 = random_paths(20, 0, 5)
+    p2 = random_paths(10, 0, 5)
 
     p12 = p1 + p2
 
     assert p12.getNodes() == (set(p1.getNodes()) | set(p2.getNodes()))
+
+
+@pytest.mark.parametrize('factor', (1, 2, 3, 4, 10))
+def test_path_multiplication(random_paths, factor):
+    TEST_PATH = ('2', '3', '2')
+    p = random_paths(20, 0, 5)  # base path
+
+    # incrementally add path p using __add__
+    sum_paths = random_paths(20, 0, 5)
+    for i in range(factor-1):
+        sum_paths = sum_paths + p
+
+    assert sum(sum_paths.paths[2][TEST_PATH]) == sum(p.paths[2][TEST_PATH]) * factor
+
+    # add in place p times to sum_inplace
+    sum_inplace = random_paths(20, 0, 5)
+    for i in range(factor-1):
+        sum_inplace += p
+
+    assert sum(sum_inplace.paths[2][TEST_PATH]) == sum(p.paths[2][TEST_PATH]) * factor
+
+    # simple multiplication
+    mult_paths = factor * p
+
+    assert sum(mult_paths.paths[2][TEST_PATH]) == sum(sum_paths.paths[2][TEST_PATH])
+
+    # multiplication inplace
+    mult_inplace = random_paths(20, 0, 5)
+    mult_inplace *= factor
+
+    assert sum(mult_paths.paths[2][TEST_PATH]) == sum(mult_inplace.paths[2][TEST_PATH])
+
+
