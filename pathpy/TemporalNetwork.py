@@ -601,6 +601,12 @@ class TemporalNetwork:
         import os
         from string import Template
 
+        import string
+        import random
+
+        allchar = string.ascii_letters + string.digits
+        div_id = "".join(random.choice(allchar) for x in range(8))
+
         network_data = {
             'nodes' : [ { 'id': v, 'group' : 1 } for v in self.nodes ],
             'links' : [ { 'source': s, 'target': v, 'value': 1, 'time': t} for s, v, t in self.tedges ]
@@ -630,7 +636,7 @@ class TemporalNetwork:
         stroke-width: 1.5px;
         }
         </style>
-        <svg width="$width" height="$height">
+        <svg width="$width" height="$height" id="$div_id">
             <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="red">time = 0</text>
         </svg>
 
@@ -658,7 +664,7 @@ class TemporalNetwork:
         });
         };
 
-        var svg = d3.select("svg"),
+        var svg = d3.select("#"+"$div_id"),
             width = +svg.attr("width"),
             height = +svg.attr("height"),
             color = d3.scaleOrdinal(d3.schemeCategory20b);
@@ -815,4 +821,4 @@ class TemporalNetwork:
         });
     </script>
     """)
-        display(HTML(html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height})))
+        display(HTML(html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height, 'div_id': div_id})))

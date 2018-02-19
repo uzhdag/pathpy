@@ -771,6 +771,12 @@ class HigherOrderNetwork:
             'links' : [ { 'source': e[0], 'target': e[1], 'value': 1} for e, weight in self.edges.items() ]
         }
 
+        import string
+        import random
+
+        allchar = string.ascii_letters + string.digits
+        div_id = "".join(random.choice(allchar) for x in range(8))
+
         html_template = Template("""
         <style>
         .links line {
@@ -782,7 +788,7 @@ class HigherOrderNetwork:
         stroke-width: 1.5px;
         }
         </style>
-        <svg width="$width" height="$height"></svg>
+        <svg width="$width" height="$height" id="$div_id"></svg>
     
         <script charset="utf-8">
         require.config({
@@ -792,7 +798,7 @@ class HigherOrderNetwork:
         });
         require(["d3"], function(d3) {
 
-            var svg = d3.select("svg"),
+            var svg = d3.select("#"+"$div_id"),
                 width = +svg.attr("width"),
                 height = +svg.attr("height");
 
@@ -866,4 +872,4 @@ class HigherOrderNetwork:
         </script>
         """)
 
-        display(HTML(html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height})))
+        display(HTML(html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height, 'div_id': div_id})))
