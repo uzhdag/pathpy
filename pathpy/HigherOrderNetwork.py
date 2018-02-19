@@ -768,7 +768,7 @@ class HigherOrderNetwork:
         
         network_data = { 
             'nodes' : [ { 'id': v, 'group' : 1 } for v in self.nodes ],
-            'links' : [ { 'source': e[0], 'target': e[1], 'value': weight[1]} for e, weight in self.edges.items() ]
+            'links' : [ { 'source': e[0], 'target': e[1], 'value': 1} for e, weight in self.edges.items() ]
         }
 
         html_template = Template("""

@@ -592,3 +592,227 @@ class TemporalNetwork:
 
         with open(filename, "w") as tex_file:
             tex_file.write(''.join(output))
+
+
+    def _repr_html_(self, width=600, height=600):
+        
+        from IPython.core.display import display, HTML
+        import json
+        import os
+        from string import Template
+
+        network_data = {
+            'nodes' : [ { 'id': v, 'group' : 1 } for v in self.nodes ],
+            'links' : [ { 'source': s, 'target': v, 'value': 1, 'time': t} for s, v, t in self.tedges ]
+        }
+
+        html_template =  Template("""
+        <style>
+        .tlinks line {
+        stroke: #fff;
+        stroke-opacity: 0.2;
+        }
+        .tlinks line.active {
+        stroke: #922;
+        stroke-opacity: 1;
+        stroke-width: 3px;
+        }
+        .tnodes circle {
+        stroke: #222;
+        fill: #eee;
+        fill-opacity: 1;
+        stroke-width: 1.5px;
+        }
+        .tnodes circle.active {
+        stroke: #222;
+        fill: #922;
+        fill-opacity: 1;
+        stroke-width: 1.5px;
+        }
+        </style>
+        <svg width="$width" height="$height">
+            <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="red">time = 0</text>
+        </svg>
+
+
+    <script charset="utf-8">
+            require.config({
+                paths: {
+                    d3: "https://d3js.org/d3.v4.min"
+                }
+            });
+            require(["d3"], function(d3) {
+
+        d3.selection.prototype.moveToFront = function() {
+        return this.each(function(){
+        this.parentNode.appendChild(this);
+        });
+        };
+
+        d3.selection.prototype.moveToBack = function() {  
+        return this.each(function() { 
+            var firstChild = this.parentNode.firstChild; 
+            if (firstChild) { 
+                this.parentNode.insertBefore(this, firstChild); 
+            } 
+        });
+        };
+
+        var svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            color = d3.scaleOrdinal(d3.schemeCategory20b);
+
+        var temporal_net = $network_data
+
+        var edgesbytime = {};
+
+        // extract timestamps
+        time_stamps = temporal_net.links.map(link => link['time']);
+        time_stamps.forEach(function(t){
+                    edgesbytime[t] = [];
+                });
+        links = [];
+        i = 0;
+
+        // extract static links 
+        temporal_net.links.forEach(function(link){
+            console.log(link);
+            id = String(link.source + '-' + link.target);
+            edgesbytime[link.time].push(id);
+            l = { 'source': link.source, 'target': link.target, 'id': id };
+            if (!contains(links, l)){
+                links.push(l);
+            }
+        });
+
+        mintime = d3.min(time_stamps);
+        maxtime = d3.max(time_stamps);
+        
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .alphaTarget(1)
+            .on("tick", ticked);
+
+        var link = svg.append("g")
+            .attr("class", "tlinks")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("id", function(d) { return d.id; });
+
+        var node = svg.append("g")
+            .attr("class", "tnodes")
+            .selectAll("circle")
+            .data(temporal_net.nodes)
+            .enter().append("circle")
+            .attr('id', function(d) { return d.id; })
+            .attr("r", 5)
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        node.append("title")
+            .text(function(d) { return d.id; });
+
+        simulation.nodes(temporal_net.nodes)
+                        .on("tick", ticked);
+
+        simulation.force("link")
+                .links(links);
+
+        // ms per tick
+        var intervl = setInterval(time_step, 100);
+        var time = mintime;
+
+        // simulates one time step
+        function time_step(){
+            //stop simulation
+            if(time == maxtime){
+                clearInterval(intervl);
+            }
+
+            // get active links
+            active_links = [];
+            active_nodes = [];
+            if (edgesbytime[time]!=null)
+            {
+                edgesbytime[time].forEach(function(id){
+                                active_links.push( id );
+                                node_ids = id.split('-');
+                                active_nodes.push(node_ids[0]);
+                                active_nodes.push(node_ids[1]);
+                        });
+            }
+
+            //color links based on activity
+            d3.selectAll('line').attr('class', 'tlinks');
+
+            active_links.forEach(function(l){
+                d3.select('#'+l).attr('class', 'active');
+                d3.select('#'+l).moveToFront();        
+            });
+
+            // color nodes based on activity
+            d3.selectAll('circle').attr('class', 'tnodes');
+
+            active_nodes.forEach(function(n){        
+                d3.select('#'+n).attr('class', 'active');
+                d3.select('#'+n).moveToFront();
+            });
+
+            // update time output
+            d3.select('text').html('time = ' + time);
+            time++;
+        }
+
+        
+        function contains(array, obj) {
+            var i = array.length;
+            while (i--) {
+            if (array[i] === obj) {
+                return true;
+            }
+            }
+            return false;
+        }
+
+
+        function dragstarted(d) {
+            if (!d3.event.active) 
+                simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) 
+                simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        function ticked() {
+            // set position attributes
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            node
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
+        }
+        });
+    </script>
+    """)
+        display(HTML(html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height})))
