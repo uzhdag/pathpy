@@ -106,7 +106,7 @@ class TemporalNetwork:
 
 
     @staticmethod
-    def fromSQLite(cursor, directed = True, timestampformat='%Y-%m-%d %H:%M'):
+    def fromSQLite(cursor, directed = True, timestampformat='%Y-%m-%d %H:%M:%S'):
         """
             Reads time-stamped links from an SQLite cursor and returns a new instance
             of the class TemporalNetwork. The cursor is assumed to refer to a table that 
@@ -150,9 +150,9 @@ class TemporalNetwork:
                 # if it is a string, we use the timestamp format to convert it to a UNIX timestamp
                 x = _dt.datetime.strptime(timestamp, timestampformat)
                 t = int(_t.mktime(x.timetuple()))
-            tedges.append((row['source'], row['target'], t))
+            tedges.append((str(row['source']), str(row['target']), t))
             if not directed:
-                tedges.append((row['target'], row['source'], t))
+                tedges.append((str(row['target']), str(row['source']), t))
 
         return TemporalNetwork(tedges=tedges)
 
@@ -594,9 +594,7 @@ class TemporalNetwork:
             tex_file.write(''.join(output))
 
 
-    def _repr_html_(self, width=600, height=600):
-        
-        from IPython.core.display import display, HTML
+    def getHTML(self, width=600, height=600):
         import json
         import os
         from string import Template
@@ -604,12 +602,11 @@ class TemporalNetwork:
         import string
         import random
 
-        allchar = string.ascii_letters + string.digits
-        div_id = "".join(random.choice(allchar) for x in range(8))
+        div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
         network_data = {
-            'nodes' : [ { 'id': v, 'group' : 1 } for v in self.nodes ],
-            'links' : [ { 'source': s, 'target': v, 'value': 1, 'time': t} for s, v, t in self.tedges ]
+            'nodes' : [ { 'id': 'n_'+v, 'group' : 1 } for v in self.nodes ],
+            'links' : [ { 'source': 'n_'+s, 'target': 'n_'+v, 'value': 1, 'time': t} for s, v, t in self.tedges ]
         }
 
         html_template =  Template("""
@@ -731,7 +728,7 @@ class TemporalNetwork:
                 .links(links);
 
         // ms per tick
-        var intervl = setInterval(time_step, 100);
+        var intervl = setInterval(time_step, 200);
         var time = mintime;
 
         // simulates one time step
@@ -821,4 +818,19 @@ class TemporalNetwork:
         });
     </script>
     """)
-        display(HTML(html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height, 'div_id': div_id})))
+        html = html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height, 'div_id': div_id})
+        return html
+
+
+    def _repr_html_(self):
+        
+        from IPython.core.display import display, HTML
+        
+        display(HTML(self.getHTML()))
+
+
+    def writeHTML(self, filename, width=600, height=600):
+        html = self.getHTML(width=width, height=height)
+        with open(filename, 'w+') as f:
+            f.write(html)
+        
