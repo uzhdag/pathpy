@@ -27,6 +27,7 @@
 import numpy as _np
 import collections as _co
 import sys as _sys
+import copy as _copy
 
 from pathpy.Log import Log, Severity
 
@@ -153,7 +154,7 @@ class Paths:
         return lengths
 
     def __add__(self, other):
-        """
+        """add path statistics of one object to the other
 
         Parameters
         ----------
@@ -163,15 +164,90 @@ class Paths:
         -------
         Paths
             Default operator +, which returns the sum of two Path objects
+
+        Examples
+        -------
+        >>> p = Paths()
+        >>> p + p
         """
         p_sum = Paths()
-        for l in self.paths:
-            for p in self.paths[l]:
-                p_sum.paths[l][p] = self.paths[l][p]
+        p_sum.paths = _copy.deepcopy(self.paths)
         for l in other.paths:
             for p in other.paths[l]:
                 p_sum.paths[l][p] += other.paths[l][p]
         return p_sum
+
+    def __iadd__(self, other):
+        """in place addition avoids unnecessary copies of the object
+
+        Parameters
+        ----------
+        other
+
+        Returns
+        -------
+        None
+
+        Examples
+        -------
+        >>> p = Paths()
+        >>> p += p  # add once to itself
+        >>> p += p  # add twice to itself
+        """
+        for l in other.paths:
+            for p in other.paths[l]:
+                self.paths[l][p] += other.paths[l][p]
+        return self
+
+    def __mul__(self, factor):
+        """multiplies all path statistics by factor
+
+        Parameters
+        ----------
+        factor
+
+        Returns
+        -------
+        a Paths object with multiplied frequencies
+
+        Examples
+        --------
+        >>> p = Paths()
+        >>> new_p = p * 3
+        >>> other_new_p = 3 * p
+        """
+        p_mult = Paths()
+        for l in self.paths:
+            for p in self.paths[l]:
+                p_mult.paths[l][p] = self.paths[l][p] * factor
+
+        return p_mult
+
+    def __rmul__(self, factor):
+        """right multiply"""
+        return self * factor
+
+    def __imul__(self, factor):
+        """in-place scaling of path statistics
+
+        Parameters
+        ----------
+        factor
+
+        Returns
+        -------
+        None
+
+        Examples
+        -------
+        >>> p = Paths()
+        >>> p *= 3
+        """
+        for l in self.paths:
+            for p in self.paths[l]:
+                self.paths[l][p] = self.paths[l][p] * factor
+
+        return self
 
 
     def getSequence(self, stopchar='|'):
