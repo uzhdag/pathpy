@@ -25,6 +25,7 @@
 """
 
 import collections as _co
+import operator
 
 import numpy as _np
 import scipy.sparse as _sparse
@@ -73,6 +74,9 @@ class HigherOrderMeasures:
             node_centralities[v] += 0
 
         _Log.add('finished.', _Severity.INFO)
+
+        node_centralities = sorted(node_centralities.items(), key=operator.itemgetter(1))
+        node_centralities.reverse()
 
         return node_centralities
 
@@ -131,6 +135,9 @@ class HigherOrderMeasures:
             node_centralities[v] += 0
 
         _Log.add('finished.', _Severity.INFO)
+
+        node_centralities = sorted(node_centralities.items(), key=operator.itemgetter(1))
+        node_centralities.reverse()
 
         return node_centralities
 
@@ -191,6 +198,9 @@ class HigherOrderMeasures:
                 first_order_evcent[v] /= sum(first_order_evcent.values())
 
         _Log.add('finished.', _Severity.INFO)
+
+        first_order_evcent = sorted(first_order_evcent.items(), key=operator.itemgetter(1))
+        first_order_evcent.reverse()
 
         return first_order_evcent
 
@@ -299,6 +309,9 @@ class HigherOrderMeasures:
             first_order_PR[v] += 0
 
         _Log.add('finished.', _Severity.INFO)
+
+        first_order_PR = sorted(first_order_PR.items(), key=operator.itemgetter(1))
+        first_order_PR.reverse()
 
         return first_order_PR
 
