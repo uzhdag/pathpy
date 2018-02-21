@@ -99,7 +99,7 @@ class TemporalNetwork:
 
             Log.add('Sorting time stamps ...')
 
-            self.ordered_times = sorted(self.time.keys())
+            self.ordered_times = sorted(list(self.time.keys()))
             for v in self.nodes:
                 self.activities[v] = sorted(self.activities_sets[v])
             Log.add('finished.')
@@ -247,6 +247,21 @@ class TemporalNetwork:
         return TemporalNetwork(tedges=tedges)
 
 
+    def writeFile(self, filename, sep=','):
+        """
+        Writes the time-stamped edge list of this temporal network instance to a CSV file
+
+        @param filename: name of CSV file to save data to
+        @sep: character used to separate columns in generated CSV file
+        """
+        Log.add('Writing {0} time-stamped edges to file {1}'.format(self.ecount(), filename), Severity.INFO)
+        with open(filename, 'w+') as f:
+            f.write('source' + sep + 'target' + sep + 'time' + '\n')
+            for time in self.ordered_times:
+                print(self.time[time])
+                for (v, w, t) in self.time[time]:
+                    f.write(str(v) + sep + str(w) + sep + str(t)+'\n')
+
 
     def filterEdges(self, edge_filter):
         """
@@ -296,10 +311,11 @@ class TemporalNetwork:
             self.activities[source].append(ts)
             self.activities[source].sort()
 
-        # Reorder time stamps
+        # Maintain order of time stamps
         index = _bs.bisect_left(self.ordered_times, ts)
-        self.ordered_times.insert(index, ts)
-        #self.ordered_times = sorted(self.time.keys())
+        # add if ts is not already in list
+        if index == len(self.ordered_times) or self.ordered_times[index] != ts:
+            self.ordered_times.insert(index, ts)
 
         # make edge undirected by adding another directed edge
         if not directed:
@@ -594,13 +610,17 @@ class TemporalNetwork:
             tex_file.write(''.join(output))
 
 
-    def getHTML(self, width=600, height=600):
+    def getHTML(self, width=600, height=600, msperframe=50, tsperframe=0):
         import json
         import os
         from string import Template
 
         import string
         import random
+
+        if tsperframe == 0:
+            d = self.getInterEventTimes()
+            tsperframe = 20*int(_np.mean(d)/(1000/msperframe))
 
         div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
@@ -664,6 +684,7 @@ class TemporalNetwork:
         var svg = d3.select("#"+"$div_id"),
             width = +svg.attr("width"),
             height = +svg.attr("height"),
+            radius = 6,
             color = d3.scaleOrdinal(d3.schemeCategory20b);
 
         var temporal_net = $network_data
@@ -691,12 +712,13 @@ class TemporalNetwork:
 
         mintime = d3.min(time_stamps);
         maxtime = d3.max(time_stamps);
+        tsperframe = $tsperframe
         
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function(d) { return d.id; }))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .alphaTarget(1)
+            .alphaTarget(0)
             .on("tick", ticked);
 
         var link = svg.append("g")
@@ -712,7 +734,7 @@ class TemporalNetwork:
             .data(temporal_net.nodes)
             .enter().append("circle")
             .attr('id', function(d) { return d.id; })
-            .attr("r", 5)
+            .attr("r", radius)
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -728,27 +750,30 @@ class TemporalNetwork:
                 .links(links);
 
         // ms per tick
-        var intervl = setInterval(time_step, 200);
+        var intervl = setInterval(time_step, $msperframe);
         var time = mintime;
 
         // simulates one time step
         function time_step(){
             //stop simulation
-            if(time == maxtime){
+            if(time > maxtime){
                 clearInterval(intervl);
             }
 
             // get active links
             active_links = [];
             active_nodes = [];
-            if (edgesbytime[time]!=null)
+            for (ti=Math.max(mintime, time-tsperframe); ti<=time; ti++)
             {
-                edgesbytime[time].forEach(function(id){
-                                active_links.push( id );
-                                node_ids = id.split('-');
-                                active_nodes.push(node_ids[0]);
-                                active_nodes.push(node_ids[1]);
-                        });
+                if (edgesbytime[ti]!=null)
+                {
+                    edgesbytime[ti].forEach(function(id){
+                                    active_links.push( id );
+                                    node_ids = id.split('-');
+                                    active_nodes.push(node_ids[0]);
+                                    active_nodes.push(node_ids[1]);
+                            });
+                }
             }
 
             //color links based on activity
@@ -769,7 +794,7 @@ class TemporalNetwork:
 
             // update time output
             d3.select('text').html('time = ' + time);
-            time++;
+            time+=tsperframe;
         }
 
         
@@ -786,7 +811,7 @@ class TemporalNetwork:
 
         function dragstarted(d) {
             if (!d3.event.active) 
-                simulation.alphaTarget(0.3).restart();
+                simulation.alphaTarget(0.2).restart();
             d.fx = d.x;
             d.fy = d.y;
         }
@@ -812,13 +837,13 @@ class TemporalNetwork:
                 .attr("y2", function(d) { return d.target.y; });
 
             node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
+                .attr("cx", function(d) {return Math.max(radius, Math.min(width - radius, d.x)); })
+                .attr("cy", function(d) { return Math.max(radius, Math.min(height - radius, d.y)); });
         }
         });
     </script>
     """)
-        html = html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height, 'div_id': div_id})
+        html = html_template.substitute({'network_data': json.dumps(network_data), 'width': width, 'height': height, 'div_id': div_id, 'msperframe': msperframe, 'tsperframe': tsperframe})
         return html
 
 
@@ -829,8 +854,8 @@ class TemporalNetwork:
         display(HTML(self.getHTML()))
 
 
-    def writeHTML(self, filename, width=600, height=600):
-        html = self.getHTML(width=width, height=height)
+    def writeHTML(self, filename, width=600, height=600, msperframe=50):
+        html = self.getHTML(width=width, height=height, msperframe = msperframe)
         with open(filename, 'w+') as f:
             f.write(html)
         
