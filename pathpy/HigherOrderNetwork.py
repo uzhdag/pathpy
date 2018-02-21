@@ -766,9 +766,16 @@ class HigherOrderNetwork:
         import os
         from string import Template
         
+        # prefix nodes starting with number
+        def fix_node_name(v):
+            if v[0].isdigit():
+                return "n_"+ v
+            else:
+                return v
+
         network_data = { 
-            'nodes' : [ { 'id': v, 'group' : 1 } for v in self.nodes ],
-            'links' : [ { 'source': e[0], 'target': e[1], 'value': 1} for e, weight in self.edges.items() ]
+            'nodes' : [ { 'id': fix_node_name(v), 'group' : 1 } for v in self.nodes ],
+            'links' : [ { 'source': fix_node_name(e[0]), 'target': fix_node_name(e[1]), 'value': 1} for e, weight in self.edges.items() ]
         }
 
         import string

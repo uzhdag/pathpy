@@ -624,9 +624,16 @@ class TemporalNetwork:
 
         div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
+        # prefix nodes starting with number
+        def fix_node_name(v):
+            if v[0].isdigit():
+                return "n_"+ v
+            else:
+                return v
+
         network_data = {
-            'nodes' : [ { 'id': 'n_'+v, 'group' : 1 } for v in self.nodes ],
-            'links' : [ { 'source': 'n_'+s, 'target': 'n_'+v, 'value': 1, 'time': t} for s, v, t in self.tedges ]
+            'nodes' : [ { 'id': fix_node_name(v), 'group' : 1 } for v in self.nodes ],
+            'links' : [ { 'source': fix_node_name(s), 'target': fix_node_name(v), 'value': 1, 'time': t} for s, v, t in self.tedges ]
         }
 
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js', 'tempnet.html')) as f:
