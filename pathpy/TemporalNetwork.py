@@ -837,7 +837,7 @@ class TemporalNetwork:
                 .attr("y2", function(d) { return d.target.y; });
 
             node
-                .attr("cx", function(d) {return Math.max(radius, Math.min(width - radius, d.x)); })
+                .attr("cx", function(d) { return Math.max(radius, Math.min(width - radius, d.x)); })
                 .attr("cy", function(d) { return Math.max(radius, Math.min(height - radius, d.y)); });
         }
         });

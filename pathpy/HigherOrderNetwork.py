@@ -756,7 +756,7 @@ class HigherOrderNetwork:
         return identity_matrix - transition_matrix
 
 
-    def _repr_html_(self, width=400, height=300):
+    def _repr_html_(self, width=600, height=600):
         """
         display an interactive D3 visualisation of the higher-order network in jupyter
         """
@@ -799,6 +799,7 @@ class HigherOrderNetwork:
         require(["d3"], function(d3) {
 
             var svg = d3.select("#"+"$div_id"),
+                radius = 6,
                 width = +svg.attr("width"),
                 height = +svg.attr("height");
 
@@ -809,7 +810,8 @@ class HigherOrderNetwork:
             var simulation = d3.forceSimulation()
                 .force("link", d3.forceLink().id(function(d) { return d.id; }))
                 .force("charge", d3.forceManyBody())
-                .force("center", d3.forceCenter(width / 2, height / 2));
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .alphaTarget(0);
                             
             var link = svg.append("g")
                 .attr("class", "links")
@@ -823,7 +825,7 @@ class HigherOrderNetwork:
                 .selectAll("circle")
                 .data(graph.nodes)
                 .enter().append("circle")
-                .attr("r", 5)
+                .attr("r", radius)
                 .attr("fill", function(d) { return color(d.group); })
                 .call(d3.drag()
                     .on("start", dragstarted)
@@ -848,8 +850,8 @@ class HigherOrderNetwork:
                     .attr("y2", function(d) { return d.target.y; });
 
                 node
-                    .attr("cx", function(d) { return d.x; })
-                    .attr("cy", function(d) { return d.y; });
+                    .attr("cx", function(d) { return Math.max(radius, Math.min(width - radius, d.x)); })
+                    .attr("cy", function(d) { return Math.max(radius, Math.min(height - radius, d.y)); });
             }
 
             function dragstarted(d) {
