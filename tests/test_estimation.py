@@ -263,5 +263,5 @@ def test_entropy_growth_rate_ratio_mle(random_paths):
 def test_entropy_growth_rate_ratio_miller(random_paths):
     p = random_paths(100, 500)
     miller_ratio = pp.PathMeasures.getEntropyGrowthRateRatio(p, method="Miller")
-    miller_expected = 0.6765478705937058
+    miller_expected = 0.88685603746914599
     assert miller_ratio == pytest.approx(miller_expected)
