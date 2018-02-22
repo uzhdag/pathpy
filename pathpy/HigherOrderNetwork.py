@@ -756,12 +756,7 @@ class HigherOrderNetwork:
         return identity_matrix - transition_matrix
 
 
-    def _repr_html_(self, width=600, height=600):
-        """
-        display an interactive D3 visualisation of the higher-order network in jupyter
-        """
-        
-        from IPython.core.display import display, HTML
+    def getHTML(self, width=600, height=600, require=True):
         import json
         import os
         from string import Template
@@ -784,13 +779,32 @@ class HigherOrderNetwork:
         allchar = string.ascii_letters + string.digits
         div_id = "".join(random.choice(allchar) for x in range(8))
 
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js', 'higherordernet.html')) as f:
+        template_file = 'higherordernet_require.html'
+        if not require:
+            template_file = 'higherordernet.html'
+
+
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js', template_file)) as f:
             html_str = f.read()
 
         html_template = Template(html_str)
 
-        display(HTML(html_template.substitute({
-            'network_data': json.dumps(network_data), 
-            'width': width, 
-            'height': height, 
-            'div_id': div_id})))
+        return html_template.substitute({
+            'network_data': json.dumps(network_data),
+            'width': width,
+            'height': height,
+            'div_id': div_id})
+
+
+    def _repr_html_(self, require=True):
+        """
+        display an interactive D3 visualisation of the higher-order network in jupyter
+        """        
+        from IPython.core.display import display, HTML        
+        display(HTML(self.getHTML(require=require)))
+
+
+    def writeHTML(self, filename, width=600, height=600):
+        html = self.getHTML(width=width, height=height, require=False)
+        with open(filename, 'w+') as f:
+            f.write(html)

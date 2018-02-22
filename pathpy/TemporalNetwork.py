@@ -610,7 +610,7 @@ class TemporalNetwork:
             tex_file.write(''.join(output))
 
 
-    def getHTML(self, width=600, height=600, msperframe=50, tsperframe=0):
+    def getHTML(self, width=600, height=600, msperframe=50, tsperframe=0, require=True):
         import json
         import os
         from string import Template
@@ -636,7 +636,11 @@ class TemporalNetwork:
             'links' : [ { 'source': fix_node_name(s), 'target': fix_node_name(v), 'value': 1, 'time': t} for s, v, t in self.tedges ]
         }
 
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js', 'tempnet.html')) as f:
+        template_file = 'tempnet_require.html'
+        if not require:
+            template_file = 'tempnet.html'
+
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js', template_file)) as f:
             html_str = f.read()
 
         html_template = Template(html_str)
@@ -652,15 +656,13 @@ class TemporalNetwork:
         return html
 
 
-    def _repr_html_(self):
-        
-        from IPython.core.display import display, HTML
-        
-        display(HTML(self.getHTML()))
+    def _repr_html_(self, require=True):
+        from IPython.core.display import display, HTML        
+        display(HTML(self.getHTML(require=require)))
 
 
     def writeHTML(self, filename, width=600, height=600, msperframe=50):
-        html = self.getHTML(width=width, height=height, msperframe = msperframe)
+        html = self.getHTML(width=width, height=height, msperframe = msperframe, require=False)
         with open(filename, 'w+') as f:
             f.write(html)
         

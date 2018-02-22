@@ -11,9 +11,14 @@
 
 <svg width="$width" height="$height" id="$div_id"></svg>
 
-<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
-
 <script charset="utf-8">
+require.config({
+    paths: {
+        d3: "https://d3js.org/d3.v4.min"
+    }
+});
+require(["d3"], function(d3) {
+
     var svg = d3.select("#"+"$div_id"),
         radius = 6,
         width = +svg.attr("width"),
@@ -86,4 +91,5 @@
     d.fx = null;
     d.fy = null;
     }
+});
 </script>
