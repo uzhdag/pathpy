@@ -618,18 +618,23 @@ class TemporalNetwork:
         import string
         import random
 
+        # auto-adjust simulation speed to temporal characteristics
         if tsperframe == 0:
             d = self.getInterEventTimes()
-            tsperframe = 20*int(_np.mean(d)/(1000/msperframe))
+            fps = 1000.0/float(msperframe)
+            avg_frames_bw_interactions = _np.mean(d)/fps
+            tsperframe = _np.max([1, 20*int(avg_frames_bw_interactions)])
 
         div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
         # prefix nodes starting with number
         def fix_node_name(v):
+            new_v = v
             if v[0].isdigit():
-                return "n_"+ v
-            else:
-                return v
+                new_v = "n_" + v
+            if v[0] == '_':
+                new_v = "n_" + v
+            return new_v
 
         network_data = {
             'nodes' : [ { 'id': fix_node_name(v), 'group' : 1 } for v in self.nodes ],
