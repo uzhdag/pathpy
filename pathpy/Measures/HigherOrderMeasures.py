@@ -48,6 +48,15 @@ class HigherOrderMeasures:
 
 
     @staticmethod
+    def ranked(centralities):
+        """
+        Returns a dictionary with node centrality values as a ranked list
+        """
+        ranked_nodes = sorted(centralities.items(), key=operator.itemgetter(1))
+        ranked_nodes.reverse()
+        return ranked_nodes
+
+    @staticmethod
     def ClosenessCentrality(network):
         """
         Calculates the closeness centralities of all nodes.
@@ -74,9 +83,6 @@ class HigherOrderMeasures:
             node_centralities[v] += 0
 
         _Log.add('finished.', _Severity.INFO)
-
-        node_centralities = sorted(node_centralities.items(), key=operator.itemgetter(1))
-        node_centralities.reverse()
 
         return node_centralities
 
@@ -135,9 +141,6 @@ class HigherOrderMeasures:
             node_centralities[v] += 0
 
         _Log.add('finished.', _Severity.INFO)
-
-        node_centralities = sorted(node_centralities.items(), key=operator.itemgetter(1))
-        node_centralities.reverse()
 
         return node_centralities
 
@@ -199,11 +202,7 @@ class HigherOrderMeasures:
 
         _Log.add('finished.', _Severity.INFO)
 
-        first_order_evcent = sorted(first_order_evcent.items(), key=operator.itemgetter(1))
-        first_order_evcent.reverse()
-
         return first_order_evcent
-
 
 
     @staticmethod
@@ -309,9 +308,6 @@ class HigherOrderMeasures:
             first_order_PR[v] += 0
 
         _Log.add('finished.', _Severity.INFO)
-
-        first_order_PR = sorted(first_order_PR.items(), key=operator.itemgetter(1))
-        first_order_PR.reverse()
 
         return first_order_PR
 
