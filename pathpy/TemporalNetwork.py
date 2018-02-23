@@ -610,7 +610,7 @@ class TemporalNetwork:
             tex_file.write(''.join(output))
 
 
-    def getHTML(self, width=600, height=600, msperframe=50, tsperframe=0, require=True):
+    def getHTML(self, width=600, height=600, msperframe=100, tsperframe=0, require=True):
         import json
         import os
         from string import Template
@@ -621,9 +621,11 @@ class TemporalNetwork:
         # auto-adjust simulation speed to temporal characteristics
         if tsperframe == 0:
             d = self.getInterEventTimes()
+            avg_ts_bw_interactions = _np.mean(d)
             fps = 1000.0/float(msperframe)
-            avg_frames_bw_interactions = _np.mean(d)/fps
-            tsperframe = _np.max([1, 20*int(avg_frames_bw_interactions)])
+            x = avg_ts_bw_interactions/fps
+            # set time scale so that we expect 5 interactions per frame
+            tsperframe = _np.max([1, int(20*x)])
 
         div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
