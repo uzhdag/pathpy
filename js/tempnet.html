@@ -56,6 +56,8 @@
         color = d3.scaleOrdinal(d3.schemeCategory20b);
 
     var temporal_net = $network_data
+    tsperframe = $tsperframe
+    msperframe = $msperframe
 
     // create a dictionary with edges indexed by timestamps
     var edgesbytime = {};
@@ -77,8 +79,8 @@
 
     mintime = d3.min(time_stamps);
     maxtime = d3.max(time_stamps);
+
     var run_status = true;
-    tsperframe = $tsperframe
     
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
@@ -131,7 +133,8 @@
 
     // start animation
     var time = mintime;
-    var intervl = setInterval(time_step, $msperframe);   
+    var intervl = setInterval(time_step, msperframe);
+    console.log('Started animation.')
 
     // animates one time step
     function time_step() {
@@ -141,23 +144,39 @@
         // stop animation
         if(time > maxtime){
             run_status = false;
-            clearInterval(intervl);            
+            clearInterval(intervl);
+            console.log('Stopped animation.')     
         }
 
-       // reset class of all nodes and links
+       // reset class of all nodes and links      
         for (id in edges_to_dom)
-            edges_to_dom[id].attr('class', 'links');
+            try{
+                edges_to_dom[id].attr('class', 'links');
+            }
+            catch(err){
+                console.log('Error: Could not find DOM object with id ' + id);
+            }
         for (id in nodes_to_dom)
-            nodes_to_dom[id].attr('class', 'nodes');
+            try{
+                nodes_to_dom[id].attr('class', 'nodes');
+            }
+            catch(err){
+                console.log('Error: Could not find DOM object with id ' + id);
+            }
 
         // change class of active nodes and links
         for (ti=Math.max(mintime, time-tsperframe); ti<=time; ti++) {
             if (edgesbytime[ti]!=null) {
-                edgesbytime[ti].forEach(function(id){
-                    edges_to_dom[id].attr('class', 'active').moveToFront();
+                edgesbytime[ti].forEach(function(id){                    
                     node_ids = id.split('-');
-                    nodes_to_dom[node_ids[0]].attr('class', 'active').moveToFront();
-                    nodes_to_dom[node_ids[1]].attr('class', 'active').moveToFront();                        
+                    try {
+                        edges_to_dom[id].attr('class', 'active').moveToFront();
+                        nodes_to_dom[node_ids[0]].attr('class', 'active').moveToFront();
+                        nodes_to_dom[node_ids[1]].attr('class', 'active').moveToFront();                        
+                    }
+                    catch(err){
+                        console.log('Error: Could not find DOM object with id ' + id);
+                    }     
                 });
             }
         }
@@ -169,12 +188,15 @@
             run_status = false;
             clearInterval(intervl);
             d3.select('#${div_id}_start_txt').html('start');
+            console.log('Paused animation.')
         }
         else {
-            intervl = setInterval(time_step, $msperframe);
+            intervl = setInterval(time_step, msperframe);
             run_status = true;
             d3.select('#${div_id}_start_txt').html('stop');
+            console.log('Resumed animation.')
         }
+        
     }
 
     function restartAnimation() {
@@ -184,7 +206,8 @@
         time_txt.html('t = ' + time);
         d3.select('#${div_id}_start_txt').html('stop');
         run_status = true;
-        intervl = setInterval(time_step, $msperframe);
+        intervl = setInterval(time_step, msperframe);
+        console.log('Restarted animation.')
     }
 
     function ticked() {

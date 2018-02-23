@@ -759,7 +759,7 @@ class HigherOrderNetwork:
         return identity_matrix - transition_matrix
 
 
-    def getHTML(self, width=600, height=600, require=True):
+    def _to_html(self, width=600, height=600, require=True):
         import json
         import os
         from string import Template
@@ -804,10 +804,10 @@ class HigherOrderNetwork:
         display an interactive D3 visualisation of the higher-order network in jupyter
         """        
         from IPython.core.display import display, HTML        
-        display(HTML(self.getHTML(require=require)))
+        display(HTML(self._to_html(require=require)))
 
 
-    def writeHTML(self, filename, width=600, height=600):
-        html = self.getHTML(width=width, height=height, require=False)
+    def write_html(self, filename, width=600, height=600):
+        html = self._to_html(width=width, height=height, require=False)
         with open(filename, 'w+') as f:
             f.write(html)

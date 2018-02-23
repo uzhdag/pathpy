@@ -59,20 +59,19 @@ require(["d3"], function(d3) {
         color = d3.scaleOrdinal(d3.schemeCategory20b);
 
     var temporal_net = $network_data
+    tsperframe = $tsperframe
+    msperframe = $msperframe
 
+    // create a dictionary with edges indexed by timestamps
     var edgesbytime = {};
-
-    // extract timestamps
     time_stamps = temporal_net.links.map(link => link['time']);
     time_stamps.forEach(function(t){
                 edgesbytime[t] = [];
             });
-    links = [];
-    i = 0;
 
-    // extract static links 
+    // extract static links
+    links = [];    
     temporal_net.links.forEach(function(link){
-        console.log(link);
         id = String(link.source + '-' + link.target);
         edgesbytime[link.time].push(id);
         l = { 'source': link.source, 'target': link.target, 'id': id };
@@ -83,8 +82,8 @@ require(["d3"], function(d3) {
 
     mintime = d3.min(time_stamps);
     maxtime = d3.max(time_stamps);
+
     var run_status = true;
-    tsperframe = $tsperframe
     
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
@@ -112,88 +111,106 @@ require(["d3"], function(d3) {
             .on("drag", dragged)
             .on("end", dragended));
 
-    d3.select('#${div_id}_start_txt').on("click", pauseSimulation);
-    d3.select('#${div_id}_restart_txt').on("click", restartSimulation);
+    node.append("title").text(function(d) { return d.id; });
 
-    node.append("title")
-        .text(function(d) { return d.id; });
+    // build mapping to DOM objects once 
+    // for performance reasons
+    var time_txt = d3.select('#${div_id}_time_txt');
+    var edges_to_dom = {};
+    var nodes_to_dom = {};    
 
-    simulation.nodes(temporal_net.nodes)
-        .on("tick", ticked);
+    links.forEach(function(link){    
+        edges_to_dom[link.id] = d3.select('#'+link.id);
+    });
 
-    simulation.force("link")
-        .links(links);
-    
+    temporal_net.nodes.forEach(function(n){    
+        nodes_to_dom[n.id] = d3.select('#'+n.id);
+    });
+
+    // attach event handlers
+    d3.select('#${div_id}_start_txt').on("click", pauseAnimation);
+    d3.select('#${div_id}_restart_txt').on("click", restartAnimation);    
+
+    simulation.nodes(temporal_net.nodes).on("tick", ticked);
+    simulation.force("link").links(links);
+
+    // start animation
     var time = mintime;
-    var intervl = setInterval(time_step, $msperframe);    
+    var intervl = setInterval(time_step, msperframe);
+    console.log('Started animation.')
 
-    function pauseSimulation() {
+    // animates one time step
+    function time_step() {
 
+        time_txt.html('t = ' + time);
+
+        // stop animation
+        if(time > maxtime){
+            run_status = false;
+            clearInterval(intervl);
+            console.log('Stopped animation.')
+        }
+
+       // reset class of all nodes and links
+      
+        for (id in edges_to_dom)
+            try{
+                edges_to_dom[id].attr('class', 'links');
+            }
+            catch(err){
+                console.log('Error: Could not find DOM object with id ' + id);
+            }
+        for (id in nodes_to_dom)
+            try{
+                nodes_to_dom[id].attr('class', 'nodes');
+            }
+            catch(err){
+                console.log('Error: Could not find DOM object with id ' + id);
+            }
+
+        // change class of active nodes and links
+        for (ti=Math.max(mintime, time-tsperframe); ti<=time; ti++) {
+            if (edgesbytime[ti]!=null) {
+                edgesbytime[ti].forEach(function(id){                    
+                    node_ids = id.split('-');
+                    try {
+                        edges_to_dom[id].attr('class', 'active').moveToFront();
+                        nodes_to_dom[node_ids[0]].attr('class', 'active').moveToFront();
+                        nodes_to_dom[node_ids[1]].attr('class', 'active').moveToFront();                        
+                    }
+                    catch(err){
+                        console.log('Error: Could not find DOM object with id ' + id);
+                    }     
+                });
+            }
+        }
+        time += tsperframe;
+    }
+
+    function pauseAnimation() {
         if (run_status) {
             run_status = false;
             clearInterval(intervl);
             d3.select('#${div_id}_start_txt').html('start');
+            console.log('Paused animation.')
         }
         else {
-            intervl = setInterval(time_step, $msperframe);
+            intervl = setInterval(time_step, msperframe);
             run_status = true;
             d3.select('#${div_id}_start_txt').html('stop');
+            console.log('Resumed animation.')
         }
     }
 
-    function restartSimulation() {
-
+    function restartAnimation() {
         if (run_status)
             clearInterval(intervl);
         time = mintime;
-        d3.select('#${div_id}_time_txt').html('t = ' + time);
+        time_txt.html('t = ' + time);
         d3.select('#${div_id}_start_txt').html('stop');
         run_status = true;
-        intervl = setInterval(time_step, $msperframe);
-    }
-
-    // simulates one time step
-    function time_step() {
-
-        //stop simulation
-        if(time > maxtime){
-            run_status = false;
-            clearInterval(intervl);            
-        }
-
-        // get active links
-        active_links = [];
-        active_nodes = [];
-        for (ti=Math.max(mintime, time-tsperframe); ti<=time; ti++) {
-            if (edgesbytime[ti]!=null) {
-                edgesbytime[ti].forEach(function(id){
-                                active_links.push( id );
-                                node_ids = id.split('-');
-                                active_nodes.push(node_ids[0]);
-                                active_nodes.push(node_ids[1]);
-                        });
-            }
-        }
-
-        //color links based on activity
-        d3.selectAll('line').attr('class', 'tlinks');
-
-        active_links.forEach(function(l){
-            d3.select('#'+l).attr('class', 'active');
-            d3.select('#'+l).moveToFront();        
-        });
-
-        // color nodes based on activity
-        d3.selectAll('circle').attr('class', 'tnodes');
-
-        active_nodes.forEach(function(n){        
-            d3.select('#'+n).attr('class', 'active');
-            d3.select('#'+n).moveToFront();
-        });
-
-        // update time output
-        d3.select('#${div_id}_time_txt').html('t = ' + time);
-        time += tsperframe;
+        intervl = setInterval(time_step, msperframe);
+        console.log('Restarted animation.')
     }
 
     function ticked() {
@@ -208,7 +225,7 @@ require(["d3"], function(d3) {
 
     function dragstarted(d) {
         if (!d3.event.active) 
-            simulation.alphaTarget(0).restart();
+            simulation.alphaTarget(0.2).restart();
         d.fx = d.x;
         d.fy = d.y;
     }
@@ -220,7 +237,7 @@ require(["d3"], function(d3) {
 
     function dragended(d) {
         if (!d3.event.active) 
-            simulation.alphaTarget(0);
+            simulation.alphaTarget(0.2);
         d.fx = null;
         d.fy = null;
     }

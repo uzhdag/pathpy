@@ -507,7 +507,7 @@ class TemporalNetwork:
         return t
 
 
-    def exportUnfoldedNetwork(self, filename, dag=True, angle=20, layer_dist='0.3cm', split_directions=True):
+    def write_tikz(self, filename, dag=True, angle=20, layer_dist='0.3cm', split_directions=True):
         """
         Generates a tex file that can be compiled to a time-unfolded
         representation of the temporal network.
@@ -610,7 +610,7 @@ class TemporalNetwork:
             tex_file.write(''.join(output))
 
 
-    def getHTML(self, width=600, height=600, msperframe=100, tsperframe=0, require=True):
+    def _to_html(self, width=600, height=600, msperframe=100, tsperframe=0, require=True):
         import json
         import os
         from string import Template
@@ -634,8 +634,10 @@ class TemporalNetwork:
             new_v = v
             if v[0].isdigit():
                 new_v = "n_" + v
-            if v[0] == '_':
+            if new_v[0] == '_':
                 new_v = "n_" + v
+            if '-' in new_v:
+                new_v = new_v.replace('-','_')
             return new_v
 
         network_data = {
@@ -664,12 +666,12 @@ class TemporalNetwork:
 
 
     def _repr_html_(self, require=True):
-        from IPython.core.display import display, HTML        
-        display(HTML(self.getHTML(require=require)))
+        from IPython.core.display import display, HTML
+        display(HTML(self._to_html(require=require)))
 
 
-    def writeHTML(self, filename, width=600, height=600, msperframe=50):
-        html = self.getHTML(width=width, height=height, msperframe = msperframe, require=False)
+    def write_html(self, filename, width=600, height=600, msperframe=100):
+        html = '<!DOCTYPE html>\n<html><body>\n' + self._to_html(width=width, height=height, msperframe = msperframe, require=False) + '</body>\n</html>'
         with open(filename, 'w+') as f:
             f.write(html)
         
