@@ -21,7 +21,7 @@
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    var graph = $network_data
+    var graph = $network_data;
 
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))

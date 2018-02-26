@@ -258,7 +258,6 @@ class TemporalNetwork:
         with open(filename, 'w+') as f:
             f.write('source' + sep + 'target' + sep + 'time' + '\n')
             for time in self.ordered_times:
-                print(self.time[time])
                 for (v, w, t) in self.time[time]:
                     f.write(str(v) + sep + str(w) + sep + str(t)+'\n')
 
