@@ -2,7 +2,7 @@ import pathpy as pp
 import pytest
 import numpy as np
 
-from pathpy.Measures import higher_order_measures
+from pathpy import higher_order_measures
 
 
 @pytest.mark.parametrize('k, e_sum, e_var', (

@@ -1,1 +1,1 @@
-from .PathMeasures import *
+from .higher_order_measures import *

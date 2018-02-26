@@ -43,6 +43,12 @@ from pathpy.Log import Severity as _Severity
 from pathpy import HigherOrderNetwork
 
 
+__all__ = ["rank_centralities", "closeness_centrality", "betweenness_centrality",
+           "eigenvector_centrality", "pagerank", "eigenvalue_gap",
+           "fiedler_vector_sparse", "fiedler_vector_dense", "algebraic_connectivity",
+           ]
+
+
 def rank_centralities(centralities):
     """Returns a dictionary with node centrality values as a rank_centralities list
 
@@ -83,6 +89,8 @@ def closeness_centrality(network):
     -------
     dict
     """
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of HigherOrderNetwork"
     dist_first = network.getDistanceMatrixFirstOrder()
     node_centralities = _co.defaultdict(lambda: 0)
 
@@ -127,6 +135,8 @@ def betweenness_centrality(network, normalized=False):
         Dictionary containing as the keys the higher order node and as values their
         centralities
     """
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of HigherOrderNetwork"
     shortest_paths = network.getShortestPaths()
     node_centralities = _co.defaultdict(lambda: 0)
 
@@ -202,6 +212,8 @@ def eigenvector_centrality(network, projection='scaled', include_sub_paths=True)
     dict
 
     """
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of HigherOrderNetwork"
     A = network.getAdjacencyMatrix(includeSubPaths=include_sub_paths, weighted=False,
                                    transposed=True)
 
@@ -281,6 +293,8 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
     dict
 
     """
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of HigherOrderNetwork"
     assert projection in ['all', 'last', 'first', 'scaled'], 'Invalid projection method'
 
     _Log.add('Calculating PageRank in ' + str(network.order) + '-th order network...',
@@ -394,6 +408,8 @@ def eigenvalue_gap(network, include_sub_paths=True, lanczos_vectors=15, maxiter=
     -------
     float
     """
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of HigherOrderNetwork"
     # NOTE to myself: most of the time goes for construction of the 2nd order
     # NOTE            null graph, then for the 2nd order null transition matrix
 
@@ -445,6 +461,8 @@ def fiedler_vector_sparse(network, normalized=True, lanczos_vectors=15, maxiter=
     -------
 
     """
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of HigherOrderNetwork"
     # NOTE: The transposed matrix is needed to get the "left" eigenvectors
     L = network.getLaplacianMatrix()
 
@@ -483,6 +501,8 @@ def fiedler_vector_dense(network):
     -------
 
     """
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of HigherOrderNetwork"
     # NOTE: The Laplacian is transposed for the sparse case to get the left
     # NOTE: eigenvalue.
     L = network.getLaplacianMatrix()
@@ -514,6 +534,8 @@ def algebraic_connectivity(network, lanczos_vectors=15, maxiter=20):
     -------
 
     """
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of HigherOrderNetwork"
     _Log.add('Calculating algebraic connectivity ... ', _Severity.INFO)
 
     L = network.getLaplacianMatrix()
