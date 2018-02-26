@@ -25,7 +25,7 @@ def test_data_directory():
 def path_from_ngram_file():
     """load the example file as pypath.Path"""
     ngram_file_path = os.path.join(test_data_dir, 'ngram_simple.ngram')
-    path = pp.Paths.readFile(ngram_file_path, frequency=True)
+    path = pp.Paths.read_file(ngram_file_path, frequency=True)
     return path
 
 

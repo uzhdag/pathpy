@@ -384,9 +384,9 @@ class Paths:
         return p
 
     @classmethod
-    def readFile(cls, filename, separator=',', frequency=False, maxlines=_sys.maxsize,
-                 max_ngram_length=_sys.maxsize, expand_sub_paths=True,
-                 max_subpath_length=_sys.maxsize):
+    def read_file(cls, filename, separator=',', frequency=False, maxlines=_sys.maxsize,
+                  max_ngram_length=_sys.maxsize, expand_sub_paths=True,
+                  max_subpath_length=_sys.maxsize):
         """Read path data in ngram format.
 
         Reads path data from a file containing multiple lines of n-grams of the form

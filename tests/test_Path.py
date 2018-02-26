@@ -32,7 +32,7 @@ def test_write_read_file(tmpdir, random_paths):
     expected_paths = sorted(expected_seq.split('|'))
 
     p.write_file(dir_path.strpath)
-    p2 = pp.Paths.readFile(dir_path.strpath, frequency=True)
+    p2 = pp.Paths.read_file(dir_path.strpath, frequency=True)
 
     read_back = ''.join(p2.sequence())
     read_back_paths = sorted(read_back.split('|'))
@@ -48,8 +48,8 @@ def test_write_file(tmpdir, random_paths, max_line, freq, maxN):
     p = random_paths(30, 50)
 
     p.write_file(dir_path.strpath)
-    p2 = pp.Paths.readFile(dir_path.strpath, frequency=freq,
-                           maxlines=max_line, max_ngram_length=maxN)
+    p2 = pp.Paths.read_file(dir_path.strpath, frequency=freq,
+                            maxlines=max_line, max_ngram_length=maxN)
     assert p2
 
 
