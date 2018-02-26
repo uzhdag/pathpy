@@ -135,7 +135,7 @@ class DAG(object):
             if not self.successors[x]:
                 # x is a leaf, so any path ending in x are longest paths in the DAG
                 for p in cp:
-                    paths.addPathTuple(p, expandSubPaths=False, frequency=(0, 1))
+                    paths.add_path_tuple(p, expandSubPaths=False, frequency=(0, 1))
 
             else:
                 # extend all paths to x by successors of x

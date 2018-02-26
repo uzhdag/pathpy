@@ -35,7 +35,7 @@ def test_dag_path_extraction(dag_object):
 
     # Extract paths between nodes in DAG
     paths = pp.PathExtraction.DAGPaths.extract(dag)
-    assert paths.ObservationCount() == 7
+    assert paths.observation_count == 7
 
 
 def test_dag_path_extraction_cyclic(dag_object: pp.DAG):
@@ -58,7 +58,7 @@ def test_dag_path_mapping(dag_object):
     assert paths_mapped2.paths[3][('A', 'B', 'B', 'A')][1] == 1
     assert paths_mapped2.paths[3][('A', 'A', 'B', 'B')][1] == 1
     assert paths_mapped2.paths[4][('A', 'A', 'B', 'B', 'A')][1] == 1
-    assert paths_mapped2.ObservationCount() == 7
+    assert paths_mapped2.observation_count == 7
 
 
 edges1, types1 = [(1, 2), (1, 3), (2, 3)], ({1}, {2}, {3})

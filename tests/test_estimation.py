@@ -19,16 +19,16 @@ def test_estimate_order_1():
     """Example without second-order correlations"""
     paths = pp.Paths()
 
-    paths.addPath('a,c')
-    paths.addPath('b,c')
-    paths.addPath('c,d')
-    paths.addPath('c,e')
+    paths.add_path('a,c')
+    paths.add_path('b,c')
+    paths.add_path('c,d')
+    paths.add_path('c,e')
 
     for k in range(4):
-        paths.addPath('a,c,d')
-        paths.addPath('b,c,e')
-        paths.addPath('b,c,d')
-        paths.addPath('a,c,e')
+        paths.add_path('a,c,d')
+        paths.add_path('b,c,e')
+        paths.add_path('b,c,d')
+        paths.add_path('a,c,e')
 
     m = pp.MultiOrderModel(paths, maxOrder=2)
     assert m.estimateOrder(paths) == 1, \
@@ -39,14 +39,14 @@ def test_estimate_order_2():
     # Example with second-order correlations
     paths = pp.Paths()
 
-    paths.addPath('a,c')
-    paths.addPath('b,c')
-    paths.addPath('c,d')
-    paths.addPath('c,e')
+    paths.add_path('a,c')
+    paths.add_path('b,c')
+    paths.add_path('c,d')
+    paths.add_path('c,e')
 
     for k in range(4):
-        paths.addPath('a,c,d')
-        paths.addPath('b,c,e')
+        paths.add_path('a,c,d')
+        paths.add_path('b,c,e')
 
     m = pp.MultiOrderModel(paths, maxOrder=2)
     assert m.estimateOrder(paths) == 2, \
@@ -93,7 +93,7 @@ def test_estimate_order_strongly_connected():
                   'f,b,e', 'b,e,b']
 
     for ngram in ngram_list:
-        paths.addPath(ngram)
+        paths.add_path(ngram)
 
     g1 = pp.HigherOrderNetwork(paths, k=1)
     g1.reduceToGCC()
@@ -116,14 +116,14 @@ def test_temp_net_extraction(temporal_network_object):
     t = temporal_network_object
     paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
 
-    assert paths.ObservationCount() == 10, \
+    assert paths.observation_count == 10, \
         "Extracted wrong number of time-respecting paths"
 
 
 def test_betweenness_preference_empty():
     t = pp.TemporalNetwork()
     paths = pp.PathExtraction.TemporalPaths.extract(t, delta=3)
-    assert len(paths.getNodes()) == 0
+    assert len(paths.nodes()) == 0
 
     betweenness_pref = pp.path_measures.betweenness_preference(paths, 'e', method='MLE')
     expected = 0.0
@@ -168,7 +168,7 @@ def test_slow_down_factor_random(random_paths):
 
 def test_get_distance_matrix_temporal(temporal_network_object):
     p = pp.PathExtraction.TemporalPaths.extract(temporal_network_object)
-    shortest_paths_dict = p.getDistanceMatrix()
+    shortest_paths_dict = p.distance_matrix()
 
     path_distances = dict()
     for k in shortest_paths_dict:
@@ -200,7 +200,7 @@ def test_get_distance_matrix_temporal(temporal_network_object):
 
 def test_get_distance_matrix_empty():
     p = pp.Paths()
-    shortest_paths_dict = p.getDistanceMatrix()
+    shortest_paths_dict = p.distance_matrix()
     assert len(shortest_paths_dict) == 0
 
 

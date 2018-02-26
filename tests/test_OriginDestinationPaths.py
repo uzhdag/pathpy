@@ -7,7 +7,7 @@ def test_extract_distribute(test_data_directory, ):
     od_path = os.path.join(test_data_directory, 'example_origin_destination.csv')
 
     # read the network topology
-    p = pp.Paths.readEdges(network_path, undirected=True)
+    p = pp.Paths.read_edges(network_path, undirected=True)
     network = pp.HigherOrderNetwork(p)
 
     OD = pp.PathExtraction.OriginDestinationPaths.readFile(od_path)
@@ -28,7 +28,7 @@ def test_extract_single(test_data_directory, ):
     od_path = os.path.join(test_data_directory, 'example_origin_destination.csv')
 
     # read the network topology
-    p = pp.Paths.readEdges(network_path, undirected=True)
+    p = pp.Paths.read_edges(network_path, undirected=True)
     network = pp.HigherOrderNetwork(p)
 
     OD = pp.PathExtraction.OriginDestinationPaths.readFile(od_path)

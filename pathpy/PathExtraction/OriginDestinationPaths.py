@@ -36,9 +36,9 @@ class OriginDestinationPaths:
     """
     This class can be used to extract shortest path statistics based on origin/destination data.
     Such data capture the statistics of the origin (i.e. the start node) and destination (i.e. the target)
-    node of itineraries in a given network. Common examples include passenger origin and destination statistics 
-    in transportation networks. The methods in this class can be used to read origin/destination data from a 
-    file and generate path statistics based on the assumption that all paths from an origin and a destination 
+    node of itineraries in a given network. Common examples include passenger origin and destination statistics
+    in transportation networks. The methods in this class can be used to read origin/destination data from a
+    file and generate path statistics based on the assumption that all paths from an origin and a destination
     follow the shortest path in the network.
     """
 
@@ -47,9 +47,9 @@ class OriginDestinationPaths:
         """
         Extracts pathway statistics by calculating shortest paths between all origin and destination pairs in a given network.
 
-        @param OD: a list of tuples (o, d, w) containing the origin (o), destination (d), and float weight (w) of paths. 
-        @param network: the network topology for which shortest paths will be calculated. Names of nodes in the network 
-            must match the node names used in the origin destination list. 
+        @param OD: a list of tuples (o, d, w) containing the origin (o), destination (d), and float weight (w) of paths.
+        @param network: the network topology for which shortest paths will be calculated. Names of nodes in the network
+            must match the node names used in the origin destination list.
         """
 
         assert network is not None, 'Error: extraction of origin destination paths requires a network topology'
@@ -59,12 +59,12 @@ class OriginDestinationPaths:
         paths = _Paths()
 
         # OD is a list of tuples of the form (origin_node, destination_node, weight)
-        # that indicates that the shortest path from origin_node to destination_node was 
+        # that indicates that the shortest path from origin_node to destination_node was
         # observed weight times
         _Log.add('Starting origin destination path calculation ...')
-        for (o, d, w) in origin_destination_list:            
-            assert o in network.nodes, 'Error: could not find node ' + str(o) + ' in network' 
-            assert d in network.nodes, 'Error: could not find node ' + str(d) + ' in network' 
+        for (o, d, w) in origin_destination_list:
+            assert o in network.nodes, 'Error: could not find node ' + str(o) + ' in network'
+            assert d in network.nodes, 'Error: could not find node ' + str(d) + ' in network'
             sp = list(shortest_paths[o][d])
             num_paths = len(sp)
             if distribute_weight and num_paths > 1:
@@ -72,11 +72,11 @@ class OriginDestinationPaths:
                 # the (integer) weight of an origin destination pair can be distributed among all possible shortest paths
                 # between a pair of nodes, while constraining the weight of shortest paths to integers.
                 for i in range(int(w)):
-                    paths.addPathTuple(sp[i%num_paths], frequency=(0,1))
+                    paths.add_path_tuple(sp[i % num_paths], frequency=(0, 1))
             else:
-                # in this case, the full weight of an origin destination path will be assigned to a random 
+                # in this case, the full weight of an origin destination path will be assigned to a random
                 # single shortest path in the network
-                paths.addPathTuple(sp[_np.random.randint(num_paths)], frequency=(0,w))
+                paths.add_path_tuple(sp[_np.random.randint(num_paths)], frequency=(0, w))
         _Log.add('finished.')
         return paths
 
@@ -84,7 +84,7 @@ class OriginDestinationPaths:
     @staticmethod
     def readFile(filename, separator=','):
         """
-        Helper function to read origin/destination statistics from a csv file. 
+        Helper function to read origin/destination statistics from a csv file.
         The file is assumed to have the following structure:
 
         origin1,destination1,weight
@@ -100,7 +100,7 @@ class OriginDestinationPaths:
         origin_destination_list = []
         _Log.add('Reading origin/destination statistics from file ...')
 
-        with open(filename, 'r') as f:                
+        with open(filename, 'r') as f:
             line = f.readline()
             while line:
                 fields = line.rstrip().split(separator)

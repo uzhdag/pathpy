@@ -104,7 +104,7 @@ def closeness_centrality(network):
                 node_centralities[v1] += 1.0 / dist_first[v1][w1]
 
     # assign centrality zero to nodes not occurring on higher-order shortest paths
-    nodes = network.paths.getNodes()
+    nodes = network.paths.nodes()
     for v in nodes:
         node_centralities[v] += 0
 
@@ -176,7 +176,7 @@ def betweenness_centrality(network, normalized=False):
             node_centralities[v] /= m
 
     # assign centrality zero to nodes not occurring on higher-order shortest paths
-    nodes = network.paths.getNodes()
+    nodes = network.paths.nodes()
     for v in nodes:
         node_centralities[v] += 0
 
@@ -376,7 +376,7 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
             first_order_PR[v] /= sum(first_order_PR.values())
 
     # assign centrality zero to nodes not occurring in higher-order PR
-    nodes = network.paths.getNodes()
+    nodes = network.paths.nodes()
     for v in nodes:
         first_order_PR[v] += 0
 

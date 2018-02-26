@@ -25,21 +25,21 @@ def test_data_directory():
 def path_from_ngram_file():
     """load the example file as pypath.Path"""
     ngram_file_path = os.path.join(test_data_dir, 'ngram_simple.ngram')
-    path = pp.Paths.readFile(ngram_file_path, pathFrequency=True)
+    path = pp.Paths.readFile(ngram_file_path, frequency=True)
     return path
 
 
 @pytest.fixture()
 def path_from_edge_file():
     file_path = os.path.join(test_data_dir, 'edge_frequency.edge')
-    path = pp.Paths.readEdges(file_path, weight=True)
+    path = pp.Paths.read_edges(file_path, weight=True)
     return path
 
 
 @pytest.fixture()
 def path_from_edge_file_undirected():
     file_path = os.path.join(test_data_dir, 'edge_frequency.edge')
-    path = pp.Paths.readEdges(file_path, weight=True, undirected=True, maxlines=5)
+    path = pp.Paths.read_edges(file_path, weight=True, undirected=True, maxlines=5)
     return path
 
 
@@ -63,7 +63,7 @@ def generate_random_path(size, rnd_seed, num_nodes=None):
         frequency = np.random.randint(1, 4)
         path_length = np.random.randint(1, 10)
         path_to_add = random_ngram(path_length, node_set)
-        paths.addPath(path_to_add, frequency=frequency)
+        paths.add_path(path_to_add, frequency=frequency)
 
     return paths
 

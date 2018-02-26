@@ -175,7 +175,7 @@ class TemporalPaths:
             p.paths[len(x)][path] += _np.array([0, 1])
 
         # expand sub paths of longest paths
-        p.expandSubPaths()
+        p.expand_subpaths()
 
         _Log.add('finished.')
 

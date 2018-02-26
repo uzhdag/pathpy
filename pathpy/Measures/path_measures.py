@@ -55,7 +55,7 @@ def betweenness_centrality(paths, normalized=False):
     """
     assert isinstance(paths, Paths), "paths must be an instance of pathpy.Paths"
     node_centralities = _co.defaultdict(lambda: 0)
-    shortest_paths = paths.getShortestPaths()
+    shortest_paths = paths.shortest_paths()
 
     for s in shortest_paths:
         for d in shortest_paths[s]:
@@ -70,7 +70,7 @@ def betweenness_centrality(paths, normalized=False):
             node_centralities[v] /= m
 
     # assign zero values to nodes not occurring on shortest paths
-    nodes = paths.getNodes()
+    nodes = paths.nodes()
     for v in nodes:
         node_centralities[v] += 0
 
@@ -92,7 +92,7 @@ def closeness_centrality(paths, normalized=False):
     dict
     """
     node_centralities = _co.defaultdict(lambda: 0)
-    shortest_path_lengths = paths.getDistanceMatrix()
+    shortest_path_lengths = paths.distance_matrix()
 
     for x in shortest_path_lengths:
         for d in shortest_path_lengths[x]:
@@ -100,7 +100,7 @@ def closeness_centrality(paths, normalized=False):
                 node_centralities[x] += 1.0 / shortest_path_lengths[x][d]
 
     # assign zero values to nodes not occurring
-    nodes = paths.getNodes()
+    nodes = paths.nodes()
     for v in nodes:
         node_centralities[v] += 0
 
@@ -399,7 +399,7 @@ def betweenness_preference(paths, v, normalized=False, method='MLE'):
     assert method in ['MLE', 'Miller'], "method must be one of 'MLE' or 'Miller'"
 
     # If the network is empty, just return zero
-    if not paths.getNodes():
+    if not paths.nodes():
         return 0.0
 
     # First create the betweenness preference matrix (equation (2) of the paper)
