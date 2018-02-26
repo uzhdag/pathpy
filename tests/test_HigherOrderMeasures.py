@@ -2,10 +2,9 @@ import pathpy as pp
 import pytest
 import numpy as np
 
-from pathpy.Measures import HigherOrderMeasures
+from pathpy.Measures import higher_order_measures
 
 
-@pytest.mark.slow
 @pytest.mark.parametrize('k, e_sum, e_var', (
         (3, 27.5833333, 0.0085720486),
         (2, 55.0, 0.046875),
@@ -14,13 +13,12 @@ from pathpy.Measures import HigherOrderMeasures
 def test_closeness_centrality(random_paths, k, e_sum, e_var):
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
-    closeness = HigherOrderMeasures.ClosenessCentrality(hon)
+    closeness = higher_order_measures.closeness_centrality(hon)
     np_closeness = np.array(list(closeness.values()))
     assert np_closeness.sum() == pytest.approx(e_sum)
     assert np_closeness.var() == pytest.approx(e_var)
 
 
-@pytest.mark.slow
 @pytest.mark.parametrize('k, norm, e_sum, e_var, e_max', (
         (2, False, 213.404507128, 43.674855957, 37.5657124911),
         (1, False, 2, 0.00694444, 0.333333333),
@@ -29,14 +27,13 @@ def test_closeness_centrality(random_paths, k, e_sum, e_var):
 def test_betweenness_centrality(random_paths, norm, k, e_sum, e_var, e_max):
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
-    betweenness = HigherOrderMeasures.BetweennessCentrality(hon, normalized=norm)
+    betweenness = higher_order_measures.betweenness_centrality(hon, normalized=norm)
     values = np.array(list(betweenness.values()))
     assert values.sum() == pytest.approx(e_sum)
     assert max(values) == pytest.approx(e_max)
     assert values.var() == pytest.approx(e_var)
 
 
-@pytest.mark.slow
 @pytest.mark.parametrize('k, sub, proj, e_sum, e_var', (
         (2, False, 'all', 2.030946758666, 0.0168478112),
         (1, False, 'scaled', 2.82310329017, 0.00047012207),
@@ -50,7 +47,7 @@ def test_betweenness_centrality(random_paths, norm, k, e_sum, e_var, e_max):
 def test_eigen_centrality(random_paths, sub, proj, k, e_sum, e_var):
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
-    eigen = HigherOrderMeasures.EvCent(hon, includeSubPaths=sub, projection=proj)
+    eigen = higher_order_measures.eigenvector_centrality(hon, include_sub_paths=sub, projection=proj)
     values = np.array(list(eigen.values()))
     assert values.sum() == pytest.approx(e_sum)
     assert values.var() == pytest.approx(e_var)
@@ -71,7 +68,7 @@ def test_eigen_centrality(random_paths, sub, proj, k, e_sum, e_var):
 def test_pagerank_centrality(random_paths, sub, proj, k, e_sum, e_var):
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
-    page = HigherOrderMeasures.PageRank(hon, includeSubPaths=sub, projection=proj)
+    page = higher_order_measures.pagerank(hon, include_sub_paths=sub, projection=proj)
     values = np.array(list(page.values()))
     assert values.sum() == pytest.approx(e_sum)
     assert values.var() == pytest.approx(e_var)
@@ -86,5 +83,5 @@ def test_eigen_value_gap(random_paths, k, sub, e_gap):
     p = random_paths(90, 0, 20)
     hon = pp.HigherOrderNetwork(p, k=k)
     np.random.seed(0)
-    eigen_gap = HigherOrderMeasures.getEigenValueGap(hon, includeSubPaths=sub)
+    eigen_gap = higher_order_measures.eigenvalue_gap(hon, include_sub_paths=sub)
     assert eigen_gap < e_gap
