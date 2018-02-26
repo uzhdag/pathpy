@@ -92,8 +92,6 @@ def test_model_size(random_paths, k, n_nodes, expected):
     assert np.allclose(hon_1.modelSize(), expected)
 
 
-
-
 def test_degrees(path_from_edge_file):
     hon_1 = pp.HigherOrderNetwork(path_from_edge_file, k=1)
     expected_degrees = {'1': 52, '2': 0, '3': 2, '5': 5}
@@ -171,7 +169,7 @@ def test_node_name_map(random_paths):
         (20, 1, False, 10, 9, 0.09),
         (20, 2, False, 10, 6, 0.0034013605)
 ))
-def test_get_adjacency_matrix(random_paths, paths, k_order, sub, num_nodes, s_sum, s_mean):
+def test_get_adjacency_mat(random_paths, paths, k_order, sub, num_nodes, s_sum, s_mean):
     p = random_paths(paths, 10, num_nodes)
     hon = pp.HigherOrderNetwork(p, k=k_order)
     adj = hon.getAdjacencyMatrix(includeSubPaths=sub)
@@ -236,4 +234,3 @@ def test_distance_matrix_first_order(random_paths, n_nodes, k, paths, e_sum):
             total_distance += dist_st
 
     assert total_distance == e_sum
-

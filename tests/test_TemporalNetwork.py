@@ -3,7 +3,8 @@ import os
 import numpy as np
 import sqlite3
 
-def test_read_temporal_file_int(test_data_directory,):
+
+def test_read_temporal_file_int(test_data_directory, ):
     file_path = os.path.join(test_data_directory, 'example_int.tedges')
     t = pp.TemporalNetwork.readFile(file_path)
     times = t.ordered_times
@@ -15,11 +16,11 @@ def test_read_temporal_file_int(test_data_directory,):
     assert expected_activities == activities
 
 
-def test_read_temporal_file_time_stamp(test_data_directory,):
+def test_read_temporal_file_time_stamp(test_data_directory, ):
     file_path = os.path.join(test_data_directory, 'example_timestamp.tedges')
     t = pp.TemporalNetwork.readFile(file_path, timestampformat="%Y-%m-%d %H:%M")
     times = t.ordered_times
-    time_diffs = [j-i for i, j in zip(times[:-1], times[1:])]
+    time_diffs = [j - i for i, j in zip(times[:-1], times[1:])]
     expected_diffs = [10800, 15060, 264960]
     # TODO: The actual time number depends on local set by the user
     assert time_diffs == expected_diffs
@@ -48,13 +49,13 @@ def test_get_interpath_times(temporal_network_object):
 
 def test_shuffle_edges(temporal_network_object):
     t = temporal_network_object
-    
+
     np.random.seed(90)
     t1 = t.ShuffleEdges(with_replacement=True)
     times1 = len(t1.tedges)
     expected1 = len(t.tedges)
     assert times1 == expected1
-    
+
     np.random.seed(90)
     t2 = t.ShuffleEdges(l=4, with_replacement=False)
     edges2 = len(t2.tedges)
@@ -82,12 +83,12 @@ def test_temporal_summary(temporal_network_object):
 
 
 def test_export_tikz_unfolded_network(temporal_network_object, tmpdir):
-    t = temporal_network_object
+    t = temporal_network_object  # type: pp.TemporalNetwork
     file_path = str(tmpdir.mkdir("sub").join("multi_order_state"))
-    t.exportUnfoldedNetwork(file_path)
+    t.write_tikz(file_path)
 
 
-def test_fromSQLite_int(test_data_directory,):
+def test_from_sqlite_int(test_data_directory, ):
     file_path = os.path.join(test_data_directory, 'test_tempnets.db')
     con = sqlite3.connect(file_path)
     con.row_factory = sqlite3.Row
@@ -103,14 +104,14 @@ def test_fromSQLite_int(test_data_directory,):
     assert expected_activities == activities
 
 
-def test_fromSQLite_timestamps(test_data_directory,):
+def test_from_sqlite_timestamps(test_data_directory, ):
     file_path = os.path.join(test_data_directory, 'test_tempnets.db')
     con = sqlite3.connect(file_path)
     con.row_factory = sqlite3.Row
     cursor = con.execute('SELECT source, target, time FROM example_timestamp')
     t = pp.TemporalNetwork.fromSQLite(cursor, timestampformat="%Y-%m-%d %H:%M")
     times = t.ordered_times
-    time_diffs = [j-i for i, j in zip(times[:-1], times[1:])]
+    time_diffs = [j - i for i, j in zip(times[:-1], times[1:])]
     expected_diffs = [10800, 15060, 264960]
     # TODO: The actual time number depends on local set by the user
     assert time_diffs == expected_diffs

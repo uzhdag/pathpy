@@ -153,9 +153,9 @@ def test_betweenness_preference_normalized(temporal_network_object):
     t = temporal_network_object
     paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
     # test normalize
-    betweenness_pref_norm = pp.PathMeasures.BetweennessPreference(paths, 'e', normalized=True)
+    betweenness_pref = pp.PathMeasures.BetweennessPreference(paths, 'e', normalized=True)
     expected_norm = 1
-    assert betweenness_pref_norm == pytest.approx(expected_norm)
+    assert betweenness_pref == pytest.approx(expected_norm)
 
 
 def test_slow_down_factor_random(random_paths):
@@ -254,7 +254,7 @@ def test_visitation_probabilities(path_from_ngram_file):
 @slow
 def test_entropy_growth_rate_ratio_mle(random_paths):
     p = random_paths(100, 500)
-    mle_ratio =pp.PathMeasures.getEntropyGrowthRateRatio(p, method="MLE")
+    mle_ratio = pp.PathMeasures.getEntropyGrowthRateRatio(p, method="MLE")
     mle_expected = 0.10515408343772015
     assert mle_ratio == pytest.approx(mle_expected)
 

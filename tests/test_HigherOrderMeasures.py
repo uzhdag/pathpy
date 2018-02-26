@@ -88,5 +88,3 @@ def test_eigen_value_gap(random_paths, k, sub, e_gap):
     np.random.seed(0)
     eigen_gap = HigherOrderMeasures.getEigenValueGap(hon, includeSubPaths=sub)
     assert eigen_gap < e_gap
-
-

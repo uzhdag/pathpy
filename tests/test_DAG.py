@@ -20,8 +20,8 @@ def test_dag_acyclic(dag_object):
     # Add cycle to the graph
     dag.addEdge('b', 'c')
     dag.topsort()
-    assert dag.edge_classes[('b', 'c')] == 'back' or \
-           dag.edge_classes[('c', 'b')] == 'back'
+    assert (dag.edge_classes[('b', 'c')] == 'back' or
+            dag.edge_classes[('c', 'b')] == 'back')
     assert dag.isAcyclic is False
 
     dag.makeAcyclic()

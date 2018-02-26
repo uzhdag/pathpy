@@ -8,14 +8,12 @@ test_data_dir = os.path.join(test_directory, 'test_data')
 
 
 def pytest_addoption(parser):
-    parser.addoption("--runslow", action="store_true",
-        help="run slow tests")
+    parser.addoption("--runslow", action="store_true", help="run slow tests")
 
 
 def pytest_runtest_setup(item):
     if 'slow' in item.keywords and not item.config.getvalue("runslow"):
         pytest.skip("need --runslow option to run")
-
 
 
 @pytest.fixture()
@@ -130,7 +128,8 @@ def dag_object():
     dag = pp.DAG()
     # For this DAG, the following five paths between the root and the leaves exist
     # for the following mapping:
-    # mapping = {'a': 'A', 'b': 'B', 'c': 'A', 'e': 'B', 'f': 'B', 'g': 'A', 'h': 'A','i': 'B', 'j': 'A' }
+    # mapping = {'a': 'A', 'b': 'B', 'c': 'A', 'e': 'B',
+    # 'f': 'B', 'g': 'A', 'h': 'A','i': 'B', 'j': 'A' }
 
     #   h -> i                  ( A -> B )
     #   h -> j                  ( A -> A )

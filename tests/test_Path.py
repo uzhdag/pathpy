@@ -24,7 +24,7 @@ def test_readfile_import(path_from_ngram_file):
         "Wrong node labels"
 
 
-def test_write_file(tmpdir, random_paths):
+def test_write_read_file(tmpdir, random_paths):
     dir_path = tmpdir.mkdir("sub").join("test.edges")
     p = random_paths(30, 50)
 
@@ -50,6 +50,7 @@ def test_write_file(tmpdir, random_paths, max_line, freq, maxN):
     p.writeFile(dir_path.strpath)
     p2 = pp.Paths.readFile(dir_path.strpath, pathFrequency=freq,
                            maxlines=max_line, maxN=maxN)
+    assert p2
 
 
 def test_read_edges_import(path_from_edge_file):
@@ -229,5 +230,3 @@ def test_path_multiplication(random_paths, factor):
     mult_inplace *= factor
 
     assert sum(mult_paths.paths[2][TEST_PATH]) == sum(mult_inplace.paths[2][TEST_PATH])
-
-
