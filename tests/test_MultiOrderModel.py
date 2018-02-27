@@ -4,6 +4,12 @@ import numpy as np
 import pathpy as pp
 
 
+def test_print(random_paths):
+    p = random_paths(90, 0, 20)
+    multi = pp.MultiOrderModel(p, maxOrder=3)
+    print(multi)
+
+
 @pytest.mark.parametrize('k', (1, 2, 3))
 def test_init(random_paths, k):
     p = random_paths(90, 0, 20)
@@ -24,7 +30,7 @@ def test_parallel(random_paths, k):
 
     multi_parallel = pp.MultiOrderModel(p, maxOrder=k)
 
-    assert multi_parallel.modelSize(k) == multi_seq.modelSize(k)
+    assert multi_parallel.model_size(k) == multi_seq.model_size(k)
     for k in multi_parallel.T:
         assert np.sum(multi_parallel.T[k] - multi_seq.T[k]) == pytest.approx(0)
 
@@ -35,7 +41,7 @@ def test_parallel(random_paths, k):
 def test_test_network_hypothesis(random_paths, k, method):
     p = random_paths(20, 40, 6)
     multi = pp.MultiOrderModel(p, maxOrder=k)
-    (is_net, ic0, ic1) = multi.testNetworkHypothesis(p, method=method)
+    (is_net, ic0, ic1) = multi.test_network_hypothesis(p, method=method)
 
 
 @pytest.mark.parametrize('k', (1, 2, 3))
@@ -45,4 +51,4 @@ def test_write_state_file(random_paths, k, tmpdir):
     multi = pp.MultiOrderModel(p, maxOrder=k)
 
     for i in range(1, k+1):
-        multi.saveStateFile(file_path+'.'+str(i), layer=i)
+        multi.save_state_file(file_path + '.' + str(i), layer=i)

@@ -45,41 +45,38 @@ class HigherOrderNetwork:
 
     def __init__(self, paths, k=1, separator='-', null_model=False,
                  method='FirstOrderTransitions', lanczos_vecs=15, maxiter=1000):
-        """
-        Generates a k-th-order representation based on the given path statistics.
+        """Generates a k-th-order representation based on the given path statistics.
 
-        @param paths: An instance of class Paths, which contains the path
-            statistics to be used in the generation of the k-th order
-            representation
-
-        @param k: The order of the network representation to generate.
-            For the default case of k=1, the resulting representation
-            corresponds to the usual (first-order) aggregate network,
-            i.e. links connect nodes and link weights are given by the
-            frequency of each interaction. For k>1, a k-th order node
-            corresponds to a sequence of k nodes. The weight of a k-th
-            order link captures the frequency of a path of length k.
-
-        @param separator: The separator character to be used in
-            higher-order node names.
-
-        @param null_model: For the default value False, link weights are
-            generated based on the statistics of paths of length k in the
-            underlying path statistics instance. If True, link weights are
-            generated from the first-order model (k=1) based on the assumption
-            of independent links (i.e. corresponding) to a first-order
+        Parameters
+        ----------
+        paths: Path
+            An instance of class Paths, which contains the path statistics to be used in
+            the generation of the k-th order representation
+        k: int
+            The order of the network representation to generate. For the default case of
+            k=1, the resulting representation corresponds to the usual (first-order)
+            aggregate network, i.e. links connect nodes and link weights are given by the
+            frequency of each interaction. For k>1, a k-th order node corresponds to a
+            sequence of k nodes. The weight of a k-th order link captures the frequency
+            of a path of length k.
+        separator: str
+            The separator character to be used in higher-order node names.
+        null_model: bool
+            For the default value False, link weights are generated based on the
+            statistics of paths of length k in the underlying path statistics instance.
+            If True, link weights are generated from the first-order model (k=1) based on
+            the assumption of independent links (i.e. corresponding) to a first-order
             Markov model.
-
-        @param method: specifies how the null model link weights
-            in the k-th order model are calculated. For the default
-            method='FirstOrderTransitions', the weight
-            w('v_1-v_2-...v_k', 'v_2-...-v_k-v_k+1') of a k-order edge
-            is set to the transition probability T['v_k', 'v_k+1'] in the
-            first order network. For method='KOrderPi' the entry
-            pi['v1-...-v_k'] in the stationary distribution of the
-            k-order network is used instead.
+        method: str
+            specifies how the null model link weights in the k-th order model are
+            calculated. For the default method='FirstOrderTransitions', the weight
+            w('v_1-v_2-...v_k', 'v_2-...-v_k-v_k+1') of a k-order edge is set to the
+            transition probability T['v_k', 'v_k+1'] in the first order network.
+            For method='KOrderPi' the entry pi['v1-...-v_k'] in the stationary
+            distribution of the k-order network is used instead.
+        lanczos_vecs: int
+        maxiter: int
         """
-
         assert not null_model or (null_model and k > 1)
 
         assert method in ['FirstOrderTransitions', 'KOrderPi'], \
@@ -88,29 +85,29 @@ class HigherOrderNetwork:
         assert paths.paths.keys() and max(paths.paths.keys()) >= k, \
             'Error: constructing a model of order k requires paths of at least length k'
 
-        ## The order of this HigherOrderNetwork
+        # The order of this HigherOrderNetwork
         self.order = k
 
-        ## The paths object used to generate this instance
+        # The paths object used to generate this instance
         self.paths = paths
 
-        ## The nodes in this HigherOrderNetwork
+        # The nodes in this HigherOrderNetwork
         self.nodes = []
 
-        ## The separator character used to label higher-order nodes.
-        ## For separator '-', a second-order node will be 'a-b'.
+        # The separator character used to label higher-order nodes.
+        # For separator '-', a second-order node will be 'a-b'.
         self.separator = separator
 
-        ## A dictionary containing the sets of successors of all nodes
+        # A dictionary containing the sets of successors of all nodes
         self.successors = _co.defaultdict(set)
 
-        ## A dictionary containing the sets of predecessors of all nodes
+        # A dictionary containing the sets of predecessors of all nodes
         self.predecessors = _co.defaultdict(set)
 
-        ## A dictionary containing the out-degrees of all nodes
+        # A dictionary containing the out-degrees of all nodes
         self.outdegrees = _co.defaultdict(lambda: 0.0)
 
-        ## A dictionary containing the in-degrees of all nodes
+        # A dictionary containing the in-degrees of all nodes
         self.indegrees = _co.defaultdict(lambda: 0.0)
 
         # NOTE: edge weights, as well as in- and out weights of nodes are
@@ -122,13 +119,13 @@ class HigherOrderNetwork:
         # (a,b) and (b,c) are both (1,0). In the second-order network, the
         # weight of edge (a-b, b-c) is (0,1).
 
-        ## A dictionary containing edges as well as edge weights
+        # A dictionary containing edges as well as edge weights
         self.edges = _co.defaultdict(lambda: _np.array([0., 0.]))
 
-        ## A dictionary containing the weighted in-degrees of all nodes
+        # A dictionary containing the weighted in-degrees of all nodes
         self.inweights = _co.defaultdict(lambda: _np.array([0., 0.]))
 
-        ## A dictionary containing the weighted out-degrees of all nodes
+        # A dictionary containing the weighted out-degrees of all nodes
         self.outweights = _co.defaultdict(lambda: _np.array([0., 0.]))
 
         if k > 1:
@@ -211,7 +208,7 @@ class HigherOrderNetwork:
             if method == 'KOrderPi':
                 # compute stationary distribution of a random walker in the k-th order
                 # network
-                g_k = HigherOrderNetwork(paths, k=k, separator=separator, null_model=False)
+                g_k = HigherOrderNetwork(paths, k, separator, null_model=False)
                 transition_m = g_k.transition_matrix(include_subpaths=True)
                 pi_k = HigherOrderNetwork.leading_eigenvector(
                     transition_m,
@@ -322,7 +319,7 @@ class HigherOrderNetwork:
             # vector containing the row sums of A**k
             non_zero = _np.count_nonzero((A ** k).sum(axis=0))
 
-            ## The degrees of freedom of the higher-order model, under the paths
+            # The degrees of freedom of the higher-order model, under the paths
             # assumption
             self.dof_paths = paths_k - non_zero
 
@@ -348,32 +345,56 @@ class HigherOrderNetwork:
         return self.adjacency_matrix().count_nonzero()
 
     def higher_order_node_to_path(self, node):
-        """
-        Helper function that transforms a node in a
-        higher-order network of order k into a corresponding
-        path of length k-1. For a higher-order node 'a-b-c-d'
+        """Helper function that transforms a node in a higher-order network of order k
+        into a corresponding path of length k-1. For a higher-order node 'a-b-c-d'
         this function will return ('a','b','c','d')
 
-        @param node: The higher-order node to be transformed to a path.
+        Parameters
+        ----------
+        node: str
+            The higher-order node to be transformed to a path.
+            TODO: this function assumes that the separator is '-', but it is not sure
+            TODO: that the user will use it.
+
+        Returns
+        -------
+        tuple
         """
         return tuple(node.split(self.separator))
 
     def path_to_higher_order_nodes(self, path, k=None):
-        """
-        Helper function that transforms a path into a sequence of k-order nodes
+        """Helper function that transforms a path into a sequence of k-order nodes
         using the separator character of the HigherOrderNetwork instance
 
-        Consider an example path (a,b,c,d) with a separator string '-'
-        For k=1, the output will be the list of strings ['a', 'b', 'c', 'd']
-        For k=2, the output will be the list of strings ['a-b', 'b-c', 'c-d']
-        For k=3, the output will be the list of strings ['a-b-c', 'b-c-d']
-        etc.
-
-        @param path: the path tuple to turn into a sequence of higher-order nodes
-
-        @param k: the order of the representation to use (default: order of the
+        Parameters
+        ----------
+        path:
+            the path tuple to turn into a sequence of higher-order nodes
+        k: int
+            the order of the representation to use (default: order of the
             HigherOrderNetwork instance)
+
+        Returns
+        -------
+        list
+
+        Examples
+        --------
+
+        Consider an example path (a,b,c,d) with a separator string '-'
+
+        >>> path_tuple = ('a', 'b', 'c', 'd')
+        >>> paths = Paths()
+        >>> paths.add_path_tuple(path_tuple)
+        >>> hon = HigherOrderNetwork(paths, separator='-')
+        >>> hon.path_to_higher_order_nodes(path_tuple, k=1)
+        ['a', 'b', 'c', 'd']
+        >>> hon.path_to_higher_order_nodes(path_tuple, k=2)
+        ['a-b', 'b-c', 'c-d']
+        >>> hon.path_to_higher_order_nodes(path_tuple, k=3)
+        ['a-b-c', 'b-c-d']
         """
+
         if k is None:
             k = self.order
         assert len(path) > k, 'Error: Path must be longer than k'
@@ -384,31 +405,31 @@ class HigherOrderNetwork:
         return [self.separator.join(path[n:n + k]) for n in range(len(path) - k + 1)]
 
     def node_to_name_map(self):
-        """
-        Returns a dictionary that can be used to map
-        nodes to matrix/vector indices
-        """
+        """Returns a dictionary that can be used to map nodes to matrix/vector indices"""
         return {v: idx for idx, v in enumerate(self.nodes)}
 
     def degrees_of_freedom(self, assumption="paths"):
-        """
-        Calculates the degrees of freedom (i.e. number of parameters) of
+        """Calculates the degrees of freedom (i.e. number of parameters) of
         this k-order model. Depending on the modeling assumptions, this either
         corresponds to the number of paths of length k in the first-order network
         or to the number of all possible k-grams. The degrees of freedom of a model
         can be used to assess the model complexity when calculating, e.g., the
         Bayesian Information Criterion (BIC).
 
-        @param assumption: if set to 'paths', for the degree of freedom calculation in
-        the BIC,
-            only paths in the first-order network topology will be considered. This is
-            needed whenever we are interested in a modeling of paths in a given network
-            topology.
+        Parameters
+        ----------
+        assumption: str
+            if set to 'paths', for the degree of freedom calculation in the BIC, only
+            paths in the first-order network topology will be considered. This is needed
+            whenever we are interested in a modeling of paths in a given network topology.
             If set to 'ngrams' all possible n-grams will be considered, independent of
-            whether they
-            are valid paths in the first-order network or not. The 'ngrams'
+            whether they are valid paths in the first-order network or not. The 'ngrams'
             and the 'paths' assumption coincide if the first-order network is fully
             connected.
+
+        Returns
+        -------
+        int
         """
         assert assumption in ['paths', 'ngrams'], 'Error: Invalid assumption'
 
@@ -417,10 +438,8 @@ class HigherOrderNetwork:
         return self.dof_ngrams
 
     def distance_matrix(self):
-        """
-        Calculates shortest path distances between all pairs of
-        higher-order nodes using the Floyd-Warshall algorithm.
-        """
+        """Calculates shortest path distances between all pairs of higher-order nodes
+        using the Floyd-Warshall algorithm."""
 
         Log.add('Calculating distance matrix in higher-order network '
                 '(k = %s) ...' % self.order, Severity.INFO)
@@ -486,9 +505,8 @@ class HigherOrderNetwork:
 
     def distance_matrix_first_order(self):
         """
-        Projects a distance matrix from a higher-order to
-        first-order nodes, while path lengths are calculated
-        based on the higher-order topology
+        Projects a distance matrix from a higher-order to first-order nodes, while path
+        lengths are calculated based on the higher-order topology
         """
 
         dist = self.distance_matrix()
@@ -506,15 +524,20 @@ class HigherOrderNetwork:
         return dist_first
 
     def higher_order_path_to_first_order(self, path):
-        """
-        Maps a path in the higher-order network
-        to a path in the first-order network. As an
-        example, the second-order path ('a-b', 'b-c', 'c-d')
-        of length two is mapped to the first-order path ('a','b','c','d')
-        of length four. In general, a path of length l in a network of
-        order k is mapped to a path of length l+k-1 in the first-order network.
+        """Maps a path in the higher-order network to a path in the first-order network.
+        As an example, the second-order path ('a-b', 'b-c', 'c-d') of length two is mapped
+        to the first-order path ('a','b','c','d') of length four.
+        In general, a path of length l in a network of order k is mapped to a path of
+        length l+k-1 in the first-order network.
 
-        @param path: The higher-order path that shall be mapped to the first-order network
+        Parameters
+        ----------
+        path: str
+            The higher-order path that shall be mapped to the first-order network
+
+        Returns
+        -------
+        tuple
         """
         p1 = self.higher_order_node_to_path(path[0])
         for x in path[1:]:
@@ -522,10 +545,8 @@ class HigherOrderNetwork:
         return p1
 
     def reduce_to_gcc(self):
-        """
-        Reduces the higher-order network to its
-        largest (giant) strongly connected component
-        (using Tarjan's algorithm)
+        """Reduces the higher-order network to its largest (giant) strongly connected
+        component (using Tarjan's algorithm).
         """
 
         # nonlocal variables (!)
@@ -591,9 +612,8 @@ class HigherOrderNetwork:
                 del self.edges[(v, w)]
 
     def summary(self):
-        """
-        Returns a string containing basic summary statistics
-        of this higher-order graphical model instance
+        """Returns a string containing basic summary statistics of this higher-order
+        graphical model instance
         """
         summary_fmt = (
             'Graphical model of order k = {order}\n'
@@ -609,28 +629,29 @@ class HigherOrderNetwork:
         return summary
 
     def __str__(self):
-        """
-        Returns the default string representation of
-        this graphical model instance
-        """
+        """Returns the default string representation of this graphical model instance"""
         return self.summary()
 
     def adjacency_matrix(self, include_subpaths=True, weighted=True, transposed=False):
-        """
-        Returns a sparse adjacency matrix of the higher-order network. By default,
+        """Returns a sparse adjacency matrix of the higher-order network. By default,
         the entry corresponding to a directed link source -> target is stored in row s and
         column t and can be accessed via A[s,t].
 
-        @param include_subpaths: if set to True, the returned adjacency matrix will
-            account for the occurrence of links of order k (i.e. paths of length k-1)
-            as subpaths
+        Parameters
+        ----------
+        include_subpaths: bool
+            if set to True, the returned adjacency matrix will account for the occurrence
+            of links of order k (i.e. paths of length k-1) as subpaths
+        weighted: bool
+            if set to False, the function returns a binary adjacency matrix.
+            If set to True, adjacency matrix entries will contain the weight of an edge.
+        transposed: bool
+            whether to transpose the matrix or not.
 
-        @param weighted: if set to False, the function returns a binary adjacency matrix.
-          If set to True, adjacency matrix entries will contain the weight of an edge.
-
-        @param transposed: whether to transpose the matrix or not.
+        Returns
+        -------
+        numpy cooc matrix
         """
-
         row = []
         col = []
         data = []
@@ -659,12 +680,18 @@ class HigherOrderNetwork:
         return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
     def transition_matrix(self, include_subpaths=True):
-        """
-        Returns a (transposed) random walk transition matrix
-        corresponding to the higher-order network.
+        """Returns a (transposed) random walk transition matrix corresponding to the
+        higher-order network.
 
-        @param include_subpaths: whether or not to include subpath statistics in the
-            transition probability calculation (default True)
+        Parameters
+        ----------
+        include_subpaths: bool
+            whether or not to include subpath statistics in the transition probability
+            calculation (default True)
+
+        Returns
+        -------
+
         """
         row = []
         col = []
@@ -712,17 +739,26 @@ class HigherOrderNetwork:
     def leading_eigenvector(A, normalized=True, lanczos_vecs=15, maxiter=1000):
         """Compute normalized leading eigenvector of a given matrix A.
 
-        @param A: sparse matrix for which leading eigenvector will be computed
-        @param normalized: wheter or not to normalize. Default is C{True}
-        @param lanczos_vecs: number of Lanczos vectors to be used in the approximate
+        Parameters
+        ----------
+        A:
+            sparse matrix for which leading eigenvector will be computed
+        normalized: bool
+            whether or not to normalize, default is True
+        lanczos_vecs: int
+            number of Lanczos vectors to be used in the approximate
             calculation of eigenvectors and eigenvalues. This maps to the ncv parameter
             of scipy's underlying function eigs.
-        @param maxiter: scaling factor for the number of iterations to be used in the
+        maxiter: int
+            scaling factor for the number of iterations to be used in the
             approximate calculation of eigenvectors and eigenvalues. The number of
             iterations passed to scipy's underlying eigs function will be n*maxiter
             where n is the number of rows/columns of the Laplacian matrix.
-        """
 
+        Returns
+        -------
+
+        """
         if not _sparse.issparse(A):  # pragma: no cover
             raise TypeError("A must be a sparse matrix")
 
@@ -739,10 +775,16 @@ class HigherOrderNetwork:
         """
         Returns the transposed Laplacian matrix corresponding to the higher-order network.
 
-        @param include_subpaths: Whether or not subpath statistics shall be included in the
-            calculation of matrix weights
-        """
+        Parameters
+        ----------
+        include_subpaths: bool
+            Whether or not subpath statistics shall be included in the calculation of
+            matrix weights
 
+        Returns
+        -------
+
+        """
         transition_matrix = self.transition_matrix(include_subpaths)
         identity_matrix = _sparse.identity(self.vcount())
 

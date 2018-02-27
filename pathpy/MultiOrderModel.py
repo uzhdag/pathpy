@@ -31,6 +31,8 @@ import pathpy
 from pathpy.HigherOrderNetwork import HigherOrderNetwork
 from pathpy.Log import Log
 from pathpy.Log import Severity
+import pathpy as _pp
+
 
 _np.seterr(all='warn')
 
@@ -39,7 +41,6 @@ class MultiOrderModel:
     """Instances of this class represent a hierarchy of
         higher-order networks which collectively represent
         a multi-order model for path statistics. """
-
 
     def __init__(self, paths, maxOrder=1):
         """
@@ -51,7 +52,9 @@ class MultiOrderModel:
         @param maxOrder: the maximum order of the multi-order model
         """
 
-        assert paths.maxSubPathLength>=maxOrder, 'Error: Construction of multi-order model with maximum order M requires sub path statistics up to length M'
+        assert paths.maxSubPathLength >= maxOrder, \
+            'Error: Construction of multi-order model with maximum order M ' \
+            'requires sub path statistics up to length M'
 
         ## A dictionary containing the layers of HigherOrderNetworks, where
         ## layers[k] contains the network of order k
@@ -78,8 +81,9 @@ class MultiOrderModel:
                 Log.add('Generating ' + str(k) + '-th order network layer ...')
                 layer = HigherOrderNetwork(paths, k, paths.separator, False)
 
-                # compute transition matrices for all layers. In order to use the maximally
-                # available statistics, we always use sub paths in the calculation
+                # compute transition matrices for all layers. In order to use the
+                # maximally available statistics, we always use sub paths in the
+                # calculation
                 T = layer.transition_matrix(include_subpaths=True)
 
                 Log.add('Generating ' + str(k) + '-th order network layer ... finished')
@@ -104,20 +108,38 @@ class MultiOrderModel:
 
             Log.add('finished.')
 
-
     def summary(self):
         """
         Returns a string containing basic summary information
         of this multi-order model instance.
         """
-        summary = 'Multi-order model (max. order = ' + str(self.maxOrder) + ', DoF (paths/ngrams) = ' + str(self.getDegreesOfFreedom(assumption='paths')) + '/' + str(self.getDegreesOfFreedom(assumption='ngrams')) + ')\n'
-        summary += '===========================================================================\n'
+        summary_fmt = (
+            "Multi-order model (max. order = {order}, "
+            "DoF (paths/ngrams) = {dof_path} / {dof_ngram})\n"
+            '==========================================================================\n'
+            )
+        summary = summary_fmt.format(
+            order=self.maxOrder,
+            dof_path=self.degrees_od_freedom(assumption='paths'),
+            dof_ngram=self.degrees_od_freedom(assumption='ngrams')
+        )
+        layer_fmt = ("Layer k = {k} \t {vcount} nodes, {ecount} links, {sum_path} paths, "
+                     "DoF (paths/ngrams) = {dof_paths} / {dof_ngram} \n")
+
         for k in range(self.maxOrder+1):
-            summary += 'Layer k = ' + str(k) + '\t' + str(self.layers[k].vcount()) + ' nodes, ' + str(self.layers[k].ecount()) + ' links, ' + str(self.layers[k].total_edge_weight().sum()) + ' paths, DoF (paths/ngrams) = ' + str(int(self.layers[k].degrees_of_freedom('paths'))) + '/' + str(int(self.layers[k].degrees_of_freedom('ngrams'))) + '\n'
+            vcount = self.layers[k].vcount()
+            ecount = self.layers[k].ecount()
+            sum_path = self.layers[k].total_edge_weight().sum()
+            dof_paths = int(self.layers[k].degrees_of_freedom('paths'))
+            dof_ngram = int(self.layers[k].degrees_of_freedom('ngrams'))
+
+            layer_sum = layer_fmt.format(k=k, vcount=vcount, ecount=ecount,
+                                         sum_path=sum_path, dof_paths=dof_paths,
+                                         dof_ngram=dof_ngram)
+            summary += layer_sum
         return summary
 
-
-    def saveStateFile(self, filename, layer=None, infomapIndexing=None):
+    def save_state_file(self, filename, layer=None, infomapIndexing=None):
         """
         Saves the multi-order model in state file format
         suitable to be used with InfoMap
@@ -201,7 +223,6 @@ class MultiOrderModel:
 
         file.close()
 
-
     def __str__(self):
         """
         Returns the default string representation of
@@ -209,8 +230,7 @@ class MultiOrderModel:
         """
         return self.summary()
 
-
-    def getLikelihood(self, paths, maxOrder=None, log=True):
+    def likelihood(self, paths, maxOrder=None, log=True):
         """Calculates the likelihood of a multi-order
         network model up to a maximum order maxOrder based on all
         path statistics.
@@ -235,17 +255,15 @@ class MultiOrderModel:
 
         for k in range(0, maxOrder+1):
             if k < maxOrder:
-                p = self.getLayerLikelihood(paths, k, considerLongerPaths=False, log=True)[0]
+                p = self.layer_likelihood(paths, k, considerLongerPaths=False, log=True)[0]
             else:
-                p = self.getLayerLikelihood(paths, k, considerLongerPaths=True, log=True)[0]
+                p = self.layer_likelihood(paths, k, considerLongerPaths=True, log=True)[0]
             # print('Log L(k=' + str(k) + ') = ' + str(p))
             assert p <= 0, 'Layer Log-Likelihood out of bounds'
             L += p
         assert L <= 0, 'Log-Likelihood out of bounds'
 
         return L if log else _np.exp(L)
-
-
 
     def factorial(self, n, log=True):  # pragma: no cover
         """
@@ -270,8 +288,7 @@ class MultiOrderModel:
         else:
             return _np.exp(f)
 
-
-    def getLayerLikelihood(self, paths, l=1, considerLongerPaths=True, log=True, minL=None):
+    def layer_likelihood(self, paths, l=1, considerLongerPaths=True, log=True, minL=None):
         """
         Calculates the (log-)likelihood of the **first** l layers of a multi-order network model
         using all observed paths of (at least) length l
@@ -332,7 +349,7 @@ class MultiOrderModel:
 
                     # special case: to calculate the likelihood of the path based on a zero-order model we
                     # use the 'start' -> v transitions in the respective model instance
-                    if l==0:
+                    if l == 0:
                         for s in range(len(p)):
                             L += _np.log(self.T[0][self.layers[0].nodes.index(p[s]), self.layers[0].nodes.index('start')]) * paths.paths[k][p][1]
 
@@ -388,7 +405,6 @@ class MultiOrderModel:
                         for k_ in range(l):
                             L += _np.log(self.T[k_][self.layers[k_].nodes.index(transitions[k_][1]), self.layers[k_].nodes.index(transitions[k_][0])]) * factor_
 
-
             if n == 0:
                 L = 0
         if log:
@@ -398,8 +414,7 @@ class MultiOrderModel:
             assert 0 <= L <= 1, 'Likelihood out of bounds'
             return _np.exp(L), n
 
-
-    def getDegreesOfFreedom(self, maxOrder=None, assumption="paths"):
+    def degrees_od_freedom(self, maxOrder=None, assumption="paths"):
         """
         Calculates the degrees of freedom of the model based on
         different assumptions, and taking into account layers up to
@@ -415,20 +430,20 @@ class MultiOrderModel:
             are valid paths in the first-order network or not. The 'ngrams' and the 'paths' assumption
             coincide if the first-order network is fully connected, i.e. if all possible paths actually occur.
         """
-        if maxOrder == None:
+        if maxOrder is None:
             maxOrder = self.maxOrder
-        assert maxOrder <= self.maxOrder, 'Error: maxOrder cannot be larger than maximum order of multi-order network'
+        assert maxOrder <= self.maxOrder, \
+            'Error: maxOrder cannot be larger than maximum order of multi-order network'
 
         dof = 0
 
         # Sum degrees of freedom of all model layers up to maxOrder
         for i in range(0, maxOrder+1):
-           dof += self.layers[i].degrees_of_freedom(assumption)
+            dof += self.layers[i].degrees_of_freedom(assumption)
 
         return int(dof)
 
-
-    def modelSize(self, maxOrder):
+    def model_size(self, maxOrder):
         """
         Returns the total number of non-zero
         transition matrix entries in all
@@ -441,11 +456,9 @@ class MultiOrderModel:
         size = 0
         for i in range(0, maxOrder+1):
             size += self.layers[i].model_size()
-
         return int(size)
 
-
-    def likeliHoodRatioTest(self, paths, maxOrderNull=0, maxOrder=1, assumption='paths', significanceThreshold=0.01):
+    def likelihood_ratio_test(self, paths, maxOrderNull=0, maxOrder=1, assumption='paths', significanceThreshold=0.01):
         """
         Performs a likelihood-ratio test between two multi-order models with given maximum orders, where maxOrderNull serves
         as null hypothesis and maxOrder serves as alternative hypothesis. The null hypothesis is rejected if the p-value for
@@ -474,10 +487,10 @@ class MultiOrderModel:
         # let L0 be the likelihood for the null model and L1 be the likelihood for the alternative model
 
         # we first compute a test statistic x = -2 * log (L0/L1) = -2 * (log L0 - log L1)
-        x = -2 * (self.getLikelihood(paths, maxOrder=maxOrderNull, log=True) - self.getLikelihood(paths, maxOrder=maxOrder, log=True))
+        x = -2 * (self.likelihood(paths, maxOrder=maxOrderNull, log=True) - self.likelihood(paths, maxOrder=maxOrder, log=True))
 
         # we calculate the additional degrees of freedom in the alternative model
-        dof_diff = self.getDegreesOfFreedom(maxOrder=maxOrder, assumption=assumption) - self.getDegreesOfFreedom(maxOrder=maxOrderNull, assumption=assumption)
+        dof_diff = self.degrees_od_freedom(maxOrder=maxOrder, assumption=assumption) - self.degrees_od_freedom(maxOrder=maxOrderNull, assumption=assumption)
 
         Log.add('Likelihood ratio test for K_opt = ' + str(maxOrder) + ', x = ' + str(x))
         Log.add('Likelihood ratio test, d_1-d_0 = ' + str(dof_diff))
@@ -488,8 +501,7 @@ class MultiOrderModel:
         Log.add('Likelihood ratio test, p = ' + str(p))
         return (p<significanceThreshold), p
 
-
-    def estimateOrder(self, paths, maxOrder=None, significanceThreshold=0.01):
+    def estimate_order(self, paths, maxOrder=None, significanceThreshold=0.01):
         """
         Selects the optimal maximum order of a multi-order network model for the
         observed paths, based on a likelihood ratio test with p-value threshold of p
@@ -499,7 +511,7 @@ class MultiOrderModel:
 
         @param maxOrder: The maximum order up to which the multi-order model shall be tested.
         """
-        if maxOrder == None:
+        if maxOrder is None:
             maxOrder = self.maxOrder
         assert maxOrder <= self.maxOrder, 'Error: maxOrder cannot be larger than maximum order of multi-order network'
         assert maxOrder > 1, 'Error: maxOrder must be larger than one'
@@ -509,13 +521,12 @@ class MultiOrderModel:
         # Test for highest order that passes
         # likelihood ratio test against null model
         for k in range(2, maxOrder+1):
-            if self.likeliHoodRatioTest(paths, maxOrderNull=k-1, maxOrder=k, significanceThreshold=significanceThreshold)[0]:
+            if self.likelihood_ratio_test(paths, maxOrderNull=k - 1, maxOrder=k, significanceThreshold=significanceThreshold)[0]:
                 maxAcceptedOrder = k
 
         return maxAcceptedOrder
 
-
-    def testNetworkHypothesis(self, paths, method='AIC'):
+    def test_network_hypothesis(self, paths, method='AIC'):
         """
         Tests whether the assumption that paths are constrained
         to the (first-order) network topology is justified.
@@ -525,7 +536,7 @@ class MultiOrderModel:
 
         The decision will be made based on a comparison between the zero-
         and the first-order layer of the model. Different from the multi-order
-        model selection method implemented in estimateOrder and likelihoodRatioTest,
+        model selection method implemented in estimate_order and likelihoodRatioTest,
         here we do *not* consider nested models, so we cannot use a likelihood ratio
         test. We instead use the AIC or BIC.
         """
@@ -533,21 +544,26 @@ class MultiOrderModel:
         assert method == 'AIC' or method == 'BIC' or method == 'AICc', 'Expected method AIC, AICc or BIC'
 
         # count number of omitted paths with length zero
-        sum = 0
+        p_sum = 0
         for p in paths.paths[0]:
-            sum += paths.paths[0][p][1]
-        if sum>0:
-            Log.add('Omitting ' + str(sum) + ' zero-length paths for test of network assumption', Severity.INFO)
+            p_sum += paths.paths[0][p][1]
+        if p_sum > 0:
+            Log.add('Omitting ' + str(p_sum) + ' zero-length paths for test of network assumption', Severity.INFO)
 
         # log-likelihood and observation count of zero-order model
-        L0, n0 = self.getLayerLikelihood(paths, l=0, considerLongerPaths=True, log=True, minL=1)
+        L0, n0 = self.layer_likelihood(paths, l=0, considerLongerPaths=True, log=True, minL=1)
 
         # log-likelihood and observation count of first-order model
-        L1, n1 = self.getLayerLikelihood(paths, l=1, considerLongerPaths=True, log=True, minL=1)
+        L1, n1 = self.layer_likelihood(paths, l=1, considerLongerPaths=True, log=True, minL=1)
 
-        # By definition, the number of observations for both models should be the total weighted degree of the
-        # first-order network
-        assert n0==n1, Log.add('Error: Observation count for 0-order and 1-st order model do not match', Severity.ERROR)
+        # By definition, the number of observations for both models should be the total
+        # weighted degree of the first-order network
+        if n0 != n1:
+            raise _pp.PathpyError(
+                'Observation count for 0-order ({n0}) and '
+                '1-st order model ({n1}) do not match'.format(n0=n0, n1=n1)
+            )
+
 
         # degrees of freedom = |V|-1
         dof0 = self.layers[0].degrees_of_freedom(assumption='ngrams')
@@ -571,7 +587,10 @@ class MultiOrderModel:
         elif method == 'BIC':
             ic0 = _np.log(n0) * dof0 - 2 * L0
             ic1 = _np.log(n1) * (dof0 + dof1) - 2 * L1
+        else:
+            raise _pp.PathpyError("Method check has not filtered out illegal "
+                                  "method %s " % method)
 
-        # if the AIC/AICc/BIC of the zero-order model is larger than that of the first-order model,
-        # we do not reject the network hypothesis
-        return(ic0>ic1, ic0, ic1)
+        # if the AIC/AICc/BIC of the zero-order model is larger than that of the
+        # first-order model, we do not reject the network hypothesis
+        return ic0 > ic1, ic0, ic1
