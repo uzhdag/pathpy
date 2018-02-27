@@ -26,14 +26,13 @@ import numpy as _np
 from scipy.stats import chi2
 
 import pathpy
-from pathpy.HigherOrderNetwork import HigherOrderNetwork
-from pathpy.Log import Log
-from pathpy.Log import Severity
+from pathpy import HigherOrderNetwork
+from pathpy import Log
+from pathpy import Severity
 import pathpy as _pp
 
 
 _np.seterr(all='warn')
-
 
 class MultiOrderModel:
     """Instances of this class represent a hierarchy of
@@ -100,8 +99,9 @@ class MultiOrderModel:
                 Log.add('Generating ' + str(k) + '-th order network layer ...')
                 self.layers[k] = HigherOrderNetwork(paths, k, paths.separator, False)
 
-                # compute transition matrices for all layers. In order to use the maximally
-                # available statistics, we always use sub paths in the calculation
+                # compute transition matrices for all layers. In order to use the
+                # maximally available statistics, we always use sub paths in the
+                # calculation
                 self.T[k] = self.layers[k].transition_matrix(include_subpaths=True)
 
             Log.add('finished.')

@@ -27,6 +27,9 @@ import time
 import sys
 
 
+__all__ = ["Severity", "Log"]
+
+
 class Severity(enum.IntEnum):
     """ An enumeration that can be used to indicate
         the severity of log messages, and which can be

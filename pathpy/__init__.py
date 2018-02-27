@@ -1,14 +1,13 @@
-﻿from .Log import *
-from .TemporalNetwork import *
-from .Paths import *
-from .HigherOrderNetwork import *
-from .MultiOrderModel import *
-from .MarkovSequence import *
-from .DAG import *
-from .Measures import higher_order_measures
-from .Measures import path_measures
+﻿from .log import Log, Severity
+from .temporal_network import TemporalNetwork
+from .paths import Paths
+from .higher_order_network import HigherOrderNetwork
+from .multi_order_model import MultiOrderModel
+from .markov_sequence import MarkovSequence
+from .dag import DAG
+from .measures import higher_order_measures
+from .measures import path_measures
 
-import pathpy.Log as Log
 import pathpy.path_extraction as path_extraction
 from .exception import *
 

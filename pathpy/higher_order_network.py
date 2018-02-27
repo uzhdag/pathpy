@@ -29,8 +29,8 @@ import numpy as _np
 import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
 
-from pathpy.Log import Log
-from pathpy.Log import Severity
+from pathpy import Log
+from pathpy.log import Severity
 
 
 class HigherOrderNetwork:

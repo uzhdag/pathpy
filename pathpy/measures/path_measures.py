@@ -27,10 +27,10 @@ import collections as _co
 import numpy as _np
 import scipy.sparse.linalg as _sla
 
-from pathpy.HigherOrderNetwork import HigherOrderNetwork as _HigherOrderNetwork
-from pathpy.Log import Log as _Log
-from pathpy.Log import Severity as _Severity
-from pathpy.Paths import Paths
+from pathpy import HigherOrderNetwork as _HigherOrderNetwork
+from pathpy import Log as _Log
+from pathpy.log import Severity as _Severity
+from pathpy import Paths
 
 
 __all__ = ['betweenness_centrality', 'closeness_centrality', 'node_traversals',

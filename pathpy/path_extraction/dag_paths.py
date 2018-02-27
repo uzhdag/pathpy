@@ -24,9 +24,9 @@
 
 import sys as _sys
 
-from pathpy.Paths import Paths as _Paths
-from pathpy.Log import Log as _Log
-from pathpy.Log import Severity as _Severity
+from pathpy import Paths as _Paths
+from pathpy import Log as _Log
+from pathpy.log import Severity as _Severity
 
 
 def paths_from_dag(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):

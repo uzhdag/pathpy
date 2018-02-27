@@ -26,7 +26,8 @@ import collections as _co
 import sys as _sys
 import copy as _copy
 
-from pathpy.Log import Log, Severity
+from pathpy import Log
+from pathpy.log import Severity
 
 
 class Paths:

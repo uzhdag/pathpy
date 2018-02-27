@@ -24,8 +24,8 @@
 
 import collections as _co
 import sys as _sys
-from pathpy.Log import Log
-from pathpy.Log import Severity
+from pathpy import Log
+from pathpy.log import Severity
 
 
 class DAG(object):

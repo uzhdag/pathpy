@@ -22,8 +22,8 @@
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
 
-from pathpy.Paths import Paths as _Paths
-from pathpy.Log import Log as _Log
+from pathpy import Paths as _Paths
+from pathpy import Log as _Log
 import numpy as _np
 
 
@@ -57,7 +57,7 @@ def paths_from_origin_destination(origin_destination_list, network,
 
     Returns
     -------
-    Paths
+    paths
     """
     assert network is not None, \
         'Error: extraction of origin destination paths requires a network topology'

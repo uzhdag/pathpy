@@ -26,8 +26,8 @@ import collections as _co
 import sys as _sys
 import numpy as _np
 
-from pathpy.Paths import Paths as _Paths
-from pathpy.Log import Log as _Log
+from pathpy import Paths as _Paths
+from pathpy import Log as _Log
 
 
 def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
@@ -59,14 +59,15 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
         calculated, which can be limited due to computational efficiency.
         A value of k will generate all time-respecting paths consisting of up to k
         time-stamped links. Note that generating a multi-order model with a maximum
-        order of k requires to paths_from_temporal_network time-respecting paths with *at least* length k.
+        order of k requires to paths_from_temporal_network time-respecting paths with
+        *at least* length k.
         If a limitation of the maxLength is not required for computational reasons,
         this parameter should not be set (as it will change the statistics of paths)
     maxSubPathLength : int
 
     Returns
     -------
-    Paths
+    paths
     """
 
     if maxLength == _sys.maxsize:  # pragma: no cover

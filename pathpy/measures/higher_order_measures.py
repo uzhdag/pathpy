@@ -38,8 +38,8 @@ import scipy.sparse.linalg as _sla
 import scipy.linalg as _la
 import scipy as _sp
 
-from pathpy.Log import Log as _Log
-from pathpy.Log import Severity as _Severity
+from pathpy import Log as _Log
+from pathpy.log import Severity as _Severity
 from pathpy import HigherOrderNetwork
 
 

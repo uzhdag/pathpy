@@ -29,10 +29,8 @@ import time as _t
 
 import numpy as _np
 
-from pathpy.Log import Log
-from pathpy.Log import Severity
-
-import sqlite3
+from pathpy import Log
+from pathpy.log import Severity
 
 
 class TemporalNetwork:

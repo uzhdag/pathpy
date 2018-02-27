@@ -26,7 +26,7 @@ import collections as _co
 
 import numpy as _np
 
-from pathpy.Log import Log
+from pathpy import Log
 
 _np.seterr(all='warn')
 
