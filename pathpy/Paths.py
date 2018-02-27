@@ -1,29 +1,26 @@
 # -*- coding: utf-8 -*-
-"""
-    pathpy is an OpenSource python package for the analysis of time series data
-    on networks using higher- and multi order graphical models.
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Contact the developer:
 
-    Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact the developer:
-
-    E-mail: ischoltes@ethz.ch
-    Web:    http://www.ingoscholtes.net
-"""
-
+#    E-mail: ischoltes@ethz.ch
+#    Web:    http://www.ingoscholtes.net
 import numpy as _np
 import collections as _co
 import sys as _sys
@@ -56,7 +53,8 @@ class Paths:
         #    subpath of a longer path, and j refers to the number of times p
         #    occurs as a *real* or *longest* path (i.e. not being a subpath
         #    of a longer path)
-        self.paths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.array([0.0, 0.0])))
+        self.paths = _co.defaultdict(
+            lambda: _co.defaultdict(lambda: _np.array([0.0, 0.0])))
 
         # The character used to separate nodes on paths
         self.separator = ','
@@ -86,13 +84,13 @@ class Paths:
         for k in sorted(self.paths):
             paths_ = self.paths[k]
             values_ = _np.array(list(paths_.values()))
-            v0 = _np.sum(values_[:,0])
-            v1 = _np.sum(values_[:,1])
+            v0 = _np.sum(values_[:, 0])
+            v1 = _np.sum(values_[:, 1])
             total_paths += [v0 + v1]
             sub_path_sum += [v0]
             l_path_sum += [v1]
             average_length += v1 * k
-            if len(paths_)>0:
+            if len(paths_) > 0:
                 max_path_length = max(max_path_length, k)
         if _np.sum(l_path_sum) > 0:
             average_length = average_length / _np.sum(l_path_sum)
@@ -124,7 +122,8 @@ class Paths:
 
         for k in sorted(self.paths):
             k_info = k_path_info_fmt.format(
-                k=k, lpsum=l_path_sum[k], spsum=sub_path_sum[k], total_paths=total_paths[k],
+                k=k, lpsum=l_path_sum[k], spsum=sub_path_sum[k],
+                total_paths=total_paths[k],
                 unique_paths_longer=self.unique_paths(l=k, consider_longer_paths=False)
             )
             summary += k_info
@@ -296,7 +295,7 @@ class Paths:
         max_length = l
         if consider_longer_paths:
             max_length = max(self.paths) if self.paths else 0
-        for j in range(l, max_length+1):
+        for j in range(l, max_length + 1):
             for p in self.paths[j]:
                 if self.paths[j][p][1] > 0:
                     L += 1.0
@@ -452,17 +451,18 @@ class Paths:
                 path = ()
                 # Add frequency of "real" path to second component of occurrence counter
                 if frequency:
-                    for i in range(0, len(fields)-1):
+                    for i in range(0, len(fields) - 1):
                         # Omit empty fields
                         v = fields[i].strip()
                         if v:
                             path += (v,)
-                    frequency = float(fields[len(fields)-1])
+                    frequency = float(fields[len(fields) - 1])
                     if len(path) <= max_ngram_length:
-                        p.paths[len(path)-1][path] += (0, frequency)
-                        maxL = max(maxL, len(path)-1)
-                    else: # cut path at max_ngram_length
-                        p.paths[max_ngram_length - 1][path[:max_ngram_length]] += (0, frequency)
+                        p.paths[len(path) - 1][path] += (0, frequency)
+                        maxL = max(maxL, len(path) - 1)
+                    else:  # cut path at max_ngram_length
+                        mnl = max_ngram_length
+                        p.paths[mnl - 1][path[:mnl]] += (0, frequency)
                         maxL = max(maxL, max_ngram_length - 1)
                 else:
                     for i in range(0, len(fields)):
@@ -471,15 +471,16 @@ class Paths:
                         if v:
                             path += (v,)
                     if len(path) <= max_ngram_length:
-                        p.paths[len(path)-1][path] += (0, 1)
-                        maxL = max(maxL, len(path)-1)
-                    else: # cut path at max_ngram_length
+                        p.paths[len(path) - 1][path] += (0, 1)
+                        maxL = max(maxL, len(path) - 1)
+                    else:  # cut path at max_ngram_length
                         p.paths[max_ngram_length - 1][path[:max_ngram_length]] += (0, 1)
                         maxL = max(maxL, max_ngram_length - 1)
                 line = f.readline()
                 n += 1
         # end of with open()
-        Log.add('finished. Read ' + str(n-1) + ' paths with maximum length ' + str(maxL))
+        Log.add(
+            'finished. Read ' + str(n - 1) + ' paths with maximum length ' + str(maxL))
 
         if expand_sub_paths:
             p.expand_subpaths()
@@ -508,7 +509,7 @@ class Paths:
                             line += x
                             line += separator
                         line += str(self.paths[l][p][1])
-                        f.write(line+'\n')
+                        f.write(line + '\n')
         f.close()
 
     @property
@@ -562,25 +563,26 @@ class Paths:
 
                 # compute maximum length of sub paths to consider
                 # (maximum up to pathLength)
-                maxL = min(self.maxSubPathLength+1, pathLength)
+                maxL = min(self.maxSubPathLength + 1, pathLength)
 
                 # Generate all subpaths of length k for k = 0 to k = maxL-1 (inclusive)
                 for k in range(maxL):
                     # Generate subpaths of length k for all start indices s
                     # for s = 0 to s = pathLength-k (inclusive)
-                    for s in range(pathLength-k+1):
+                    for s in range(pathLength - k + 1):
                         # Add frequency as a subpath to *first* entry of occurrence
                         # counter
-                        self.paths[k][path[s:s+k+1]] += (frequency, 0)
+                        self.paths[k][path[s:s + k + 1]] += (frequency, 0)
 
-    def add_path_tuple(self, path, expandSubPaths=True, frequency=(0, 1)):
+    def add_path_tuple(self, path, expand_subpaths=True, frequency=(0, 1)):
         """
         Adds a tuple of elements as a path. If the elements are not strings,
         a conversion to strings will be made. This function can be used to
         to set custom subpath statistics, via the frequency tuple (see below).
 
         @param path: The path tuple to be added, e.g. ('a', 'b', 'c')
-        @param expandSubPaths: Whether or not to calculate subpath statistics for this path
+        @param expand_subpaths: Whether or not to calculate subpath statistics for this
+        path
         @param frequency: A tuple (x,y) indicating the frequency of this path as subpath
             (first component) and longest path (second component). Default is (0,1).
         """
@@ -589,33 +591,35 @@ class Paths:
 
         path_str = path if isinstance(path, str) else tuple(map(str, path))
 
-        self.paths[len(path)-1][path_str] += frequency
+        self.paths[len(path) - 1][path_str] += frequency
 
-        if expandSubPaths:
+        if expand_subpaths:
 
-            maxL = min(self.maxSubPathLength+1, len(path_str)-1)
+            maxL = min(self.maxSubPathLength + 1, len(path_str) - 1)
 
             for k in range(0, maxL):
-                for s in range(len(path_str)-k):
+                for s in range(len(path_str) - k):
                     # for all start indices from 0 to n-k
 
                     subpath = ()
                     # construct subpath
-                    for i in range(s, s+k+1):
+                    for i in range(s, s + k + 1):
                         subpath += (path_str[i],)
                     # add subpath weight to first component of occurrences
                     self.paths[k][subpath] += (frequency[1], 0)
 
-    def add_path(self, ngram, separator=',', expandSubPaths=True, frequency=None):
+    def add_path_ngram(self, ngram, separator=',', expand_subpaths=True, frequency=None):
         """
         Adds the path(s) of a single n-gram to the path statistics object.
 
-        @param ngram: An ngram representing a path between nodes, separated by the separator character, e.g.
+        @param ngram: An ngram representing a path between nodes, separated by the
+        separator character, e.g.
             the 4-gram a;b;c;d represents a path of length three (with separator ';')
 
         @param separator: The character used as separator for the ngrams (';' by default)
 
-        @param expandSubPaths: by default all subpaths of the given ngram are generated, i.e.
+        @param expand_subpaths: by default all subpaths of the given ngram are
+        generated, i.e.
             for the trigram a;b;c a path a->b->c of length two will be generated
             as well as two subpaths a->b and b->c of length one
 
@@ -631,16 +635,16 @@ class Paths:
         else:
             self.paths[pathLength][path] += (0, 1)
 
-        if expandSubPaths:
-            maxL = min(self.maxSubPathLength+1, len(path)-1)
+        if expand_subpaths:
+            maxL = min(self.maxSubPathLength + 1, len(path) - 1)
             if frequency is not None:
                 for k in range(maxL):
-                    for s in range(pathLength-k+1):
-                        self.paths[k][path[s:s+k+1]] += (frequency, 0)
+                    for s in range(pathLength - k + 1):
+                        self.paths[k][path[s:s + k + 1]] += (frequency, 0)
             else:
                 for k in range(maxL):
-                    for s in range(pathLength-k+1):
-                        self.paths[k][path[s:s+k+1]] += (1, 0)
+                    for s in range(pathLength - k + 1):
+                        self.paths[k][path[s:s + k + 1]] += (1, 0)
 
     @staticmethod
     def contained_paths(p, node_filter):
@@ -667,7 +671,7 @@ class Paths:
 
         return contained_paths
 
-    def filter(self, node_filter, min_length=0, max_length=_sys.maxsize):
+    def filter_nodes(self, node_filter, min_length=0, max_length=_sys.maxsize):
         """
         Returns a new paths object which contains only paths between nodes in a given
         filter set. For each of the paths in the current Paths object, the set of
@@ -690,8 +694,9 @@ class Paths:
                     # nodes in node_filter
                     contained = Paths.contained_paths(x, node_filter)
                     for s in contained:
-                        if min_length <= len(s)-1 <= max_length:
-                            p.add_path_tuple(s, expandSubPaths=True, frequency=(0, self.paths[l][x][1]))
+                        if min_length <= len(s) - 1 <= max_length:
+                            freq = (0, self.paths[l][x][1])
+                            p.add_path_tuple(s, expand_subpaths=True, frequency=freq)
         return p
 
     def project_paths(self, mapping):
@@ -715,7 +720,8 @@ class Paths:
                     for v in x:
                         newP += (mapping[v],)
                     # add to new path object and expand sub paths
-                    p.add_path_tuple(newP, expandSubPaths=True, frequency=(0, self.paths[l][x][1]))
+                    freq = (0, self.paths[l][x][1])
+                    p.add_path_tuple(newP, expand_subpaths=True, frequency=freq)
         return p
 
     def distance_matrix(self):
@@ -771,4 +777,3 @@ class Paths:
         Return the maximal path length.
         """
         return len(self.paths) - 1
-

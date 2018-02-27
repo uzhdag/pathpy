@@ -50,7 +50,7 @@ class TemporalNetwork:
         Constructor that generates a temporal network instance.
 
         @param tedges: an optional list of directed time-stamped edges
-            from which to construct a temporal network instance. For the 
+            from which to construct a temporal network instance. For the
             default value None an empty temporal network will be created.
         """
 
@@ -109,17 +109,17 @@ class TemporalNetwork:
     def fromSQLite(cursor, directed = True, timestampformat='%Y-%m-%d %H:%M:%S'):
         """
             Reads time-stamped links from an SQLite cursor and returns a new instance
-            of the class TemporalNetwork. The cursor is assumed to refer to a table that 
+            of the class TemporalNetwork. The cursor is assumed to refer to a table that
             minimally has three columns
 
                 source target time
 
             and where each row refers to a directed link. Time stamps can be integers,
-            or strings to be converted to UNIX time stamps via a custom timestamp format. 
+            or strings to be converted to UNIX time stamps via a custom timestamp format.
             For this, the python function datetime.strptime will be used.
 
-            Important: Since columns are accessed by name this function requires that a 
-            row factory object is set for the SQLite connection prior to cursor creation, 
+            Important: Since columns are accessed by name this function requires that a
+            row factory object is set for the SQLite connection prior to cursor creation,
             i.e. you should set
 
                 connection.row_factory = sqlite3.Row
@@ -130,7 +130,7 @@ class TemporalNetwork:
         """
 
         tedges = []
-        
+
         assert cursor.connection.row_factory, 'Cannot access columns by name. Please set connection.row_factory = sqlite3.Row before creating DB cursor.'
 
 
@@ -177,7 +177,7 @@ class TemporalNetwork:
 
             @param filename: path of the file to read from
             @param sep: the character that separates columns (default ',')
-            @param directed: whether to read edges as directed (default True)            
+            @param directed: whether to read edges as directed (default True)
             @param timestampformat: used to convert string timestamps to UNIX timestamps.
                 This parameter is ignored, if timestamps are digit types (like a simple int).
                 The default is '%Y-%m-%d %H:%M'
@@ -264,7 +264,7 @@ class TemporalNetwork:
 
     def filterEdges(self, edge_filter):
         """
-        Filter time-stamped edges according to a given filter expression. This can be used, e.g., 
+        Filter time-stamped edges according to a given filter expression. This can be used, e.g.,
         to create time slice networks by filtering edges within certain time windows.
 
         @param edge_filter: an arbitrary filter function of the form
@@ -417,22 +417,22 @@ class TemporalNetwork:
     def ShuffleEdges(self, l=0, with_replacement=False, window_splits = None, maintain_undirected = True):
         """
         Generates a shuffled version of the temporal network in which edge statistics (i.e.
-        the frequencies of time-stamped edges) and inter-event time statistics are preserved, 
+        the frequencies of time-stamped edges) and inter-event time statistics are preserved,
         while all order correlations are destroyed by randomly reshuffling the time stamps of links.
 
-        @param l: the length of the sequence to be generated (i.e. the number of time-stamped links to be 
+        @param l: the length of the sequence to be generated (i.e. the number of time-stamped links to be
             generated ber shuffling time window, see below).
             For the default value l=0, the length of the original temporal network is used.
-        @param with_replacement: Whether or not the sampling of new time-stamped edges should be with 
-            replacement (default False). If False, the exact edge frequencies and inter-event time 
+        @param with_replacement: Whether or not the sampling of new time-stamped edges should be with
+            replacement (default False). If False, the exact edge frequencies and inter-event time
             statistics in the original network will be preserved.
-        @param window_splits: a list of time stamps that separate shuffling windows. E.g. specifying 
-            window_splits = [7,14,21] will separately shuffle edges within intervals 
+        @param window_splits: a list of time stamps that separate shuffling windows. E.g. specifying
+            window_splits = [7,14,21] will separately shuffle edges within intervals
             [min_timestamp,7], (7,14], (14,21], (21,max_timestamp] (default None).
-            The number of edges l to generate applies separately for each time window. For l=0, the original 
-            number of edges in each time window will be used. 
-        @param maintain_undirected: if True, two directed edges (a,b,t) (b,a,t) ocurring at the same time 
-            will be treated as a single undirected edge, i.e. both are reassigned to a different time stamp 
+            The number of edges l to generate applies separately for each time window. For l=0, the original
+            number of edges in each time window will be used.
+        @param maintain_undirected: if True, two directed edges (a,b,t) (b,a,t) ocurring at the same time
+            will be treated as a single undirected edge, i.e. both are reassigned to a different time stamp
             at once (default True). This ensures that undirected edges are preserved as atomic objects.
         """
 
@@ -446,7 +446,7 @@ class TemporalNetwork:
         window_min = min(self.time)-1
         for window_max in window_splits:
 
-            timestamps = [] 
+            timestamps = []
             edges = []
             for e in self.tedges:
                 if e[2] > window_min and e[2] <= window_max:
@@ -460,19 +460,19 @@ class TemporalNetwork:
                     # Pick random link
                     edge = edges[_np.random.randint(0, len(edges))]
                     # Pick random time stamp
-                    time = timestamps[_np.random.randint(0, len(timestamps))]            
+                    time = timestamps[_np.random.randint(0, len(timestamps))]
                     # Generate new time-stamped link
                     tedges.append((edge[0], edge[1], time))
             else: # shuffle edges while avoiding multiple identical edges at same time stamp
                 i = 0
                 while i<l:
-                    # Pick random link                    
+                    # Pick random link
                     edge = edges.pop(_np.random.randint(0, len(edges)))
 
                     # Pick random time stamp
                     time = timestamps.pop(_np.random.randint(0, len(timestamps)))
                     rewired = False
-                    
+
                     # for undirected edges, rewire both directed edges at once
                     if maintain_undirected and (edge[1], edge[0], edge[2]) in edges:
 
@@ -482,20 +482,20 @@ class TemporalNetwork:
                             tedges.append((edge[1], edge[0], time))
                             edges.remove((edge[1], edge[0], edge[2]))
                             rewired = True
-                    
+
                     # rewire a single directed edge individually
                     elif (edge[0], edge[1], time) not in tedges:
                         tedges.append((edge[0], edge[1], time))
                         rewired = True
-                    
-                    # edge could not be rewired to the chosen time stamp, so reappend both 
+
+                    # edge could not be rewired to the chosen time stamp, so reappend both
                     # to the list for future sampling
                     if not rewired:
                         edges.append(edge)
                         timestamps.append(time)
                     else:
                         i += 1
-            
+
             window_min = window_max
 
         # Generate temporal network
@@ -565,7 +565,7 @@ class TemporalNetwork:
         for n in  _np.sort(self.nodes):
             output.append("\\node[v,below=" + layer_dist + " of " + n + "-\\pgfmathresult]     (" + n + "-\\number) {};\n")
         output.append("\\node[lbl,left=0.4cm of " + _np.sort(self.nodes)[0] + "-\\number]    (col-\\pgfmathresult) {\\selectfont{\\bf \\Huge \\number}};\n")
-        output.append("}\n")        
+        output.append("}\n")
         output.append("\\path[->,line width=2pt]\n")
         i = 1
         # draw only directed edges
@@ -574,7 +574,7 @@ class TemporalNetwork:
                 if dag:
                     output.append("(" + edge[0] + "-" + str(ts) + ") edge (" + edge[1] + "-" + str(ts + 1) + ")\n")
                 else:
-                    if (edge[1], edge[0], ts) not in self.time[ts]:                        
+                    if (edge[1], edge[0], ts) not in self.time[ts]:
                         bend_direction = 'right'
                         if not split_directions and edge[0] < edge[1]:
                             bend_direction = 'left'
@@ -588,7 +588,7 @@ class TemporalNetwork:
             for ts in self.ordered_times:
                 for edge in self.time[ts]:
                     if (edge[1], edge[0], ts) in self.time[ts]:
-                        # admittedly, this is an ugly trick: I avoid keeping state on which of the directed edges 
+                        # admittedly, this is an ugly trick: I avoid keeping state on which of the directed edges
                         # has been drawn already as an undirected edge, by simply drawing them twice in the same way :-)
                         s = max(edge[0], edge[1])
                         t = min(edge[0], edge[1])
@@ -673,4 +673,3 @@ class TemporalNetwork:
         html = '<!DOCTYPE html>\n<html><body>\n' + self._to_html(width=width, height=height, msperframe = msperframe, require=False) + '</body>\n</html>'
         with open(filename, 'w+') as f:
             f.write(html)
-        

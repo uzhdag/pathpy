@@ -63,7 +63,7 @@ def generate_random_path(size, rnd_seed, num_nodes=None):
         frequency = np.random.randint(1, 4)
         path_length = np.random.randint(1, 10)
         path_to_add = random_ngram(path_length, node_set)
-        paths.add_path(path_to_add, frequency=frequency)
+        paths.add_path_ngram(path_to_add, frequency=frequency)
 
     return paths
 

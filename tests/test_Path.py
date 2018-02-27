@@ -153,7 +153,7 @@ def test_get_contained_paths():
 
 def test_filter_paths(path_from_ngram_file):
     p = path_from_ngram_file
-    new_paths = p.filter(node_filter=['a', 'b', 'c'])
+    new_paths = p.filter_nodes(node_filter=['a', 'b', 'c'])
     expected_sequence = {'ab': 6, 'abc': 2, '': 1}
     new_sequence_raw = ''.join(new_paths.sequence())
     new_sequence = Counter(new_sequence_raw.split('|'))

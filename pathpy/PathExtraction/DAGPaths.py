@@ -67,7 +67,7 @@ class DAGPaths:
                     # add detected paths to paths object
                     for d in paths:
                         for x in paths[d]:
-                            p.add_path_tuple(x, expandSubPaths=False, frequency=(0, 1))
+                            p.add_path_tuple(x, expand_subpaths=False, frequency=(0, 1))
                 else:
                     dag.constructMappedPaths(s, node_mapping, p)
                 n += 1

@@ -93,7 +93,7 @@ def test_dag_io(dag_object, tmpdir):
     dag_back = pp.DAG.readFile(file_path)
     assert set(dag_back.edges) == set(dag_orig.edges)
 
-    # filter out nodes not in the mapping
+    # filter_nodes out nodes not in the mapping
     mapping = {'a': 'A', 'b': 'B', 'c': 'A'}
     dag_back_map = pp.DAG.readFile(file_path, mapping=mapping)
     assert dag_back_map.nodes == {'a', 'b', 'c'}

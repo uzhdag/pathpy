@@ -19,16 +19,16 @@ def test_estimate_order_1():
     """Example without second-order correlations"""
     paths = pp.Paths()
 
-    paths.add_path('a,c')
-    paths.add_path('b,c')
-    paths.add_path('c,d')
-    paths.add_path('c,e')
+    paths.add_path_ngram('a,c')
+    paths.add_path_ngram('b,c')
+    paths.add_path_ngram('c,d')
+    paths.add_path_ngram('c,e')
 
     for k in range(4):
-        paths.add_path('a,c,d')
-        paths.add_path('b,c,e')
-        paths.add_path('b,c,d')
-        paths.add_path('a,c,e')
+        paths.add_path_ngram('a,c,d')
+        paths.add_path_ngram('b,c,e')
+        paths.add_path_ngram('b,c,d')
+        paths.add_path_ngram('a,c,e')
 
     m = pp.MultiOrderModel(paths, maxOrder=2)
     assert m.estimateOrder(paths) == 1, \
@@ -39,14 +39,14 @@ def test_estimate_order_2():
     # Example with second-order correlations
     paths = pp.Paths()
 
-    paths.add_path('a,c')
-    paths.add_path('b,c')
-    paths.add_path('c,d')
-    paths.add_path('c,e')
+    paths.add_path_ngram('a,c')
+    paths.add_path_ngram('b,c')
+    paths.add_path_ngram('c,d')
+    paths.add_path_ngram('c,e')
 
     for k in range(4):
-        paths.add_path('a,c,d')
-        paths.add_path('b,c,e')
+        paths.add_path_ngram('a,c,d')
+        paths.add_path_ngram('b,c,e')
 
     m = pp.MultiOrderModel(paths, maxOrder=2)
     assert m.estimateOrder(paths) == 2, \
@@ -93,7 +93,7 @@ def test_estimate_order_strongly_connected():
                   'f,b,e', 'b,e,b']
 
     for ngram in ngram_list:
-        paths.add_path(ngram)
+        paths.add_path_ngram(ngram)
 
     g1 = pp.HigherOrderNetwork(paths, k=1)
     g1.reduceToGCC()
