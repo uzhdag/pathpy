@@ -1,28 +1,26 @@
 # -*- coding: utf-8 -*-
-"""
-    pathpy is an OpenSource python package for the analysis of time series data
-    on networks using higher- and multi order graphical models.
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Contact the developer:
 
-    Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Contact the developer:
-
-    E-mail: ischoltes@ethz.ch
-    Web:    http://www.ingoscholtes.net
-"""
+#    E-mail: ischoltes@ethz.ch
+#    Web:    http://www.ingoscholtes.net
 
 import numpy as _np
 from scipy.stats import chi2
@@ -265,16 +263,18 @@ class MultiOrderModel:
 
         return L if log else _np.exp(L)
 
-    def factorial(self, n, log=True):  # pragma: no cover
+    @staticmethod
+    def factorial(n, log=True):  # pragma: no cover
         """
-        Caclulates (or approximates) the (log of the) factorial n!. The function applies Stirling's approximation if n>20.
+        Calculates (or approximates) the (log of the) factorial n!.
+        The function applies Stirling's approximation if n>20.
 
         @param n: computes factorial of n
         @param log: whether or not to return the (natural) logarithm of the factorial
         """
         f = _np.float64(0)
         n_ = _np.float64(n)
-        if n > 20: # use Stirling's approximation
+        if n > 20:  # use Stirling's approximation
             try:
                 f = n_ * _np.log(n_)-n_ + 0.5 * _np.log(2.0*_np.pi*n_)+1.0/(12.0*n_)-1/(360.0*n_**3.0)
             except Warning as w:
@@ -541,7 +541,8 @@ class MultiOrderModel:
         test. We instead use the AIC or BIC.
         """
 
-        assert method == 'AIC' or method == 'BIC' or method == 'AICc', 'Expected method AIC, AICc or BIC'
+        assert method in ['AIC', 'BIC', 'AICc'],\
+            'Expected method AIC, AICc or BIC "%s" given.' % method
 
         # count number of omitted paths with length zero
         p_sum = 0
@@ -563,7 +564,6 @@ class MultiOrderModel:
                 'Observation count for 0-order ({n0}) and '
                 '1-st order model ({n1}) do not match'.format(n0=n0, n1=n1)
             )
-
 
         # degrees of freedom = |V|-1
         dof0 = self.layers[0].degrees_of_freedom(assumption='ngrams')
