@@ -42,38 +42,40 @@ class TemporalNetwork:
     """
 
     def __init__(self, tedges=None):
-        """
-        Constructor that generates a temporal network instance.
+        """Constructor that generates a temporal network instance.
 
-        @param tedges: an optional list of directed time-stamped edges
-            from which to construct a temporal network instance. For the
-            default value None an empty temporal network will be created.
+        Parameters
+        ----------
+        tedges:
+            an optional list of directed time-stamped edges from which to construct a
+            temporal network instance. For the default value None an empty temporal
+            network will be created.
         """
-
-        ## A list of time-stamped edges of this temporal network
+        # A list of time-stamped edges of this temporal network
         self.tedges = []
 
-        ## A list of nodes of this temporal network
+        # A list of nodes of this temporal network
         self.nodes = []
 
-        ## A dictionary storing all time-stamped links, indexed by time-stamps
+        # A dictionary storing all time-stamped links, indexed by time-stamps
         self.time = _co.defaultdict(lambda: list())
 
-        ## A dictionary storing all time-stamped links, indexed by time and target node
+        # A dictionary storing all time-stamped links, indexed by time and target node
         self.targets = _co.defaultdict(lambda: dict())
 
-        ## A dictionary storing all time-stamped links, indexed by time and source node
+        # A dictionary storing all time-stamped links, indexed by time and source node
         self.sources = _co.defaultdict(lambda: dict())
 
-        ## A dictionary storing time stamps at which links (v,*;t) originate from node v
+        # A dictionary storing time stamps at which links (v,*;t) originate from node v
         self.activities = _co.defaultdict(lambda: list())
 
-        ## A dictionary storing sets of time stamps at which links (v,*;t) originate from node v
-        ## Note that the insertion into a set is much faster than repeatedly checking whether
-        ## an element already exists in a list!
+        # A dictionary storing sets of time stamps at which links (v,*;t) originate from
+        # node v
+        # Note that the insertion into a set is much faster than repeatedly checking
+        # whether an element already exists in a list!
         self.activities_sets = _co.defaultdict(lambda: set())
 
-        ## An ordered list of time-stamps
+        # An ordered list of time-stamps
         self.ordered_times = []
 
         nodes_seen = _co.defaultdict(lambda: False)
@@ -103,31 +105,40 @@ class TemporalNetwork:
 
     @staticmethod
     def fromSQLite(cursor, directed = True, timestampformat='%Y-%m-%d %H:%M:%S'):
-        """
-            Reads time-stamped links from an SQLite cursor and returns a new instance
-            of the class TemporalNetwork. The cursor is assumed to refer to a table that
-            minimally has three columns
+        """Reads time-stamped links from an SQLite cursor and returns a new instance of
+        the class TemporalNetwork. The cursor is assumed to refer to a table that
+        minimally has three columns
 
                 source target time
 
-            and where each row refers to a directed link. Time stamps can be integers,
-            or strings to be converted to UNIX time stamps via a custom timestamp format.
-            For this, the python function datetime.strptime will be used.
+        and where each row refers to a directed link. Time stamps can be integers,
+        or strings to be converted to UNIX time stamps via a custom timestamp format.
+        For this, the python function datetime.strptime will be used.
 
-            Important: Since columns are accessed by name this function requires that a
-            row factory object is set for the SQLite connection prior to cursor creation,
-            i.e. you should set
+        Important: Since columns are accessed by name this function requires that a
+        row factory object is set for the SQLite connection prior to cursor creation,
+        i.e. you should set
 
                 connection.row_factory = sqlite3.Row
 
-            @param cursor: The SQLite cursor to fetch rows
-            @param timestampformat: used to convert string timestamps to UNIX timestamps.
-                This parameter is ignored, if the timestamps are digit types (like a simple int).
-        """
+        Parameters
+        ----------
+        cursor:
+            The SQLite cursor to fetch rows
+        directed: bool
+        timestampformat: str
+            used to convert string timestamps to UNIX timestamps. This parameter is
+            ignored, if the timestamps are digit types (like a simple int).
 
+        Returns
+        -------
+
+        """
         tedges = []
 
-        assert cursor.connection.row_factory, 'Cannot access columns by name. Please set connection.row_factory = sqlite3.Row before creating DB cursor.'
+        assert cursor.connection.row_factory, \
+            'Cannot access columns by name. Please set ' \
+            'connection.row_factory = sqlite3.Row before creating DB cursor.'
 
 
         if not directed:
@@ -157,27 +168,38 @@ class TemporalNetwork:
     @staticmethod
     def readFile(filename, sep=',', directed = True, timestampformat='%Y-%m-%d %H:%M:%S', maxlines=_sys.maxsize):
         """
-            Reads time-stamped links from a file and returns a new instance
-            of the class TemporalNetwork. The file is assumed to have a header
+        Reads time-stamped links from a file and returns a new instance of the class
+        TemporalNetwork. The file is assumed to have a header
 
                 source target time
 
-            where columns can be in arbitrary order and separated by arbitrary characters.
-            Each time-stamped link must occur in a separate line and links are assumed to be
-            directed.
+        where columns can be in arbitrary order and separated by arbitrary characters.
+        Each time-stamped link must occur in a separate line and links are assumed to be
+        directed.
 
-            The time column can be omitted and in this case all links are assumed to occur
-            in consecutive time stamps (that have a distance of one). Time stamps can be simple
-            integers, or strings to be converted to UNIX time stamps via a custom timestamp format.
-            For this, the python function datetime.strptime will be used.
+        The time column can be omitted and in this case all links are assumed to occur
+        in consecutive time stamps (that have a distance of one). Time stamps can be
+        simple integers, or strings to be converted to UNIX time stamps via a custom
+        timestamp format. For this, the python function datetime.strptime will be used.
 
-            @param filename: path of the file to read from
-            @param sep: the character that separates columns (default ',')
-            @param directed: whether to read edges as directed (default True)
-            @param timestampformat: used to convert string timestamps to UNIX timestamps.
-                This parameter is ignored, if timestamps are digit types (like a simple int).
-                The default is '%Y-%m-%d %H:%M'
-            @param maxlines: limit reading of file to a given number of lines (default sys.maxsize)
+        Parameters
+        ----------
+        filename: str
+            path of the file to read from
+        sep: str
+            the character that separates columns (default ',')
+        directed: bool
+            whether to read edges as directed (default True)
+        timestampformat: str
+            used to convert string timestamps to UNIX timestamps. This parameter is
+            ignored, if timestamps are digit types (like a simple int).
+            The default is '%Y-%m-%d %H:%M'
+        maxlines: int
+            limit reading of file to a given number of lines (default sys.maxsize)
+
+        Returns
+        -------
+
         """
         assert (filename != ''), 'Empty filename given'
 
@@ -244,11 +266,18 @@ class TemporalNetwork:
 
 
     def writeFile(self, filename, sep=','):
-        """
-        Writes the time-stamped edge list of this temporal network instance to a CSV file
+        """Writes the time-stamped edge list of this temporal network instance as CSV file
 
-        @param filename: name of CSV file to save data to
-        @sep: character used to separate columns in generated CSV file
+        Parameters
+        ----------
+        filename: str
+            name of CSV file to save data to
+        sep: str
+            character used to separate columns in generated CSV file
+
+        Returns
+        -------
+
         """
         Log.add('Writing {0} time-stamped edges to file {1}'.format(self.ecount(), filename), Severity.INFO)
         with open(filename, 'w+') as f:
@@ -259,15 +288,21 @@ class TemporalNetwork:
 
 
     def filterEdges(self, edge_filter):
-        """
-        Filter time-stamped edges according to a given filter expression. This can be used, e.g.,
-        to create time slice networks by filtering edges within certain time windows.
+        """Filter time-stamped edges according to a given filter expression. This can be
+        used, e.g., to create time slice networks by filtering edges within certain time
+        windows.
 
-        @param edge_filter: an arbitrary filter function of the form
-            filter_func(v, w, time) that returns True for time-stamped edges that shall pass the
-            filter, and False for all edges that shall be filtered out.
-        """
+        Parameters
+        ----------
+        edge_filter: callable
+            an arbitrary filter function of the form filter_func(v, w, time) that returns
+            True for time-stamped edges that shall pass the filter, and False for all
+            edges that shall be filtered out.
 
+        Returns
+        -------
+
+        """
         Log.add('Starting filtering ...', Severity.INFO)
         new_t_edges = []
 
@@ -279,16 +314,23 @@ class TemporalNetwork:
 
         return TemporalNetwork(tedges=new_t_edges)
 
-
     def addEdge(self, source, target, ts, directed=True):
-        """
-        Adds a time-stamped edge (source,target;time) to the temporal network.
+        """Adds a time-stamped edge (source,target;time) to the temporal network.
         Unless specified otherwise, time-stamped edges are assumed to be directed.
 
-        @param source: name of the source node of a directed, time-stamped link
-        @param target: name of the target node of a directed, time-stamped link
-        @param ts: (integer) time-stamp of the time-stamped link
-        @param directed: whether or not to create a directed edge (default True)
+        Parameters
+        ----------
+        source:
+            name of the source node of a directed, time-stamped link
+        target:
+            name of the target node of a directed, time-stamped link
+        ts: int
+            time-stamp of the time-stamped link
+        directed: bool
+
+        Returns
+        -------
+
         """
         e = (source, target, ts)
         self.tedges.append(e)
@@ -411,27 +453,36 @@ class TemporalNetwork:
 
 
     def ShuffleEdges(self, l=0, with_replacement=False, window_splits = None, maintain_undirected = True):
-        """
-        Generates a shuffled version of the temporal network in which edge statistics (i.e.
-        the frequencies of time-stamped edges) and inter-event time statistics are preserved,
-        while all order correlations are destroyed by randomly reshuffling the time stamps of links.
+        """Generates a shuffled version of the temporal network in which edge statistics
+        (i.e. the frequencies of time-stamped edges) and inter-event time  statistics are
+        preserved, while all order correlations are destroyed by randomly reshuffling the
+        time stamps of links.
 
-        @param l: the length of the sequence to be generated (i.e. the number of time-stamped links to be
-            generated ber shuffling time window, see below).
-            For the default value l=0, the length of the original temporal network is used.
-        @param with_replacement: Whether or not the sampling of new time-stamped edges should be with
-            replacement (default False). If False, the exact edge frequencies and inter-event time
-            statistics in the original network will be preserved.
-        @param window_splits: a list of time stamps that separate shuffling windows. E.g. specifying
+        Parameters
+        ----------
+        l: int
+            For the default value l=0, the length of the original temporal network is
+            used.
+        with_replacement: bool
+            Whether or not the sampling of new time-stamped edges should be with
+            replacement (default False). If False, the exact edge frequencies and
+            inter-event time statistics in the original network will be preserved.
+        window_splits: list
+            a list of time stamps that separate shuffling windows. E.g. specifying
             window_splits = [7,14,21] will separately shuffle edges within intervals
-            [min_timestamp,7], (7,14], (14,21], (21,max_timestamp] (default None).
-            The number of edges l to generate applies separately for each time window. For l=0, the original
-            number of edges in each time window will be used.
-        @param maintain_undirected: if True, two directed edges (a,b,t) (b,a,t) ocurring at the same time
-            will be treated as a single undirected edge, i.e. both are reassigned to a different time stamp
-            at once (default True). This ensures that undirected edges are preserved as atomic objects.
-        """
+            [min_timestamp,7], (7,14], (14,21], (21,max_timestamp] (default None). The
+            number of edges l to generate applies separately for each time window. For
+            l=0, the original number of edges in each time window will be used.
+        maintain_undirected: bool
+            if True, two directed edges (a,b,t) (b,a,t) occurring at the same time will be
+            treated as a single undirected edge, i.e. both are reassigned to a different
+            time stamp at once (default True). This ensures that undirected edges are
+            preserved as atomic objects.
 
+        Returns
+        -------
+
+        """
         tedges = []
 
         if window_splits == None:
@@ -501,23 +552,34 @@ class TemporalNetwork:
         t.nodes = self.nodes
         return t
 
-
     def write_tikz(self, filename, dag=True, angle=20, layer_dist='0.3cm', split_directions=True):
-        """
-        Generates a tex file that can be compiled to a time-unfolded
-        representation of the temporal network.
+        """Generates a tex file that can be compiled to a time-unfolded representation of
+         the temporal network.
 
-        @param filename: the name of the tex file to be generated.
-        @param dag: whether or not to draw the unfolded network as a directed acyclic graph, in which a link (v,w,t)
-            connects node-time elements (v_t, w_t+1) (default True). If False, a simple sequence of links will be generated.
-        @param layer_dist: LaTex distance parameter string specifying the distance between adjacent node-time elements (default '0.3cm')
-        @param angle: the angle of curved edges
-        @param split_directions: whether or not the curve angle of edges shall be split depending on direction (default True)
-            If this is set to True, arrows from left to right bend upwards, while arrows from right to left bend downwards
-            This helps readability in temporal networks with multiple edges per time step. For temporal networks with single edges
-            per time, False is recommended.
-        """
+        Parameters
+        ----------
+        filename: str
+            the name of the tex file to be generated.
+        dag: bool
+            whether or not to draw the unfolded network as a directed acyclic graph,
+            in which a link (v,w,t) connects node-time elements (v_t, w_t+1) (default
+            True). If False, a simple sequence of links will be generated.
+        angle: float
+            the angle of curved edges
+        layer_dist: str
+            LaTex distance parameter string specifying the distance between adjacent
+            node-time elements (default '0.3cm')
+        split_directions: bool
+            whether or not the curve angle of edges shall be split depending on
+            direction (default True) If this is set to True, arrows from left to right
+            bend upwards, while arrows from right to left bend downwards This helps
+            readability in temporal networks with multiple edges per time step. For
+            temporal networks with single edges per time, False is recommended.
 
+        Returns
+        -------
+
+        """
         import os as _os
 
         output = []

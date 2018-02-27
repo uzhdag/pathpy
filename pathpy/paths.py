@@ -490,16 +490,19 @@ class Paths:
         return p
 
     def write_file(self, filename, separator=','):
-        """
-        Writes path statistics data to a file.
-        Each line in this file captures a longest path
-        (v0,v1,...,vl), as well as its frequency f as follows
+        """Writes path statistics data to a file. Each line in this file captures a
+        longest path (v0,v1,...,vl), as well as its frequency f as follows
 
-        v0,v1,...,vl,f
+        Parameters
+        ----------
+        filename: str
+            name of the file to write to
+        separator: str
+            character that shall be used to separate nodes and frequencies
 
-        @param filename: name of the file to write to
-        @param separator: character that shall be used to
-            separate nodes and frequencies
+        Returns
+        -------
+
         """
         with open(filename, 'w') as f:
             for l in self.paths:
@@ -576,18 +579,24 @@ class Paths:
                         self.paths[k][path[s:s + k + 1]] += (frequency, 0)
 
     def add_path_tuple(self, path, expand_subpaths=True, frequency=(0, 1)):
-        """
-        Adds a tuple of elements as a path. If the elements are not strings,
+        """Adds a tuple of elements as a path. If the elements are not strings,
         a conversion to strings will be made. This function can be used to
         to set custom subpath statistics, via the frequency tuple (see below).
 
-        @param path: The path tuple to be added, e.g. ('a', 'b', 'c')
-        @param expand_subpaths: Whether or not to calculate subpath statistics for this
-        path
-        @param frequency: A tuple (x,y) indicating the frequency of this path as subpath
+        Parameters
+        ----------
+        path: tuple
+            The path tuple to be added, e.g. ('a', 'b', 'c')
+        expand_subpaths: bool
+            Whether or not to calculate subpath statistics for this path
+        frequency: tuple
+            A tuple (x,y) indicating the frequency of this path as subpath
             (first component) and longest path (second component). Default is (0,1).
-        """
 
+        Returns
+        -------
+
+        """
         assert path, 'Error: paths needs to contain at least one element'
 
         path_str = path if isinstance(path, str) else tuple(map(str, path))
@@ -610,23 +619,27 @@ class Paths:
                     self.paths[k][subpath] += (frequency[1], 0)
 
     def add_path_ngram(self, ngram, separator=',', expand_subpaths=True, frequency=None):
-        """
-        Adds the path(s) of a single n-gram to the path statistics object.
+        """Adds the path(s) of a single n-gram to the path statistics object.
 
-        @param ngram: An ngram representing a path between nodes, separated by the
-        separator character, e.g.
-            the 4-gram a;b;c;d represents a path of length three (with separator ';')
-
-        @param separator: The character used as separator for the ngrams (';' by default)
-
-        @param expand_subpaths: by default all subpaths of the given ngram are
-        generated, i.e.
+        Parameters
+        ----------
+        ngram: str
+            An ngram representing a path between nodes, separated by the separator
+            character, e.g. the 4-gram a;b;c;d represents a path of length three
+            (with separator ';')
+        separator: str
+            The character used as separator for the ngrams (';' by default)
+        expand_subpaths: bool
+            by default all subpaths of the given ngram are generated, i.e.
             for the trigram a;b;c a path a->b->c of length two will be generated
             as well as two subpaths a->b and b->c of length one
+        frequency: int
+            the number of occurrences (i.e. frequency) of the ngram
 
-        @param frequency: the number of occurrences (i.e. frequency) of the ngram
+        Returns
+        -------
+
         """
-
         path = tuple(ngram.split(separator))
         pathLength = len(path) - 1
 
@@ -649,15 +662,21 @@ class Paths:
 
     @staticmethod
     def contained_paths(p, node_filter):
-        """
-        Returns the set of maximum-length sub-paths of the path p, which
-        only contain nodes that appear in the node_filter. As an example,
-        for the path (a,b,c,d,e,f,g) and a node_filter [a,b,d,f,g], the method
-        will return [(a,b), (d,), (f,g)].
+        """Returns the set of maximum-length sub-paths of the path p, which only contain
+        nodes that appear in the node_filter. As an example, for the path (a,b,c,d,e,f,g)
+        and a node_filter [a,b,d,f,g], the method will return [(a,b), (d,), (f,g)].
 
-        @param p: a path tuple to check for contained paths
-        @param node_filter: a set of nodes to which the contained paths should be limited
+        Parameters
+        ----------
+        p: tuple
+            a path tuple to check for contained paths
+        node_filter: set
+            a set of nodes to which the contained paths should be limited
+
+        Returns
+        -------
         """
+
         contained_paths = []
         current_path = ()
         for k in range(0, len(p)):
@@ -673,20 +692,24 @@ class Paths:
         return contained_paths
 
     def filter_nodes(self, node_filter, min_length=0, max_length=_sys.maxsize):
-        """
-        Returns a new paths object which contains only paths between nodes in a given
+        """Returns a new paths object which contains only paths between nodes in a given
         filter set. For each of the paths in the current Paths object, the set of
-        maximally
-        contained subpaths between nodes in node_filter is extracted. This method is
-        useful
-        when studying (sub-)paths passing through a subset of nodes.
+        maximally contained subpaths between nodes in node_filter is extracted.
+        This method is useful when studying (sub-)paths passing through a subset of nodes.
 
-        @param node_filter: the nodes for which paths with be extracted from the current
-            set of paths
-        @param min_length: the minimum length of paths to paths_from_temporal_network (default 0)
-        @param max_length: the maximum length of paths to paths_from_temporal_network (default sys.maxsize)
+        Parameters
+        ----------
+        node_filter: set
+            the nodes for which paths with be extracted from the current set of paths
+        min_length: int
+            the minimum length of paths to paths_from_temporal_network (default 0)
+        max_length: int
+            the maximum length of paths to paths_from_temporal_network (default sys.maxsize)
+
+        Returns
+        -------
+        Paths
         """
-
         p = Paths()
         for l in self.paths:
             for x in self.paths[l]:
@@ -701,14 +724,20 @@ class Paths:
         return p
 
     def project_paths(self, mapping):
-        """
-        Returns a new path object in which nodes have been mapped to different labels
+        """Returns a new path object in which nodes have been mapped to different labels
         given by an arbitrary mapping function. For instance, for the mapping
         {'a': 'x', 'b': 'x', 'c': 'y', 'd': 'y'} the path (a,b,c,d) is mapped to
         (x,x,y,y). This is useful, e.g., to map page page click streams to topic
         click streams, using a mapping from pages to topics.
 
-        @param mapping: a dictionary that maps nodes to the new labels
+        Parameters
+        ----------
+        mapping: dict
+            a dictionary that maps nodes to the new labels
+
+        Returns
+        -------
+
         """
         p = Paths()
         p.maxSubPathLength = self.maxSubPathLength

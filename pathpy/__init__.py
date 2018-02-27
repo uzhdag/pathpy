@@ -1,4 +1,9 @@
-﻿from .log import Log, Severity
+﻿__author__ = """Ingo Scholtes"""
+__email__ = 'ischoltes@ethz.ch'
+__version__ = '1.2.1'
+
+
+from .log import Log, Severity
 from .temporal_network import TemporalNetwork
 from .paths import Paths
 from .higher_order_network import HigherOrderNetwork

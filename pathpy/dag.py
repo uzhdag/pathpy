@@ -142,14 +142,15 @@ class DAG(object):
                         continuable[w].append(p + (node_mapping[w],))
 
     def dfs_visit(self, v, parent=None):
-        """
-        Recursively visits nodes in the graph, classifying
-        edges as (1) tree, (2) forward, (3) back or (4) cross
-        edges.
+        """Recursively visits nodes in the graph, classifying edges as (1) tree, (2)
+        forward, (3) back or (4) cross edges.
 
-        @param v: the node to be visited
-        @param parent: the parent of this node (None for nodes)
-            with no parents
+        Parameters
+        ----------
+        v:
+            node to be visited
+        parent:
+            the parent of this node (None for nodes) with no parents
         """
         self.parent[v] = parent
         self.top_sort_count += 1

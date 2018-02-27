@@ -33,6 +33,7 @@ from pathpy import Log as _Log
 def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
                                 maxSubPathLength=_sys.maxsize):
     """create from a temporal network a Paths object
+
     Calculates the frequency of all time-respecting paths up to maximum length
     of maxLength, assuming a maximum temporal distance of delta between consecutive
     time-stamped links on a path. This (static) method returns an instance of the
@@ -41,8 +42,8 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
 
     Parameters
     ----------
-
-    tempnet : pytest.TemporalNetwork
+    tempnet : pathpy.TemporalNetwork
+        TemporalNetwork to extract the path from
     delta : int
         Indicates the maximum temporal distance up to which time-stamped
         links will be considered to contribute to time-respecting paths.
@@ -64,10 +65,18 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
         If a limitation of the maxLength is not required for computational reasons,
         this parameter should not be set (as it will change the statistics of paths)
     maxSubPathLength : int
+        This can be used to limit the calculation of sub path statistics to a given
+        maximum length. This is useful, as the statistics of sub paths of length k
+        are only needed to fit a higher-order model with order k. Hence, if we know
+        that the model selection is limited to a given maximum order K, we can safely
+        set the maximum sub path length to K. By default, sub paths of any length
+        will be calculated. Note that, independent of the sub path calculation
+        longest path of any length will be considered in the likelihood calculation!
 
     Returns
     -------
-    paths
+    Paths
+
     """
 
     if maxLength == _sys.maxsize:  # pragma: no cover

@@ -34,21 +34,23 @@ import pathpy as _pp
 
 _np.seterr(all='warn')
 
+
 class MultiOrderModel:
     """Instances of this class represent a hierarchy of
         higher-order networks which collectively represent
         a multi-order model for path statistics. """
 
     def __init__(self, paths, maxOrder=1):
-        """
-        Generates a hierarchy of higher-order
-        models for the given path statistics,
+        """Generates a hierarchy of higher-order models for the given path statistics,
         up to a given maximum order
 
-        @param paths: the paths instance for which the model should be created
-        @param maxOrder: the maximum order of the multi-order model
+        Parameters
+        ----------
+        paths: Paths
+            the paths instance for which the model should be created
+        maxOrder: int
+            the maximum order of the multi-order model
         """
-
         assert paths.maxSubPathLength >= maxOrder, \
             'Error: Construction of multi-order model with maximum order M ' \
             'requires sub path statistics up to length M'
@@ -138,21 +140,27 @@ class MultiOrderModel:
         return summary
 
     def save_state_file(self, filename, layer=None, infomapIndexing=None):
-        """
-        Saves the multi-order model in state file format
-        suitable to be used with InfoMap
+        """Saves the multi-order model in state file format suitable to be used with
+         InfoMap
 
-        @param layer: if none, all layers will be export. If set to k, only
-            the k-th layer of the model will be exported.
-        @param infomapIndexing: if none, standard pathpy indices will be used
-            in the export of state files. This can be set to a custom index dictionary
-            in which infomapIndexing[k] contains a dictionary that maps k-th order nodes
-            to a custum node index. This is useful to create state files with consistent indices
-            from multiple MultiOrderModels
-        """
+        Parameters
+        ----------
+        filename
+        layer: int
+            if none, all layers will be export. If set to k, only the k-th layer of the
+            model will be exported.
+        infomapIndexing: dict
+            if none, standard pathpy indices will be used in the export of state files.
+            This can be set to a custom index dictionary in which infomapIndexing[k]
+            contains a dictionary that maps k-th order nodes to a custom node index.
+            This is useful to create state files with consistent indices from multiple
+            MultiOrderModels
 
+        Returns
+        -------
+
+        """
         assert layer, 'Export of all layers is currently not supported'
-
 
         name_map = self.layers[layer].node_to_name_map()
         first_layer_map = self.layers[1].node_to_name_map()
@@ -233,15 +241,20 @@ class MultiOrderModel:
         network model up to a maximum order maxOrder based on all
         path statistics.
 
-        @param paths: the path statistics to be used in the likelihood
-            calculation
+        Parameters
+        ----------
+        paths:
+            the path statistics to be used in the likelihood calculation
+        maxOrder:
+            the maximum layer order to take into account for the likelihood calculation.
+            For the default value None, all orders will be used for the likelihood
+            calculation.
+        log: bool
+            Whether or not to return the log likelihood (default: True)
 
-        @param maxOrder: the maximum layer order to take into
-            account for the likelihood calculation. For the default
-            value None, all orders will be used for the
-            likelihood calculation.
+        Returns
+        -------
 
-        @log: Whether or not to return the log likelihood (default: True)
         """
         maxOrder = self.maxOrder if maxOrder is None else maxOrder
         assert maxOrder <= self.maxOrder, \
@@ -266,12 +279,19 @@ class MultiOrderModel:
     @staticmethod
     def factorial(n, log=True):  # pragma: no cover
         """
-        Calculates (or approximates) the (log of the) factorial n!.
-        The function applies Stirling's approximation if n>20.
 
-        @param n: computes factorial of n
-        @param log: whether or not to return the (natural) logarithm of the factorial
+        Parameters
+        ----------
+        n: int
+            computes factorial of n
+        log: bool
+            whether or not to return the (natural) logarithm of the factorial
+
+        Returns
+        -------
+        float
         """
+
         f = _np.float64(0)
         n_ = _np.float64(n)
         if n > 20:  # use Stirling's approximation
@@ -290,37 +310,43 @@ class MultiOrderModel:
 
     def layer_likelihood(self, paths, l=1, considerLongerPaths=True, log=True, minL=None):
         """
-        Calculates the (log-)likelihood of the **first** l layers of a multi-order network model
-        using all observed paths of (at least) length l
+        Calculates the (log-)likelihood of the **first** l layers of a multi-order
+        network model using all observed paths of (at least) length l
 
-        @param paths: the path statistics for which to calculate the layer likelihood
-
-        @param l: number of layers for which likelihood shall be calculated
-            Paths of length l (and possibly longer) will be used to calculate the likelihood
-            of model layers for all orders up to l
-
-        @param considerLongerPaths: whether or not to include paths longer than l
-            in the calculation of the likelihood. In general, when calculating the likelihood
-            of a multi-order model which combines orders from 1 to l, this should be set to
-            true only for the value of l that corresponds to the largest order in the model.
-
-        @param log: whether to compute Log-Likelihood (default: True)
-
-        @param minL: minimum length of paths which enter the likelihood calculation. For the
+        Parameters
+        ----------
+        paths: Paths
+            the path statistics for which to calculate the layer likelihood
+        l: int
+            number of layers for which likelihood shall be calculated Paths of length l
+            (and possibly longer) will be used to calculate the likelihood of model layers
+            for all orders up to l
+        considerLongerPaths: bool
+            whether or not to include paths longer than l in the calculation of the
+            likelihood. In general, when calculating the likelihood of a multi-order model
+            which combines orders from 1 to l, this should be set to true only for the
+            value of l that corresponds to the largest order in the model.
+        log: bool
+             whether to compute Log-Likelihood (default: True)
+        minL: int
+            minimum length of paths which enter the likelihood calculation. For the
             default value None, all paths with at least length l will be considered.
 
-        @returns: the (log-)likelihood of the model layer given the path statistics
+        Returns
+        -------
+        float
+            the (log-)likelihood of the model layer given the path statistics
         """
-
         # m is the maximum length of any path in the data
         m = max(paths.paths)
 
-        assert m >= l and len(paths.paths[l])>0, 'Error: there are no paths of length l or longer'
+        assert m >= l and len(paths.paths[l]) > 0, \
+            'Error: there are no paths of length l or longer'
 
-        if minL == None:
+        if minL is None:
             minL = l
 
-         # Set maximum length of paths to consider in likelihood calculation
+        # Set maximum length of paths to consider in likelihood calculation
         if considerLongerPaths:
             maxL = m
         else:
@@ -420,15 +446,22 @@ class MultiOrderModel:
         different assumptions, and taking into account layers up to
         a maximum order.
 
-        @param: maxOrder: the maximum order up to which model layers shall be
-            taken into account
+        Parameters
+        ----------
+        maxOrder: int
+            the maximum order up to which model layers shall be taken into account
+        assumption: str
+            if set to 'paths', for the degree of freedom calculation only paths in the
+            first-order network topology will be considered. This is needed whenever we
+            model paths in a *given* network topology. If set to 'ngrams' all possible
+            n-grams will be considered, independent of whether they are valid paths in the
+            first-order network or not. The 'ngrams' and the 'paths' assumption coincide
+            if the first-order network is fully connected, i.e. if all possible paths
+            actually occur.
 
-        @param assumption: if set to 'paths', for the degree of freedom calculation
-            only paths in the first-order network topology will be considered. This is
-            needed whenever we model paths in a *given* network topology.
-            If set to 'ngrams' all possible n-grams will be considered, independent of whether they
-            are valid paths in the first-order network or not. The 'ngrams' and the 'paths' assumption
-            coincide if the first-order network is fully connected, i.e. if all possible paths actually occur.
+        Returns
+        -------
+
         """
         if maxOrder is None:
             maxOrder = self.maxOrder
@@ -460,29 +493,41 @@ class MultiOrderModel:
 
     def likelihood_ratio_test(self, paths, maxOrderNull=0, maxOrder=1, assumption='paths', significanceThreshold=0.01):
         """
-        Performs a likelihood-ratio test between two multi-order models with given maximum orders, where maxOrderNull serves
-        as null hypothesis and maxOrder serves as alternative hypothesis. The null hypothesis is rejected if the p-value for
-        the observed paths under the null hypothesis is smaller than the given significance threshold.
+        Performs a likelihood-ratio test between two multi-order models with given
+        maximum orders, where maxOrderNull serves as null hypothesis and maxOrder
+        serves as alternative hypothesis. The null hypothesis is rejected if the
+        p-value for the observed paths under the null hypothesis is smaller than the
+        given significance threshold.
 
-        Applying this test makes the assumption that we have nested models, i.e. that the null model is contained
-        as a special case in the parameter space of the more complex model. If we assume that the path constraint holds,
-        this is not true for the test of the first- against the zero-order model (since some sequences of the zero order model
-        cannot be generated in the first-order model). However, since the set of possible higher-order transitions is generated
-        based on the first-order model, the nestedness property holds for all higher order models.
+        Applying this test makes the assumption that we have nested models, i.e. that
+        the null model is contained as a special case in the parameter space of the
+        more complex model. If we assume that the path constraint holds, this is not
+        true for the test of the first- against the zero-order model (since some
+        sequences of the zero order model cannot be generated in the first-order
+        model). However, since the set of possible higher-order transitions is
+        generated based on the first-order model, the nestedness property holds for all
+        higher order models.
 
-        @param paths: the path data to be used in the liklihood ratio test
-        @param maxOrderNull: maximum order of the multi-order model
-                to be used as a null hypothesis
-        @param maxOrder: maximum order of the multi-order model to be used as
-                alternative hypothesis
-        @param assumption: paths or ngrams
-        @param significanceThreshold: the threshold for the p-value
-                below which to accept the alternative hypothesis
-        @returns: a tuple of the format (reject, p) which captures whether or
-                not the null hypothesis is rejected in favor of the alternative
-                hypothesis, as well as the p-value that led to the decision
+        Parameters
+        ----------
+        paths:
+            the path data to be used in the liklihood ratio test
+        maxOrderNull:
+            maximum order of the multi-order model to be used as a null hypothesis
+        maxOrder: int
+            maximum order of the multi-order model to be used as alternative hypothesis
+        assumption: str
+            paths or ngrams
+        significanceThreshold: float
+            the threshold for the p-value below which to accept the alternative hypothesis
+
+        Returns
+        -------
+        tuple
+            a tuple of the format (reject, p) which captures whether or not the null
+            hypothesis is rejected in favor of the alternative hypothesis,
+            as well as the p-value that led to the decision
         """
-
         assert maxOrderNull < maxOrder, 'Error: order of null hypothesis must be smaller than order of alternative hypothesis'
         # let L0 be the likelihood for the null model and L1 be the likelihood for the alternative model
 
@@ -502,14 +547,24 @@ class MultiOrderModel:
         return (p<significanceThreshold), p
 
     def estimate_order(self, paths, maxOrder=None, significanceThreshold=0.01):
-        """
-        Selects the optimal maximum order of a multi-order network model for the
+        """Selects the optimal maximum order of a multi-order network model for the
         observed paths, based on a likelihood ratio test with p-value threshold of p
-        By default, all orders up to the maximum order of the multi-order model will be tested.
 
-        @param paths: The path statistics for which to perform the order selection
+        By default, all orders up to the maximum order of the multi-order model will be
+        tested.
 
-        @param maxOrder: The maximum order up to which the multi-order model shall be tested.
+        Parameters
+        ----------
+        paths: Paths
+             The path statistics for which to perform the order selection
+        maxOrder: int
+            The maximum order up to which the multi-order model shall be tested.
+        significanceThreshold
+            the threshold for the p-value below which to accept the alternative hypothesis
+        Returns
+        -------
+        int
+
         """
         if maxOrder is None:
             maxOrder = self.maxOrder
