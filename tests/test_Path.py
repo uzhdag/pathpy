@@ -109,7 +109,7 @@ def test_path_summary(random_paths):
 
 def test_summary_multi_order_model(random_paths):
     p = random_paths(90, 90)
-    multi = pp.MultiOrderModel(paths=p, maxOrder=3)
+    multi = pp.MultiOrderModel(paths=p, max_order=3)
     print(multi)
 
 

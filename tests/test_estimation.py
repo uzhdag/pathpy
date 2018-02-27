@@ -30,7 +30,7 @@ def test_estimate_order_1():
         paths.add_path_ngram('b,c,d')
         paths.add_path_ngram('a,c,e')
 
-    m = pp.MultiOrderModel(paths, maxOrder=2)
+    m = pp.MultiOrderModel(paths, max_order=2)
     assert m.estimate_order(paths) == 1, \
         "Error, wrongly detected higher-order correlations"
 
@@ -48,7 +48,7 @@ def test_estimate_order_2():
         paths.add_path_ngram('a,c,d')
         paths.add_path_ngram('b,c,e')
 
-    m = pp.MultiOrderModel(paths, maxOrder=2)
+    m = pp.MultiOrderModel(paths, max_order=2)
     assert m.estimate_order(paths) == 2, \
         "Error, did not detect second-order correlations"
 
