@@ -5,11 +5,11 @@ from .HigherOrderNetwork import *
 from .MultiOrderModel import *
 from .MarkovSequence import *
 from .DAG import *
-from .PathExtraction import *
 from .Measures import higher_order_measures
 from .Measures import path_measures
 
 import pathpy.Log as Log
+import pathpy.path_extraction as path_extraction
 from .exception import *
 
 global ENABLE_MULTICORE_SUPPORT

@@ -682,8 +682,8 @@ class Paths:
 
         @param node_filter: the nodes for which paths with be extracted from the current
             set of paths
-        @param min_length: the minimum length of paths to extract (default 0)
-        @param max_length: the maximum length of paths to extract (default sys.maxsize)
+        @param min_length: the minimum length of paths to paths_from_temporal_network (default 0)
+        @param max_length: the maximum length of paths to paths_from_temporal_network (default sys.maxsize)
         """
 
         p = Paths()

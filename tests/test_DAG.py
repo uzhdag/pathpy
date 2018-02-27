@@ -34,14 +34,14 @@ def test_dag_path_extraction(dag_object):
     dag.topsort()
 
     # Extract paths between nodes in DAG
-    paths = pp.PathExtraction.DAGPaths.extract(dag)
+    paths = pp.path_extraction.paths_from_dag(dag)
     assert paths.observation_count == 7
 
 
 def test_dag_path_extraction_cyclic(dag_object: pp.DAG):
     dag_object.addEdge('g', 'a')  # adds a cycle to the dag object
     with pytest.raises(ValueError):
-        pp.PathExtraction.DAGPaths.extract(dag_object)
+        pp.path_extraction.paths_from_dag(dag_object)
 
 
 def test_dag_path_mapping(dag_object):
@@ -50,7 +50,7 @@ def test_dag_path_mapping(dag_object):
 
     mapping = {'a': 'A', 'b': 'B', 'c': 'A', 'e': 'B', 'f': 'B', 'g': 'A', 'h': 'A',
                'i': 'B', 'j': 'A'}
-    paths_mapped2 = pp.PathExtraction.DAGPaths.extract(dag, node_mapping=mapping)
+    paths_mapped2 = pp.path_extraction.paths_from_dag(dag, node_mapping=mapping)
     assert paths_mapped2.paths[1][('A', 'B')][1] == 1
     assert paths_mapped2.paths[1][('A', 'A')][1] == 1
     assert paths_mapped2.paths[2][('A', 'B', 'B')][1] == 1

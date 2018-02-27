@@ -367,7 +367,7 @@ class MultiOrderModel:
                         #   at order l=3 is ['a-b-c', 'b-c-d'] and thus the prefix is 'a-b-c'.
                         prefix = nodes[0]
 
-                        # 3.) We extract the transitions for the prefix based on models of
+                        # 3.) We paths_from_temporal_network the transitions for the prefix based on models of
                         #   orders k_<l. In our example, we have the transitions ...
                         #   (a-b, b-c) for k_=2
                         #   (a, b) for k_=1, and

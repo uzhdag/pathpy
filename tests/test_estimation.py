@@ -114,7 +114,7 @@ def test_estimate_order_strongly_connected():
 
 def test_temp_net_extraction(temporal_network_object):
     t = temporal_network_object
-    paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
+    paths = pp.path_extraction.paths_from_temporal_network(t, delta=1)
 
     assert paths.observation_count == 10, \
         "Extracted wrong number of time-respecting paths"
@@ -122,7 +122,7 @@ def test_temp_net_extraction(temporal_network_object):
 
 def test_betweenness_preference_empty():
     t = pp.TemporalNetwork()
-    paths = pp.PathExtraction.TemporalPaths.extract(t, delta=3)
+    paths = pp.path_extraction.paths_from_temporal_network(t, delta=3)
     assert len(paths.nodes()) == 0
 
     betweenness_pref = pp.path_measures.betweenness_preference(paths, 'e', method='MLE')
@@ -134,7 +134,7 @@ def test_betweenness_preference_mle(temporal_network_object):
     t = temporal_network_object
 
     # Extract (time-respecting) paths
-    p = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
+    p = pp.path_extraction.paths_from_temporal_network(t, delta=1)
     betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', method='MLE')
     expected = 1.2954618442383219
     assert betweenness_pref == pytest.approx(expected)
@@ -142,7 +142,7 @@ def test_betweenness_preference_mle(temporal_network_object):
 
 def test_betweenness_preference_miller(temporal_network_object):
     t = temporal_network_object
-    p = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
+    p = pp.path_extraction.paths_from_temporal_network(t, delta=1)
 
     betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', method='Miller')
     expected = 0.99546184423832196
@@ -151,7 +151,7 @@ def test_betweenness_preference_miller(temporal_network_object):
 
 def test_betweenness_preference_normalized(temporal_network_object):
     t = temporal_network_object
-    p = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
+    p = pp.path_extraction.paths_from_temporal_network(t, delta=1)
     # test normalize
     betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', normalized=True)
     expected_norm = 1
@@ -167,7 +167,7 @@ def test_slow_down_factor_random(random_paths):
 
 
 def test_get_distance_matrix_temporal(temporal_network_object):
-    p = pp.PathExtraction.TemporalPaths.extract(temporal_network_object)
+    p = pp.path_extraction.paths_from_temporal_network(temporal_network_object)
     shortest_paths_dict = p.distance_matrix()
 
     path_distances = dict()

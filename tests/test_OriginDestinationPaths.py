@@ -10,9 +10,9 @@ def test_extract_distribute(test_data_directory, ):
     p = pp.Paths.read_edges(network_path, undirected=True)
     network = pp.HigherOrderNetwork(p)
 
-    OD = pp.PathExtraction.OriginDestinationPaths.readFile(od_path)
+    OD = pp.path_extraction.read_origin_destination(od_path)
 
-    paths = pp.PathExtraction.OriginDestinationPaths.extract(OD, network)
+    paths = pp.path_extraction.paths_from_origin_destination(OD, network)
 
     assert (paths.paths[3][('A', 'B', 'F', 'H')][1] == 2.0 and
             paths.paths[3][('A', 'C', 'G', 'H')][1] == 3.0) or \
@@ -31,9 +31,9 @@ def test_extract_single(test_data_directory, ):
     p = pp.Paths.read_edges(network_path, undirected=True)
     network = pp.HigherOrderNetwork(p)
 
-    OD = pp.PathExtraction.OriginDestinationPaths.readFile(od_path)
+    OD = pp.path_extraction.read_origin_destination(od_path)
 
-    paths = pp.PathExtraction.OriginDestinationPaths.extract(OD, network,
+    paths = pp.path_extraction.paths_from_origin_destination(OD, network,
                                                              distribute_weight=False)
 
     assert (paths.paths[3][('A', 'B', 'F', 'H')][1] == 5.0 and
