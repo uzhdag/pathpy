@@ -204,7 +204,7 @@ def slow_down_factor(paths, k=2, lanczos_vectors=15, maxiter=1000):
     # NOTE            null graph, then for the 2nd order null transition matrix
 
     gk = _HigherOrderNetwork(paths, k=k)
-    gkn = _HigherOrderNetwork(paths, k=k, nullModel=True)
+    gkn = _HigherOrderNetwork(paths, k=k, null_model=True)
 
     _Log.add('Calculating slow down factor ... ', _Severity.INFO)
 
@@ -310,7 +310,7 @@ def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxi
     Hk = _np.absolute(Hk)
 
     # Compute entropy rate of null model
-    gk_n = _HigherOrderNetwork(paths, k=k, nullModel=True)
+    gk_n = _HigherOrderNetwork(paths, k=k, null_model=True)
 
     # For the entropy rate of the null model, no Miller correction is needed
     # since we assume that transitions correspond to the true probabilities

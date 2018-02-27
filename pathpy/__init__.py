@@ -10,6 +10,7 @@ from .Measures import higher_order_measures
 from .Measures import path_measures
 
 import pathpy.Log as Log
+from .exception import *
 
 global ENABLE_MULTICORE_SUPPORT
 ENABLE_MULTICORE_SUPPORT = False

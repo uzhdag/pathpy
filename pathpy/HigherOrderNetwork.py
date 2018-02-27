@@ -35,14 +35,6 @@ from pathpy.Log import Log
 from pathpy.Log import Severity
 
 
-class EmptySCCError(Exception):
-    """
-    This exception is thrown whenever a non-empty strongly
-    connected component is needed, but we encounter an empty one
-    """
-    pass
-
-
 class HigherOrderNetwork:
     """
     Instances of this class capture a k-th-order representation
@@ -51,7 +43,7 @@ class HigherOrderNetwork:
     of a network topology.
     """
 
-    def __init__(self, paths, k=1, separator='-', nullModel=False,
+    def __init__(self, paths, k=1, separator='-', null_model=False,
                  method='FirstOrderTransitions', lanczos_vecs=15, maxiter=1000):
         """
         Generates a k-th-order representation based on the given path statistics.
@@ -71,7 +63,7 @@ class HigherOrderNetwork:
         @param separator: The separator character to be used in
             higher-order node names.
 
-        @param nullModel: For the default value False, link weights are
+        @param null_model: For the default value False, link weights are
             generated based on the statistics of paths of length k in the
             underlying path statistics instance. If True, link weights are
             generated from the first-order model (k=1) based on the assumption
@@ -88,7 +80,7 @@ class HigherOrderNetwork:
             k-order network is used instead.
         """
 
-        assert not nullModel or (nullModel and k > 1)
+        assert not null_model or (null_model and k > 1)
 
         assert method in ['FirstOrderTransitions', 'KOrderPi'], \
             'Error: unknown method to build null model'
@@ -151,7 +143,7 @@ class HigherOrderNetwork:
             A = g1.adjacency_matrix(include_subpaths=True, weighted=False,
                                     transposed=True)
 
-        if not nullModel:
+        if not null_model:
             # Calculate the frequency of all paths of
             # length k, generate k-order nodes and set
             # edge weights accordingly
@@ -219,7 +211,7 @@ class HigherOrderNetwork:
             if method == 'KOrderPi':
                 # compute stationary distribution of a random walker in the k-th order
                 # network
-                g_k = HigherOrderNetwork(paths, k=k, separator=separator, nullModel=False)
+                g_k = HigherOrderNetwork(paths, k=k, separator=separator, null_model=False)
                 transition_m = g_k.transition_matrix(include_subpaths=True)
                 pi_k = HigherOrderNetwork.leading_eigenvector(
                     transition_m,
@@ -407,7 +399,7 @@ class HigherOrderNetwork:
         can be used to assess the model complexity when calculating, e.g., the
         Bayesian Information Criterion (BIC).
 
-        @param assumption: if set to 'paths', for the degree of freedon calculation in
+        @param assumption: if set to 'paths', for the degree of freedom calculation in
         the BIC,
             only paths in the first-order network topology will be considered. This is
             needed whenever we are interested in a modeling of paths in a given network
@@ -418,8 +410,7 @@ class HigherOrderNetwork:
             and the 'paths' assumption coincide if the first-order network is fully
             connected.
         """
-        assert assumption == 'paths' or assumption == 'ngrams', 'Error: Invalid ' \
-                                                                'assumption'
+        assert assumption in ['paths', 'ngrams'], 'Error: Invalid assumption'
 
         if assumption == 'paths':
             return self.dof_paths
@@ -431,8 +422,8 @@ class HigherOrderNetwork:
         higher-order nodes using the Floyd-Warshall algorithm.
         """
 
-        Log.add('Calculating distance matrix in higher-order network (k = ' +
-                str(self.order) + ') ...', Severity.INFO)
+        Log.add('Calculating distance matrix in higher-order network '
+                '(k = %s) ...' % self.order, Severity.INFO)
 
         dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
@@ -460,8 +451,8 @@ class HigherOrderNetwork:
         higher-order nodes using the Floyd-Warshall algorithm.
         """
 
-        Log.add('Calculating shortest paths in higher-order network (k = ' +
-                str(self.order) + ') ...', Severity.INFO)
+        Log.add('Calculating shortest paths in higher-order network '
+                '(k = %s) ...' % self.order, Severity.INFO)
 
         dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
         shortest_paths = _co.defaultdict(lambda: _co.defaultdict(set))
@@ -541,36 +532,36 @@ class HigherOrderNetwork:
         index = 0
         S = []
         indices = _co.defaultdict(lambda: None)
-        lowlink = _co.defaultdict(lambda: None)
-        onstack = _co.defaultdict(lambda: False)
+        low_link = _co.defaultdict(lambda: None)
+        on_stack = _co.defaultdict(lambda: False)
 
         # Tarjan's algorithm
         def strong_connect(v):
             nonlocal index
             nonlocal S
             nonlocal indices
-            nonlocal lowlink
-            nonlocal onstack
+            nonlocal low_link
+            nonlocal on_stack
 
             indices[v] = index
-            lowlink[v] = index
+            low_link[v] = index
             index += 1
             S.append(v)
-            onstack[v] = True
+            on_stack[v] = True
 
             for w in self.successors[v]:
                 if indices[w] is None:
                     strong_connect(w)
-                    lowlink[v] = min(lowlink[v], lowlink[w])
-                elif onstack[w]:
-                    lowlink[v] = min(lowlink[v], indices[w])
+                    low_link[v] = min(low_link[v], low_link[w])
+                elif on_stack[w]:
+                    low_link[v] = min(low_link[v], indices[w])
 
             # Generate SCC of node v
             component = set()
-            if lowlink[v] == indices[v]:
+            if low_link[v] == indices[v]:
                 while True:
                     w = S.pop()
-                    onstack[w] = False
+                    on_stack[w] = False
                     component.add(w)
                     if v == w:
                         break
@@ -748,7 +739,7 @@ class HigherOrderNetwork:
         """
         Returns the transposed Laplacian matrix corresponding to the higher-order network.
 
-        @param includeSubpaths: Whether or not subpath statistics shall be included in the
+        @param include_subpaths: Whether or not subpath statistics shall be included in the
             calculation of matrix weights
         """
 
@@ -781,8 +772,8 @@ class HigherOrderNetwork:
         import string
         import random
 
-        allchar = string.ascii_letters + string.digits
-        div_id = "".join(random.choice(allchar) for x in range(8))
+        all_chars = string.ascii_letters + string.digits
+        div_id = "".join(random.choice(all_chars) for x in range(8))
 
         template_file = 'higherordernet_require.html'
         if not require:
