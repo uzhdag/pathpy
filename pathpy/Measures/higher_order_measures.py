@@ -91,7 +91,7 @@ def closeness_centrality(network):
     """
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
-    dist_first = network.getDistanceMatrixFirstOrder()
+    dist_first = network.distance_matrix_first_order()
     node_centralities = _co.defaultdict(lambda: 0)
 
     _Log.add('Calculating closeness centralities (k = %s) ...' % network.order,
@@ -137,7 +137,7 @@ def betweenness_centrality(network, normalized=False):
     """
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
-    shortest_paths = network.getShortestPaths()
+    shortest_paths = network.shortest_paths()
     node_centralities = _co.defaultdict(lambda: 0)
 
     shortest_paths_first_order = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
@@ -147,15 +147,15 @@ def betweenness_centrality(network, normalized=False):
 
     for sk in shortest_paths:
         for dk in shortest_paths:
-            s1 = network.HigherOrderNodeToPath(sk)[0]
-            d1 = network.HigherOrderNodeToPath(dk)[-1]
+            s1 = network.higher_order_node_to_path(sk)[0]
+            d1 = network.higher_order_node_to_path(dk)[-1]
 
             # we consider a path in a k-th order network
             # connecting first-order node s1 to d1
             for pk in shortest_paths[sk][dk]:
                 # convert k-th order path to first-order path and add
                 shortest_paths_first_order[s1][d1].add(
-                    network.HigherOrderPathToFirstOrder(pk))
+                    network.higher_order_path_to_first_order(pk))
 
     for s1 in shortest_paths_first_order:
         for d1 in shortest_paths_first_order[s1]:
@@ -214,8 +214,8 @@ def eigenvector_centrality(network, projection='scaled', include_sub_paths=True)
     """
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
-    A = network.getAdjacencyMatrix(includeSubPaths=include_sub_paths, weighted=False,
-                                   transposed=True)
+    A = network.adjacency_matrix(include_subpaths=include_sub_paths, weighted=False,
+                                 transposed=True)
 
     # calculate leading eigenvector of A
     w, v = _sla.eigs(A, k=1, which="LM", ncv=13)
@@ -231,7 +231,7 @@ def eigenvector_centrality(network, projection='scaled', include_sub_paths=True)
     # and normalize the result
     for v in network.nodes:
         # turns node a-b-c in path tuple (a,b,c)
-        p = network.HigherOrderNodeToPath(v)
+        p = network.higher_order_node_to_path(v)
         if projection == 'all':
             # assign eigen_vec_cent of higher-order node to all first-order nodes
             for x in p:
@@ -307,8 +307,8 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
     assert n > 0, "Number of nodes is zero"
 
     # entries A[s,t] give directed link s -> t
-    A = network.getAdjacencyMatrix(includeSubPaths=include_sub_paths, weighted=weighted,
-                                   transposed=False)
+    A = network.adjacency_matrix(include_subpaths=include_sub_paths, weighted=weighted,
+                                 transposed=False)
 
     # sum of outgoing node degrees
     row_sums = _sp.array(A.sum(axis=1)).flatten()
@@ -352,7 +352,7 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
     # and normalize the result
     for v in network.nodes:
         # turns node a-b-c in path tuple (a,b,c)
-        p = network.HigherOrderNodeToPath(v)
+        p = network.higher_order_node_to_path(v)
         if projection == 'all':
             # assign PR of higher-order node to all first-order nodes
             for x in p:
@@ -416,7 +416,7 @@ def eigenvalue_gap(network, include_sub_paths=True, lanczos_vectors=15, maxiter=
     _Log.add('Calculating eigenvalue gap ... ', _Severity.INFO)
 
     # Build transition matrices
-    T = network.getTransitionMatrix(include_sub_paths)
+    T = network.transition_matrix(include_sub_paths)
 
     # Compute the two largest eigenvalues
     # NOTE: ncv sets additional auxiliary eigenvectors that are computed
@@ -464,7 +464,7 @@ def fiedler_vector_sparse(network, normalized=True, lanczos_vectors=15, maxiter=
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
     # NOTE: The transposed matrix is needed to get the "left" eigenvectors
-    L = network.getLaplacianMatrix()
+    L = network.laplacian_matrix()
 
     # NOTE: ncv sets additional auxiliary eigenvectors that are computed
     # NOTE: in order to be more confident to find the one with the largest
@@ -505,7 +505,7 @@ def fiedler_vector_dense(network):
         "network must be an instance of HigherOrderNetwork"
     # NOTE: The Laplacian is transposed for the sparse case to get the left
     # NOTE: eigenvalue.
-    L = network.getLaplacianMatrix()
+    L = network.laplacian_matrix()
     # convert to dense matrix and transpose again to have the un-transposed
     # laplacian again.
     laplacian_transposed = L.todense().transpose()
@@ -538,7 +538,7 @@ def algebraic_connectivity(network, lanczos_vectors=15, maxiter=20):
         "network must be an instance of HigherOrderNetwork"
     _Log.add('Calculating algebraic connectivity ... ', _Severity.INFO)
 
-    L = network.getLaplacianMatrix()
+    L = network.laplacian_matrix()
     # NOTE: ncv sets additional auxiliary eigenvectors that are computed
     # NOTE: in order to be more confident to find the one with the largest
     # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987

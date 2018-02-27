@@ -209,8 +209,8 @@ def slow_down_factor(paths, k=2, lanczos_vectors=15, maxiter=1000):
     _Log.add('Calculating slow down factor ... ', _Severity.INFO)
 
     # Build transition matrices
-    Tk = gk.getTransitionMatrix()
-    Tkn = gkn.getTransitionMatrix()
+    Tk = gk.transition_matrix()
+    Tkn = gkn.transition_matrix()
 
     # Compute eigenvector sequences
     # NOTE: ncv=13 sets additional auxiliary eigenvectors that are computed
@@ -280,10 +280,10 @@ def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxi
     _Log.add('Calculating entropy growth rate ratio ... ', _Severity.INFO)
 
     # Compute entropy growth rate of observed transition matrix
-    A = g1.getAdjacencyMatrix(weighted=False, transposed=True)
-    Tk = gk.getTransitionMatrix()
-    Tk_pi = _HigherOrderNetwork.getLeadingEigenvector(
-        Tk, normalized=True, lanczosVecs=lanczos_vectors, maxiter=maxiter
+    A = g1.adjacency_matrix(weighted=False, transposed=True)
+    Tk = gk.transition_matrix()
+    Tk_pi = _HigherOrderNetwork.leading_eigenvector(
+        Tk, normalized=True, lanczos_vecs=lanczos_vectors, maxiter=maxiter
     )
 
     Tk.data *= _np.log2(Tk.data)
@@ -314,8 +314,8 @@ def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxi
 
     # For the entropy rate of the null model, no Miller correction is needed
     # since we assume that transitions correspond to the true probabilities
-    Tk_n = gk_n.getTransitionMatrix()
-    Tk_n_pi = _HigherOrderNetwork.getLeadingEigenvector(Tk_n)
+    Tk_n = gk_n.transition_matrix()
+    Tk_n_pi = _HigherOrderNetwork.leading_eigenvector(Tk_n)
     Tk_n.data *= _np.log2(Tk_n.data)
     Hk_n = -_np.sum(Tk_n * Tk_n_pi)
     Hk_n = _np.absolute(Hk_n)

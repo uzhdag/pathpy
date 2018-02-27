@@ -64,7 +64,7 @@ def test_estimate_order_2():
     assert g2.ecount() == 2, \
         "Error, wrong number of links in second-order network"
 
-    g2.reduceToGCC()
+    g2.reduce_to_gcc()
     assert g2.vcount() == 1, \
         "Error, wrong number of nodes in giant connected component"
     assert g2.ecount() == 0, \
@@ -96,19 +96,19 @@ def test_estimate_order_strongly_connected():
         paths.add_path_ngram(ngram)
 
     g1 = pp.HigherOrderNetwork(paths, k=1)
-    g1.reduceToGCC()
+    g1.reduce_to_gcc()
     assert g1.vcount() == 5, "Error, wrong number of nodes in first-order network"
     assert g1.ecount() == 8, "Error, wrong number of links in first-order network"
 
     g2 = pp.HigherOrderNetwork(paths, k=2)
-    g2.reduceToGCC()
+    g2.reduce_to_gcc()
     assert g2.vcount() == 4, "Error, wrong number of nodes in second-order network"
     assert g2.ecount() == 4, "Error, wrong number of links in second-order network"
 
     # test mapping of higher-order nodes and paths
-    assert g2.HigherOrderNodeToPath('a-b') == ('a', 'b'), \
+    assert g2.higher_order_node_to_path('a-b') == ('a', 'b'), \
         "Error: mapping from higher-order node to first-order path failed"
-    assert g2.HigherOrderPathToFirstOrder(('a-b', 'b-c')) == ('a', 'b', 'c'), \
+    assert g2.higher_order_path_to_first_order(('a-b', 'b-c')) == ('a', 'b', 'c'), \
         "Error: mapping from higher-order path to first-order path failed"
 
 

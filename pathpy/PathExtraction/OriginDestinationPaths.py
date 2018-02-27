@@ -54,7 +54,7 @@ class OriginDestinationPaths:
 
         assert network is not None, 'Error: extraction of origin destination paths requires a network topology'
 
-        shortest_paths = network.getShortestPaths()
+        shortest_paths = network.shortest_paths()
 
         paths = _Paths()
 

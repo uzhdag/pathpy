@@ -52,7 +52,7 @@ class HigherOrderNetwork:
     """
 
     def __init__(self, paths, k=1, separator='-', nullModel=False,
-                 method='FirstOrderTransitions', lanczosVecs=15, maxiter=1000):
+                 method='FirstOrderTransitions', lanczos_vecs=15, maxiter=1000):
         """
         Generates a k-th-order representation based on the given path statistics.
 
@@ -90,7 +90,7 @@ class HigherOrderNetwork:
 
         assert not nullModel or (nullModel and k > 1)
 
-        assert method == 'FirstOrderTransitions' or method == 'KOrderPi', \
+        assert method in ['FirstOrderTransitions', 'KOrderPi'], \
             'Error: unknown method to build null model'
 
         assert paths.paths.keys() and max(paths.paths.keys()) >= k, \
@@ -147,9 +147,9 @@ class HigherOrderNetwork:
             # times!
             # TODO: Make this more efficient
             g1 = HigherOrderNetwork(paths, k=1)
-            g1_node_mapping = g1.getNodeNameMap()
-            A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False,
-                                      transposed=True)
+            g1_node_mapping = g1.node_to_name_map()
+            A = g1.adjacency_matrix(include_subpaths=True, weighted=False,
+                                    transposed=True)
 
         if not nullModel:
             # Calculate the frequency of all paths of
@@ -212,7 +212,7 @@ class HigherOrderNetwork:
 
             # validate that the number of unique generated paths corresponds to the sum
             # of entries in A**k
-            A_sum = _np.sum(A**k)
+            A_sum = _np.sum(A ** k)
             assert A_sum == len(possiblePaths), \
                 'Expected {ak} paths but got {re}'.format(ak=A_sum, re=len(possiblePaths))
 
@@ -220,18 +220,18 @@ class HigherOrderNetwork:
                 # compute stationary distribution of a random walker in the k-th order
                 # network
                 g_k = HigherOrderNetwork(paths, k=k, separator=separator, nullModel=False)
-                transition_m = g_k.getTransitionMatrix(includeSubPaths=True)
-                pi_k = HigherOrderNetwork.getLeadingEigenvector(
+                transition_m = g_k.transition_matrix(include_subpaths=True)
+                pi_k = HigherOrderNetwork.leading_eigenvector(
                     transition_m,
                     normalized=True,
-                    lanczosVecs=lanczosVecs,
+                    lanczos_vecs=lanczos_vecs,
                     maxiter=maxiter
                 )
-                gk_node_mapping = g_k.getNodeNameMap()
+                gk_node_mapping = g_k.node_to_name_map()
             else:
-                # A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=True,
+                # A = g1.adjacency_matrix(includeSubPaths=True, weighted=True,
                 # transposed=False)
-                T = g1.getTransitionMatrix(includeSubPaths=True)
+                T = g1.transition_matrix(include_subpaths=True)
 
             # assign link weights in k-order null model
             for p in possiblePaths:
@@ -298,8 +298,8 @@ class HigherOrderNetwork:
             # for a first-order model, self is the first-order network
             if k == 1:
                 g1 = self
-                A = g1.getAdjacencyMatrix(includeSubPaths=True, weighted=False,
-                                          transposed=True)
+                A = g1.adjacency_matrix(include_subpaths=True, weighted=False,
+                                        transposed=True)
 
             # Degrees of freedom in a higher-order ngram model
             s = g1.vcount()
@@ -342,20 +342,20 @@ class HigherOrderNetwork:
         """ Returns the number of links """
         return len(self.edges)
 
-    def totalEdgeWeight(self):
+    def total_edge_weight(self):
         """ Returns the sum of all edge weights """
         if self.edges:
             return sum(self.edges.values())
         return _np.array([0, 0])
 
-    def modelSize(self):
+    def model_size(self):
         """
         Returns the number of non-zero elements in the adjacency matrix
         of the higher-order model.
         """
-        return self.getAdjacencyMatrix().count_nonzero()
+        return self.adjacency_matrix().count_nonzero()
 
-    def HigherOrderNodeToPath(self, node):
+    def higher_order_node_to_path(self, node):
         """
         Helper function that transforms a node in a
         higher-order network of order k into a corresponding
@@ -366,7 +366,7 @@ class HigherOrderNetwork:
         """
         return tuple(node.split(self.separator))
 
-    def pathToHigherOrderNodes(self, path, k=None):
+    def path_to_higher_order_nodes(self, path, k=None):
         """
         Helper function that transforms a path into a sequence of k-order nodes
         using the separator character of the HigherOrderNetwork instance
@@ -391,14 +391,14 @@ class HigherOrderNetwork:
 
         return [self.separator.join(path[n:n + k]) for n in range(len(path) - k + 1)]
 
-    def getNodeNameMap(self):
+    def node_to_name_map(self):
         """
         Returns a dictionary that can be used to map
         nodes to matrix/vector indices
         """
         return {v: idx for idx, v in enumerate(self.nodes)}
 
-    def getDoF(self, assumption="paths"):
+    def degrees_of_freedom(self, assumption="paths"):
         """
         Calculates the degrees of freedom (i.e. number of parameters) of
         this k-order model. Depending on the modeling assumptions, this either
@@ -425,7 +425,7 @@ class HigherOrderNetwork:
             return self.dof_paths
         return self.dof_ngrams
 
-    def getDistanceMatrix(self):
+    def distance_matrix(self):
         """
         Calculates shortest path distances between all pairs of
         higher-order nodes using the Floyd-Warshall algorithm.
@@ -454,7 +454,7 @@ class HigherOrderNetwork:
 
         return dist
 
-    def getShortestPaths(self):
+    def shortest_paths(self):
         """
         Calculates all shortest paths between all pairs of
         higher-order nodes using the Floyd-Warshall algorithm.
@@ -493,28 +493,28 @@ class HigherOrderNetwork:
 
         return shortest_paths
 
-    def getDistanceMatrixFirstOrder(self):
+    def distance_matrix_first_order(self):
         """
         Projects a distance matrix from a higher-order to
         first-order nodes, while path lengths are calculated
         based on the higher-order topology
         """
 
-        dist = self.getDistanceMatrix()
+        dist = self.distance_matrix()
         dist_first = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
         # calculate distances between first-order nodes based on distance in
         # higher-order topology
         for vk in dist:
             for wk in dist[vk]:
-                v1 = self.HigherOrderNodeToPath(vk)[0]
-                w1 = self.HigherOrderNodeToPath(wk)[-1]
+                v1 = self.higher_order_node_to_path(vk)[0]
+                w1 = self.higher_order_node_to_path(wk)[-1]
                 if dist[vk][wk] + self.order - 1 < dist_first[v1][w1]:
                     dist_first[v1][w1] = dist[vk][wk] + self.order - 1
 
         return dist_first
 
-    def HigherOrderPathToFirstOrder(self, path):
+    def higher_order_path_to_first_order(self, path):
         """
         Maps a path in the higher-order network
         to a path in the first-order network. As an
@@ -525,12 +525,12 @@ class HigherOrderNetwork:
 
         @param path: The higher-order path that shall be mapped to the first-order network
         """
-        p1 = self.HigherOrderNodeToPath(path[0])
+        p1 = self.higher_order_node_to_path(path[0])
         for x in path[1:]:
-            p1 += (self.HigherOrderNodeToPath(x)[-1],)
+            p1 += (self.higher_order_node_to_path(x)[-1],)
         return p1
 
-    def reduceToGCC(self):
+    def reduce_to_gcc(self):
         """
         Reduces the higher-order network to its
         largest (giant) strongly connected component
@@ -605,15 +605,15 @@ class HigherOrderNetwork:
         of this higher-order graphical model instance
         """
         summary_fmt = (
-            'Graphical model of order k = {order}\n' 
+            'Graphical model of order k = {order}\n'
             '\n'
             'Nodes:\t\t\t\t{vcount}\n'
             'Links:\t\t\t\t{ecount}\n'
             'Total weight (sub/longest):\t{sub_w}/{uni_w}\n'
-            )
+        )
         summary = summary_fmt.format(
             order=self.order, vcount=self.vcount(), ecount=self.ecount(),
-            sub_w=self.totalEdgeWeight()[0], uni_w=self.totalEdgeWeight()[1]
+            sub_w=self.total_edge_weight()[0], uni_w=self.total_edge_weight()[1]
         )
         return summary
 
@@ -624,13 +624,13 @@ class HigherOrderNetwork:
         """
         return self.summary()
 
-    def getAdjacencyMatrix(self, includeSubPaths=True, weighted=True, transposed=False):
+    def adjacency_matrix(self, include_subpaths=True, weighted=True, transposed=False):
         """
         Returns a sparse adjacency matrix of the higher-order network. By default,
         the entry corresponding to a directed link source -> target is stored in row s and
         column t and can be accessed via A[s,t].
 
-        @param includeSubPaths: if set to True, the returned adjacency matrix will
+        @param include_subpaths: if set to True, the returned adjacency matrix will
             account for the occurrence of links of order k (i.e. paths of length k-1)
             as subpaths
 
@@ -644,7 +644,7 @@ class HigherOrderNetwork:
         col = []
         data = []
 
-        node_to_coord = self.getNodeNameMap()
+        node_to_coord = self.node_to_name_map()
 
         if transposed:
             for s, t in self.edges:
@@ -659,7 +659,7 @@ class HigherOrderNetwork:
         if not weighted:
             data = _np.ones(len(self.edges.keys()))
         else:
-            if includeSubPaths:
+            if include_subpaths:
                 data = _np.array([float(x.sum()) for x in self.edges.values()])
             else:
                 data = _np.array([float(x[1]) for x in self.edges.values()])
@@ -667,25 +667,24 @@ class HigherOrderNetwork:
         shape = (self.vcount(), self.vcount())
         return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
-
-    def getTransitionMatrix(self, includeSubPaths=True):
+    def transition_matrix(self, include_subpaths=True):
         """
         Returns a (transposed) random walk transition matrix
         corresponding to the higher-order network.
 
-        @param includeSubpaths: whether or not to include subpath statistics in the
+        @param include_subpaths: whether or not to include subpath statistics in the
             transition probability calculation (default True)
         """
         row = []
         col = []
         data = []
         # calculate weighted out-degrees (with or without subpaths)
-        if includeSubPaths:
+        if include_subpaths:
             D = {n: w.sum() for n, w in self.outweights.items()}
         else:
             D = {n: w[1] for n, w in self.outweights.items()}
 
-        node_to_coord = self.getNodeNameMap()
+        node_to_coord = self.node_to_name_map()
 
         for (s, t) in self.edges:
             # either s->t has been observed as a longest path, or we are interested in
@@ -695,11 +694,11 @@ class HigherOrderNetwork:
             # edges (automatically added by default_dic)
             unique_weight = self.edges[(s, t)][1]
             subpath_weight = self.edges[(s, t)][0]
-            is_valid = (unique_weight > 0 or (includeSubPaths and subpath_weight > 0))
+            is_valid = (unique_weight > 0 or (include_subpaths and subpath_weight > 0))
             if is_valid:
                 row.append(node_to_coord[t])
                 col.append(node_to_coord[s])
-                if includeSubPaths:
+                if include_subpaths:
                     count = self.edges[(s, t)].sum()
                 else:
                     count = self.edges[(s, t)][1]
@@ -719,12 +718,12 @@ class HigherOrderNetwork:
         return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
     @staticmethod
-    def getLeadingEigenvector(A, normalized=True, lanczosVecs=15, maxiter=1000):
+    def leading_eigenvector(A, normalized=True, lanczos_vecs=15, maxiter=1000):
         """Compute normalized leading eigenvector of a given matrix A.
 
         @param A: sparse matrix for which leading eigenvector will be computed
         @param normalized: wheter or not to normalize. Default is C{True}
-        @param lanczosVecs: number of Lanczos vectors to be used in the approximate
+        @param lanczos_vecs: number of Lanczos vectors to be used in the approximate
             calculation of eigenvectors and eigenvalues. This maps to the ncv parameter
             of scipy's underlying function eigs.
         @param maxiter: scaling factor for the number of iterations to be used in the
@@ -739,13 +738,13 @@ class HigherOrderNetwork:
         # NOTE: ncv sets additional auxiliary eigenvectors that are computed
         # NOTE: in order to be more confident to find the one with the largest
         # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
-        w, pi = _sla.eigs(A, k=1, which="LM", ncv=lanczosVecs, maxiter=maxiter)
+        w, pi = _sla.eigs(A, k=1, which="LM", ncv=lanczos_vecs, maxiter=maxiter)
         pi = pi.reshape(pi.size, )
         if normalized:
             pi /= sum(pi)
         return pi
 
-    def getLaplacianMatrix(self, includeSubPaths=True):
+    def laplacian_matrix(self, include_subpaths=True):
         """
         Returns the transposed Laplacian matrix corresponding to the higher-order network.
 
@@ -753,27 +752,30 @@ class HigherOrderNetwork:
             calculation of matrix weights
         """
 
-        transition_matrix = self.getTransitionMatrix(includeSubPaths)
+        transition_matrix = self.transition_matrix(include_subpaths)
         identity_matrix = _sparse.identity(self.vcount())
 
         return identity_matrix - transition_matrix
-
 
     def _to_html(self, width=600, height=600, require=True):
         import json
         import os
         from string import Template
-        
+
         # prefix nodes starting with number
         def fix_node_name(v):
             if v[0].isdigit():
-                return "n_"+ v
+                return "n_" + v
             else:
                 return v
 
-        network_data = { 
-            'nodes' : [ { 'id': fix_node_name(v), 'group' : 1 } for v in self.nodes ],
-            'links' : [ { 'source': fix_node_name(e[0]), 'target': fix_node_name(e[1]), 'value': 1} for e, weight in self.edges.items() ]
+        network_data = {
+            'nodes': [{'id': fix_node_name(v), 'group': 1} for v in self.nodes],
+            'links': [
+                {'source': fix_node_name(e[0]),
+                 'target': fix_node_name(e[1]),
+                 'value': 1} for e, weight in self.edges.items()
+            ]
         }
 
         import string
@@ -786,8 +788,8 @@ class HigherOrderNetwork:
         if not require:
             template_file = 'higherordernet.html'
 
-
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js', template_file)) as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js',
+                               template_file)) as f:
             html_str = f.read()
 
         html_template = Template(html_str)
@@ -798,14 +800,12 @@ class HigherOrderNetwork:
             'height': height,
             'div_id': div_id})
 
-
     def _repr_html_(self, require=True):
         """
         display an interactive D3 visualisation of the higher-order network in jupyter
-        """        
-        from IPython.core.display import display, HTML        
+        """
+        from IPython.core.display import display, HTML
         display(HTML(self._to_html(require=require)))
-
 
     def write_html(self, filename, width=600, height=600):
         html = self._to_html(width=width, height=height, require=False)

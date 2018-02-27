@@ -75,7 +75,7 @@ def test_summary(path_from_edge_file):
 def test_edge_weight(random_paths, k, n_nodes, expected):
     p = random_paths(20, 10, n_nodes)
     hon_1 = pp.HigherOrderNetwork(p, k=k)
-    assert np.allclose(hon_1.totalEdgeWeight(), expected)
+    assert np.allclose(hon_1.total_edge_weight(), expected)
 
 
 @pytest.mark.parametrize('k, n_nodes, expected', (
@@ -89,7 +89,7 @@ def test_edge_weight(random_paths, k, n_nodes, expected):
 def test_model_size(random_paths, k, n_nodes, expected):
     p = random_paths(20, 10, n_nodes)
     hon_1 = pp.HigherOrderNetwork(p, k=k)
-    assert np.allclose(hon_1.modelSize(), expected)
+    assert np.allclose(hon_1.model_size(), expected)
 
 
 def test_degrees(path_from_edge_file):
@@ -103,7 +103,7 @@ def test_degrees(path_from_edge_file):
 def test_distance_matrix_from_file(path_from_edge_file):
     p = path_from_edge_file
     hon = pp.HigherOrderNetwork(paths=p, k=1)
-    d_matrix = hon.getDistanceMatrix()
+    d_matrix = hon.distance_matrix()
 
     np_matrix = dict_of_dicts_to_matrix(d_matrix)
     assert np.sum(np_matrix) == 8
@@ -118,8 +118,8 @@ def test_distance_matrix_equal_across_objects(random_paths):
     p2 = random_paths(40, 20, num_nodes=9)
     hon1 = pp.HigherOrderNetwork(paths=p1, k=1)
     hon2 = pp.HigherOrderNetwork(paths=p2, k=1)
-    d_matrix1 = hon1.getDistanceMatrix()
-    d_matrix2 = hon2.getDistanceMatrix()
+    d_matrix1 = hon1.distance_matrix()
+    d_matrix2 = hon2.distance_matrix()
     assert d_matrix1 == d_matrix2
 
 
@@ -131,7 +131,7 @@ def test_distance_matrix_equal_across_objects(random_paths):
 def test_distance_matrix(random_paths, paths, n_nodes, k, e_var, e_sum):
     p = random_paths(paths, 20, num_nodes=n_nodes)
     hon = pp.HigherOrderNetwork(paths=p, k=k)
-    d_matrix = hon.getDistanceMatrix()
+    d_matrix = hon.distance_matrix()
 
     np_matrix = dict_of_dicts_to_matrix(d_matrix)
 
@@ -147,7 +147,7 @@ def test_shortest_path_length(random_paths, paths, k, num_nodes, s_mean, s_var, 
     p = random_paths(paths, 10, num_nodes=num_nodes)
     hon = pp.HigherOrderNetwork(p, k=k)
 
-    shortest_paths = hon.getShortestPaths()
+    shortest_paths = hon.shortest_paths()
 
     distances = dict_of_dicts_to_matrix(shortest_paths, agg=len)
     assert np.mean(distances) == pytest.approx(s_mean)
@@ -158,7 +158,7 @@ def test_shortest_path_length(random_paths, paths, k, num_nodes, s_mean, s_var, 
 def test_node_name_map(random_paths):
     p = random_paths(20, 10, 20)
     hon = pp.HigherOrderNetwork(p, k=1)
-    node_map = hon.getNodeNameMap()
+    node_map = hon.node_to_name_map()
 
     assert set(node_map) == set(hon.nodes)
 
@@ -172,7 +172,7 @@ def test_node_name_map(random_paths):
 def test_get_adjacency_mat(random_paths, paths, k_order, sub, num_nodes, s_sum, s_mean):
     p = random_paths(paths, 10, num_nodes)
     hon = pp.HigherOrderNetwork(p, k=k_order)
-    adj = hon.getAdjacencyMatrix(includeSubPaths=sub)
+    adj = hon.adjacency_matrix(include_subpaths=sub)
     assert adj.sum() == s_sum
     assert adj.mean() == pytest.approx(s_mean)
 
@@ -180,7 +180,7 @@ def test_get_adjacency_mat(random_paths, paths, k_order, sub, num_nodes, s_sum, 
 def test_laplacian_matrix(random_paths):
     paths = random_paths(30, 10, 5)
     hon = pp.HigherOrderNetwork(paths, k=1)
-    L = hon.getLaplacianMatrix().toarray()
+    L = hon.laplacian_matrix().toarray()
     assert np.trace(L) > 0
     assert np.tril(L, k=-1).sum() < 0
     assert np.triu(L, k=1).sum() < 0
@@ -191,7 +191,7 @@ def test_laplacian_matrix(random_paths):
 def test_transition_probability(random_paths, k, sub):
     paths = random_paths(30, 45, 14)
     hon = pp.HigherOrderNetwork(paths, k=k)
-    T = hon.getTransitionMatrix(includeSubPaths=sub).toarray()
+    T = hon.transition_matrix(include_subpaths=sub).toarray()
     if sub:
         transitions = sum(w.sum() > 0 for w in hon.outweights.values())
     else:
@@ -205,11 +205,11 @@ def test_transition_probability(random_paths, k, sub):
 @pytest.mark.parametrize('paths', (10, 20, 50))
 def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nodes):
     """test that the distance matrix of k=1 is equal to
-    getDistanceMatrixFirstOrder"""
+    distance_matrix_first_order"""
     p = random_paths(paths, 10, num_nodes)
     hon = pp.HigherOrderNetwork(p, k=1)
-    dist = hon.getDistanceMatrixFirstOrder()
-    dist_alt = hon.getDistanceMatrix()
+    dist = hon.distance_matrix_first_order()
+    dist_alt = hon.distance_matrix()
     m = dict_of_dicts_to_matrix(dist)
     m_alt = dict_of_dicts_to_matrix(dist_alt)
     assert np.allclose(m, m_alt)
@@ -223,8 +223,8 @@ def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nod
 def test_distance_matrix_first_order(random_paths, n_nodes, k, paths, e_sum):
     p = random_paths(paths, 10, n_nodes)
     hon_k, hon_1 = pp.HigherOrderNetwork(p, k=k), pp.HigherOrderNetwork(p, k=1)
-    dist_k = hon_k.getDistanceMatrixFirstOrder()
-    dist_1 = hon_1.getDistanceMatrix()
+    dist_k = hon_k.distance_matrix_first_order()
+    dist_1 = hon_1.distance_matrix()
     total_distance = 0
     for source, target in itertools.product(hon_1.nodes, hon_1.nodes):
         dist_st = dist_k[source][target]

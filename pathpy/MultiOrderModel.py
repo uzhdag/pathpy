@@ -80,7 +80,7 @@ class MultiOrderModel:
 
                 # compute transition matrices for all layers. In order to use the maximally
                 # available statistics, we always use sub paths in the calculation
-                T = layer.getTransitionMatrix(includeSubPaths=True)
+                T = layer.transition_matrix(include_subpaths=True)
 
                 Log.add('Generating ' + str(k) + '-th order network layer ... finished')
                 return [k, layer, T]
@@ -100,7 +100,7 @@ class MultiOrderModel:
 
                 # compute transition matrices for all layers. In order to use the maximally
                 # available statistics, we always use sub paths in the calculation
-                self.T[k] = self.layers[k].getTransitionMatrix(includeSubPaths=True)
+                self.T[k] = self.layers[k].transition_matrix(include_subpaths=True)
 
             Log.add('finished.')
 
@@ -113,7 +113,7 @@ class MultiOrderModel:
         summary = 'Multi-order model (max. order = ' + str(self.maxOrder) + ', DoF (paths/ngrams) = ' + str(self.getDegreesOfFreedom(assumption='paths')) + '/' + str(self.getDegreesOfFreedom(assumption='ngrams')) + ')\n'
         summary += '===========================================================================\n'
         for k in range(self.maxOrder+1):
-            summary += 'Layer k = ' + str(k) + '\t' + str(self.layers[k].vcount()) + ' nodes, ' + str(self.layers[k].ecount()) + ' links, ' + str(self.layers[k].totalEdgeWeight().sum()) + ' paths, DoF (paths/ngrams) = ' + str(int(self.layers[k].getDoF('paths'))) + '/' + str(int(self.layers[k].getDoF('ngrams'))) + '\n'
+            summary += 'Layer k = ' + str(k) + '\t' + str(self.layers[k].vcount()) + ' nodes, ' + str(self.layers[k].ecount()) + ' links, ' + str(self.layers[k].total_edge_weight().sum()) + ' paths, DoF (paths/ngrams) = ' + str(int(self.layers[k].degrees_of_freedom('paths'))) + '/' + str(int(self.layers[k].degrees_of_freedom('ngrams'))) + '\n'
         return summary
 
 
@@ -124,20 +124,20 @@ class MultiOrderModel:
 
         @param layer: if none, all layers will be export. If set to k, only
             the k-th layer of the model will be exported.
-        @param infomapIndexing: if none, standard pathpy indices will be used 
+        @param infomapIndexing: if none, standard pathpy indices will be used
             in the export of state files. This can be set to a custom index dictionary
             in which infomapIndexing[k] contains a dictionary that maps k-th order nodes
-            to a custum node index. This is useful to create state files with consistent indices 
+            to a custum node index. This is useful to create state files with consistent indices
             from multiple MultiOrderModels
         """
 
         assert layer, 'Export of all layers is currently not supported'
 
-        
-        name_map = self.layers[layer].getNodeNameMap()
-        first_layer_map = self.layers[1].getNodeNameMap()
-        
-        T = self.layers[layer].getTransitionMatrix()
+
+        name_map = self.layers[layer].node_to_name_map()
+        first_layer_map = self.layers[1].node_to_name_map()
+
+        T = self.layers[layer].transition_matrix()
 
         file = open(filename,'w')
 
@@ -166,7 +166,7 @@ class MultiOrderModel:
                 v_ix = infomapIndexing[layer][v]
             else:
                 v_ix = name_map[v]+1
-            v_path = self.layers[layer].HigherOrderNodeToPath(v)
+            v_path = self.layers[layer].higher_order_node_to_path(v)
 
             # each line contains uniqueID physicalID [name]
             if infomapIndexing:
@@ -180,8 +180,8 @@ class MultiOrderModel:
             target = e[1]
 
             # Get source and target paths
-            #source_p = self.layers[layer].HigherOrderNodeToPath(source)
-            #source_t = self.layers[layer].HigherOrderNodeToPath(target)
+            #source_p = self.layers[layer].higher_order_node_to_path(source)
+            #source_t = self.layers[layer].higher_order_node_to_path(target)
 
             source_ix = name_map[source]
             target_ix = name_map[target]
@@ -194,9 +194,9 @@ class MultiOrderModel:
 
             # Write entry to file
             # each line contains from to [weight]
-            if infomapIndexing:                
+            if infomapIndexing:
                 file.write('{0} {1} {2}\n'.format(infomapIndexing[layer][source], infomapIndexing[layer][target], T_st))
-            else:    
+            else:
                 file.write('{0} {1} {2}\n'.format(source_ix+1, target_ix+1, T_st))
 
         file.close()
@@ -341,7 +341,7 @@ class MultiOrderModel:
                     else:
 
                         # 1.) transform the path into a sequence of (two or more) l-th-order nodes
-                        nodes = self.layers[l].pathToHigherOrderNodes(p)
+                        nodes = self.layers[l].path_to_higher_order_nodes(p)
                         # print('l-th order path = ', str(nodes))
 
                         # 2.) nodes[0] is the prefix of the k-th order transitions, which we
@@ -361,7 +361,7 @@ class MultiOrderModel:
                         for k_ in range(l-1, -1, -1):
                             #print('prefix = ', prefix)
                             x = prefix.split(self.layers[k_].separator)
-                            transitions[k_] = self.layers[k_].pathToHigherOrderNodes(x)
+                            transitions[k_] = self.layers[k_].path_to_higher_order_nodes(x)
                             #print('transition (k_=', k_,') = ', transitions[k_])
                             prefix = transitions[k_][0]
 
@@ -423,7 +423,7 @@ class MultiOrderModel:
 
         # Sum degrees of freedom of all model layers up to maxOrder
         for i in range(0, maxOrder+1):
-           dof += self.layers[i].getDoF(assumption)
+           dof += self.layers[i].degrees_of_freedom(assumption)
 
         return int(dof)
 
@@ -440,7 +440,7 @@ class MultiOrderModel:
 
         size = 0
         for i in range(0, maxOrder+1):
-            size += self.layers[i].modelSize()
+            size += self.layers[i].model_size()
 
         return int(size)
 
@@ -550,10 +550,10 @@ class MultiOrderModel:
         assert n0==n1, Log.add('Error: Observation count for 0-order and 1-st order model do not match', Severity.ERROR)
 
         # degrees of freedom = |V|-1
-        dof0 = self.layers[0].getDoF(assumption='ngrams')
+        dof0 = self.layers[0].degrees_of_freedom(assumption='ngrams')
 
         # degrees of freedom based on network assumption
-        dof1 = self.layers[1].getDoF(assumption='paths')
+        dof1 = self.layers[1].degrees_of_freedom(assumption='paths')
 
         Log.add('Log-Likelihood (k=0) = ' + str(L0), Severity.INFO)
         Log.add('Degrees of freedom (k=0) = ' + str(dof0), Severity.INFO)
