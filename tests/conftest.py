@@ -78,47 +78,47 @@ def random_paths():
 def temporal_network_object():
     t = pp.TemporalNetwork()
     # Path of length two
-    t.addEdge("c", "e", 1)
-    t.addEdge("e", "f", 2)
+    t.add_edge("c", "e", 1)
+    t.add_edge("e", "f", 2)
 
     # Path of length two
-    t.addEdge("a", "e", 3)
-    t.addEdge("e", "g", 4)
+    t.add_edge("a", "e", 3)
+    t.add_edge("e", "g", 4)
 
     # Path of length two
-    t.addEdge("c", "e", 5)
-    t.addEdge("e", "f", 6)
+    t.add_edge("c", "e", 5)
+    t.add_edge("e", "f", 6)
 
     # Path of length two
-    t.addEdge("a", "e", 7)
-    t.addEdge("e", "g", 8)
+    t.add_edge("a", "e", 7)
+    t.add_edge("e", "g", 8)
 
     # Path of length two
-    t.addEdge("c", "e", 9)
-    t.addEdge("e", "f", 10)
+    t.add_edge("c", "e", 9)
+    t.add_edge("e", "f", 10)
 
     # The next two edges continue the previous path to ( c-> e-> f-> e -> b )
-    t.addEdge("f", "e", 11)
-    t.addEdge("e", "b", 12)
+    t.add_edge("f", "e", 11)
+    t.add_edge("e", "b", 12)
 
     # This is an isolated edge (i.e. path of length one)
-    t.addEdge("e", "b", 13)
+    t.add_edge("e", "b", 13)
 
     # Path of length two
-    t.addEdge("c", "e", 14)
-    t.addEdge("e", "f", 15)
+    t.add_edge("c", "e", 14)
+    t.add_edge("e", "f", 15)
 
     # Path of length two
-    t.addEdge("b", "e", 16)
-    t.addEdge("e", "g", 17)
+    t.add_edge("b", "e", 16)
+    t.add_edge("e", "g", 17)
 
     # Path of length two
-    t.addEdge("c", "e", 18)
-    t.addEdge("e", "f", 19)
+    t.add_edge("c", "e", 18)
+    t.add_edge("e", "f", 19)
 
     # Path of length two
-    t.addEdge("c", "e", 20)
-    t.addEdge("e", "f", 21)
+    t.add_edge("c", "e", 20)
+    t.add_edge("e", "f", 21)
 
     return t
 
@@ -138,13 +138,13 @@ def dag_object():
     #   a -> b -> f -> g        ( A -> B -> B -> A )
     #   a -> c -> b -> e        ( A -> A -> B -> B )
     #   a -> c -> b -> f -> g   ( A -> A -> B -> B -> A )
-    dag.addEdge('a', 'b')
-    dag.addEdge('a', 'c')
-    dag.addEdge('c', 'b')
-    dag.addEdge('b', 'e')
-    dag.addEdge('b', 'f')
-    dag.addEdge('f', 'g')
-    dag.addEdge('c', 'g')
-    dag.addEdge('h', 'i')
-    dag.addEdge('h', 'j')
+    dag.add_edge('a', 'b')
+    dag.add_edge('a', 'c')
+    dag.add_edge('c', 'b')
+    dag.add_edge('b', 'e')
+    dag.add_edge('b', 'f')
+    dag.add_edge('f', 'g')
+    dag.add_edge('c', 'g')
+    dag.add_edge('h', 'i')
+    dag.add_edge('h', 'j')
     return dag

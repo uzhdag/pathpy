@@ -102,9 +102,8 @@ class TemporalNetwork:
                 self.activities[v] = sorted(self.activities_sets[v])
             Log.add('finished.')
 
-
-    @staticmethod
-    def fromSQLite(cursor, directed = True, timestampformat='%Y-%m-%d %H:%M:%S'):
+    @classmethod
+    def from_sqlite(cls, cursor, directed=True, timestamp_format='%Y-%m-%d %H:%M:%S'):
         """Reads time-stamped links from an SQLite cursor and returns a new instance of
         the class TemporalNetwork. The cursor is assumed to refer to a table that
         minimally has three columns
@@ -126,7 +125,7 @@ class TemporalNetwork:
         cursor:
             The SQLite cursor to fetch rows
         directed: bool
-        timestampformat: str
+        timestamp_format: str
             used to convert string timestamps to UNIX timestamps. This parameter is
             ignored, if the timestamps are digit types (like a simple int).
 
@@ -140,7 +139,6 @@ class TemporalNetwork:
             'Cannot access columns by name. Please set ' \
             'connection.row_factory = sqlite3.Row before creating DB cursor.'
 
-
         if not directed:
             Log.add('Retrieving undirected time-stamped links ...')
         else:
@@ -149,24 +147,25 @@ class TemporalNetwork:
         for row in cursor:
             # r = sqlite3.Row(row)
             timestamp = row['time']
-            assert isinstance(timestamp, int) or isinstance(timestamp, str), 'Error: pathpy only supports integer or string timestamps'
+            assert isinstance(timestamp, int) or isinstance(timestamp, str), \
+                'Error: pathpy only supports integer or string timestamps'
             # if the timestamp is a number, we use this
             if isinstance(timestamp, int):
                 t = timestamp
             else:
-                # if it is a string, we use the timestamp format to convert it to a UNIX timestamp
-                x = _dt.datetime.strptime(timestamp, timestampformat)
+                # if it is a string, we use the timestamp format to convert it to
+                # a UNIX timestamp
+                x = _dt.datetime.strptime(timestamp, timestamp_format)
                 t = int(_t.mktime(x.timetuple()))
             tedges.append((str(row['source']), str(row['target']), t))
             if not directed:
                 tedges.append((str(row['target']), str(row['source']), t))
 
-        return TemporalNetwork(tedges=tedges)
+        return cls(tedges=tedges)
 
-
-
-    @staticmethod
-    def readFile(filename, sep=',', directed = True, timestampformat='%Y-%m-%d %H:%M:%S', maxlines=_sys.maxsize):
+    @classmethod
+    def read_file(cls, filename, sep=',', directed=True,
+                  timestamp_format='%Y-%m-%d %H:%M:%S', maxlines=_sys.maxsize):
         """
         Reads time-stamped links from a file and returns a new instance of the class
         TemporalNetwork. The file is assumed to have a header
@@ -190,7 +189,7 @@ class TemporalNetwork:
             the character that separates columns (default ',')
         directed: bool
             whether to read edges as directed (default True)
-        timestampformat: str
+        timestamp_format: str
             used to convert string timestamps to UNIX timestamps. This parameter is
             ignored, if timestamps are digit types (like a simple int).
             The default is '%Y-%m-%d %H:%M'
@@ -223,7 +222,8 @@ class TemporalNetwork:
                 elif header[i] == 'time' or header[i] == 'timestamp':
                     time_ix = i
 
-            assert (source_ix >= 0 and target_ix >= 0), "Detected invalid header columns: %s" % header
+            assert (source_ix >= 0 and target_ix >= 0), \
+                "Detected invalid header columns: %s" % header
 
             if time_ix < 0:  # pragma: no cover
                 Log.add('No time stamps found in data, assuming consecutive links', Severity.WARNING)
@@ -244,8 +244,9 @@ class TemporalNetwork:
                         if timestamp.isdigit():
                             t = int(timestamp)
                         else:
-                            # if it is a string, we use the timestamp format to convert it to a UNIX timestamp
-                            x = _dt.datetime.strptime(timestamp, timestampformat)
+                            # if it is a string, we use the timestamp format to convert
+                            # it to a UNIX timestamp
+                            x = _dt.datetime.strptime(timestamp, timestamp_format)
                             t = int(_t.mktime(x.timetuple()))
                     else:
                         t = n
@@ -255,17 +256,19 @@ class TemporalNetwork:
                         if not directed:
                             tedges.append((fields[target_ix], fields[source_ix], t))
                     else:  # pragma: no cover
-                        Log.add('Ignoring negative timestamp in line ' + str(n+1) + ': "' + line.strip() + '"', Severity.WARNING)
+                        msg = 'Ignoring negative timestamp in line {}'.format(n+1)
+                        Log.add(msg, Severity.WARNING)
                 except (IndexError, ValueError):  # pragma: no cover
-                    Log.add('Ignoring malformed data in line ' + str(n+1) + ': "' +  line.strip() + '"', Severity.WARNING)
+                    s_line = line.strip()
+                    msg = 'Ignoring malformed data in line {}: "{}"'.format(n+1, s_line)
+                    Log.add(msg, Severity.WARNING)
                 line = f.readline()
                 n += 1
         # end of with open()
 
-        return TemporalNetwork(tedges=tedges)
+        return cls(tedges=tedges)
 
-
-    def writeFile(self, filename, sep=','):
+    def write_file(self, filename, sep=','):
         """Writes the time-stamped edge list of this temporal network instance as CSV file
 
         Parameters
@@ -286,8 +289,7 @@ class TemporalNetwork:
                 for (v, w, t) in self.time[time]:
                     f.write(str(v) + sep + str(w) + sep + str(t)+'\n')
 
-
-    def filterEdges(self, edge_filter):
+    def filter_edges(self, edge_filter):
         """Filter time-stamped edges according to a given filter expression. This can be
         used, e.g., to create time slice networks by filtering edges within certain time
         windows.
@@ -310,11 +312,13 @@ class TemporalNetwork:
             if edge_filter(v, w, t):
                 new_t_edges.append((v, w, t))
 
-        Log.add('finished. Filtered out ' + str(self.ecount() - len(new_t_edges)) + ' time-stamped edges.', Severity.INFO)
+        n_filtered = self.ecount() - len(new_t_edges)
+        msg = 'finished. Filtered out {} time-stamped edges.'.format(n_filtered)
+        Log.add(msg,  Severity.INFO)
 
         return TemporalNetwork(tedges=new_t_edges)
 
-    def addEdge(self, source, target, ts, directed=True):
+    def add_edge(self, source, target, ts, directed=True):
         """Adds a time-stamped edge (source,target;time) to the temporal network.
         Unless specified otherwise, time-stamped edges are assumed to be directed.
 
@@ -356,68 +360,56 @@ class TemporalNetwork:
 
         # make edge undirected by adding another directed edge
         if not directed:
-            self.addEdge(target, source, ts)
-
+            self.add_edge(target, source, ts)
 
     def vcount(self):
-        """
-        Returns the number of vertices in the temporal network.
+        """Returns the number of vertices in the temporal network.
         This number corresponds to the number of nodes in the (first-order)
         time-aggregated network.
         """
 
         return len(self.nodes)
 
-
     def ecount(self):
-        """
-        Returns the number of time-stamped edges (u,v;t) in the temporal network.
+        """Returns the number of time-stamped edges (u,v;t) in the temporal network.
         This number corresponds to the sum of link weights in the (first-order)
         time-aggregated network.
         """
 
         return len(self.tedges)
 
-
-    def getObservationLength(self):
-        """
-        Returns the length of the observation time in time units.
-        """
+    def observation_length(self):
+        """Returns the length of the observation time in time units."""
 
         return max(self.ordered_times)-min(self.ordered_times)
 
-
-    def getInterEventTimes(self):
+    def inter_event_times(self):
         """
         Returns an array containing all time differences between any
         two consecutive time-stamped links (involving any node)
         """
-
-        timediffs = []
+        time_diffs = []
         for i in range(1, len(self.ordered_times)):
-            timediffs += [self.ordered_times[i] - self.ordered_times[i-1]]
-        return _np.array(timediffs)
+            time_diffs += [self.ordered_times[i] - self.ordered_times[i-1]]
+        return _np.array(time_diffs)
 
-
-    def getInterPathTimes(self):
+    def inter_path_times(self):
+        """Returns a dictionary which, for each node v, contains all time differences
+        between any time-stamped link (*,v;t) and the next link (v,*;t') (t'>t) in the
+        temporal network
         """
-        Returns a dictionary which, for each node v, contains all time differences
-        between any time-stamped link (*,v;t) and the next link (v,*;t') (t'>t)
-        in the temporal network
-        """
-
-        interPathTimes = _co.defaultdict(lambda: list())
+        ip_imes = _co.defaultdict(lambda: list())
         for e in self.tedges:
             # Get target v of current edge e=(u,v,t)
             v = e[1]
             t = e[2]
 
-            # Get time stamp of link (v,*,t_next) with smallest t_next such that t_next > t
+            # Get time stamp of link (v,*,t_next)
+            # with smallest t_next such that t_next > t
             i = _bs.bisect_right(self.activities[v], t)
             if i != len(self.activities[v]):
-                interPathTimes[v].append(self.activities[v][i]-t)
-        return interPathTimes
-
+                ip_imes[v].append(self.activities[v][i]-t)
+        return ip_imes
 
     def summary(self):
         """
@@ -437,22 +429,19 @@ class TemporalNetwork:
             summary += 'Observation length:\t' + str(max(self.ordered_times) - min(self.ordered_times)) + '\n'
             summary += 'Time stamps:\t\t' + str(len(self.ordered_times)) + '\n'
 
-            d = self.getInterEventTimes()
+            d = self.inter_event_times()
             summary += 'Avg. inter-event dt:\t' + str(_np.mean(d)) + '\n'
             summary += 'Min/Max inter-event dt:\t' + str(min(d)) + '/' + str(max(d)) + '\n'
 
         return summary
 
-
     def __str__(self):
-        """
-        Returns the default string representation of
-        this temporal network instance.
+        """Returns the default string representation of this temporal network instance.
         """
         return self.summary()
 
-
-    def ShuffleEdges(self, l=0, with_replacement=False, window_splits = None, maintain_undirected = True):
+    def shuffle_edges(self, l=0, with_replacement=False, window_splits=None,
+                      maintain_undirected=True):
         """Generates a shuffled version of the temporal network in which edge statistics
         (i.e. the frequencies of time-stamped edges) and inter-event time  statistics are
         preserved, while all order correlations are destroyed by randomly reshuffling the
@@ -485,7 +474,7 @@ class TemporalNetwork:
         """
         tedges = []
 
-        if window_splits == None:
+        if window_splits is None:
             window_splits = [max(self.time)]
         else:
             window_splits.append(max(self.time))
@@ -496,7 +485,7 @@ class TemporalNetwork:
             timestamps = []
             edges = []
             for e in self.tedges:
-                if e[2] > window_min and e[2] <= window_max:
+                if window_min < e[2] <= window_max:
                     timestamps.append(e[2])
                     edges.append(e)
 
@@ -510,9 +499,10 @@ class TemporalNetwork:
                     time = timestamps[_np.random.randint(0, len(timestamps))]
                     # Generate new time-stamped link
                     tedges.append((edge[0], edge[1], time))
-            else: # shuffle edges while avoiding multiple identical edges at same time stamp
+            else:
+                # shuffle edges while avoiding multiple identical edges at same time stamp
                 i = 0
-                while i<l:
+                while i < l:
                     # Pick random link
                     edge = edges.pop(_np.random.randint(0, len(edges)))
 
@@ -535,8 +525,8 @@ class TemporalNetwork:
                         tedges.append((edge[0], edge[1], time))
                         rewired = True
 
-                    # edge could not be rewired to the chosen time stamp, so reappend both
-                    # to the list for future sampling
+                    # edge could not be rewired to the chosen time stamp, so re-append
+                    # both to the list for future sampling
                     if not rewired:
                         edges.append(edge)
                         timestamps.append(time)
@@ -552,7 +542,8 @@ class TemporalNetwork:
         t.nodes = self.nodes
         return t
 
-    def write_tikz(self, filename, dag=True, angle=20, layer_dist='0.3cm', split_directions=True):
+    def write_tikz(self, filename, dag=True, angle=20, layer_dist='0.3cm',
+                   split_directions=True):
         """Generates a tex file that can be compiled to a time-unfolded representation of
          the temporal network.
 
@@ -583,7 +574,6 @@ class TemporalNetwork:
         import os as _os
 
         output = []
-
         output.append('\\documentclass{article}\n')
         output.append('\\usepackage{tikz}\n')
         output.append('\\usepackage{verbatim}\n')
@@ -666,8 +656,8 @@ class TemporalNetwork:
         with open(filename, "w") as tex_file:
             tex_file.write(''.join(output))
 
-
-    def _to_html(self, width=600, height=600, msperframe=100, tsperframe=0, require=True):
+    def _to_html(self, width=600, height=600, ms_per_frame=100, ts_per_frame=0,
+                 require=True):
         import json
         import os
         from string import Template
@@ -676,13 +666,13 @@ class TemporalNetwork:
         import random
 
         # auto-adjust simulation speed to temporal characteristics
-        if tsperframe == 0:
-            d = self.getInterEventTimes()
+        if ts_per_frame == 0:
+            d = self.inter_event_times()
             avg_ts_bw_interactions = _np.mean(d)
-            fps = 1000.0/float(msperframe)
+            fps = 1000.0/float(ms_per_frame)
             x = avg_ts_bw_interactions/fps
             # set time scale so that we expect 5 interactions per frame
-            tsperframe = _np.max([1, int(20*x)])
+            ts_per_frame = _np.max([1, int(20 * x)])
 
         div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
@@ -716,18 +706,17 @@ class TemporalNetwork:
             'width': width,
             'height': height,
             'div_id': div_id,
-            'msperframe': msperframe,
-            'tsperframe': tsperframe})
+            'ms_per_frame': ms_per_frame,
+            'ts_per_frame': ts_per_frame})
 
         return html
-
 
     def _repr_html_(self, require=True):
         from IPython.core.display import display, HTML
         display(HTML(self._to_html(require=require)))
 
-
     def write_html(self, filename, width=600, height=600, msperframe=100):
-        html = '<!DOCTYPE html>\n<html><body>\n' + self._to_html(width=width, height=height, msperframe = msperframe, require=False) + '</body>\n</html>'
+        inner_html = self._to_html(width, height, msperframe, require=False)
+        html = '<!DOCTYPE html>\n<html><body>\n' + inner_html + '</body>\n</html>'
         with open(filename, 'w+') as f:
             f.write(html)

@@ -18,13 +18,13 @@ def test_dag_acyclic(dag_object):
     assert dag.isAcyclic is True
 
     # Add cycle to the graph
-    dag.addEdge('b', 'c')
+    dag.add_edge('b', 'c')
     dag.topsort()
     assert (dag.edge_classes[('b', 'c')] == 'back' or
             dag.edge_classes[('c', 'b')] == 'back')
     assert dag.isAcyclic is False
 
-    dag.makeAcyclic()
+    dag.make_acyclic()
     assert ('b', 'c') not in dag.edges or ('c', 'b') not in dag.edges
     assert len(dag.edges) == 9
 
@@ -39,7 +39,7 @@ def test_dag_path_extraction(dag_object):
 
 
 def test_dag_path_extraction_cyclic(dag_object: pp.DAG):
-    dag_object.addEdge('g', 'a')  # adds a cycle to the dag object
+    dag_object.add_edge('g', 'a')  # adds a cycle to the dag object
     with pytest.raises(ValueError):
         pp.path_extraction.paths_from_dag(dag_object)
 
@@ -87,13 +87,13 @@ def test_add_edges(edges, types):
 def test_dag_io(dag_object, tmpdir):
     file_path = str(tmpdir.mkdir("sub").join("test.edges"))
     dag_orig = dag_object
-    dag_orig.makeAcyclic()
+    dag_orig.make_acyclic()
 
-    dag_orig.writeFile(file_path)
-    dag_back = pp.DAG.readFile(file_path)
+    dag_orig.write_file(file_path)
+    dag_back = pp.DAG.read_file(file_path)
     assert set(dag_back.edges) == set(dag_orig.edges)
 
     # filter_nodes out nodes not in the mapping
     mapping = {'a': 'A', 'b': 'B', 'c': 'A'}
-    dag_back_map = pp.DAG.readFile(file_path, mapping=mapping)
+    dag_back_map = pp.DAG.read_file(file_path, mapping=mapping)
     assert dag_back_map.nodes == {'a', 'b', 'c'}

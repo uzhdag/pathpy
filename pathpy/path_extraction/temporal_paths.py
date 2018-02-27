@@ -60,8 +60,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
         calculated, which can be limited due to computational efficiency.
         A value of k will generate all time-respecting paths consisting of up to k
         time-stamped links. Note that generating a multi-order model with a maximum
-        order of k requires to paths_from_temporal_network time-respecting paths with
-        *at least* length k.
+        order of k requires to extract time-respecting paths with *at least* length k.
         If a limitation of the maxLength is not required for computational reasons,
         this parameter should not be set (as it will change the statistics of paths)
     maxSubPathLength : int
@@ -83,7 +82,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
         _Log.add('Extracting time-respecting paths for delta = ' + str(delta) + ' ...')
     else:  # pragma: no cover
         _Log.add('Extracting time-respecting paths up to length ' + str(maxLength) +
-                ' for delta = ' + str(delta) + ' ...')
+                 ' for delta = ' + str(delta) + ' ...')
 
     # for dictionary p.paths paths[k] contains a list of all
     # time-respecting paths p with length k and paths[k][p] contains
@@ -98,8 +97,9 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
     # candidates[t][v] is a set of paths which end at time t in node v
     candidates = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
 
-    # Note that here we only paths_from_temporal_network **longest** time-respecting paths, since we will
-    # use later the expandSubpaths function to calculate statistics of shorter paths
+    # Note that here we only extract **longest** time-respecting
+    # paths, since we will use later the expandSubpaths function to calculate statistics
+    # of shorter paths
 
     # set of longest time-respecting paths (i.e. those paths which are
     # NOT sub path of a longer time-respecting path)
@@ -115,7 +115,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
             # check whether this edge extends existing candidates
             for t_prev in list(candidates):
                 # time stamp of candidate has to be in [t-delta, t) ...
-                if t-delta <= t_prev < t:
+                if t - delta <= t_prev < t:
                     # ... and last node has to be e[0] ...
                     if e[0] in candidates[t_prev]:
                         for c in list(candidates[t_prev][e[0]]):
@@ -147,18 +147,18 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
             # if edge e does not continue a previous path
             # we start a new longest path
             if root:
-                longest_paths.add(((e[0], e[1], t), ))
+                longest_paths.add(((e[0], e[1], t),))
                 # add edge as candidate path of length one that can be extended by
                 # future edges
                 if maxLength > 1:
-                    candidates[t][e[1]].add(((e[0], e[1], t), ))
+                    candidates[t][e[1]].add(((e[0], e[1], t),))
 
         # we finished processing time stamp t, so
         # we can remove all candidates which finish
         # at a time smaller than t-delta. Since they cannot
         # be extended, these are longest paths
         for t_prev in list(candidates.keys()):
-            if t_prev < t-delta:
+            if t_prev < t - delta:
                 del candidates[t_prev]
 
     # once we reached the last time stamp, add all candidates
@@ -170,9 +170,9 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
 
     # Count occurrences as longest time-respecting path
     for x in longest_paths:
-        path = (x[0][0], )
+        path = (x[0][0],)
         for edge in x:
-            path += (edge[1], )
+            path += (edge[1],)
         p.paths[len(x)][path] += _np.array([0, 1])
 
     # expand sub paths of longest paths

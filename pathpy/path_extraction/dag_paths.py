@@ -41,8 +41,8 @@ def paths_from_dag(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):
         dag.topsort()
     # issue error if graph contains cycles
     if dag.isAcyclic is False:
-        _Log.add('Cannot paths_from_temporal_network path statistics from a cyclic graph', _Severity.ERROR)
-        raise ValueError('Cannot paths_from_temporal_network path statistics from a cyclic graph')
+        _Log.add('Cannot extract statistics from a cyclic graph', _Severity.ERROR)
+        raise ValueError('Cannot extract path statistics from a cyclic graph')
     else:
         # path object which will hold the detected (projected) paths
         p = _Paths()
@@ -53,15 +53,16 @@ def paths_from_dag(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):
         # construct all paths originating from root nodes
         for s in dag.roots:
             if n % 100 == 0:
-                _Log.add('Processed ' + str(n) + '/' + str(len(dag.roots)) + ' root nodes', _Severity.TIMING)
+                msg = 'Processed {} / {} root nodes'.format(n, len(dag.roots))
+                _Log.add(msg, _Severity.TIMING)
             if node_mapping is None:
-                paths = dag.constructPaths(s)
+                paths = dag.construct_paths(s)
                 # add detected paths to paths object
                 for d in paths:
                     for x in paths[d]:
                         p.add_path_tuple(x, expand_subpaths=False, frequency=(0, 1))
             else:
-                dag.constructMappedPaths(s, node_mapping, p)
+                dag.construct_mapped_paths(s, node_mapping, p)
             n += 1
         p.expand_subpaths()
         _Log.add('finished.', _Severity.INFO)

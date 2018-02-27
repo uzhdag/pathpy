@@ -42,18 +42,16 @@ class MarkovSequence:
         as a single list of strings
         """
 
-        ## The sequence to be modeled
+        # The sequence to be modeled
         self.sequence = sequence
 
-        ## The transition probabilities of higher-order Markov chains
+        # The transition probabilities of higher-order Markov chains
         self.P = {}
 
-        ## the set of states of higher-order Markov chains
-        self.states = {}
-        self.states[1] = set(sequence)
+        # the set of states of higher-order Markov chains
+        self.states = {1: set(sequence)}
 
-
-    def fitMarkovModel(self, k=1):
+    def markov_model(self, k=1):
         """ Generates a k-th order Markov model
             for the underlying sequence
         """
@@ -86,15 +84,14 @@ class MarkovSequence:
                 self.P[k][m][s] /= S
         Log.add('finished.')
 
-
-    def getLikelihood(self, k=1, log=True):
+    def likelihood(self, k=1, log=True):
         """
         Returns the likelihood of the sequence
         assuming a k-th order Markov model
         """
 
         if k not in self.P:
-            self.fitMarkovModel(k)
+            self.markov_model(k)
 
         L = 0
 
@@ -114,19 +111,18 @@ class MarkovSequence:
 
         return _np.exp(L)
 
-
-    def getBIC(self, k=1, m=1):
+    def bic(self, k=1, m=1):
         """ Returns the Bayesian Information Criterion
             assuming a k-th order Markov model """
 
         if k not in self.P:
-            self.fitMarkovModel(k)
+            self.markov_model(k)
 
         if m not in self.P:
-            self.fitMarkovModel(m)
+            self.markov_model(m)
 
-        L_k = self.getLikelihood(k, log=True)
-        L_m = self.getLikelihood(m, log=True)
+        L_k = self.likelihood(k, log=True)
+        L_m = self.likelihood(m, log=True)
 
         s = len(self.states[1])
         n = len(self.sequence)-k
@@ -140,19 +136,18 @@ class MarkovSequence:
 
         return bic
 
-
-    def getAIC(self, k=1, m=1):
+    def aic(self, k=1, m=1):
         """ Returns the Akaike Information Criterion
             assuming a k-th order Markov model """
 
         if k not in self.P:
-            self.fitMarkovModel(k)
+            self.markov_model(k)
 
         if m not in self.P:
-            self.fitMarkovModel(m)
+            self.markov_model(m)
 
-        L_k = self.getLikelihood(k, log=True)
-        L_m = self.getLikelihood(m, log=True)
+        L_k = self.likelihood(k, log=True)
+        L_m = self.likelihood(m, log=True)
 
         s = len(self.states[1])
 
@@ -160,8 +155,7 @@ class MarkovSequence:
 
         return aic
 
-
-    def estimateOrder(self, maxOrder, method='BIC'):
+    def estimate_order(self, maxOrder, method='BIC'):
         """ Estimates the optimal order of a Markov model
             based on Likelihood, BIC or AIC """
 
@@ -176,19 +170,19 @@ class MarkovSequence:
         # is why we only test up to maxOrder - 1
         for k in range(1, maxOrder):
             if k not in self.P:
-                self.fitMarkovModel(k)
+                self.markov_model(k)
 
             orders.append(k)
 
             if method == 'AIC':
-                values.append(self.getAIC(k, maxOrder))
+                values.append(self.aic(k, maxOrder))
             elif method == 'BIC':
-                values.append(self.getBIC(k, maxOrder))
+                values.append(self.bic(k, maxOrder))
             elif method == 'Likelihood':
-                values.append(self.getLikelihood(k, log=True))
+                values.append(self.likelihood(k, log=True))
 
         if method == 'Likelihood':
-            values.append(self.getLikelihood(maxOrder, log=True))
+            values.append(self.likelihood(maxOrder, log=True))
             orders.append(maxOrder)
 
             # return order at which likelihood is maximized

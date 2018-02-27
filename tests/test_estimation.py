@@ -76,7 +76,7 @@ def test_markov_sequence(method):
     _np.random.seed(90)
     x = list(map(str, _np.random.choice(range(10), 1000)))
     ms = pp.MarkovSequence(x)
-    detected_order = ms.estimateOrder(maxOrder=4, method=method)
+    detected_order = ms.estimate_order(maxOrder=4, method=method)
     assert detected_order == 1, \
         "Error, wrongly detected higher-order correlations"
 

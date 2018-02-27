@@ -42,22 +42,22 @@ class DAG(object):
         self.nodes = set()
         self.edges = set()
 
-        ## Whether or not this graph is acyclic. None indicates that it is unknown
+        # Whether or not this graph is acyclic. None indicates that it is unknown
         self.isAcyclic = None
 
-        ## list of topologically sorted nodes
+        # list of topologically sorted nodes
         self.sorting = []
 
-        ## Set of nodes with no incoming edges
+        # Set of nodes with no incoming edges
         self.roots = set()
 
-        ## Set of nodes with no outgoing edges
+        # Set of nodes with no outgoing edges
         self.leafs = set()
 
-        ## The dictionary of successors of each node
+        # The dictionary of successors of each node
         self.successors = _co.defaultdict(lambda: set())
 
-        ## The dictionary of predecessors of each node
+        # The dictionary of predecessors of each node
         self.predecessors = _co.defaultdict(lambda: set())
         self_loops = 0
         redundant_edges = 0
@@ -72,7 +72,7 @@ class DAG(object):
                     is_redundant = True
                     redundant_edges += 1
                 if not has_self_loop and not is_redundant:
-                    self.addEdge(e[0], e[1])
+                    self.add_edge(e[0], e[1])
             if self_loops > 0:
                 Log.add('Warning: omitted %d self-loops' % self_loops, Severity.WARNING)
             if redundant_edges > 0:
@@ -86,7 +86,7 @@ class DAG(object):
         self.edge_classes = {}
         self.top_sort_count = 0
 
-    def constructPaths(self, v):
+    def construct_paths(self, v):
         """
         Constructs all paths from node v to any leaf nodes
         """
@@ -113,7 +113,7 @@ class DAG(object):
 
         return temp_paths
 
-    def constructMappedPaths(self, v, node_mapping, paths):
+    def construct_mapped_paths(self, v, node_mapping, paths):
         """
         Constructs all paths from node v to any leaf nodes,
         while applying a surjective projection function
@@ -192,13 +192,10 @@ class DAG(object):
                 self.dfs_visit(v)
         self.sorting.reverse()
 
-    def makeAcyclic(self):
+    def make_acyclic(self):
+        """Removes all back-links from the graph to make it acyclic, then performs another
+        topological sorting of the DAG
         """
-        Removes all backlinks from the graph to make it
-        acyclic, then performs another topological sorting
-        of the DAG
-        """
-
         if self.isAcyclic is None:
             self.topsort()
         removed_links = 0
@@ -212,7 +209,7 @@ class DAG(object):
                     self.predecessors[e[1]].remove(e[0])
                     del self.edge_classes[e]
             self.topsort()
-            assert self.isAcyclic, "Error: makeAcyclic did not generate acyclic graph!"
+            assert self.isAcyclic, "Error: make_acyclic did not generate acyclic graph!"
             Log.add('Removed ' + str(removed_links) +
                     ' back links to make graph acyclic', Severity.INFO)
 
@@ -236,7 +233,7 @@ class DAG(object):
         """
         return self.summary()
 
-    def addEdge(self, source, target):
+    def add_edge(self, source, target):
         """
         Adds a directed edge to the graph
         """
@@ -255,8 +252,7 @@ class DAG(object):
         self.predecessors[target].add(source)
         self.isAcyclic = None
 
-
-    def writeFile(self, filename, sep=','):
+    def write_file(self, filename, sep=','):
         """Writes a dag as an adjaceny list to file
 
         Parameters
@@ -272,9 +268,8 @@ class DAG(object):
             for edge in self.edges:
                 file.write(sep.join(edge)+'\n')
 
-
-    @staticmethod
-    def readFile(filename, sep=',', maxlines=_sys.maxsize, mapping=None):
+    @classmethod
+    def read_file(cls, filename, sep=',', maxlines=_sys.maxsize, mapping=None):
         """
         Reads a directed acyclic graph from a file
         containing an edge list of the form
@@ -311,5 +306,4 @@ class DAG(object):
                 n += 1
         # end of with open()
 
-        return DAG(edges=edges)
-
+        return cls(edges=edges)

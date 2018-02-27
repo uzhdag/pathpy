@@ -36,19 +36,19 @@ class Severity(enum.IntEnum):
         used to filter messages based on severities.
     """
 
-    ## Error messages
+    # Error messages
     ERROR = 4
 
-    ## Warning messages
+    # Warning messages
     WARNING = 3
 
-    ## Informational messages (default minimum level)
+    # Informational messages (default minimum level)
     INFO = 2
 
-    ## Messages regarding timing and performance
+    # Messages regarding timing and performance
     TIMING = 1
 
-    ## Debug messages (really verbose)
+    # Debug messages (really verbose)
     DEBUG = 0
 
 
@@ -57,15 +57,14 @@ class Log:
         be recorded in the output, and where these message should be directed.
     """
 
-    ## the output stream to which log entries will be written
+    # the output stream to which log entries will be written
     output_stream = sys.stdout
 
-    ## The minimum severity level of messages to be logged
+    # The minimum severity level of messages to be logged
     min_severity = Severity.INFO
 
-
     @staticmethod
-    def setMinSeverity(severity):  # pragma: no cover
+    def set_min_severity(severity):  # pragma: no cover
         """ Sets the minimum sveerity level a message
         needs to have in order to be recorded in the output stream.
         By default, any message which has a severity of at least
@@ -74,15 +73,13 @@ class Log:
         """
         Log.min_severity = severity
 
-
     @staticmethod
-    def setOutputStream(stream):  # pragma: no cover
+    def set_output_stream(stream):  # pragma: no cover
         """ Sets the output stream to which all messages will be
             written. By default, this is sys.stdout, but it can be
             changed in order to redirect the log to a logfile.
         """
         Log.output_stream = stream
-
 
     @staticmethod
     def add(msg, severity=Severity.INFO):  # pragma: no cover

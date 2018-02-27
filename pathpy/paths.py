@@ -702,9 +702,9 @@ class Paths:
         node_filter: set
             the nodes for which paths with be extracted from the current set of paths
         min_length: int
-            the minimum length of paths to paths_from_temporal_network (default 0)
+            the minimum length of paths to extract (default 0)
         max_length: int
-            the maximum length of paths to paths_from_temporal_network (default sys.maxsize)
+            the maximum length of paths to extract (default sys.maxsize)
 
         Returns
         -------

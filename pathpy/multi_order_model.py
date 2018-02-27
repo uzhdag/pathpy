@@ -383,51 +383,50 @@ class MultiOrderModel:
                     # hierarchy of higher-order models as follows ...
                     else:
 
-                        # 1.) transform the path into a sequence of (two or more) l-th-order nodes
+                        # 1.) transform the path into a sequence of (two or more)
+                        # l-th-order nodes
                         nodes = self.layers[l].path_to_higher_order_nodes(p)
                         # print('l-th order path = ', str(nodes))
 
-                        # 2.) nodes[0] is the prefix of the k-th order transitions, which we
-                        #   can transform into multiple transitions in lower order models.
-                        #   Example: for a path a-b-c-d of length three, the node sequence
-                        #   at order l=3 is ['a-b-c', 'b-c-d'] and thus the prefix is 'a-b-c'.
+                        # 2.) nodes[0] is the prefix of the k-th order transitions,
+                        # which we can transform into multiple transitions in lower
+                        # order models. Example: for a path a-b-c-d of length three,
+                        # the node sequence at order l=3 is ['a-b-c', 'b-c-d'] and thus
+                        #  the prefix is 'a-b-c'.
                         prefix = nodes[0]
 
-                        # 3.) We paths_from_temporal_network the transitions for the prefix based on models of
-                        #   orders k_<l. In our example, we have the transitions ...
-                        #   (a-b, b-c) for k_=2
-                        #   (a, b) for k_=1, and
-                        #   (start, a) for k_=0
+                        # 3.) We extract the transitions for the prefix based on models
+                        #  of orders k_<l. In our example, we have the transitions ...
+                        # (a-b, b-c) for k_=2 (a, b) for k_=1, and (start, a) for k_=0
                         transitions = {}
 
                         # for all k_<l in descending order
                         for k_ in range(l-1, -1, -1):
-                            #print('prefix = ', prefix)
                             x = prefix.split(self.layers[k_].separator)
                             transitions[k_] = self.layers[k_].path_to_higher_order_nodes(x)
-                            #print('transition (k_=', k_,') = ', transitions[k_])
                             prefix = transitions[k_][0]
 
-                        # 4.) Using Bayes theorem, we calculate the likelihood of a path a-b-c-d-e
-                        #   of length four for l=4 as a single transition in a fourth-order model, and
-                        #   four additional transitions in the k_=0, 1, 2 and 3-order models, i.e. we have ...
-                        #   P(a-b-c-d-e) = P(e|a-b-c-d) * [ P(d|a-b-c) * P(c|a-b) * P(b|a) * P(a) ]
-                        #   If we were to model the same path based on model hierarchy with a maximum order of l=2,
-                        #   we instead have three transitions in the second-order model and two additional transitions
-                        #   in the k_=0 and k_=1 order models for the prefix 'a-b' ...
-                        #   P(a-b-c-d-e) = P(e|c-d) * P(d|b-c) * P(c|a-b) * [ P(b|a) * P(a) ]
+                        # 4.) Using Bayes theorem, we calculate the likelihood of a
+                        # path a-b-c-d-e of length four for l=4 as a single transition
+                        # in a fourth-order model, and four additional transitions in
+                        # the k_=0, 1, 2 and 3-order models, i.e. we have ...
+                        # P(a-b-c-d-e) = P(e|a-b-c-d) * [ P(d|a-b-c) * P(c|a-b) * P(b|a)
+                        # * P(a) ] If we were to model the same path based on model
+                        # hierarchy with a maximum order of l=2, we instead have three
+                        # transitions in the second-order model and two additional
+                        # transitions in the k_=0 and k_=1 order models for the prefix
+                        # 'a-b' ... P(a-b-c-d-e) = P(e|c-d) * P(d|b-c) * P(c|a-b) * [
+                        # P(b|a) * P(a) ]
 
                         # First multiply the transitions in the l-th order model ...
                         transition_matrix = self.T[l]
                         nodes_ = self.layers[l].nodes
                         factor_ = paths.paths[k][p][1]
                         for s in range(len(nodes)-1):
-                            # print((nodes[s], nodes[s+1]))
-                            # print(T[model.nodes.index(nodes[s+1]), model.nodes.index(nodes[s])])
                             L += _np.log(transition_matrix[nodes_.index(nodes[s+1]), nodes_.index(nodes[s])]) * factor_
 
-
-                        # ... then multiply additional transition probabilities for the prefix ...
+                        # ... then multiply additional transition probabilities for the
+                        #  prefix ...
                         for k_ in range(l):
                             L += _np.log(self.T[k_][self.layers[k_].nodes.index(transitions[k_][1]), self.layers[k_].nodes.index(transitions[k_][0])]) * factor_
 
@@ -528,8 +527,11 @@ class MultiOrderModel:
             hypothesis is rejected in favor of the alternative hypothesis,
             as well as the p-value that led to the decision
         """
-        assert maxOrderNull < maxOrder, 'Error: order of null hypothesis must be smaller than order of alternative hypothesis'
-        # let L0 be the likelihood for the null model and L1 be the likelihood for the alternative model
+        assert maxOrderNull < maxOrder, \
+            'Error: order of null hypothesis must be smaller than order of ' \
+            'alternative hypothesis'
+        # let L0 be the likelihood for the null model and L1 be the likelihood for the
+        # alternative model
 
         # we first compute a test statistic x = -2 * log (L0/L1) = -2 * (log L0 - log L1)
         x = -2 * (self.likelihood(paths, maxOrder=maxOrderNull, log=True) - self.likelihood(paths, maxOrder=maxOrder, log=True))
@@ -540,7 +542,8 @@ class MultiOrderModel:
         Log.add('Likelihood ratio test for K_opt = ' + str(maxOrder) + ', x = ' + str(x))
         Log.add('Likelihood ratio test, d_1-d_0 = ' + str(dof_diff))
 
-        # if the p-value is *below* the significance threshold, we reject the null hypothesis
+        # if the p-value is *below* the significance threshold, we reject the null
+        # hypothesis
         p = 1-chi2.cdf(x, dof_diff)
 
         Log.add('Likelihood ratio test, p = ' + str(p))
@@ -568,7 +571,8 @@ class MultiOrderModel:
         """
         if maxOrder is None:
             maxOrder = self.maxOrder
-        assert maxOrder <= self.maxOrder, 'Error: maxOrder cannot be larger than maximum order of multi-order network'
+        assert maxOrder <= self.maxOrder, \
+            'Error: maxOrder cannot be larger than maximum order of multi-order network'
         assert maxOrder > 1, 'Error: maxOrder must be larger than one'
 
         maxAcceptedOrder = 1
