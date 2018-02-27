@@ -134,26 +134,26 @@ def test_betweenness_preference_mle(temporal_network_object):
     t = temporal_network_object
 
     # Extract (time-respecting) paths
-    paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
-    betweenness_pref = pp.path_measures.betweenness_preference(paths, 'e', method='MLE')
+    p = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
+    betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', method='MLE')
     expected = 1.2954618442383219
     assert betweenness_pref == pytest.approx(expected)
 
 
 def test_betweenness_preference_miller(temporal_network_object):
     t = temporal_network_object
-    paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
+    p = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
 
-    betweenness_pref = pp.path_measures.betweenness_preference(paths, 'e', method='Miller')
+    betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', method='Miller')
     expected = 0.99546184423832196
     assert betweenness_pref == pytest.approx(expected)
 
 
 def test_betweenness_preference_normalized(temporal_network_object):
     t = temporal_network_object
-    paths = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
+    p = pp.PathExtraction.TemporalPaths.extract(t, delta=1)
     # test normalize
-    betweenness_pref = pp.path_measures.betweenness_preference(paths, 'e', normalized=True)
+    betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', normalized=True)
     expected_norm = 1
     assert betweenness_pref == pytest.approx(expected_norm)
 

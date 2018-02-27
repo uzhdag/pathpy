@@ -34,7 +34,7 @@ def test_betweenness_centrality(random_paths, norm, k, e_sum, e_var, e_max):
     assert values.var() == pytest.approx(e_var)
 
 
-@pytest.mark.parametrize('k, sub, proj, e_sum, e_var', (
+@pytest.mark.parametrize('k, sub, projection, e_sum, e_var', (
         (2, False, 'all', 2.030946758666, 0.0168478112),
         (1, False, 'scaled', 2.82310329017, 0.00047012207),
         (2, False, 'last', 1.7463870380802424, 0.0077742413305),
@@ -44,10 +44,10 @@ def test_betweenness_centrality(random_paths, norm, k, e_sum, e_var, e_max):
         (2, True, 'last', 1.746387038080242, 0.007774241),
         (2, True, 'first', 1.7461339874793727, 0.0083696967427313),
 ))
-def test_eigen_centrality(random_paths, sub, proj, k, e_sum, e_var):
+def test_eigen_centrality(random_paths, sub, projection, k, e_sum, e_var):
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
-    eigen = higher_order_measures.eigenvector_centrality(hon, include_sub_paths=sub, projection=proj)
+    eigen = higher_order_measures.eigenvector_centrality(hon, projection, sub)
     values = np.array(list(eigen.values()))
     assert values.sum() == pytest.approx(e_sum)
     assert values.var() == pytest.approx(e_var)
