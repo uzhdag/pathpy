@@ -181,7 +181,8 @@ def slow_down_factor(paths, k=2, lanczos_vectors=15, maxiter=1000):
 
     Parameters
     ----------
-    paths
+    paths: Paths
+        the Paths object to compute the slow down factor for
     k: int
         order of the model to consider
     lanczos_vectors: int
@@ -191,8 +192,8 @@ def slow_down_factor(paths, k=2, lanczos_vectors=15, maxiter=1000):
     maxiter: int
         scaling factor for the number of iterations to be used in the approximate
         calculation of eigenvectors and eigenvalues. The number of iterations passed to
-         scipy's underlying eigs function will be n*maxiter where n is the number of
-         rows/columns of the Laplacian matrix.
+        scipy's underlying eigs function will be n*maxiter where n is the number of
+        rows/columns of the Laplacian matrix.
 
     Returns
     -------
