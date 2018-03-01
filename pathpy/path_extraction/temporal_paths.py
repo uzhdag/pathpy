@@ -91,7 +91,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
     # the number of occurrences of p as "real" path
     p = _Paths()
 
-    p.maxSubPathLength = maxSubPathLength
+    p.max_subpath_length = maxSubPathLength
     # a dictionary containing paths that can still be extended
     # by future time-stamped links
     # candidates[t][v] is a set of paths which end at time t in node v

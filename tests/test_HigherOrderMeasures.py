@@ -122,6 +122,7 @@ def test_fiedler_vector_dense(random_paths, k, e_sum, e_var):
     assert np.sum(fv ** 2) == pytest.approx(e_sum)
 
 
+@pytest.mark.xfail
 @pytest.mark.parametrize('k, e_sum', (
         (3, 0.9967398214809227),
         (2, 0.24345712528855065),

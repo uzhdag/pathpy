@@ -52,9 +52,8 @@ def dict_of_dicts_to_matrix(network, max_val=np.inf, agg=None):
     return matrix
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize('null_model', (True, False))
-@pytest.mark.parametrize('k', (3,))
+@pytest.mark.parametrize('k', (3, 2))
 def test_init_k_order_pi(random_paths, k, null_model):
     p = random_paths(90, 0, 10)
     hon = pp.HigherOrderNetwork(p, method='KOrderPi', k=k, null_model=null_model)

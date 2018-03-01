@@ -29,6 +29,7 @@ import pathpy
 from pathpy import HigherOrderNetwork
 from pathpy import Log
 from pathpy import Severity
+from pathpy import Paths
 import pathpy as _pp
 
 
@@ -51,7 +52,7 @@ class MultiOrderModel:
         max_order: int
             the maximum order of the multi-order model
         """
-        assert paths.maxSubPathLength >= max_order, \
+        assert paths.max_subpath_length >= max_order, \
             'Error: Construction of multi-order model with maximum order M ' \
             'requires sub path statistics up to length M'
 

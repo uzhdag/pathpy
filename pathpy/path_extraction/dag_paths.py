@@ -46,7 +46,7 @@ def paths_from_dag(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):
     else:
         # path object which will hold the detected (projected) paths
         p = _Paths()
-        p.maxSubPathLength = maxSubPathLength
+        p.max_subpath_length = maxSubPathLength
         _Log.add('Creating paths from directed acyclic graph', _Severity.INFO)
         n = 0
 

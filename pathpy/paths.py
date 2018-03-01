@@ -21,11 +21,11 @@
 
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
-import numpy as _np
 import collections as _co
 import sys as _sys
 import copy as _copy
 
+import numpy as _np
 from pathpy import Log
 from pathpy.log import Severity
 
@@ -67,7 +67,7 @@ class Paths:
         #  set the maximum sub path length to K. By default, sub paths of any length
         # will be calculated. Note that, independent of the sub path calculation
         # longest path of any length will be considered in the likelihood calculation!
-        self.maxSubPathLength = _sys.maxsize
+        self.max_subpath_length = _sys.maxsize
 
     def summary(self):
         """
@@ -85,13 +85,13 @@ class Paths:
         for k in sorted(self.paths):
             paths_ = self.paths[k]
             values_ = _np.array(list(paths_.values()))
-            v0 = _np.sum(values_[:, 0])
-            v1 = _np.sum(values_[:, 1])
-            total_paths += [v0 + v1]
-            sub_path_sum += [v0]
-            l_path_sum += [v1]
-            average_length += v1 * k
-            if len(paths_) > 0:
+            v_0 = _np.sum(values_[:, 0])
+            v_1 = _np.sum(values_[:, 1])
+            total_paths += [v_0 + v_1]
+            sub_path_sum += [v_0]
+            l_path_sum += [v_1]
+            average_length += v_1 * k
+            if paths_:
                 max_path_length = max(max_path_length, k)
         if _np.sum(l_path_sum) > 0:
             average_length = average_length / _np.sum(l_path_sum)
@@ -166,9 +166,9 @@ class Paths:
         """
         p_sum = Paths()
         p_sum.paths = _copy.deepcopy(self.paths)
-        for l in other.paths:
-            for p in other.paths[l]:
-                p_sum.paths[l][p] += other.paths[l][p]
+        for p_length in other.paths:
+            for p in other.paths[p_length]:
+                p_sum.paths[p_length][p] += other.paths[p_length][p]
         return p_sum
 
     def __iadd__(self, other):
@@ -183,9 +183,9 @@ class Paths:
         None
 
         """
-        for l in other.paths:
-            for p in other.paths[l]:
-                self.paths[l][p] += other.paths[l][p]
+        for p_length in other.paths:
+            for p in other.paths[p_length]:
+                self.paths[p_length][p] += other.paths[p_length][p]
         return self
 
     def __mul__(self, factor):
@@ -201,9 +201,9 @@ class Paths:
 
         """
         p_mult = Paths()
-        for l in self.paths:
-            for p in self.paths[l]:
-                p_mult.paths[l][p] = self.paths[l][p] * factor
+        for p_length in self.paths:
+            for p in self.paths[p_length]:
+                p_mult.paths[p_length][p] = self.paths[p_length][p] * factor
 
         return p_mult
 
@@ -246,14 +246,14 @@ class Paths:
         """
         Log.add('Concatenating paths to sequence ...')
         sequence = []
-        for l in self.paths:
-            for p in self.paths[l]:
+        for p_length in self.paths:
+            for p in self.paths[p_length]:
                 segment = []
                 for s in p:
                     segment.append(s)
                 if stop_char != '':
                     segment.append(stop_char)
-                for f in range(int(self.paths[l][p][1])):
+                for _ in range(int(self.paths[p_length][p][1])):
                     sequence += segment
 
         Log.add('finished')
@@ -274,15 +274,15 @@ class Paths:
         int
             number of unique paths satisfying parameter ``l``
         """
-        L = 0.0
+        num_l = 0.0
         max_length = l
         if consider_longer_paths:
             max_length = max(self.paths) if self.paths else 0
         for j in range(l, max_length + 1):
             for p in self.paths[j]:
                 if self.paths[j][p][1] > 0:
-                    L += 1.0
-        return L
+                    num_l += 1.0
+        return num_l
 
     def __str__(self):
         """
@@ -341,7 +341,7 @@ class Paths:
         p = Paths()
 
         p.separator = separator
-        p.maxSubPathLength = _sys.maxsize
+        p.max_subpath_length = _sys.maxsize
 
         with open(filename, 'r') as f:
             Log.add('Reading edge data ... ')
@@ -421,9 +421,9 @@ class Paths:
 
         p = cls()
 
-        p.maxSubPathLength = max_subpath_length
+        p.max_subpath_length = max_subpath_length
         p.separator = separator
-        maxL = 0
+        max_length = 0
 
         with open(filename, 'r') as f:
             Log.add('Reading ngram data ... ')
@@ -442,28 +442,28 @@ class Paths:
                     frequency = float(fields[len(fields) - 1])
                     if len(path) <= max_ngram_length:
                         p.paths[len(path) - 1][path] += (0, frequency)
-                        maxL = max(maxL, len(path) - 1)
+                        max_length = max(max_length, len(path) - 1)
                     else:  # cut path at max_ngram_length
                         mnl = max_ngram_length
                         p.paths[mnl - 1][path[:mnl]] += (0, frequency)
-                        maxL = max(maxL, max_ngram_length - 1)
+                        max_length = max(max_length, max_ngram_length - 1)
                 else:
-                    for i in range(0, len(fields)):
+                    for field in fields:
                         # Omit empty fields
-                        v = fields[i].strip()
+                        v = field.strip()
                         if v:
                             path += (v,)
                     if len(path) <= max_ngram_length:
                         p.paths[len(path) - 1][path] += (0, 1)
-                        maxL = max(maxL, len(path) - 1)
+                        max_length = max(max_length, len(path) - 1)
                     else:  # cut path at max_ngram_length
                         p.paths[max_ngram_length - 1][path[:max_ngram_length]] += (0, 1)
-                        maxL = max(maxL, max_ngram_length - 1)
+                        max_length = max(max_length, max_ngram_length - 1)
                 line = f.readline()
                 n += 1
         # end of with open()
         Log.add(
-            'finished. Read ' + str(n - 1) + ' paths with maximum length ' + str(maxL))
+            'finished. Read ' + str(n - 1) + ' paths with maximum length ' + str(max_length))
 
         if expand_sub_paths:
             p.expand_subpaths()
@@ -487,14 +487,14 @@ class Paths:
 
         """
         with open(filename, 'w') as f:
-            for l in self.paths:
-                for p in self.paths[l]:
-                    if self.paths[l][p][1] > 0:
+            for p_length in self.paths:
+                for p in self.paths[p_length]:
+                    if self.paths[p_length][p][1] > 0:
                         line = ""
                         for x in p:
                             line += x
                             line += separator
-                        line += str(self.paths[l][p][1])
+                        line += str(self.paths[p_length][p][1])
                         f.write(line + '\n')
         f.close()
 
@@ -505,11 +505,11 @@ class Paths:
         (includes multiple observations for paths with a frequency weight)
         """
 
-        OCount = 0
+        obs_count = 0
         for k in self.paths:
             for p in self.paths[k]:
-                OCount += self.paths[k][p][1]
-        return OCount
+                obs_count += self.paths[k][p][1]
+        return obs_count
 
     def expand_subpaths(self):
         """
@@ -519,7 +519,7 @@ class Paths:
         two will be counted.
 
         This process will consider restrictions to the maximum
-        sub path length defined in self.maxSubPathLength
+        sub path length defined in self.max_subpath_length
         """
 
         # nothing to see here ...
@@ -536,12 +536,12 @@ class Paths:
 
         # Thanks to the use of defaultdict, the following trick will prevent us from
         # repeatedly testing whether l already exists as a key
-        for l in range(max(self.paths)):
-            self.paths[l] = self.paths[l]
+        for p_length in range(max(self.paths)):
+            self.paths[p_length] = self.paths[p_length]
 
         # expand subpaths in paths of any length ...
-        for pathLength in self.paths:
-            for path, value in self.paths[pathLength].items():
+        for path_length in self.paths:
+            for path, value in self.paths[path_length].items():
 
                 # The frequency is given by the number of occurrences as longest
                 # path, which is stored in the second entry of the numpy array
@@ -549,13 +549,13 @@ class Paths:
 
                 # compute maximum length of sub paths to consider
                 # (maximum up to pathLength)
-                maxL = min(self.maxSubPathLength + 1, pathLength)
+                max_length = min(self.max_subpath_length + 1, path_length)
 
-                # Generate all subpaths of length k for k = 0 to k = maxL-1 (inclusive)
-                for k in range(maxL):
+                # Generate all subpaths of length k for k = 0 to k = max_len-1 (inclusive)
+                for k in range(max_length):
                     # Generate subpaths of length k for all start indices s
                     # for s = 0 to s = pathLength-k (inclusive)
-                    for s in range(pathLength - k + 1):
+                    for s in range(path_length - k + 1):
                         # Add frequency as a subpath to *first* entry of occurrence
                         # counter
                         self.paths[k][path[s:s + k + 1]] += (frequency, 0)
@@ -587,9 +587,9 @@ class Paths:
 
         if expand_subpaths:
 
-            maxL = min(self.maxSubPathLength + 1, len(path_str) - 1)
+            max_length = min(self.max_subpath_length + 1, len(path_str) - 1)
 
-            for k in range(0, maxL):
+            for k in range(0, max_length):
                 for s in range(len(path_str) - k):
                     # for all start indices from 0 to n-k
 
@@ -623,23 +623,23 @@ class Paths:
 
         """
         path = tuple(ngram.split(separator))
-        pathLength = len(path) - 1
+        path_length = len(path) - 1
 
         # add the occurrences as *longest* path to the second component of the numpy array
         if frequency is not None:
-            self.paths[pathLength][path] += (0, frequency)
+            self.paths[path_length][path] += (0, frequency)
         else:
-            self.paths[pathLength][path] += (0, 1)
+            self.paths[path_length][path] += (0, 1)
 
         if expand_subpaths:
-            maxL = min(self.maxSubPathLength + 1, len(path) - 1)
+            max_length = min(self.max_subpath_length + 1, len(path) - 1)
             if frequency is not None:
-                for k in range(maxL):
-                    for s in range(pathLength - k + 1):
+                for k in range(max_length):
+                    for s in range(path_length - k + 1):
                         self.paths[k][path[s:s + k + 1]] += (frequency, 0)
             else:
-                for k in range(maxL):
-                    for s in range(pathLength - k + 1):
+                for k in range(max_length):
+                    for s in range(path_length - k + 1):
                         self.paths[k][path[s:s + k + 1]] += (1, 0)
 
     @staticmethod
@@ -661,9 +661,9 @@ class Paths:
 
         contained_paths = []
         current_path = ()
-        for k in range(0, len(p)):
-            if p[k] in node_filter:
-                current_path += (p[k],)
+        for node in p:
+            if node in node_filter:
+                current_path += (node,)
             else:
                 if current_path:
                     contained_paths.append(current_path)
@@ -693,15 +693,15 @@ class Paths:
         Paths
         """
         p = Paths()
-        for l in self.paths:
-            for x in self.paths[l]:
-                if self.paths[l][x][1] > 0:
+        for p_length in self.paths:
+            for x in self.paths[p_length]:
+                if self.paths[p_length][x][1] > 0:
                     # determine all contained subpaths which only pass through
                     # nodes in node_filter
                     contained = Paths.contained_paths(x, node_filter)
                     for s in contained:
                         if min_length <= len(s) - 1 <= max_length:
-                            freq = (0, self.paths[l][x][1])
+                            freq = (0, self.paths[p_length][x][1])
                             p.add_path_tuple(s, expand_subpaths=True, frequency=freq)
         return p
 
@@ -722,18 +722,18 @@ class Paths:
 
         """
         p = Paths()
-        p.maxSubPathLength = self.maxSubPathLength
-        for l in self.paths:
-            for x in self.paths[l]:
-                # if this path ocurred as longest path
-                if self.paths[l][x][1] > 0:
+        p.max_subpath_length = self.max_subpath_length
+        for p_length in self.paths:
+            for x in self.paths[p_length]:
+                # if this path occurred as longest path
+                if self.paths[p_length][x][1] > 0:
                     # construct projected path
-                    newP = ()
+                    new_p = ()
                     for v in x:
-                        newP += (mapping[v],)
+                        new_p += (mapping[v],)
                     # add to new path object and expand sub paths
-                    freq = (0, self.paths[l][x][1])
-                    p.add_path_tuple(newP, expand_subpaths=True, frequency=freq)
+                    freq = (0, self.paths[p_length][x][1])
+                    p.add_path_tuple(new_p, expand_subpaths=True, frequency=freq)
         return p
 
     def distance_matrix(self):
@@ -747,12 +747,12 @@ class Paths:
         # Node: no need to initialize shortest_path_lengths[v][v] = 0
         # since paths of length zero are contained in self.paths
 
-        for l in self.paths:
-            for p in self.paths[l]:
+        for p_length in self.paths:
+            for p in self.paths[p_length]:
                 start = p[0]
                 end = p[-1]
-                if l < shortest_path_lengths[start][end]:
-                    shortest_path_lengths[start][end] = l
+                if p_length < shortest_path_lengths[start][end]:
+                    shortest_path_lengths[start][end] = p_length
 
         Log.add('finished.', Severity.INFO)
 
@@ -763,21 +763,21 @@ class Paths:
         Calculates all observed shortest paths (and subpaths) between
         all pairs of nodes
         """
-        shortest_paths = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
+        shortest_paths = _co.defaultdict(lambda: _co.defaultdict(set))
         shortest_path_lengths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
         Log.add('Calculating shortest paths based on empirical paths ...', Severity.INFO)
 
-        for l in self.paths:
-            for p in self.paths[l]:
+        for p_length in self.paths:
+            for p in self.paths[p_length]:
                 s = p[0]
                 d = p[-1]
                 # we found a path of length l from s to d
-                if l < shortest_path_lengths[s][d]:
-                    shortest_path_lengths[s][d] = l
+                if p_length < shortest_path_lengths[s][d]:
+                    shortest_path_lengths[s][d] = p_length
                     shortest_paths[s][d] = set()
                     shortest_paths[s][d].add(p)
-                elif l == shortest_path_lengths[s][d]:
+                elif p_length == shortest_path_lengths[s][d]:
                     shortest_paths[s][d].add(p)
 
         Log.add('finished.', Severity.INFO)

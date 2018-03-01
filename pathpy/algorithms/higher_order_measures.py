@@ -550,8 +550,8 @@ def algebraic_connectivity(network, lanczos_vectors=15, maxiter=20):
     # NOTE: ncv sets additional auxiliary eigenvectors that are computed
     # NOTE: in order to be more confident to find the one with the largest
     # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
-    w = _sla.eigs(lapl_mat, which="SM", k=2, ncv=lanczos_vectors, return_eigenvectors=False,
-                  maxiter=maxiter)
+    w = _sla.eigs(lapl_mat, which="SM", k=2, ncv=lanczos_vectors,
+                  return_eigenvectors=False, maxiter=maxiter)
     eigen_values_sorted = _np.sort(_np.absolute(w))
 
     _Log.add('finished.', _Severity.INFO)
