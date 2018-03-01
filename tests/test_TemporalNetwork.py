@@ -2,6 +2,7 @@ import pathpy as pp
 import os
 import numpy as np
 import sqlite3
+from pytest import mark
 
 
 def test_read_temporal_file_int(test_data_directory, ):
@@ -115,3 +116,19 @@ def test_from_sqlite_timestamps(test_data_directory, ):
     expected_diffs = [10800, 15060, 264960]
     # TODO: The actual time number depends on local set by the user
     assert time_diffs == expected_diffs
+
+
+def test_write_html(temporal_network_object, tmpdir):
+    file_path = str(tmpdir.mkdir("sub").join("d3_temp.html"))
+    t = temporal_network_object
+    t.write_html(file_path)
+
+
+@mark.latex
+def test_write_tikz(temporal_network_object, tmpdir):
+    file_path = str(tmpdir.mkdir("sub").join("temp.tikz"))
+    print(file_path)
+    t = temporal_network_object
+    t.write_tikz(file_path)
+    exit_code = os.system("pdflatex -interaction nonstopmode  {}".format(file_path))
+    assert exit_code == 0

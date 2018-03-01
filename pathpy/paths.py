@@ -163,11 +163,6 @@ class Paths:
         -------
         Paths
             Default operator +, which returns the sum of two Path objects
-
-        Examples
-        -------
-        >>> p = Paths()
-        >>> p + p
         """
         p_sum = Paths()
         p_sum.paths = _copy.deepcopy(self.paths)
@@ -187,11 +182,6 @@ class Paths:
         -------
         None
 
-        Examples
-        -------
-        >>> p = Paths()
-        >>> p += p  # add once to itself
-        >>> p += p  # add twice to itself
         """
         for l in other.paths:
             for p in other.paths[l]:
@@ -209,11 +199,6 @@ class Paths:
         -------
         a Paths object with multiplied frequencies
 
-        Examples
-        --------
-        >>> p = Paths()
-        >>> new_p = p * 3
-        >>> other_new_p = 3 * p
         """
         p_mult = Paths()
         for l in self.paths:
@@ -237,10 +222,7 @@ class Paths:
         -------
         None
 
-        Examples
-        -------
-        >>> p = Paths()
-        >>> p *= 3
+
         """
         for l in self.paths:
             for p in self.paths[l]:

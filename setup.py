@@ -11,11 +11,11 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ ]
+requirements = ["numpy", "scipy"]
 
-setup_requirements = ['pytest-runner', ]
+setup_requirements = ['pytest-runner']
 
-test_requirements = ['pytest', ]
+test_requirements = ['pytest']
 
 setup(
     author="Ingo Scholtes",
@@ -44,4 +44,5 @@ setup(
     url='https://github.com/IngoScholtes/pathpy',
     version='1.2.1',
     zip_safe=False,
+    data_files=[('.', ['DESCRIPTION.rst', 'README.rst', 'HISTORY.rst'])]
 )

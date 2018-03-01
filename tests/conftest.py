@@ -9,11 +9,15 @@ test_data_dir = os.path.join(test_directory, 'test_data')
 
 def pytest_addoption(parser):
     parser.addoption("--runslow", action="store_true", help="run slow tests")
+    parser.addoption("--latex", action="store_true", help="set `pdflatex` as available")
 
 
 def pytest_runtest_setup(item):
     if 'slow' in item.keywords and not item.config.getvalue("runslow"):
         pytest.skip("need --runslow option to run")
+
+    if 'latex' in item.keywords and not item.config.getvalue("latex"):
+        pytest.skip("need --latex option to run")
 
 
 @pytest.fixture()

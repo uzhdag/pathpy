@@ -706,8 +706,8 @@ class TemporalNetwork:
             'width': width,
             'height': height,
             'div_id': div_id,
-            'ms_per_frame': ms_per_frame,
-            'ts_per_frame': ts_per_frame})
+            'msperframe': ms_per_frame,
+            'tsperframe': ts_per_frame})
 
         return html
 

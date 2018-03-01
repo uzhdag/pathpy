@@ -1,6 +1,6 @@
 import pathpy as pp
 import pytest
-import numpy as np
+
 
 from pathpy import higher_order_measures
 
@@ -11,6 +11,7 @@ from pathpy import higher_order_measures
         (1, 55, 0.046875),
 ))
 def test_closeness_centrality(random_paths, k, e_sum, e_var):
+    import numpy as np
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
     closeness = higher_order_measures.closeness_centrality(hon)
@@ -25,6 +26,7 @@ def test_closeness_centrality(random_paths, k, e_sum, e_var):
         (2, True, 5.68083215, 0.030949114, 1),
 ))
 def test_betweenness_centrality(random_paths, norm, k, e_sum, e_var, e_max):
+    import numpy as np
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
     betweenness = higher_order_measures.betweenness_centrality(hon, normalized=norm)
@@ -45,6 +47,7 @@ def test_betweenness_centrality(random_paths, norm, k, e_sum, e_var, e_max):
         (2, True, 'first', 1.7461339874793727, 0.0083696967427313),
 ))
 def test_eigen_centrality(random_paths, sub, projection, k, e_sum, e_var):
+    import numpy as np
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
     eigen = higher_order_measures.eigenvector_centrality(hon, projection, sub)
@@ -66,6 +69,7 @@ def test_eigen_centrality(random_paths, sub, projection, k, e_sum, e_var):
         (2, True, 'first', 1, 0.0003457969),
 ))
 def test_pagerank_centrality(random_paths, sub, proj, k, e_sum, e_var):
+    import numpy as np
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
     page = higher_order_measures.pagerank(hon, include_sub_paths=sub, projection=proj)
@@ -80,8 +84,52 @@ def test_pagerank_centrality(random_paths, sub, proj, k, e_sum, e_var):
         (2, True, 1),
 ))
 def test_eigen_value_gap(random_paths, k, sub, e_gap):
+    import numpy as np
     p = random_paths(90, 0, 20)
     hon = pp.HigherOrderNetwork(p, k=k)
     np.random.seed(0)
     eigen_gap = higher_order_measures.eigenvalue_gap(hon, include_sub_paths=sub)
     assert eigen_gap < e_gap
+
+
+@pytest.mark.parametrize('k, norm, e_sum, e_var', (
+        (3, True, 1, 0.0036494914419765924),
+        (2, False, 2765.72998141474, 8.661474971012986),
+        (1, True, 1, 0.04948386659908706),
+))
+def test_fiedler_vector_sparse(random_paths, k, norm, e_sum, e_var):
+    import numpy as np
+    from pathpy.algorithms.higher_order_measures import fiedler_vector_sparse
+    p = random_paths(90, 0, 20)
+    hon = pp.HigherOrderNetwork(p, k=k)
+    fv = fiedler_vector_sparse(hon, normalized=norm)
+    assert fv.var() == pytest.approx(e_var, rel=1e-8)
+    assert np.sum(fv ** 2) == pytest.approx(e_sum)
+
+
+@pytest.mark.parametrize('k, e_sum, e_var', (
+        (3, 1, 0.003649586067168485),
+        (2, (1.0000000000000002+0j), 0.0031136096467386416),
+        (1, (-0.0009514819500764382+0.1190367717310192j), 0.049999999999999996),
+))
+def test_fiedler_vector_dense(random_paths, k, e_sum, e_var):
+    import numpy as np
+    from pathpy.algorithms.higher_order_measures import fiedler_vector_dense
+    p = random_paths(90, 0, 20)
+    hon = pp.HigherOrderNetwork(p, k=k)
+    fv = fiedler_vector_dense(hon)
+    assert fv.var() == pytest.approx(e_var, rel=1e-8)
+    assert np.sum(fv ** 2) == pytest.approx(e_sum)
+
+
+@pytest.mark.parametrize('k, e_sum', (
+        (3, 0.9967398214809227),
+        (2, 0.24345712528855065),
+        (1, 0.7143571081268268),
+))
+def test_algebraic_connectivity(random_paths, k, e_sum):
+    from pathpy.algorithms.higher_order_measures import algebraic_connectivity
+    p = random_paths(120, 0, 40)
+    hon = pp.HigherOrderNetwork(p, k=k)
+    ac = algebraic_connectivity(hon, lanczos_vectors=60, maxiter=40)
+    assert ac == pytest.approx(e_sum, rel=1e-7)

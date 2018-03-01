@@ -13,7 +13,7 @@
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Affero General Public License for more details.
+#    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -41,6 +41,8 @@ import scipy as _sp
 from pathpy import Log as _Log
 from pathpy.log import Severity as _Severity
 from pathpy import HigherOrderNetwork
+
+from pathpy.exception import PathpyNotImplemented
 
 
 __all__ = ["rank_centralities", "closeness_centrality", "betweenness_centrality",
@@ -89,8 +91,12 @@ def closeness_centrality(network):
     -------
     dict
     """
-    assert isinstance(network, HigherOrderNetwork), \
-        "network must be an instance of HigherOrderNetwork"
+    if not isinstance(network, HigherOrderNetwork):
+        raise PathpyNotImplemented(
+            "`network` must be an instance of HigherOrderNetwork "
+            "not `{}`".format(type(network))
+        )
+
     dist_first = network.distance_matrix_first_order()
     node_centralities = _co.defaultdict(lambda: 0)
 
@@ -547,5 +553,9 @@ def algebraic_connectivity(network, lanczos_vectors=15, maxiter=20):
     eigen_values_sorted = _np.sort(_np.absolute(w))
 
     _Log.add('finished.', _Severity.INFO)
+
+    # TODO: result is unstable, it looks like it depends on a "warm start"
+    # (i.e. run after other eigen velue calculations) see test_algebraic_connectivity
+    # problems with order k=3
 
     return _np.abs(eigen_values_sorted[1])

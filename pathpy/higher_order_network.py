@@ -381,6 +381,7 @@ class HigherOrderNetwork:
 
         Consider an example path (a,b,c,d) with a separator string '-'
 
+        >>> from pathpy import Paths
         >>> path_tuple = ('a', 'b', 'c', 'd')
         >>> paths = Paths()
         >>> paths.add_path_tuple(path_tuple)
