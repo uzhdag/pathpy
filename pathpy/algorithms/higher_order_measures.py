@@ -47,8 +47,7 @@ from pathpy.exception import PathpyNotImplemented
 
 __all__ = ["rank_centralities", "closeness_centrality", "betweenness_centrality",
            "eigenvector_centrality", "pagerank", "eigenvalue_gap",
-           "fiedler_vector_sparse", "fiedler_vector_dense", "algebraic_connectivity",
-           ]
+           "fiedler_vector_sparse", "fiedler_vector_dense", "algebraic_connectivity"]
 
 
 def rank_centralities(centralities):
@@ -104,10 +103,10 @@ def closeness_centrality(network):
              _Severity.INFO)
 
     # calculate closeness values
-    for v1 in dist_first:
-        for w1 in dist_first[v1]:
-            if v1 != w1 and dist_first[v1][w1] < _np.inf:
-                node_centralities[v1] += 1.0 / dist_first[v1][w1]
+    for v_node in dist_first:
+        for w_node in dist_first[v_node]:
+            if v_node != w_node and dist_first[v_node][w_node] < _np.inf:
+                node_centralities[v_node] += 1.0 / dist_first[v_node][w_node]
 
     # assign centrality zero to nodes not occurring on higher-order shortest paths
     nodes = network.paths.nodes()
@@ -146,40 +145,40 @@ def betweenness_centrality(network, normalized=False):
     shortest_paths = network.shortest_paths()
     node_centralities = _co.defaultdict(lambda: 0)
 
-    shortest_paths_first_order = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
+    shortest_paths_first_order = _co.defaultdict(lambda: _co.defaultdict(set))
 
     _Log.add('Calculating betweenness centralities (k = %s) ...' % network.order,
              _Severity.INFO)
 
-    for sk in shortest_paths:
-        for dk in shortest_paths:
-            s1 = network.higher_order_node_to_path(sk)[0]
-            d1 = network.higher_order_node_to_path(dk)[-1]
+    for path_1_ord_k in shortest_paths:
+        for path_2_ord_k in shortest_paths:
+            source_k1 = network.higher_order_node_to_path(path_1_ord_k)[0]
+            dest_k1 = network.higher_order_node_to_path(path_2_ord_k)[-1]
 
             # we consider a path in a k-th order network
             # connecting first-order node s1 to d1
-            for pk in shortest_paths[sk][dk]:
+            for path_ord_k in shortest_paths[path_1_ord_k][path_2_ord_k]:
                 # convert k-th order path to first-order path and add
-                shortest_paths_first_order[s1][d1].add(
-                    network.higher_order_path_to_first_order(pk))
+                shortest_paths_first_order[source_k1][dest_k1].add(
+                    network.higher_order_path_to_first_order(path_ord_k))
 
-    for s1 in shortest_paths_first_order:
-        for d1 in shortest_paths_first_order[s1]:
-            for p1 in shortest_paths_first_order[s1][d1]:
+    for source_k1 in shortest_paths_first_order:
+        for dest_k1 in shortest_paths_first_order[source_k1]:
+            for path_k1 in shortest_paths_first_order[source_k1][dest_k1]:
                 # increase betweenness centrality of all intermediary nodes
                 # on path from s1 to d1
-                for v in p1[1:-1]:
-                    if s1 != v != d1:
+                for v in path_k1[1:-1]:
+                    if source_k1 != v != dest_k1:
                         # print('node ' + x + ': ' + str(1.0 / len(shortest_paths[vk][
                         # wk])))
                         node_centralities[v] += 1.0 / (len(
-                            shortest_paths_first_order[s1][d1]) + network.order - 1)
+                            shortest_paths_first_order[source_k1][dest_k1]) + network.order - 1)
                         # else:
                         #    node_centralities[v] += 1.0
     if normalized:
-        m = max(node_centralities.values())
+        max_centr = max(node_centralities.values())
         for v in node_centralities:
-            node_centralities[v] /= m
+            node_centralities[v] /= max_centr
 
     # assign centrality zero to nodes not occurring on higher-order shortest paths
     nodes = network.paths.nodes()
@@ -220,11 +219,11 @@ def eigenvector_centrality(network, projection='scaled', include_sub_paths=True)
     """
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
-    A = network.adjacency_matrix(include_subpaths=include_sub_paths, weighted=False,
-                                 transposed=True)
+    adj_mat = network.adjacency_matrix(include_subpaths=include_sub_paths,
+                                       weighted=False, transposed=True)
 
     # calculate leading eigenvector of A
-    w, v = _sla.eigs(A, k=1, which="LM", ncv=13)
+    _, v = _sla.eigs(adj_mat, k=1, which="LM", ncv=13)
 
     v = v.reshape(v.size, )
 
@@ -306,18 +305,18 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
     _Log.add('Calculating PageRank in ' + str(network.order) + '-th order network...',
              _Severity.INFO)
 
-    higher_order_PR = _co.defaultdict(lambda: 0)
+    higher_order_pr = _co.defaultdict(lambda: 0)
 
-    n = float(len(network.nodes))
+    n_nodes = float(len(network.nodes))
 
-    assert n > 0, "Number of nodes is zero"
+    assert n_nodes > 0, "Number of nodes is zero"
 
     # entries A[s,t] give directed link s -> t
-    A = network.adjacency_matrix(include_subpaths=include_sub_paths, weighted=weighted,
-                                 transposed=False)
+    adj_mat = network.adjacency_matrix(include_subpaths=include_sub_paths,
+                                       weighted=weighted, transposed=False)
 
     # sum of outgoing node degrees
-    row_sums = _sp.array(A.sum(axis=1)).flatten()
+    row_sums = _sp.array(adj_mat.sum(axis=1)).flatten()
 
     # replace non-zero entries x by 1/x
     row_sums[row_sums != 0] = 1.0 / row_sums[row_sums != 0]
@@ -326,69 +325,71 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
     d = _sp.where(row_sums == 0)[0]
 
     # create sparse matrix with row_sums as diagonal elements
-    Q = _sparse.spdiags(row_sums.T, 0, A.shape[0], A.shape[1], format='csr')
+    q_mat = _sparse.spdiags(row_sums.T, 0, adj_mat.shape[0], adj_mat.shape[1],
+                            format='csr')
 
     # with this, we have divided elements in non-zero rows in A by 1 over the row sum
-    Q = Q * A
+    q_mat = q_mat * adj_mat
 
     # vector with n entries 1/n
-    p = _sp.array([1.0 / n] * int(n))
+    inv_n_nodes = _sp.array([1.0 / n_nodes] * int(n_nodes))
 
-    pr = p
+    p_rank = inv_n_nodes
 
     # Power iteration
-    for i in range(max_iter):
-        last = pr
+    for _ in range(max_iter):
+        last = p_rank
 
         # sum(pr[d]) is the sum of PageRanks for nodes with zero out-degree
         # sum(pr[d]) * p yields a vector with length n
-        pr = alpha * (pr * Q + sum(pr[d]) * p) + (1 - alpha) * p
+        p_rank = (alpha * (p_rank * q_mat + sum(p_rank[d]) * inv_n_nodes) +
+                  (1 - alpha) * inv_n_nodes)
 
-        if _sp.absolute(pr - last).sum() < n * tol:
-            higher_order_PR = dict(zip(network.nodes, map(float, pr)))
+        if _sp.absolute(p_rank - last).sum() < n_nodes * tol:
+            higher_order_pr = dict(zip(network.nodes, map(float, p_rank)))
             break
 
     if network.order == 1:
-        return higher_order_PR
+        return higher_order_pr
 
     # project PageRank of higher-order nodes to first-order network
-    first_order_PR = _co.defaultdict(lambda: 0.0)
+    first_order_pr = _co.defaultdict(lambda: 0.0)
 
     # sum PageRank values based on higher-order nodes
     # and normalize the result
     for v in network.nodes:
         # turns node a-b-c in path tuple (a,b,c)
-        p = network.higher_order_node_to_path(v)
+        inv_n_nodes = network.higher_order_node_to_path(v)
         if projection == 'all':
             # assign PR of higher-order node to all first-order nodes
-            for x in p:
-                first_order_PR[x] += higher_order_PR[v] / len(p)
+            for x in inv_n_nodes:
+                first_order_pr[x] += higher_order_pr[v] / len(inv_n_nodes)
         elif projection == 'scaled':
-            for x in p:
+            for x in inv_n_nodes:
                 # each node on e.g. a 4-th-order path a-b-c-d receives one fourth of the
                 # PageRank value, to ensure that the resulting first-order PageRank sums
                 # to one
-                first_order_PR[x] += higher_order_PR[v] / float(len(p))
+                first_order_pr[x] += higher_order_pr[v] / float(len(inv_n_nodes))
         elif projection == 'last':
             # assign PR of higher-order node to last first-order node
-            first_order_PR[p[-1]] += higher_order_PR[v]
+            first_order_pr[inv_n_nodes[-1]] += higher_order_pr[v]
         elif projection == 'first':
             # assign PR of higher-order node to last first-order node
-            first_order_PR[p[0]] += higher_order_PR[v]
+            first_order_pr[inv_n_nodes[0]] += higher_order_pr[v]
 
     # for projection method 'scaled', the values sum to one anyway
     if projection != 'scaled':
-        for v in first_order_PR:
-            first_order_PR[v] /= sum(first_order_PR.values())
+        for v in first_order_pr:
+            first_order_pr[v] /= sum(first_order_pr.values())
 
     # assign centrality zero to nodes not occurring in higher-order PR
     nodes = network.paths.nodes()
     for v in nodes:
-        first_order_PR[v] += 0
+        first_order_pr[v] += 0
 
     _Log.add('finished.', _Severity.INFO)
 
-    return first_order_PR
+    return first_order_pr
 
 
 def eigenvalue_gap(network, include_sub_paths=True, lanczos_vectors=15, maxiter=20):
@@ -422,15 +423,15 @@ def eigenvalue_gap(network, include_sub_paths=True, lanczos_vectors=15, maxiter=
     _Log.add('Calculating eigenvalue gap ... ', _Severity.INFO)
 
     # Build transition matrices
-    T = network.transition_matrix(include_sub_paths)
+    trans_mat = network.transition_matrix(include_sub_paths)
 
     # Compute the two largest eigenvalues
     # NOTE: ncv sets additional auxiliary eigenvectors that are computed
     # NOTE: in order to be more confident to actually find the one with the largest
     # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
-    w2 = _sla.eigs(T, which="LM", k=2, ncv=lanczos_vectors, return_eigenvectors=False,
-                   maxiter=maxiter)
-    eigen_values2_sorted = _np.sort(-_np.absolute(w2))
+    eig_vals = _sla.eigs(trans_mat, which="LM", k=2, ncv=lanczos_vectors,
+                         return_eigenvectors=False, maxiter=maxiter)
+    eigen_values2_sorted = _np.sort(-_np.absolute(eig_vals))
 
     _Log.add('finished.', _Severity.INFO)
 
@@ -470,29 +471,30 @@ def fiedler_vector_sparse(network, normalized=True, lanczos_vectors=15, maxiter=
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
     # NOTE: The transposed matrix is needed to get the "left" eigenvectors
-    L = network.laplacian_matrix()
+    lapl_mat = network.laplacian_matrix()
 
     # NOTE: ncv sets additional auxiliary eigenvectors that are computed
     # NOTE: in order to be more confident to find the one with the largest
     # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
-    maxiter = maxiter * L.get_shape()[0]
-    w = _sla.eigs(L, k=2, which="SM", ncv=lanczos_vectors, return_eigenvectors=False,
-                  maxiter=maxiter)
+    maxiter = maxiter * lapl_mat.get_shape()[0]
+    w = _sla.eigs(lapl_mat, k=2, which="SM", ncv=lanczos_vectors,
+                  return_eigenvectors=False, maxiter=maxiter)
 
     # compute a sparse LU decomposition and solve for the eigenvector
     # corresponding to the second largest eigenvalue
-    n = L.get_shape()[0]
-    b = _np.ones(n)
+    lapl_n = lapl_mat.get_shape()[0]
+    fiedler_v = _np.ones(lapl_n)
     eigen_value = _np.sort(_np.abs(w))[1]
-    A = (L[1:n, :].tocsc()[:, 1:n] - _sparse.identity(n - 1).multiply(eigen_value))
-    b[1:n] = A[0, :].toarray()
+    mat = (lapl_mat[1:lapl_n, :].tocsc()[:, 1:lapl_n] -
+           _sparse.identity(lapl_n - 1).multiply(eigen_value))
+    fiedler_v[1:lapl_n] = mat[0, :].toarray()
 
-    lu = _sla.splu(A)
-    b[1:n] = lu.solve(b[1:n])
+    lu_decom = _sla.splu(mat)
+    fiedler_v[1:lapl_n] = lu_decom.solve(fiedler_v[1:lapl_n])
 
     if normalized:
-        b /= _np.sqrt(_np.inner(b, b))
-    return b
+        fiedler_v /= _np.sqrt(_np.inner(fiedler_v, fiedler_v))
+    return fiedler_v
 
 
 def fiedler_vector_dense(network):
@@ -511,10 +513,10 @@ def fiedler_vector_dense(network):
         "network must be an instance of HigherOrderNetwork"
     # NOTE: The Laplacian is transposed for the sparse case to get the left
     # NOTE: eigenvalue.
-    L = network.laplacian_matrix()
+    lapl_mat = network.laplacian_matrix()
     # convert to dense matrix and transpose again to have the un-transposed
     # laplacian again.
-    laplacian_transposed = L.todense().transpose()
+    laplacian_transposed = lapl_mat.todense().transpose()
     w, v = _la.eig(laplacian_transposed, right=False, left=True)
 
     return v[:, _np.argsort(_np.absolute(w))][:, 1]
@@ -544,11 +546,11 @@ def algebraic_connectivity(network, lanczos_vectors=15, maxiter=20):
         "network must be an instance of HigherOrderNetwork"
     _Log.add('Calculating algebraic connectivity ... ', _Severity.INFO)
 
-    L = network.laplacian_matrix()
+    lapl_mat = network.laplacian_matrix()
     # NOTE: ncv sets additional auxiliary eigenvectors that are computed
     # NOTE: in order to be more confident to find the one with the largest
     # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
-    w = _sla.eigs(L, which="SM", k=2, ncv=lanczos_vectors, return_eigenvectors=False,
+    w = _sla.eigs(lapl_mat, which="SM", k=2, ncv=lanczos_vectors, return_eigenvectors=False,
                   maxiter=maxiter)
     eigen_values_sorted = _np.sort(_np.absolute(w))
 

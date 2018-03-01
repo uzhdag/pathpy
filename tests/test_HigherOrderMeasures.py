@@ -99,10 +99,10 @@ def test_eigen_value_gap(random_paths, k, sub, e_gap):
 ))
 def test_fiedler_vector_sparse(random_paths, k, norm, e_sum, e_var):
     import numpy as np
-    from pathpy.algorithms.higher_order_measures import fiedler_vector_sparse
+    import pathpy
     p = random_paths(90, 0, 20)
     hon = pp.HigherOrderNetwork(p, k=k)
-    fv = fiedler_vector_sparse(hon, normalized=norm)
+    fv = pathpy.higher_order_measures.fiedler_vector_sparse(hon, normalized=norm)
     assert fv.var() == pytest.approx(e_var, rel=1e-8)
     assert np.sum(fv ** 2) == pytest.approx(e_sum)
 
@@ -114,10 +114,10 @@ def test_fiedler_vector_sparse(random_paths, k, norm, e_sum, e_var):
 ))
 def test_fiedler_vector_dense(random_paths, k, e_sum, e_var):
     import numpy as np
-    from pathpy.algorithms.higher_order_measures import fiedler_vector_dense
+    import pathpy
     p = random_paths(90, 0, 20)
     hon = pp.HigherOrderNetwork(p, k=k)
-    fv = fiedler_vector_dense(hon)
+    fv = pathpy.higher_order_measures.fiedler_vector_dense(hon)
     assert fv.var() == pytest.approx(e_var, rel=1e-8)
     assert np.sum(fv ** 2) == pytest.approx(e_sum)
 
@@ -128,8 +128,8 @@ def test_fiedler_vector_dense(random_paths, k, e_sum, e_var):
         (1, 0.7143571081268268),
 ))
 def test_algebraic_connectivity(random_paths, k, e_sum):
-    from pathpy.algorithms.higher_order_measures import algebraic_connectivity
+    import pathpy
     p = random_paths(120, 0, 40)
     hon = pp.HigherOrderNetwork(p, k=k)
-    ac = algebraic_connectivity(hon, lanczos_vectors=60, maxiter=40)
+    ac = pathpy.higher_order_measures.algebraic_connectivity(hon, lanczos_vectors=60, maxiter=40)
     assert ac == pytest.approx(e_sum, rel=1e-7)

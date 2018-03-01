@@ -125,10 +125,20 @@ def test_write_html(temporal_network_object, tmpdir):
 
 
 @mark.latex
-def test_write_tikz(temporal_network_object, tmpdir):
-    file_path = str(tmpdir.mkdir("sub").join("temp.tikz"))
+@mark.parametrize('is_dag', (False, True))
+@mark.parametrize('split_dir', (False, True))
+def test_write_tikz(temporal_network_object, tmpdir, is_dag, split_dir):
+    dir_path = tmpdir
+    file_path = str(dir_path.join("temp.tikz"))
     print(file_path)
     t = temporal_network_object
-    t.write_tikz(file_path)
-    exit_code = os.system("pdflatex -interaction nonstopmode  {}".format(file_path))
+    t.write_tikz(file_path, dag=is_dag, split_directions=split_dir)
+
+    cmd = "cd {}; pdflatex " \
+          " -interaction nonstopmode {} > /dev/null".format(str(dir_path), file_path)
+    exit_code = os.system(cmd)
+    print(dir_path)
     assert exit_code == 0
+
+
+

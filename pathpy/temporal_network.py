@@ -226,7 +226,8 @@ class TemporalNetwork:
                 "Detected invalid header columns: %s" % header
 
             if time_ix < 0:  # pragma: no cover
-                Log.add('No time stamps found in data, assuming consecutive links', Severity.WARNING)
+                Log.add('No time stamps found in data, assuming consecutive links',
+                        Severity.WARNING)
 
             if not directed:
                 Log.add('Reading undirected time-stamped links ...')
@@ -282,7 +283,8 @@ class TemporalNetwork:
         -------
 
         """
-        Log.add('Writing {0} time-stamped edges to file {1}'.format(self.ecount(), filename), Severity.INFO)
+        msg = 'Writing {0} time-stamped edges to file {1}'.format(self.ecount(), filename)
+        Log.add(msg, Severity.INFO)
         with open(filename, 'w+') as f:
             f.write('source' + sep + 'target' + sep + 'time' + '\n')
             for time in self.ordered_times:
@@ -418,20 +420,26 @@ class TemporalNetwork:
 
         summary = ''
 
-        summary += 'Nodes:\t\t\t' +  str(self.vcount()) + '\n'
+        summary += 'Nodes:\t\t\t' + str(self.vcount()) + '\n'
         summary += 'Time-stamped links:\t' + str(self.ecount()) + '\n'
         if self.vcount() > 0:
             summary += 'Links/Nodes:\t\t' + str(self.ecount()/self.vcount()) + '\n'
         else:
             summary += 'Links/Nodes:\t\tN/A\n'
         if len(self.ordered_times) > 1:
-            summary += 'Observation period:\t[' + str(min(self.ordered_times)) + ', ' + str(max(self.ordered_times)) + ']\n'
-            summary += 'Observation length:\t' + str(max(self.ordered_times) - min(self.ordered_times)) + '\n'
-            summary += 'Time stamps:\t\t' + str(len(self.ordered_times)) + '\n'
+            min_o = min(self.ordered_times)
+            max_o = max(self.ordered_times)
+            obs_len = max_o - min_o
+            n_stamps = len(self.ordered_times)
+            summary += 'Observation period:\t[{}, {}]\n'.format(min_o, max_o)
+            summary += 'Observation length:\t {} \n'.format(obs_len)
+            summary += 'Time stamps:\t\t {} \n'.format(n_stamps)
 
             d = self.inter_event_times()
-            summary += 'Avg. inter-event dt:\t' + str(_np.mean(d)) + '\n'
-            summary += 'Min/Max inter-event dt:\t' + str(min(d)) + '/' + str(max(d)) + '\n'
+            mean_d = _np.mean(d)
+
+            summary += 'Avg. inter-event dt:\t {}\n'.format(mean_d)
+            summary += 'Min/Max inter-event dt:\t {}/{}'.format(min(d), max(d))
 
         return summary
 
@@ -491,7 +499,7 @@ class TemporalNetwork:
 
             if l == 0:
                 l = len(edges)
-            if with_replacement: # sample l edges with replacement
+            if with_replacement:  # sample l edges with replacement
                 for i in range(l):
                     # Pick random link
                     edge = edges[_np.random.randint(0, len(edges))]
@@ -514,7 +522,10 @@ class TemporalNetwork:
                     if maintain_undirected and (edge[1], edge[0], edge[2]) in edges:
 
                         # check whether one of the time-stamped edges already exists
-                        if (edge[0], edge[1], time) not in tedges and (edge[1], edge[0], time) not in tedges:
+                        if (
+                                (edge[0], edge[1], time) not in tedges and
+                                (edge[1], edge[0], time) not in tedges
+                        ):
                             tedges.append((edge[0], edge[1], time))
                             tedges.append((edge[1], edge[0], time))
                             edges.remove((edge[1], edge[0], edge[2]))
@@ -573,61 +584,79 @@ class TemporalNetwork:
         """
         import os as _os
 
-        output = []
-        output.append('\\documentclass{article}\n')
-        output.append('\\usepackage{tikz}\n')
-        output.append('\\usepackage{verbatim}\n')
-        output.append('\\usepackage[active,tightpage]{preview}\n')
-        output.append('\\PreviewEnvironment{tikzpicture}\n')
-        output.append('\\setlength\\PreviewBorder{5pt}%\n')
-        output.append('\\usetikzlibrary{arrows}\n')
-        output.append('\\usetikzlibrary{positioning}\n')
-        output.append('\\renewcommand{\\familydefault}{\\sfdefault}\n')
-        output.append('\\begin{document}\n')
-        output.append('\\begin{center}\n')
-        output.append('\\newcounter{a}\n')
-        output.append("\\begin{tikzpicture}[->,>=stealth',auto,scale=1, every node/.style={scale=1}]\n")
-        output.append("\\tikzstyle{node} = [fill=lightgray,text=black,circle]\n")
-        output.append("\\tikzstyle{v} = [fill=lightgray,draw=black,text=white,circle,minimum size=0.5cm]\n")
-        output.append("\\tikzstyle{dst} = [fill=lightgray,text=black,circle]\n")
-        output.append("\\tikzstyle{lbl} = [text=black,circle]\n")
+        output = [
+            '\\documentclass{article}',
+            '\\usepackage{tikz}',
+            '\\usepackage{verbatim}',
+            '\\usepackage[active,tightpage]{preview}',
+            '\\PreviewEnvironment{tikzpicture}',
+            '\\setlength\\PreviewBorder{5pt}%',
+            '\\usetikzlibrary{arrows}',
+            '\\usetikzlibrary{positioning}',
+            '\\renewcommand{\\familydefault}{\\sfdefault}',
+            '\\begin{document}',
+            '\\begin{center}',
+            '\\newcounter{a}',
+            "\\begin{tikzpicture}[->,>=stealth',auto,"
+            "scale=1, every node/.style={scale=1}]",
+            "\\tikzstyle{node} = [fill=lightgray,text=black,circle]",
+            "\\tikzstyle{v} = [fill=lightgray,draw=black,"
+            "text=white,circle,minimum size=0.5cm]",
+            "\\tikzstyle{dst} = [fill=lightgray,text=black,circle]",
+            "\\tikzstyle{lbl} = [text=black,circle]"]
 
         last = ''
 
         for n in _np.sort(self.nodes):
             if last == '':
-                output.append("\\node[lbl]                     (" + n + "-0)   {\\bf \\Huge " + n + "};\n")
+                node = r"\node[lbl]  ({n}-0) {{\bf \Huge {n} }};".format(n=n)
             else:
-                output.append("\\node[lbl,right=0.4cm of "+last+"-0] (" + n + "-0)   {\\bf \\Huge " + n + "};\n")
+                node_fmt = r"\node[lbl, right=0.4cm of {last}-0] ({n}-0) " \
+                           r"{{\bf \Huge {n} }};"
+                node = node_fmt.format(last=last, n=n)
+
+            output.append(node)
             last = n
 
         output.append("\\setcounter{a}{0}\n")
+        min_t = min(self.ordered_times)
+        max_t = max(self.ordered_times)
         if dag:
-            output.append("\\foreach \\number in {"+ str(min(self.ordered_times))+ ",...," + str(max(self.ordered_times)+1) + "}{\n")
+            dag_num = r'\foreach \number in {{ {min_t}, ..., {max_t} }} {{'
+            output.append(dag_num.format(min_t=min_t, max_t=max_t+1))
         else:
-            output.append("\\foreach \\number in {"+ str(min(self.ordered_times))+ ",...," + str(max(self.ordered_times)) + "}{\n")
-        output.append("\\setcounter{a}{\\number}\n")
-        output.append("\\addtocounter{a}{-1}\n")
-        output.append("\\pgfmathparse{\\thea}\n")
+            dag_num = r'\foreach \number in {{ {min_t}, ..., {max_t} }} {{'
+            output.append(dag_num.format(min_t=min_t, max_t=max_t))
+        output.append("\\setcounter{a}{\\number}")
+        output.append("\\addtocounter{a}{-1}")
+        output.append("\\pgfmathparse{\\thea}")
 
-        for n in  _np.sort(self.nodes):
-            output.append("\\node[v,below=" + layer_dist + " of " + n + "-\\pgfmathresult]     (" + n + "-\\number) {};\n")
-        output.append("\\node[lbl,left=0.4cm of " + _np.sort(self.nodes)[0] + "-\\number]    (col-\\pgfmathresult) {\\selectfont{\\bf \\Huge \\number}};\n")
-        output.append("}\n")
-        output.append("\\path[->,line width=2pt]\n")
-        i = 1
+        for n in _np.sort(self.nodes):
+            layer_fm = r"\node[v,below={layer} of {n}-\pgfmathresult] ({n}-\number) {{}};"
+            output.append(layer_fm.format(layer=layer_dist, n=n))
+
+        first_node = _np.sort(self.nodes)[0]
+        fmt = r'\node[lbl,left=0.4cm of {f_node}-\number] (col-\pgfmathresult) ' \
+              r'{{ \selectfont {{ \bf \Huge \number}} }};'
+
+        output.append(fmt.format(f_node=first_node))
+        output.append(r"}")
+        output.append(r"\path[->,line width=2pt]")
         # draw only directed edges
         for ts in self.ordered_times:
             for edge in self.time[ts]:
                 if dag:
-                    output.append("(" + edge[0] + "-" + str(ts) + ") edge (" + edge[1] + "-" + str(ts + 1) + ")\n")
+                    edge_str = r'({}-{}) edge ({}-{})'.format(edge[0], ts, edge[1], ts+1)
+                    output.append(edge_str)
                 else:
                     if (edge[1], edge[0], ts) not in self.time[ts]:
                         bend_direction = 'right'
                         if not split_directions and edge[0] < edge[1]:
                             bend_direction = 'left'
-                        output.append("(" + edge[0] + "-" + str(ts) + ") edge[bend " + bend_direction + "=" + str(angle) + "] (" + edge[1] + "-" + str(ts) + ")\n")
-                i += 1
+                        edge_fmt = r'({}-{}) edge[bend {} = {}] ({}-{})'
+                        edge_str = edge_fmt.format(edge[0], ts, bend_direction, angle,
+                                                   edge[1], ts)
+                        output.append(edge_str)
         output.append(";\n")
 
         # separately draw undirected edges if we don't output a DAG
@@ -636,16 +665,18 @@ class TemporalNetwork:
             for ts in self.ordered_times:
                 for edge in self.time[ts]:
                     if (edge[1], edge[0], ts) in self.time[ts]:
-                        # admittedly, this is an ugly trick: I avoid keeping state on which of the directed edges
-                        # has been drawn already as an undirected edge, by simply drawing them twice in the same way :-)
+                        # admittedly, this is an ugly trick: I avoid keeping state on
+                        # which of the directed edges has been drawn already as an
+                        # undirected edge, by simply drawing them twice in the same way
+                        #  :-)
                         s = max(edge[0], edge[1])
                         t = min(edge[0], edge[1])
-                        output.append("(" + s + "-" + str(ts) + ") edge[bend right=" + str(angle) + "] (" + t + "-" + str(ts) + ")\n")
+                        edge = "({s}-{ts}) edge[bend right={angle}] ({t}={ts})\n"
+                        output.append(edge.format(s=s, ts=ts, angle=angle, t=t))
             output.append(";\n")
-        output.append(
-            """\\end{tikzpicture}
-            \\end{center}
-            \\end{document}""")
+        output.append("\\end{tikzpicture} \n"
+                      "\\end{center} \n"
+                      "\\end{document}")
 
         # create directory if necessary to avoid IO errors
         directory = _os.path.dirname(filename)
@@ -654,7 +685,7 @@ class TemporalNetwork:
                 _os.makedirs(directory)
 
         with open(filename, "w") as tex_file:
-            tex_file.write(''.join(output))
+            tex_file.writelines('\n'.join(output))
 
     def _to_html(self, width=600, height=600, ms_per_frame=100, ts_per_frame=0,
                  require=True):
@@ -684,19 +715,24 @@ class TemporalNetwork:
             if new_v[0] == '_':
                 new_v = "n_" + v
             if '-' in new_v:
-                new_v = new_v.replace('-','_')
+                new_v = new_v.replace('-', '_')
             return new_v
 
         network_data = {
-            'nodes' : [ { 'id': fix_node_name(v), 'group' : 1 } for v in self.nodes ],
-            'links' : [ { 'source': fix_node_name(s), 'target': fix_node_name(v), 'value': 1, 'time': t} for s, v, t in self.tedges ]
+            'nodes': [{'id': fix_node_name(v), 'group': 1} for v in self.nodes],
+            'links': [{'source': fix_node_name(s),
+                       'target': fix_node_name(v),
+                       'value': 1,
+                       'time': t} for s, v, t in self.tedges
+                      ]
         }
 
         template_file = 'tempnet_require.html'
         if not require:
             template_file = 'tempnet.html'
 
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js', template_file)) as f:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(module_dir, '..', 'js', template_file)) as f:
             html_str = f.read()
 
         html_template = Template(html_str)
