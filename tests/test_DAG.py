@@ -15,14 +15,14 @@ def test_dag_init(edge_list):
 def test_dag_acyclic(dag_object):
     dag = dag_object
     dag.topsort()
-    assert dag.isAcyclic is True
+    assert dag.is_acyclic is True
 
     # Add cycle to the graph
     dag.add_edge('b', 'c')
     dag.topsort()
     assert (dag.edge_classes[('b', 'c')] == 'back' or
             dag.edge_classes[('c', 'b')] == 'back')
-    assert dag.isAcyclic is False
+    assert dag.is_acyclic is False
 
     dag.make_acyclic()
     assert ('b', 'c') not in dag.edges or ('c', 'b') not in dag.edges

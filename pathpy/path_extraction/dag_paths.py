@@ -27,20 +27,29 @@ import sys as _sys
 from pathpy import Paths as _Paths
 from pathpy import Log as _Log
 from pathpy.log import Severity as _Severity
+from pathpy import DAG
 
 
 def paths_from_dag(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):
-    """
-    Extracts pathway statistics from a directed acyclic graph.
+    """    Extracts pathway statistics from a directed acyclic graph.
     For this, all paths between all roots (zero incoming links)
     and all leafs (zero outgoing link) will be constructed.
-    """
 
+    Parameters
+    ----------
+    dag: DAG
+    node_mapping
+    maxSubPathLength
+
+    Returns
+    -------
+
+    """
     # Try to topologically sort the graph if not already sorted
-    if dag.isAcyclic is None:
+    if dag.is_acyclic is None:
         dag.topsort()
     # issue error if graph contains cycles
-    if dag.isAcyclic is False:
+    if dag.is_acyclic is False:
         _Log.add('Cannot extract statistics from a cyclic graph', _Severity.ERROR)
         raise ValueError('Cannot extract path statistics from a cyclic graph')
     else:

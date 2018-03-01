@@ -14,6 +14,9 @@ from .markov_sequence import MarkovSequence
 from .dag import DAG
 from .algorithms import higher_order_measures
 from .algorithms import path_measures
+from .path_extraction import paths_from_dag
+from .path_extraction import paths_from_origin_destination
+from .path_extraction import paths_from_temporal_network
 
 from .exception import PathpyNotImplemented, PathpyException, PathpyError
 

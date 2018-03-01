@@ -43,7 +43,7 @@ class DAG(object):
         self.edges = set()
 
         # Whether or not this graph is acyclic. None indicates that it is unknown
-        self.isAcyclic = None
+        self.is_acyclic = None
 
         # list of topologically sorted nodes
         self.sorting = []
@@ -55,10 +55,10 @@ class DAG(object):
         self.leafs = set()
 
         # The dictionary of successors of each node
-        self.successors = _co.defaultdict(lambda: set())
+        self.successors = _co.defaultdict(set)
 
         # The dictionary of predecessors of each node
-        self.predecessors = _co.defaultdict(lambda: set())
+        self.predecessors = _co.defaultdict(set)
         self_loops = 0
         redundant_edges = 0
         if edges is not None:
@@ -96,11 +96,11 @@ class DAG(object):
         temp_paths[v] = [(v,)]
 
         # set of unprocessed nodes
-        Q = {v}
+        queue = {v}
 
-        while Q:
+        while queue:
             # take one unprocessed node
-            x = Q.pop()
+            x = queue.pop()
 
             # successors of x expand all temporary
             # paths, currently ending in x
@@ -108,7 +108,7 @@ class DAG(object):
                 for w in self.successors[x]:
                     for p in temp_paths[x]:
                         temp_paths[w].append(p + (w,))
-                    Q.add(w)
+                    queue.add(w)
                 del temp_paths[x]
 
         return temp_paths
@@ -163,7 +163,7 @@ class DAG(object):
                 self.dfs_visit(w, v)
             elif w not in self.finish_time:
                 self.edge_classes[(v, w)] = 'back'
-                self.isAcyclic = False
+                self.is_acyclic = False
             elif self.start_time[v] < self.start_time[w]:
                 self.edge_classes[(v, w)] = 'forward'
             else:
@@ -186,7 +186,7 @@ class DAG(object):
         self.finish_time = {}
         self.edge_classes = {}
         self.top_sort_count = 0
-        self.isAcyclic = True
+        self.is_acyclic = True
         for v in self.nodes:
             if v not in self.parent:
                 self.dfs_visit(v)
@@ -196,10 +196,10 @@ class DAG(object):
         """Removes all back-links from the graph to make it acyclic, then performs another
         topological sorting of the DAG
         """
-        if self.isAcyclic is None:
+        if self.is_acyclic is None:
             self.topsort()
         removed_links = 0
-        if not self.isAcyclic:
+        if not self.is_acyclic:
             # Remove all back links
             for e in list(self.edge_classes):
                 if self.edge_classes[e] == 'back':
@@ -209,7 +209,7 @@ class DAG(object):
                     self.predecessors[e[1]].remove(e[0])
                     del self.edge_classes[e]
             self.topsort()
-            assert self.isAcyclic, "Error: make_acyclic did not generate acyclic graph!"
+            assert self.is_acyclic, "Error: make_acyclic did not generate acyclic graph!"
             Log.add('Removed ' + str(removed_links) +
                     ' back links to make graph acyclic', Severity.INFO)
 
@@ -224,7 +224,7 @@ class DAG(object):
         summary += 'Roots:\t\t' + str(len(self.roots)) + '\n'
         summary += 'Leaves:\t\t' + str(len(self.leafs)) + '\n'
         summary += 'Links:\t\t' + str(len(self.edges)) + '\n'
-        summary += 'Acyclic:\t' + str(self.isAcyclic) + '\n'
+        summary += 'Acyclic:\t' + str(self.is_acyclic) + '\n'
         return summary
 
     def __str__(self):
@@ -250,7 +250,7 @@ class DAG(object):
         self.edges.add((source, target))
         self.successors[source].add(target)
         self.predecessors[target].add(source)
-        self.isAcyclic = None
+        self.is_acyclic = None
 
     def write_file(self, filename, sep=','):
         """Writes a dag as an adjaceny list to file
