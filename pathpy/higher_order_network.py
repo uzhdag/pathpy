@@ -69,7 +69,7 @@ class HigherOrderNetwork:
             specifies how the null model link weights in the k-th order model are
             calculated. For the default method='FirstOrderTransitions', the weight
             w('v_1-v_2-...v_k', 'v_2-...-v_k-v_k+1') of a k-order edge is set to the
-            transition probability T['v_k', 'v_k+1'] in the first order network.
+            transition probability transition_matrices['v_k', 'v_k+1'] in the first order network.
             For method='KOrderPi' the entry pi['v1-...-v_k'] in the stationary
             distribution of the k-order network is used instead.
         lanczos_vecs: int
@@ -256,7 +256,7 @@ class HigherOrderNetwork:
                 # / A.sum()
 
                 # Solution C: Use transition probability in first-order network
-                # Note that T is transposed (!)
+                # Note that transition_matrices is transposed (!)
                 elif method == 'FirstOrderTransitions':
                     v_i, w_i = g1_node_mapping[p[-1]], g1_node_mapping[p[-2]]
                     p_vw = T[v_i, w_i]

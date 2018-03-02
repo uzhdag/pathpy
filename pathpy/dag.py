@@ -122,7 +122,7 @@ class DAG(object):
 
         # (mapped) paths that can be continued
         # for a given endpoint node (key)
-        continuable = _co.defaultdict(lambda: [])
+        continuable = _co.defaultdict(list)
         continuable[v] = [(node_mapping[v],)]
 
         while continuable:

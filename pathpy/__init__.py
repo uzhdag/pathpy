@@ -17,8 +17,10 @@ from .algorithms import path_measures
 from .path_extraction import paths_from_dag
 from .path_extraction import paths_from_origin_destination
 from .path_extraction import paths_from_temporal_network
+from .exception import PathpyNotImplemented
+from .exception import PathpyException
+from .exception import PathpyError
 
-from .exception import PathpyNotImplemented, PathpyException, PathpyError
 
 global ENABLE_MULTICORE_SUPPORT
 ENABLE_MULTICORE_SUPPORT = False

@@ -23,6 +23,7 @@
 #    Web:    http://www.ingoscholtes.net
 """Exception for pathpy"""
 
+
 class PathpyException(Exception):
     """Base class for exceptions in Pathpy."""
 

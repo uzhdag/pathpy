@@ -31,8 +31,8 @@ def test_parallel(random_paths, k):
     multi_parallel = pp.MultiOrderModel(p, max_order=k)
 
     assert multi_parallel.model_size(k) == multi_seq.model_size(k)
-    for k in multi_parallel.T:
-        assert np.sum(multi_parallel.T[k] - multi_seq.T[k]) == pytest.approx(0)
+    for k in multi_parallel.transition_matrices:
+        assert np.sum(multi_parallel.transition_matrices[k] - multi_seq.transition_matrices[k]) == pytest.approx(0)
 
 
 # TODO: how to properly test this function?
@@ -42,6 +42,21 @@ def test_test_network_hypothesis(random_paths, k, method):
     p = random_paths(20, 40, 6)
     multi = pp.MultiOrderModel(p, max_order=k)
     (is_net, ic0, ic1) = multi.test_network_hypothesis(p, method=method)
+
+
+@pytest.mark.parametrize(
+    'method, k, e_ic0, e_ic1', (
+            ('AIC', 1, 853.7904463041854, 829.9533867847043),
+            ('BIC', 3, 862.234843574755, 885.6864087704643),
+            ('AICc', 3, 856.3359008496399, 1305.9533867847044)
+    )
+)
+def test_test_network_hypothesis_values(random_paths, k, method, e_ic0, e_ic1):
+    p = random_paths(20, 40, 6)
+    multi = pp.MultiOrderModel(p, max_order=k)
+    (is_net, ic0, ic1) = multi.test_network_hypothesis(p, method=method)
+    assert e_ic0 == pytest.approx(ic0)
+    assert e_ic1 == pytest.approx(ic1)
 
 
 @pytest.mark.parametrize('k', (1, 2, 3))

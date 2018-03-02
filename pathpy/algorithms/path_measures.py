@@ -31,6 +31,7 @@ from pathpy import HigherOrderNetwork as _HigherOrderNetwork
 from pathpy import Log as _Log
 from pathpy.log import Severity as _Severity
 from pathpy import Paths
+from pathpy.exception import PathpyError
 
 
 __all__ = ['betweenness_centrality', 'closeness_centrality', 'node_traversals',
@@ -281,50 +282,51 @@ def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxi
     _Log.add('Calculating entropy growth rate ratio ... ', _Severity.INFO)
 
     # Compute entropy growth rate of observed transition matrix
-    A = g1.adjacency_matrix(weighted=False, transposed=True)
-    Tk = gk.transition_matrix()
-    Tk_pi = _HigherOrderNetwork.leading_eigenvector(
-        Tk, normalized=True, lanczos_vecs=lanczos_vectors, maxiter=maxiter
+    adj_matrix = g1.adjacency_matrix(weighted=False, transposed=True)
+    tran_mat_k = gk.transition_matrix()
+    leading_eigen_vec_k = _HigherOrderNetwork.leading_eigenvector(
+        tran_mat_k, normalized=True, lanczos_vecs=lanczos_vectors, maxiter=maxiter
     )
 
-    Tk.data *= _np.log2(Tk.data)
+    tran_mat_k.data *= _np.log2(tran_mat_k.data)
 
     # Apply Miller correction to the entropy estimation
     if method == 'Miller':
-        # Here, K is the number of different k-paths that can exist based on the
-        # observed edges
-        K = (A ** k).sum()
-        print('K = ', K)
+        # Here, 'possible_k_paths' is the number of different k-paths that can exist
+        # based on the observed edges
+        possible_k_paths = (adj_matrix ** k).sum()
+        print('K = ', possible_k_paths)
 
         # N is the number of observations used to estimate the transition probabilities
         # in the second-order network. This corresponds to the total edge weight in the
         # k-order network, or - alternatively - to the number of paths of length k
-        N = 0
+        num_obs = 0
         for p in paths.paths[k]:
-            N += paths.paths[k][p].sum()
-        print('N = ', N)
-        Hk = - _np.sum(Tk * Tk_pi) + (K - 1) / (2 * N)
+            num_obs += paths.paths[k][p].sum()
+        print('N = ', num_obs)
+        h_mat_k = (- _np.sum(tran_mat_k * leading_eigen_vec_k) +
+                   (possible_k_paths - 1) / (2 * num_obs))
     else:
         # simple MLE estimation
-        Hk = - _np.sum(Tk * Tk_pi)
+        h_mat_k = - _np.sum(tran_mat_k * leading_eigen_vec_k)
 
-    Hk = _np.absolute(Hk)
+    h_mat_k = _np.absolute(h_mat_k)
 
     # Compute entropy rate of null model
     gk_n = _HigherOrderNetwork(paths, k=k, null_model=True)
 
     # For the entropy rate of the null model, no Miller correction is needed
     # since we assume that transitions correspond to the true probabilities
-    Tk_n = gk_n.transition_matrix()
-    Tk_n_pi = _HigherOrderNetwork.leading_eigenvector(Tk_n)
-    Tk_n.data *= _np.log2(Tk_n.data)
-    Hk_n = -_np.sum(Tk_n * Tk_n_pi)
-    Hk_n = _np.absolute(Hk_n)
+    trans_mat_null = gk_n.transition_matrix()
+    leading_eigen_v_null = _HigherOrderNetwork.leading_eigenvector(trans_mat_null)
+    trans_mat_null.data *= _np.log2(trans_mat_null.data)
+    h_mat_null = -_np.sum(trans_mat_null * leading_eigen_v_null)
+    h_mat_null = _np.absolute(h_mat_null)
 
     _Log.add('finished.', _Severity.INFO)
 
     # Return ratio
-    return Hk / Hk_n
+    return h_mat_k / h_mat_null
 
 
 def betweenness_preference_matrix(paths, v):
@@ -524,7 +526,7 @@ def _entropy(prob, possible_outcomes=None, sample_size=None, method='MLE'):
     if method == 'MLE':
         idx = _np.nonzero(prob)
         return -_np.inner(_np.log2(prob[idx]), prob[idx])
-    if method == 'Miller':
+    elif method == 'Miller':
         assert (possible_outcomes is not None) and (sample_size is not None)
         if sample_size == 0:
             return 0
@@ -533,3 +535,5 @@ def _entropy(prob, possible_outcomes=None, sample_size=None, method='MLE'):
 
         addition = (possible_outcomes - 1) / (2 * sample_size)
         return -_np.inner(_np.log2(prob[idx]), prob[idx]) + addition
+    else:
+        raise PathpyError("method {} not supported".format(method))
