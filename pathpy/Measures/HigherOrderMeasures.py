@@ -139,7 +139,7 @@ class HigherOrderMeasures:
                     for v in p1[1:-1]:
                         if s1 != v != d1:
                             #print('node ' + x + ': ' + str(1.0 / len(shortest_paths[vk][wk])))
-                            node_centralities[v] += 1.0 / (len(shortest_paths_firstorder[s1][d1]) + network.order-1)
+                            node_centralities[v] += 1.0 / len(shortest_paths_firstorder[s1][d1])
                             #else:
                             #    node_centralities[v] += 1.0
         if normalized:
