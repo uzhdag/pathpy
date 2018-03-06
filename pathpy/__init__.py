@@ -2,8 +2,7 @@
 
 __author__ = """Ingo Scholtes"""
 __email__ = 'ischoltes@ethz.ch'
-__version__ = '1.2.1'
-
+__version__ = '2.0.0'
 
 from .log import Log, Severity
 from .temporal_network import TemporalNetwork

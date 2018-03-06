@@ -820,7 +820,7 @@ class HigherOrderNetwork:
         if not require:
             template_file = 'higherordernet.html'
 
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'js',
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'html_templates',
                                template_file)) as f:
             html_str = f.read()
 

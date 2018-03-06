@@ -687,8 +687,59 @@ class TemporalNetwork:
         with open(filename, "w") as tex_file:
             tex_file.writelines('\n'.join(output))
 
-    def _to_html(self, width=600, height=600, ms_per_frame=100, ts_per_frame=0,
-                 require=True):
+    def _to_html(self, width=600, height=600, ms_per_frame=100, ts_per_frame=1, radius=6,
+                template_file=None, use_requirejs=True, **kwargs):
+        """
+        Generates an html snippet with an interactive d3js visualisation of the
+        temporal network. This function can be used to embed interactive visualisations
+        into a jupyter notebook, or to export stand-alone html visualisations based on 
+        a customizable template.
+
+        Parameters
+        ----------
+        width:  int
+            the width of the div that contains the visualisation (default 600)
+        height: int
+            the height of the div that contains the visualisation (default 600)
+        ms_per_frame: int
+            how many milliseconds each frame of the visualisation shall be displayed.
+            The inverse of this value gives the framerate of the resulting visualisation.
+            The default value of 100 yields a framerate of 10 fps
+        ts_per_frame: int
+            how many timestamps in the temporal network shall be displayed in every frame 
+            of the visualisation (default 1). For the default value of 1, each timestamp
+            is shown in a new frame. For higher values, multiple timestamps will be aggregated
+            in a single frame.        
+        radius: int
+            radius of nodes in the visualisation. Unfortunately this can only be set via 
+            the style file starting from SVG2.
+        template_file: str
+            path to the template file that shall be used to output the html visualisation (default None) 
+            If a custom-tailored template_file is specified, python's string.Template mechanism is used 
+            to replace the following strings by JavaScript variables: 
+                $network_data:  replaced by a JSON dictionary that contains nodes and time-stamped links 
+                $width: width of the DIV to be generated 
+                $height: height of the DIV to be generated
+                $msperframe: see above 
+                $tsperframe: see above
+                $div_id: a unique ID for the generated DIV. This is important when including 
+                    multiple visualisations into a single output file (e.g. in multiple jupyter cells)
+            If this is set to None (default value), a default template provided by pathpy will be used.
+        use_requirejs: bool
+            whether or not the generated html shall import d3js via the requirejs framework 
+            (default True). The use of requirejs is needed to include html inside a jupyter 
+            notebook. For the generation of stand-alone files, the value should be set to 
+            False. This parameter will be ignored when using a custom templatefile
+        **kwargs: keyword args
+            arbitrary key-value pairs, that will be exported (via json.dumps) to the corresponding 
+            placeholder values in a custom template-file. As an example, if the template file contains 
+            JavaScript code like x=f($x); and console.log($y);, and we set parameters 
+            write_html(..., x=42, y='knockknock'), the exported JavaScript will contain x=f(42) and 
+            console.log('knockknock').
+        Returns
+        -------
+
+        """
         import json
         import os
         from string import Template
@@ -727,32 +778,42 @@ class TemporalNetwork:
                       ]
         }
 
-        template_file = 'tempnet_require.html'
-        if not require:
-            template_file = 'tempnet.html'
-
-        module_dir = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(module_dir, '..', 'js', template_file)) as f:
+        # use standard template if no custom template is specified
+        if template_file == None:
+            module_dir = os.path.dirname(os.path.realpath(__file__))
+            if not use_requirejs:
+                template_file = os.path.join(module_dir, 'html_templates', 'tempnet_require.html')
+            else:
+                template_file = os.path.join(module_dir, 'html_templates', 'tempnet.html')            
+        
+        with open(template_file) as f:
             html_str = f.read()
 
-        html_template = Template(html_str)
-
-        html = html_template.substitute({
+        default_args = {
             'network_data': json.dumps(network_data),
             'width': width,
             'height': height,
             'div_id': div_id,
             'msperframe': ms_per_frame,
-            'tsperframe': ts_per_frame})
+            'tsperframe': ts_per_frame,
+            'radius': radius}
+
+        # replace all placeholders in template
+        html = Template(html_str).substitute({**default_args, **kwargs})
 
         return html
 
-    def _repr_html_(self, require=True):
+    def _repr_html_(self, use_requirejs=True):
         from IPython.core.display import display, HTML
-        display(HTML(self._to_html(require=require)))
+        display(HTML(self._to_html(use_requirejs=use_requirejs)))
 
-    def write_html(self, filename, width=600, height=600, msperframe=100):
-        inner_html = self._to_html(width, height, msperframe, require=False)
-        html = '<!DOCTYPE html>\n<html><body>\n' + inner_html + '</body>\n</html>'
+    def write_html(self, filename, width=600, height=600, msperframe=100, tsperframe=1, radius=6, template_file=None, **kwargs):
+        html = self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius,
+            template_file=template_file, use_requirejs=False, **kwargs)
+
+        # for the inner HTML generated from the default templates, add surrounding DOCTYPE and body
+        # needed for a stand-alone file
+        if template_file == None:
+            html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
         with open(filename, 'w+') as f:
             f.write(html)
