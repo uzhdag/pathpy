@@ -104,19 +104,31 @@ class HigherOrderMeasures:
         node_centralities = _co.defaultdict(lambda: 0)
 
         shortest_paths_firstorder = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
+        shortest_paths_firstorder_lengths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
 
         _Log.add('Calculating betweenness centralities (k = ' + str(network.order) + ') ...', _Severity.INFO)
 
         for sk in shortest_paths:
             for dk in shortest_paths:
-                s1 = network.HigherOrderNodeToPath(sk)[0]
-                d1 = network.HigherOrderNodeToPath(dk)[-1]
-
-                # we consider a path in a k-th order network
-                # connecting first-order node s1 to d1
                 for pk in shortest_paths[sk][dk]:
-                     # convert k-th order path to first-order path and add
-                    shortest_paths_firstorder[s1][d1].add(network.HigherOrderPathToFirstOrder(pk))
+
+                    # convert the higher-order path to a first-order path
+                    p1 = network.HigherOrderPathToFirstOrder(pk)
+
+                    # obtain start node and end node
+                    s1 = p1[0]
+                    d1 = p1[-1]
+
+                    # compute the length of the first-order path
+                    l = len(p1) - 1 
+
+                    # if path is a shortest path add it to dictionary
+                    if l < shortest_paths_firstorder_lengths[s1][d1]:
+                        shortest_paths_firstorder_lengths[s1][d1] = l
+                        shortest_paths_firstorder[s1][d1] = set()
+                        shortest_paths_firstorder[s1][d1].add(p1)
+                    elif l == shortest_paths_firstorder_lengths[s1][d1]:
+                        shortest_paths_firstorder[s1][d1].add(p1)
 
 
         for s1 in shortest_paths_firstorder:
