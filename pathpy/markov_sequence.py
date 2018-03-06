@@ -51,7 +51,7 @@ class MarkovSequence:
         # the set of states of higher-order Markov chains
         self.states = {1: set(sequence)}
 
-    def markov_model(self, k=1):
+    def fit_markov_model(self, k=1):
         """ Generates a k-th order Markov model
             for the underlying sequence
         """
@@ -91,7 +91,7 @@ class MarkovSequence:
         """
 
         if k not in self.P:
-            self.markov_model(k)
+            self.fit_markov_model(k)
 
         L = 0
 
@@ -116,10 +116,10 @@ class MarkovSequence:
             assuming a k-th order Markov model """
 
         if k not in self.P:
-            self.markov_model(k)
+            self.fit_markov_model(k)
 
         if m not in self.P:
-            self.markov_model(m)
+            self.fit_markov_model(m)
 
         L_k = self.likelihood(k, log=True)
         L_m = self.likelihood(m, log=True)
@@ -141,10 +141,10 @@ class MarkovSequence:
             assuming a k-th order Markov model """
 
         if k not in self.P:
-            self.markov_model(k)
+            self.fit_markov_model(k)
 
         if m not in self.P:
-            self.markov_model(m)
+            self.fit_markov_model(m)
 
         L_k = self.likelihood(k, log=True)
         L_m = self.likelihood(m, log=True)
@@ -170,7 +170,7 @@ class MarkovSequence:
         # is why we only test up to maxOrder - 1
         for k in range(1, maxOrder):
             if k not in self.P:
-                self.markov_model(k)
+                self.fit_markov_model(k)
 
             orders.append(k)
 
