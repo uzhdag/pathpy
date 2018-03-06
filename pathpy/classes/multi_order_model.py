@@ -22,16 +22,15 @@
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
 
-import numpy as _np
+import numpy as np
 from scipy.stats import chi2
 
-from pathpy import HigherOrderNetwork
-from pathpy import Log
-from pathpy import Severity
-from pathpy import Paths
-import pathpy as _pp
+import pathpy
+from pathpy.utils import Log, Severity
+from .higher_order_network import HigherOrderNetwork
+from .paths import Paths
 
-_np.seterr(all='warn')
+np.seterr(all='warn')
 
 
 class MultiOrderModel:
@@ -67,7 +66,7 @@ class MultiOrderModel:
         # a dictionary of transition matrices for all layers of the model
         self.transition_matrices = {}
 
-        if _pp.ENABLE_MULTICORE_SUPPORT:
+        if pathpy.ENABLE_MULTICORE_SUPPORT:
             try:
                 import pathos as _pa
             except ImportError:  # pragma: no cover
@@ -268,7 +267,7 @@ class MultiOrderModel:
 
         # add log-likelihoods of multiple model layers,
         # assuming that paths are independent
-        likelihood = _np.float64(0)
+        likelihood = np.float64(0)
 
         for k in range(0, max_order + 1):
             if k < max_order:
@@ -280,7 +279,7 @@ class MultiOrderModel:
             likelihood += p
         assert likelihood <= 0, 'Log-Likelihood out of bounds'
 
-        return likelihood if log else _np.exp(likelihood)
+        return likelihood if log else np.exp(likelihood)
 
     @staticmethod
     def factorial(n, log=True):  # pragma: no cover
@@ -298,23 +297,23 @@ class MultiOrderModel:
         float
         """
 
-        f = _np.float64(0)
-        n_ = _np.float64(n)
+        f = np.float64(0)
+        n_ = np.float64(n)
         if n > 20:  # use Stirling's approximation
             try:
-                f = (n_ * _np.log(n_) - n_ + 0.5 * _np.log(2.0 * _np.pi * n_)
+                f = (n_ * np.log(n_) - n_ + 0.5 * np.log(2.0 * np.pi * n_)
                      + 1.0 / (12.0 * n_) - 1 / (360.0 * n_ ** 3.0))
             except Warning as w:
                 msg = 'Factorial calculation for n={}: {}'.format(n, w)
                 Log.add(msg, severity=Severity.WARNING)
 
         else:
-            f = _np.log(_np.math.factorial(n))
+            f = np.log(np.math.factorial(n))
 
         if log:
             return f
         else:
-            return _np.exp(f)
+            return np.exp(f)
 
     def layer_likelihood(self, paths, l=1, consider_longer_paths=True, log=True,
                          min_path_length=None):
@@ -387,7 +386,7 @@ class MultiOrderModel:
                     # respective model instance
                     if l == 0:
                         for s in range(len(p)):
-                            likelihood += _np.log(self.transition_matrices[0][self.layers[0].nodes.index(p[s]), self.layers[0].nodes.index('start')]) * paths.paths[k][p][1]
+                            likelihood += np.log(self.transition_matrices[0][self.layers[0].nodes.index(p[s]), self.layers[0].nodes.index('start')]) * paths.paths[k][p][1]
 
                     # general case: compute likelihood of path based on
                     # hierarchy of higher-order models as follows ...
@@ -437,12 +436,12 @@ class MultiOrderModel:
                             idx_s1 = nodes_.index(nodes[s + 1])
                             idx_s0 = nodes_.index(nodes[s])
                             trans_mat = transition_matrix[idx_s1, idx_s0]
-                            likelihood += _np.log(trans_mat) * factor_
+                            likelihood += np.log(trans_mat) * factor_
 
                         # ... then multiply additional transition probabilities for the
                         #  prefix ...
                         for k_ in range(l):
-                            likelihood += _np.log(self.transition_matrices[k_][self.layers[k_].nodes.index(transitions[k_][1]), self.layers[k_].nodes.index(transitions[k_][0])]) * factor_
+                            likelihood += np.log(self.transition_matrices[k_][self.layers[k_].nodes.index(transitions[k_][1]), self.layers[k_].nodes.index(transitions[k_][0])]) * factor_
 
             if n == 0:
                 likelihood = 0
@@ -451,7 +450,7 @@ class MultiOrderModel:
             return likelihood, n
         else:
             assert 0 <= likelihood <= 1, 'Likelihood out of bounds'
-            return _np.exp(likelihood), n
+            return np.exp(likelihood), n
 
     def degrees_of_freedom(self, max_order=None, assumption="paths"):
         """
@@ -674,8 +673,8 @@ class MultiOrderModel:
             ic0 = 2 * dof0 - 2 * likelihood_0 + (2 * (dof0 + 1) * (dof0 + 2)) / (n_0 - dof0 - 2)
             ic1 = 2 * dof10 - 2 * likelihood_1 + (2 * (dof10+1) * (dof10 + 2)) / (n_1 - dof10 - 2)
         elif method == 'BIC':
-            ic0 = _np.log(n_0) * dof0 - 2 * likelihood_0
-            ic1 = _np.log(n_1) * (dof0 + dof1) - 2 * likelihood_1
+            ic0 = np.log(n_0) * dof0 - 2 * likelihood_0
+            ic1 = np.log(n_1) * (dof0 + dof1) - 2 * likelihood_1
         else:
             raise _pp.PathpyError("Method check has not filtered out illegal "
                                   "method %s " % method)

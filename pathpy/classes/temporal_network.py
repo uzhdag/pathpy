@@ -21,16 +21,15 @@
 
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
-import sys as _sys
-import collections as _co
-import bisect as _bs
-import datetime as _dt
-import time as _t
+import sys
+from collections import defaultdict
+import bisect
+import datetime
+from time import mktime
 
 import numpy as _np
 
-from pathpy import Log
-from pathpy.log import Severity
+from pathpy.utils import Log, Severity
 
 
 class TemporalNetwork:
@@ -58,27 +57,27 @@ class TemporalNetwork:
         self.nodes = []
 
         # A dictionary storing all time-stamped links, indexed by time-stamps
-        self.time = _co.defaultdict(lambda: list())
+        self.time = defaultdict(lambda: list())
 
         # A dictionary storing all time-stamped links, indexed by time and target node
-        self.targets = _co.defaultdict(lambda: dict())
+        self.targets = defaultdict(lambda: dict())
 
         # A dictionary storing all time-stamped links, indexed by time and source node
-        self.sources = _co.defaultdict(lambda: dict())
+        self.sources = defaultdict(lambda: dict())
 
         # A dictionary storing time stamps at which links (v,*;t) originate from node v
-        self.activities = _co.defaultdict(lambda: list())
+        self.activities = defaultdict(lambda: list())
 
         # A dictionary storing sets of time stamps at which links (v,*;t) originate from
         # node v
         # Note that the insertion into a set is much faster than repeatedly checking
         # whether an element already exists in a list!
-        self.activities_sets = _co.defaultdict(lambda: set())
+        self.activities_sets = defaultdict(lambda: set())
 
         # An ordered list of time-stamps
         self.ordered_times = []
 
-        nodes_seen = _co.defaultdict(lambda: False)
+        nodes_seen = defaultdict(lambda: False)
 
         if tedges is not None:
             Log.add('Building index data structures ...')
@@ -155,8 +154,8 @@ class TemporalNetwork:
             else:
                 # if it is a string, we use the timestamp format to convert it to
                 # a UNIX timestamp
-                x = _dt.datetime.strptime(timestamp, timestamp_format)
-                t = int(_t.mktime(x.timetuple()))
+                x = datetime.datetime.strptime(timestamp, timestamp_format)
+                t = int(mktime(x.timetuple()))
             tedges.append((str(row['source']), str(row['target']), t))
             if not directed:
                 tedges.append((str(row['target']), str(row['source']), t))
@@ -165,7 +164,7 @@ class TemporalNetwork:
 
     @classmethod
     def read_file(cls, filename, sep=',', directed=True,
-                  timestamp_format='%Y-%m-%d %H:%M:%S', maxlines=_sys.maxsize):
+                  timestamp_format='%Y-%m-%d %H:%M:%S', maxlines=sys.maxsize):
         """
         Reads time-stamped links from a file and returns a new instance of the class
         TemporalNetwork. The file is assumed to have a header
@@ -247,8 +246,8 @@ class TemporalNetwork:
                         else:
                             # if it is a string, we use the timestamp format to convert
                             # it to a UNIX timestamp
-                            x = _dt.datetime.strptime(timestamp, timestamp_format)
-                            t = int(_t.mktime(x.timetuple()))
+                            x = datetime.datetime.strptime(timestamp, timestamp_format)
+                            t = int(mktime(x.timetuple()))
                     else:
                         t = n
                     if t >= 0:
@@ -355,7 +354,7 @@ class TemporalNetwork:
             self.activities[source].sort()
 
         # Maintain order of time stamps
-        index = _bs.bisect_left(self.ordered_times, ts)
+        index = bisect.bisect_left(self.ordered_times, ts)
         # add if ts is not already in list
         if index == len(self.ordered_times) or self.ordered_times[index] != ts:
             self.ordered_times.insert(index, ts)
@@ -400,7 +399,7 @@ class TemporalNetwork:
         between any time-stamped link (*,v;t) and the next link (v,*;t') (t'>t) in the
         temporal network
         """
-        ip_imes = _co.defaultdict(lambda: list())
+        ip_times = defaultdict(list)
         for e in self.tedges:
             # Get target v of current edge e=(u,v,t)
             v = e[1]
@@ -408,10 +407,10 @@ class TemporalNetwork:
 
             # Get time stamp of link (v,*,t_next)
             # with smallest t_next such that t_next > t
-            i = _bs.bisect_right(self.activities[v], t)
+            i = bisect.bisect_right(self.activities[v], t)
             if i != len(self.activities[v]):
-                ip_imes[v].append(self.activities[v][i]-t)
-        return ip_imes
+                ip_times[v].append(self.activities[v][i]-t)
+        return ip_times
 
     def summary(self):
         """
@@ -688,11 +687,11 @@ class TemporalNetwork:
             tex_file.writelines('\n'.join(output))
 
     def _to_html(self, width=600, height=600, ms_per_frame=100, ts_per_frame=1, radius=6,
-                template_file=None, use_requirejs=True, **kwargs):
+                 template_file=None, use_requirejs=True, **kwargs):
         """
         Generates an html snippet with an interactive d3js visualisation of the
         temporal network. This function can be used to embed interactive visualisations
-        into a jupyter notebook, or to export stand-alone html visualisations based on 
+        into a jupyter notebook, or to export stand-alone html visualisations based on
         a customizable template.
 
         Parameters
@@ -706,35 +705,35 @@ class TemporalNetwork:
             The inverse of this value gives the framerate of the resulting visualisation.
             The default value of 100 yields a framerate of 10 fps
         ts_per_frame: int
-            how many timestamps in the temporal network shall be displayed in every frame 
+            how many timestamps in the temporal network shall be displayed in every frame
             of the visualisation (default 1). For the default value of 1, each timestamp
             is shown in a new frame. For higher values, multiple timestamps will be aggregated
-            in a single frame.        
+            in a single frame.
         radius: int
-            radius of nodes in the visualisation. Unfortunately this can only be set via 
+            radius of nodes in the visualisation. Unfortunately this can only be set via
             the style file starting from SVG2.
         template_file: str
-            path to the template file that shall be used to output the html visualisation (default None) 
-            If a custom-tailored template_file is specified, python's string.Template mechanism is used 
-            to replace the following strings by JavaScript variables: 
-                $network_data:  replaced by a JSON dictionary that contains nodes and time-stamped links 
-                $width: width of the DIV to be generated 
+            path to the template file that shall be used to output the html visualisation (default None)
+            If a custom-tailored template_file is specified, python's string.Template mechanism is used
+            to replace the following strings by JavaScript variables:
+                $network_data:  replaced by a JSON dictionary that contains nodes and time-stamped links
+                $width: width of the DIV to be generated
                 $height: height of the DIV to be generated
-                $msperframe: see above 
+                $msperframe: see above
                 $tsperframe: see above
-                $div_id: a unique ID for the generated DIV. This is important when including 
+                $div_id: a unique ID for the generated DIV. This is important when including
                     multiple visualisations into a single output file (e.g. in multiple jupyter cells)
             If this is set to None (default value), a default template provided by pathpy will be used.
         use_requirejs: bool
-            whether or not the generated html shall import d3js via the requirejs framework 
-            (default True). The use of requirejs is needed to include html inside a jupyter 
-            notebook. For the generation of stand-alone files, the value should be set to 
+            whether or not the generated html shall import d3js via the requirejs framework
+            (default True). The use of requirejs is needed to include html inside a jupyter
+            notebook. For the generation of stand-alone files, the value should be set to
             False. This parameter will be ignored when using a custom templatefile
         **kwargs: keyword args
-            arbitrary key-value pairs, that will be exported (via json.dumps) to the corresponding 
-            placeholder values in a custom template-file. As an example, if the template file contains 
-            JavaScript code like x=f($x); and console.log($y);, and we set parameters 
-            write_html(..., x=42, y='knockknock'), the exported JavaScript will contain x=f(42) and 
+            arbitrary key-value pairs, that will be exported (via json.dumps) to the corresponding
+            placeholder values in a custom template-file. As an example, if the template file contains
+            JavaScript code like x=f($x); and console.log($y);, and we set parameters
+            write_html(..., x=42, y='knockknock'), the exported JavaScript will contain x=f(42) and
             console.log('knockknock').
         Returns
         -------
@@ -779,13 +778,14 @@ class TemporalNetwork:
         }
 
         # use standard template if no custom template is specified
-        if template_file == None:
-            module_dir = os.path.dirname(os.path.realpath(__file__))
+        if template_file is None:
+            CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+            HTML_DIR = os.path.join(CUR_DIR, os.path.pardir, 'html_templates')
             if not use_requirejs:
-                template_file = os.path.join(module_dir, 'html_templates', 'tempnet_require.html')
+                template_file = os.path.join(HTML_DIR, 'tempnet_require.html')
             else:
-                template_file = os.path.join(module_dir, 'html_templates', 'tempnet.html')            
-        
+                template_file = os.path.join(HTML_DIR, 'tempnet.html')
+
         with open(template_file) as f:
             html_str = f.read()
 

@@ -22,9 +22,9 @@
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
 
-from pathpy import Paths as _Paths
-from pathpy import Log as _Log
-import numpy as _np
+from pathpy import Paths
+from pathpy.utils import Log
+import numpy as np
 
 
 __all__ = ["paths_from_origin_destination", "read_origin_destination"]
@@ -64,12 +64,12 @@ def paths_from_origin_destination(origin_destination_list, network,
 
     shortest_paths = network.shortest_paths()
 
-    paths = _Paths()
+    paths = Paths()
 
     # OD is a list of tuples of the form (origin_node, destination_node, weight)
     # that indicates that the shortest path from origin_node to destination_node was
     # observed weight times
-    _Log.add('Starting origin destination path calculation ...')
+    Log.add('Starting origin destination path calculation ...')
     for (o, d, w) in origin_destination_list:
         assert o in network.nodes, 'Error: could not find node ' + str(o) + ' in network'
         assert d in network.nodes, 'Error: could not find node ' + str(d) + ' in network'
@@ -85,8 +85,8 @@ def paths_from_origin_destination(origin_destination_list, network,
         else:
             # in this case, the full weight of an origin destination path will be
             # assigned to a random single shortest path in the network
-            paths.add_path_tuple(sp[_np.random.randint(num_paths)], frequency=(0, w))
-    _Log.add('finished.')
+            paths.add_path_tuple(sp[np.random.randint(num_paths)], frequency=(0, w))
+    Log.add('finished.')
     return paths
 
 
@@ -110,7 +110,7 @@ def read_origin_destination(filename, separator=','):
     list
     """
     origin_destination_list = []
-    _Log.add('Reading origin/destination statistics from file ...')
+    Log.add('Reading origin/destination statistics from file ...')
 
     with open(filename, 'r') as f:
         line = f.readline()
@@ -118,7 +118,7 @@ def read_origin_destination(filename, separator=','):
             fields = line.rstrip().split(separator)
             origin_destination_list.append((fields[0].strip(), fields[1].strip(), float(fields[2].strip())))
             line = f.readline()
-    _Log.add('Finished.')
+    Log.add('Finished.')
 
     return origin_destination_list
 

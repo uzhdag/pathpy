@@ -29,8 +29,6 @@ var/
 *.spec
 
 # Sphinx Documentation
-docs/*
-sp_docs/_build/*
 
 # Installer logs
 pip-log.txt
@@ -112,3 +110,4 @@ prof/*
 # ==================
 
 .vscode/
+docs/_build/*

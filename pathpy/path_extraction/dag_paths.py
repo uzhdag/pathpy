@@ -22,15 +22,14 @@
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
 
-import sys as _sys
+import sys
 
-from pathpy import Paths as _Paths
-from pathpy import Log as _Log
-from pathpy.log import Severity as _Severity
+from pathpy import Paths
+from pathpy.utils import Log, Severity
 from pathpy import DAG
 
 
-def paths_from_dag(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):
+def paths_from_dag(dag, node_mapping=None, maxSubPathLength=sys.maxsize):
     """    Extracts pathway statistics from a directed acyclic graph.
     For this, all paths between all roots (zero incoming links)
     and all leafs (zero outgoing link) will be constructed.
@@ -50,20 +49,20 @@ def paths_from_dag(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):
         dag.topsort()
     # issue error if graph contains cycles
     if dag.is_acyclic is False:
-        _Log.add('Cannot extract statistics from a cyclic graph', _Severity.ERROR)
+        Log.add('Cannot extract statistics from a cyclic graph', Severity.ERROR)
         raise ValueError('Cannot extract path statistics from a cyclic graph')
     else:
         # path object which will hold the detected (projected) paths
-        p = _Paths()
+        p = Paths()
         p.max_subpath_length = maxSubPathLength
-        _Log.add('Creating paths from directed acyclic graph', _Severity.INFO)
+        Log.add('Creating paths from directed acyclic graph', Severity.INFO)
         n = 0
 
         # construct all paths originating from root nodes
         for s in dag.roots:
             if n % 100 == 0:
                 msg = 'Processed {} / {} root nodes'.format(n, len(dag.roots))
-                _Log.add(msg, _Severity.TIMING)
+                Log.add(msg, Severity.TIMING)
             if node_mapping is None:
                 paths = dag.construct_paths(s)
                 # add detected paths to paths object
@@ -74,5 +73,5 @@ def paths_from_dag(dag, node_mapping=None, maxSubPathLength=_sys.maxsize):
                 dag.construct_mapped_paths(s, node_mapping, p)
             n += 1
         p.expand_subpaths()
-        _Log.add('finished.', _Severity.INFO)
+        Log.add('finished.', Severity.INFO)
         return p
