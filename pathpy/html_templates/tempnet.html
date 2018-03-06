@@ -1,22 +1,37 @@
 <style>
-    .tlinks line {
-    stroke: rgb(209, 208, 208);
-    stroke-opacity: 0.2;
+    text.active {
+        font-size: 10px;
+        font-family: Arial, Helvetica, sans-serif;
+        fill:  rgb(109, 105, 105);
+        opacity: 1;
     }
-    .tlinks line.active {
-    stroke: #922;
-    stroke-opacity: 1;
-    stroke-width: 4px;
+    text.hidden {
+        opacity: 0;
     }
-    .tnodes circle {
+    line.tlinks {
+        stroke: rgb(209, 208, 208);
+        stroke-opacity: 0.4;
+        stroke-width: 1px;
+    }
+    line.active {
+        stroke: #922;
+        stroke-opacity: 1;
+        stroke-width: 4px;
+    }
+    line.hidden {
+        stroke: rgb(255, 255, 255);
+        stroke-opacity: 0;
+        stroke-width: 0px;
+    }
+    circle.active {
+        stroke: #222;
+        fill: #922;
+        fill-opacity: 1;
+        stroke-width: 2px;
+    }
+    circle {
+    fill: rgb(138, 137, 137);
     stroke: #222;
-    fill: #eee;
-    fill-opacity: 1;
-    stroke-width: 1.5px;
-    }
-    .tnodes circle.active {
-    stroke: #222;
-    fill: #922;
     fill-opacity: 1;
     stroke-width: 1.5px;
     }
@@ -52,63 +67,93 @@
     var svg = d3.select("#${div_id}"),
         width = +svg.attr("width"),
         height = +svg.attr("height"),
-        radius = 6,
+        radius = $radius,
         color = d3.scaleOrdinal(d3.schemeCategory20b);
 
     var temporal_net = $network_data;
-    tsperframe = $tsperframe;
-    msperframe = $msperframe;
+    var tsperframe = $tsperframe;
+    var msperframe = $msperframe;
+    var look_ahead = $look_ahead;
+    var look_behind = $look_behind;
+
+    var hidden_link_strength = 0;
+    var active_link_strength = 0.2;
 
     // create a dictionary with edges indexed by timestamps
     var edgesbytime = {};
-    time_stamps = temporal_net.links.map(link => link['time']);
+    var time_stamps = temporal_net.links.map(link => link['time']);
     time_stamps.forEach(function(t){
                 edgesbytime[t] = [];
             });
 
     // extract static links
-    links = [];    
+    var links = [];
+    var links_by_id = {};
     temporal_net.links.forEach(function(link){
         id = String(link.source + '-' + link.target);
         edgesbytime[link.time].push(id);
-        l = { 'source': link.source, 'target': link.target, 'id': id };
+        l = {
+            'source': link.source, 
+            'target': link.target, 
+            'id': id,
+            'strength': 0
+        };
         if (!contains(links, l)){
             links.push(l);
+            links_by_id[l.id] = l;
         }
     });
 
-    mintime = d3.min(time_stamps);
-    maxtime = d3.max(time_stamps);
-
+    var mintime = d3.min(time_stamps);
+    var maxtime = d3.max(time_stamps);
     var run_status = true;
     
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
-        .force("charge", d3.forceManyBody())
+        .force("charge", d3.forceManyBody().strength(-30).distanceMax(200))
+        .force("repelForce", d3.forceManyBody().strength(-100).distanceMax(200))
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .alphaTarget(0)
+        .alphaTarget(0.1)
         .on("tick", ticked);
 
-    var link = svg.append("g")
+    var g = svg.append("g")
+        .attr("class", "everything");
+
+    var link = g.append("g")
         .attr("class", "tlinks")
         .selectAll("line")
-        .data(links)
+        .data(links, function(d){return d.id;})
         .enter().append("line")
         .attr("id", function(d) { return d.id; });
 
-    var node = svg.append("g")
-        .attr("class", "tnodes")
+    var node_g = g.append("g").attr("class", "tnodes")
         .selectAll("circle")
-        .data(temporal_net.nodes)
-        .enter().append("circle")
-        .attr('id', function(d) { return d.id; })
-        .attr("r", radius)
-        .call(d3.drag()
-            .on("start", dragstarted)
-            .on("drag", dragged)
-            .on("end", dragended));
+        .data(temporal_net.nodes, function(d){return d.id;})
+        .enter()
+        .append("g");
 
+    var node = node_g.append("circle")
+            .attr('id', function(d) { return d.id; })
+            .attr("r", radius)
+            // .attr("fill", function(d) { return color(d.group); })
+            .attr("class", "tnodes")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+    var text = node_g.append("text")
+    .attr("x", 8)
+    .attr("y", ".31em")
+    .attr("id", function(d) {return d.id; })
+    .attr("class", "active")
+    .text(function(d) { return d.id; });
+    
     node.append("title").text(function(d) { return d.id; });
+
+    var zoom_handler = d3.zoom()
+        .on("zoom", zoom_actions);
+    zoom_handler(svg);
 
     // build mapping to DOM objects once 
     // for performance reasons
@@ -129,7 +174,7 @@
     d3.select('#${div_id}_restart_txt').on("click", restartAnimation);    
 
     simulation.nodes(temporal_net.nodes).on("tick", ticked);
-    simulation.force("link").links(links);
+    // simulation.force("link").links(links);
 
     // start animation
     var time = mintime;
@@ -148,38 +193,67 @@
             console.log('Stopped animation.')     
         }
 
-       // reset class of all nodes and links      
-        for (id in edges_to_dom)
-            try{
-                edges_to_dom[id].attr('class', 'links');
+       // reset all links to hidden 
+       for (id in edges_to_dom){
+            try {
+                // edges_to_dom[l.id].attr('class', 'links');
+                links_by_id[id].strength = hidden_link_strength;
+                edges_to_dom[id].attr('class', 'hidden');              
             }
             catch(err){
                 console.log('Error: Could not find DOM object with id ' + id);
             }
-        for (id in nodes_to_dom)
+        }
+        // reset all nodes to inactive
+        for (id in nodes_to_dom) {
             try{
-                nodes_to_dom[id].attr('class', 'nodes');
+                nodes_to_dom[id].attr("class", "tnodes");
             }
             catch(err){
                 console.log('Error: Could not find DOM object with id ' + id);
             }
+        }
+        
+        // change nodes and links in current time slice
+        for (ti=Math.max(mintime, time-look_behind); ti<=time+look_ahead; ti++) {
 
-        // change class of active nodes and links
-        for (ti=Math.max(mintime, time-tsperframe); ti<=time; ti++) {
-            if (edgesbytime[ti]!=null) {
-                edgesbytime[ti].forEach(function(id){                    
-                    node_ids = id.split('-');
-                    try {
-                        edges_to_dom[id].attr('class', 'active').moveToFront();
-                        nodes_to_dom[node_ids[0]].attr('class', 'active').moveToFront();
-                        nodes_to_dom[node_ids[1]].attr('class', 'active').moveToFront();                        
+            if (ti in edgesbytime) {
+                edgesbytime[ti].forEach(function(id){
+                    links_by_id[id].strength = active_link_strength;
+                    // links that are currently active
+                    if (ti >= time-tsperframe && ti <= time) {
+                        node_ids = id.split('-');
+                        try {
+                            edges_to_dom[id].attr('class', 'active').moveToFront();
+                        }
+                        catch(err){
+                            console.log('Error: Could not find DOM link with id ' + id);
+                        }
+                        try {
+                            nodes_to_dom[node_ids[0]].attr('class', 'active').moveToFront();
+                        }
+                        catch(err){
+                            console.log('Error: Could not find DOM node with id ' + node_ids[0]);
+                        }
+                        try {
+                            nodes_to_dom[node_ids[1]].attr('class', 'active').moveToFront();
+                        }
+                        catch(err){
+                            console.log('Error: Could not find DOM node with id ' + node_ids[1]);
+                        }
                     }
-                    catch(err){
-                        console.log('Error: Could not find DOM object with id ' + id);
-                    }     
+                    // links in current time slice that are not active
+                    else{
+                        edges_to_dom[id].attr('class', 'tlinks');
+                    }
                 });
             }
         }
+        simulation.force('link', d3.forceLink()
+            .id(link => link.id)
+            .strength(link => link.strength));
+        simulation.force("link").links(links);
+
         time += tsperframe;
     }
 
@@ -199,6 +273,10 @@
         
     }
 
+    function zoom_actions(){
+        g.attr("transform", d3.event.transform)
+    }
+
     function restartAnimation() {
         if (run_status)
             clearInterval(intervl);
@@ -216,8 +294,19 @@
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
 
-        node.attr("cx", function(d) { return Math.max(radius, Math.min(width - radius, d.x)); })
-            .attr("cy", function(d) { return Math.max(radius, Math.min(height - radius, d.y)); });
+         text.attr("transform", transform);
+
+
+        text.attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+
+        node.attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+    }
+
+    
+    function transform(d) {
+        return "translate(" + d.x + "," + d.y + ")";
     }
 
     function dragstarted(d) {
