@@ -686,8 +686,9 @@ class TemporalNetwork:
         with open(filename, "w") as tex_file:
             tex_file.writelines('\n'.join(output))
 
-    def _to_html(self, width=600, height=600, ms_per_frame=100, ts_per_frame=1, radius=6,
-                 template_file=None, use_requirejs=True, **kwargs):
+
+    def _to_html(self, width=600, height=600, ms_per_frame=50, ts_per_frame=20, radius=6,
+                look_behind=1500, look_ahead=150, template_file=None, use_requirejs=True, **kwargs):
         """
         Generates an html snippet with an interactive d3js visualisation of the
         temporal network. This function can be used to embed interactive visualisations
@@ -779,12 +780,12 @@ class TemporalNetwork:
 
         # use standard template if no custom template is specified
         if template_file is None:
-            CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-            HTML_DIR = os.path.join(CUR_DIR, os.path.pardir, 'html_templates')
+            module_dir = os.path.dirname(os.path.realpath(__file__))
+            html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
             if not use_requirejs:
-                template_file = os.path.join(HTML_DIR, 'tempnet_require.html')
+                template_file = os.path.join(html_dir, 'tempnet.html')
             else:
-                template_file = os.path.join(HTML_DIR, 'tempnet.html')
+                template_file = os.path.join(html_dir, 'tempnet_require.html')
 
         with open(template_file) as f:
             html_str = f.read()
@@ -796,18 +797,25 @@ class TemporalNetwork:
             'div_id': div_id,
             'msperframe': ms_per_frame,
             'tsperframe': ts_per_frame,
-            'radius': radius}
+            'radius': radius,
+            'look_ahead': look_ahead,
+            'look_behind': look_behind
+        }
 
         # replace all placeholders in template
         html = Template(html_str).substitute({**default_args, **kwargs})
 
         return html
 
+
     def _repr_html_(self, use_requirejs=True):
         from IPython.core.display import display, HTML
         display(HTML(self._to_html(use_requirejs=use_requirejs)))
 
-    def write_html(self, filename, width=600, height=600, msperframe=100, tsperframe=1, radius=6, template_file=None, **kwargs):
+
+    def write_html(self, filename, width=600, height=600, msperframe=50, tsperframe=20, radius=6,
+            look_behind=1500, look_ahead=150, template_file=None, **kwargs):
+
         html = self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius,
             template_file=template_file, use_requirejs=False, **kwargs)
 
