@@ -13,6 +13,8 @@ from .classes import MarkovSequence
 from .classes import Network
 from .algorithms import higher_order_measures
 from .algorithms import path_measures
+from .algorithms import shortest_paths
+from .algorithms import components
 from .path_extraction import paths_from_dag
 from .path_extraction import paths_from_origin_destination
 from .path_extraction import paths_from_temporal_network

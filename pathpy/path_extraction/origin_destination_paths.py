@@ -24,6 +24,8 @@
 
 from pathpy import Paths
 from pathpy.utils import Log
+from pathpy.algorithms.shortest_paths import shortest_paths
+
 import numpy as np
 
 
@@ -62,7 +64,7 @@ def paths_from_origin_destination(origin_destination_list, network,
     assert network is not None, \
         'Error: extraction of origin destination paths requires a network topology'
 
-    shortest_paths = network.shortest_paths()
+    all_paths = shortest_paths(network)
 
     paths = Paths()
 
@@ -73,7 +75,7 @@ def paths_from_origin_destination(origin_destination_list, network,
     for (o, d, w) in origin_destination_list:
         assert o in network.nodes, 'Error: could not find node ' + str(o) + ' in network'
         assert d in network.nodes, 'Error: could not find node ' + str(d) + ' in network'
-        sp = list(shortest_paths[o][d])
+        sp = list(all_paths[o][d])
         num_paths = len(sp)
         if distribute_weight and num_paths > 1:
             # to avoid introducing false correlations that are not justified by the

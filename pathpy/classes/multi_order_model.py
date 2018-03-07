@@ -181,20 +181,19 @@ class MultiOrderModel:
                 file.write('{0} "{1}"\n'.format(node_idx, reverse_index[node_idx]))
         else:
             file.write('*Vertices {0}\n'.format(self.layers[1].vcount()))
-            for i in range(self.layers[1].vcount()):
-                first = first_layer_map[self.layers[1].nodes[i]] + 1
+            for i in self.layers[1].nodes:
+                first = first_layer_map[i]
                 second = self.layers[1].nodes[i]
 
                 file.write('{0} "{1}"\n'.format(first, second))
 
         # Write higher-order nodes to states section
         file.write('*States {0}\n'.format(self.layers[layer].vcount()))
-        for i in range(self.layers[layer].vcount()):
-            v = self.layers[layer].nodes[i]
+        for v in self.layers[layer].nodes:
             if infomap_indexing:
                 v_ix = infomap_indexing[layer][v]
             else:
-                v_ix = name_map[v] + 1
+                v_ix = name_map[v]
             v_path = self.layers[layer].higher_order_node_to_path(v)
 
             # each line contains uniqueID physicalID [name]
@@ -203,7 +202,7 @@ class MultiOrderModel:
                     '{0} {1} "{2}"\n'.format(v_ix, infomap_indexing[1][v_path[-1]], v))
             else:
                 file.write(
-                    '{0} {1} "{2}"\n'.format(v_ix, first_layer_map[v_path[-1]] + 1, v))
+                    '{0} {1} "{2}"\n'.format(v_ix, first_layer_map[v_path[-1]], v))
 
         file.write('*Links {0}\n'.format(self.layers[layer].ecount()))
         for e in self.layers[layer].edges:
@@ -230,7 +229,7 @@ class MultiOrderModel:
                 idx_t = infomap_indexing[layer][target]
                 file.write('{} {} {}\n'.format(idx_s, idx_t, trans_prop))
             else:
-                file.write('{} {} {}\n'.format(source_ix + 1, target_ix + 1, trans_prop))
+                file.write('{} {} {}\n'.format(source_ix, target_ix, trans_prop))
 
         file.close()
 
@@ -360,6 +359,11 @@ class MultiOrderModel:
         else:
             maxL = l
 
+        # create index maps to map node names to matrix indices
+        indexmaps = {}
+        for k in range(0, l+1):
+            indexmaps[k] = self.layers[k].node_to_name_map()
+
         # For the paths S_k of length k (or longer) that we observe, we need to calculate
         # the probability of observing all paths in S_k based on the probabilities of
         # individual paths (which are calculated using the underlying Markov model(s))
@@ -368,13 +372,12 @@ class MultiOrderModel:
         n = 0
 
         # Initialize likelihood
-        likelihood = 0
+        likelihood = 0        
 
         # compute likelihood for all longest paths
         # up to the maximum path length maxL
         for k in range(min_path_length, maxL + 1):
-            for p in paths.paths[k]:
-
+            for p in paths.paths[k]:                
                 # Only consider observations as *longest* path
                 if paths.paths[k][p][1] > 0:
 
@@ -386,7 +389,7 @@ class MultiOrderModel:
                     # respective model instance
                     if l == 0:
                         for s in range(len(p)):
-                            likelihood += np.log(self.transition_matrices[0][self.layers[0].nodes.index(p[s]), self.layers[0].nodes.index('start')]) * paths.paths[k][p][1]
+                            likelihood += np.log(self.transition_matrices[0][indexmaps[0][p[s]], indexmaps[0]['start']]) * paths.paths[k][p][1]
 
                     # general case: compute likelihood of path based on
                     # hierarchy of higher-order models as follows ...
@@ -430,18 +433,17 @@ class MultiOrderModel:
 
                         # First multiply the transitions in the l-th order model ...
                         transition_matrix = self.transition_matrices[l]
-                        nodes_ = self.layers[l].nodes
                         factor_ = paths.paths[k][p][1]
                         for s in range(len(nodes)-1):
-                            idx_s1 = nodes_.index(nodes[s + 1])
-                            idx_s0 = nodes_.index(nodes[s])
+                            idx_s1 = indexmaps[l][nodes[s + 1]]
+                            idx_s0 = indexmaps[l][nodes[s]]
                             trans_mat = transition_matrix[idx_s1, idx_s0]
                             likelihood += np.log(trans_mat) * factor_
 
                         # ... then multiply additional transition probabilities for the
                         #  prefix ...
                         for k_ in range(l):
-                            likelihood += np.log(self.transition_matrices[k_][self.layers[k_].nodes.index(transitions[k_][1]), self.layers[k_].nodes.index(transitions[k_][0])]) * factor_
+                            likelihood += np.log(self.transition_matrices[k_][indexmaps[k_][transitions[k_][1]], indexmaps[k_][transitions[k_][0]]]) * factor_
 
             if n == 0:
                 likelihood = 0

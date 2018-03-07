@@ -140,7 +140,7 @@ class Network:
 
         Log.add('Retrieving links from database ...')
 
-        for row in cursor:    
+        for row in cursor:
             n.add_edge(str(row['source']), str(row['target']))
 
         return n
@@ -150,8 +150,51 @@ class Network:
         """
         Adds a node to a network
         """
-        self.nodes[v] = { **self.nodes[v], **kwargs }
+        if v not in self.nodes:
+            self.nodes[v] = { **self.nodes[v], **kwargs }
 
+            # set default values if not set already
+            if 'inweight' not in self.nodes[v]:
+                self.nodes[v]['inweight'] = 0.0
+            if 'outweight' not in self.nodes[v]:
+                self.nodes[v]['outweight'] = 0.0
+            if self.directed:
+                self.nodes[v]['indegree'] = 0
+                self.nodes[v]['outdegree'] = 0
+            else:
+                self.nodes[v]['degree'] = 0
+    
+    
+    def remove_node(self, v):
+        """
+        Removes a node from the network
+        """
+        if v in self.nodes:
+            # remove all incident edges and update neighbors
+            if not self.directed:
+                for w in self.successors[v]:
+                    edge = tuple(x for x in sorted([v,w]))
+                    self.nodes[w]['degree'] -= 1
+                    self.nodes[w]['inweight'] -= self.edges[edge]['weight']
+                    self.nodes[w]['outweight'] -= self.edges[edge]['weight']
+                    self.successors[w].remove(v)
+                    self.predecessors[w].remove(v)
+                    del self.edges[edge]
+            else:
+                for w in self.successors[v]:
+                    self.nodes[w]['indegree'] -= 1
+                    self.nodes[w]['inweight'] -= self.edges[(v,w)]['weight']
+                    self.predecessors[w].remove(v)
+                    del self.edges[(v,w)]
+                for w in self.predecessors[v]:
+                    self.nodes[w]['outdegree'] -= 1
+                    self.nodes[w]['outweight'] -= self.edges[(w,v)]['weight']
+                    self.successors[w].remove(v)
+                    del self.edges[(w,v)]
+            del self.nodes[v]
+            del self.successors[v]
+            del self.predecessors[v]
+           
 
     def add_edge(self, v, w, **kwargs):
         """
@@ -162,14 +205,56 @@ class Network:
 
         if not self.directed:
             edge = tuple(x for x in sorted([v,w]))
+        else:
+            edge = (v,w)
         self.edges[edge] = { **self.edges[edge], **kwargs}
 
-        self.successors[v].add(w)
-        self.predecessors[w].add(w)
+        if 'weight' not in self.edges[edge]:
+            self.edges[edge]['weight'] = 1.0
 
-        if not self.directed:            
+        # update predecessor and successor lists
+        self.successors[v].add(w)
+        self.predecessors[w].add(v)
+        if not self.directed:
             self.successors[w].add(v)
-            self.predecessors[v].add(v)
+            self.predecessors[v].add(w)
+
+        # update degrees and node weights
+        if not self.directed:
+            # update degree, in- and outweight
+            self.nodes[v]['degree'] = len(self.successors[v])
+            self.nodes[w]['degree'] = len(self.successors[w])
+
+            S = [self.edges[tuple(x for x in sorted([v,w]))]['weight'] for w in self.successors[v]]
+            if len(S) > 0:
+                self.nodes[v]['outweight'] =  sum(S)
+                self.nodes[v]['inweight'] = self.nodes[v]['outweight']
+            S = [self.edges[tuple(x for x in sorted([w,v]))]['weight'] for v in self.successors[w]]
+            if len(S)>0:
+                self.nodes[w]['outweight'] =  sum( S )
+                self.nodes[w]['inweight'] = self.nodes[w]['outweight']
+        else:
+            self.nodes[v]['outdegree'] = len(self.successors[v])
+            self.nodes[v]['indegree'] = len(self.predecessors[v])
+            self.nodes[w]['outdegree'] = len(self.successors[w])
+            self.nodes[w]['indegree'] = len(self.predecessors[w])
+
+            # Note: Weights will be 0 for nodes with empty successors or predecessors. This is a problem 
+            # for higher-order networks, where the zero weight is assumed to be a vector (0,0)
+
+            S = [ self.edges[(v,w)]['weight'] for w in self.successors[v] ]
+            if len(S) > 0:
+                self.nodes[v]['outweight'] =  sum( S )
+            S = [ self.edges[(w,v)]['weight'] for w in self.predecessors[v] ]
+            if len(S) > 0:
+                self.nodes[v]['inweight'] =  sum( S )
+            S = [ self.edges[(w,v)]['weight'] for v in self.successors[w] ]
+            if len(S) > 0:
+                self.nodes[w]['outweight'] =  sum( S )
+            S = [ self.edges[(v,w)]['weight'] for v in self.predecessors[w] ]
+            if len(S) > 0:
+                self.nodes[w]['inweight'] =  sum( S )
+
 
     def find_nodes(self, select_node = lambda v: True):
         """ 
@@ -195,12 +280,173 @@ class Network:
     def total_edge_weight(self):
         """ Returns the sum of all edge weights """
         if self.edges:
-            return sum(self.edges.values())
+            return _np.sum(e['weight'] for e in self.edges.values())
         return 0
 
     def node_to_name_map(self):
         """Returns a dictionary that can be used to map nodes to matrix/vector indices"""
         return {v: idx for idx, v in enumerate(self.nodes)}
+
+    def adjacency_matrix(self, weighted=True, transposed=False):
+        """Returns a sparse adjacency matrix of the higher-order network. By default,
+        the entry corresponding to a directed link source -> target is stored in row s and
+        column t and can be accessed via A[s,t].
+
+        Parameters
+        ----------       
+        weighted: bool
+            if set to False, the function returns a binary adjacency matrix.
+            If set to True, adjacency matrix entries will contain the weight of an edge.
+        transposed: bool
+            whether to transpose the matrix or not.
+
+        Returns
+        -------
+        numpy cooc matrix
+        """
+        row = []
+        col = []
+        data = []
+
+        node_to_coord = self.node_to_name_map()
+
+        if transposed:
+            for s, t in self.edges:
+                row.append(node_to_coord[t])
+                col.append(node_to_coord[s])
+        else:
+            for s, t in self.edges:
+                row.append(node_to_coord[s])
+                col.append(node_to_coord[t])
+
+        # create array with non-zero entries
+        if not weighted:
+            data = _np.ones(len(self.edges.keys()))
+        else:           
+            data = _np.array([float(e['weight']) for e in self.edges.values()])
+
+        shape = (self.vcount(), self.vcount())
+        return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+
+
+    def transition_matrix(self):
+        """Returns a (transposed) transition matrix of a random walk process
+        on the network
+
+        Parameters
+        ----------    
+
+        Returns
+        -------
+
+        """
+        row = []
+        col = []
+        data = []
+        # calculate weighted out-degrees
+        D = {n: self.nodes[n]['outweight'] for n in self.nodes}
+
+        node_to_coord = self.node_to_name_map()
+
+        for (s, t) in self.edges:
+            # either s->t has been observed as a longest path, or we are interested in
+            # subpaths as well
+
+            # the following makes sure that we do not accidentally consider zero-weight
+            # edges (automatically added by default_dic)
+            weight = self.edges[(s, t)]['weight']
+            if weight > 0:
+                row.append(node_to_coord[t])
+                col.append(node_to_coord[s])               
+                assert D[s] > 0, \
+                    'Encountered zero out-degree for node "{s}" ' \
+                    'while weight of link ({s}, {t}) is non-zero.'.format(s=s, t=t)
+                prob = weight / D[s]
+                if prob < 0 or prob > 1:  # pragma: no cover
+                    raise ValueError('Encountered transition probability {p} outside '
+                                     '[0,1] range.'.format(p=prob))
+                data.append(prob)
+
+        data = _np.array(data)
+        data = data.reshape(data.size, )
+
+        shape = self.vcount(), self.vcount()
+        return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+
+
+    def laplacian_matrix(self):
+        """
+        Returns the transposed normalized Laplacian matrix corresponding to the network.
+
+        Parameters
+        ----------
+    
+        Returns
+        -------
+
+        """
+        transition_matrix = self.transition_matrix()
+        identity_matrix = _sparse.identity(self.vcount())
+
+        return identity_matrix - transition_matrix
+
+
+    @staticmethod
+    def leading_eigenvector(A, normalized=True, lanczos_vecs=15, maxiter=1000):
+        """Compute normalized leading eigenvector of a given matrix A.
+
+        Parameters
+        ----------
+        A:
+            sparse matrix for which leading eigenvector will be computed
+        normalized: bool
+            whether or not to normalize, default is True
+        lanczos_vecs: int
+            number of Lanczos vectors to be used in the approximate
+            calculation of eigenvectors and eigenvalues. This maps to the ncv parameter
+            of scipy's underlying function eigs.
+        maxiter: int
+            scaling factor for the number of iterations to be used in the
+            approximate calculation of eigenvectors and eigenvalues. The number of
+            iterations passed to scipy's underlying eigs function will be n*maxiter
+            where n is the number of rows/columns of the Laplacian matrix.
+
+        Returns
+        -------
+
+        """
+        if not _sparse.issparse(A):  # pragma: no cover
+            raise TypeError("A must be a sparse matrix")
+
+        # NOTE: ncv sets additional auxiliary eigenvectors that are computed
+        # NOTE: in order to be more confident to find the one with the largest
+        # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
+        w, pi = _sla.eigs(A, k=1, which="LM", ncv=lanczos_vecs, maxiter=maxiter)
+        pi = pi.reshape(pi.size, )
+        if normalized:
+            pi /= sum(pi)
+        return pi
+
+
+    def summary(self):
+        """Returns a string containing basic summary statistics of this network instance
+        """
+        summary_fmt = (
+            '{directed_str} network\n'
+            '\n'
+            'Nodes:\t\t\t\t{vcount}\n'
+            'Links:\t\t\t\t{ecount}\n'
+        )
+        if self.directed:
+            directed_str = 'Directed'
+        else:
+            directed_str = 'Undirected'
+        summary = summary_fmt.format(directed_str=directed_str, vcount=self.vcount(), ecount=self.ecount())
+        return summary
+
+    def __str__(self):
+        """Returns the default string representation of this graphical model instance"""
+        return self.summary()
 
     def _to_html(self, width=600, height=600, use_requirejs=True):
         import json

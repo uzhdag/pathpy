@@ -40,6 +40,7 @@ import scipy as sp
 
 from pathpy .utils import Log, Severity
 from pathpy import HigherOrderNetwork
+from pathpy.algorithms.shortest_paths import *
 
 from pathpy.utils import PathpyNotImplemented
 
@@ -141,7 +142,7 @@ def betweenness_centrality(network, normalized=False):
     """
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
-    shortest_paths = network.shortest_paths()
+    all_paths = shortest_paths(network)
     node_centralities = defaultdict(lambda: 0)
 
     shortest_paths_first_order = defaultdict(lambda: defaultdict(set))
@@ -149,14 +150,14 @@ def betweenness_centrality(network, normalized=False):
     Log.add('Calculating betweenness centralities (k = %s) ...' % network.order,
             Severity.INFO)
 
-    for path_1_ord_k in shortest_paths:
-        for path_2_ord_k in shortest_paths:
+    for path_1_ord_k in all_paths:
+        for path_2_ord_k in all_paths:
             source_k1 = network.higher_order_node_to_path(path_1_ord_k)[0]
             dest_k1 = network.higher_order_node_to_path(path_2_ord_k)[-1]
 
             # we consider a path in a k-th order network
             # connecting first-order node s1 to d1
-            for path_ord_k in shortest_paths[path_1_ord_k][path_2_ord_k]:
+            for path_ord_k in all_paths[path_1_ord_k][path_2_ord_k]:
                 # convert k-th order path to first-order path and add
                 shortest_paths_first_order[source_k1][dest_k1].add(
                     network.higher_order_path_to_first_order(path_ord_k))
