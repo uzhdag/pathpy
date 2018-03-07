@@ -621,7 +621,7 @@ class MultiOrderModel:
         here we do *not* consider nested models, so we cannot use a likelihood ratio
         test. We instead use the AIC or BIC.
         """
-
+        from pathpy.utils.exceptions import PathpyError
         assert method in ['AIC', 'BIC', 'AICc'], \
             'Expected method AIC, AICc or BIC "%s" given.' % method
 
@@ -645,7 +645,7 @@ class MultiOrderModel:
         # By definition, the number of observations for both models should be the total
         # weighted degree of the first-order network
         if n_0 != n_1:
-            raise _pp.PathpyError(
+            raise PathpyError(
                 'Observation count for 0-order ({n0}) and '
                 '1-st order model ({n1}) do not match'.format(n0=n_0, n1=n_1)
             )
@@ -676,7 +676,7 @@ class MultiOrderModel:
             ic0 = np.log(n_0) * dof0 - 2 * likelihood_0
             ic1 = np.log(n_1) * (dof0 + dof1) - 2 * likelihood_1
         else:
-            raise _pp.PathpyError("Method check has not filtered out illegal "
+            raise PathpyError("Method check has not filtered out illegal "
                                   "method %s " % method)
 
         # if the AIC/AICc/BIC of the zero-order model is larger than that of the
