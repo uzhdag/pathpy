@@ -240,7 +240,8 @@ class Network:
             self.nodes[w]['indegree'] = len(self.predecessors[w])
 
             # Note: Weights will be 0 for nodes with empty successors or predecessors. This is a problem 
-            # for higher-order networks, where the zero weight is assumed to be a vector (0,0)
+            # for higher-order networks, where the zero weight is assumed to be a vector (0,0), Not updating
+            # weights in this case will ensure that we keep the initial value of weights
 
             S = [ self.edges[(v,w)]['weight'] for w in self.successors[v] ]
             if len(S) > 0:
@@ -472,8 +473,7 @@ class Network:
         import string
         import random
 
-        all_chars = string.ascii_letters + string.digits
-        div_id = "".join(random.choice(all_chars) for x in range(8))
+        div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
         if not use_requirejs:
             template_file = 'higherordernet.html'
