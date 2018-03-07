@@ -22,10 +22,9 @@
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
 
-import collections as _co
-import sys as _sys
-from pathpy import Log
-from pathpy.log import Severity
+from collections import defaultdict
+import sys
+from pathpy.utils import Log, Severity
 
 
 class DAG(object):
@@ -55,10 +54,10 @@ class DAG(object):
         self.leafs = set()
 
         # The dictionary of successors of each node
-        self.successors = _co.defaultdict(set)
+        self.successors = defaultdict(set)
 
         # The dictionary of predecessors of each node
-        self.predecessors = _co.defaultdict(set)
+        self.predecessors = defaultdict(set)
         self_loops = 0
         redundant_edges = 0
         if edges is not None:
@@ -92,7 +91,7 @@ class DAG(object):
         """
 
         # Collect temporary paths, indexed by the target node
-        temp_paths = _co.defaultdict(lambda: [])
+        temp_paths = defaultdict(lambda: [])
         temp_paths[v] = [(v,)]
 
         # set of unprocessed nodes
@@ -122,7 +121,7 @@ class DAG(object):
 
         # (mapped) paths that can be continued
         # for a given endpoint node (key)
-        continuable = _co.defaultdict(list)
+        continuable = defaultdict(list)
         continuable[v] = [(node_mapping[v],)]
 
         while continuable:
@@ -269,7 +268,7 @@ class DAG(object):
                 file.write(sep.join(edge)+'\n')
 
     @classmethod
-    def read_file(cls, filename, sep=',', maxlines=_sys.maxsize, mapping=None):
+    def read_file(cls, filename, sep=',', maxlines=sys.maxsize, mapping=None):
         """
         Reads a directed acyclic graph from a file
         containing an edge list of the form

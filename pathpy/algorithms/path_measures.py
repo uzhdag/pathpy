@@ -22,16 +22,15 @@
 
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
-import collections as _co
+from collections import defaultdict
 
-import numpy as _np
-import scipy.sparse.linalg as _sla
+import numpy as np
+import scipy.sparse.linalg as sla
 
-from pathpy import HigherOrderNetwork as _HigherOrderNetwork
-from pathpy import Log as _Log
-from pathpy.log import Severity as _Severity
+from pathpy import HigherOrderNetwork
+from pathpy.utils import Log, Severity
 from pathpy import Paths
-from pathpy.exception import PathpyError
+from pathpy.utils import PathpyError
 
 
 __all__ = ['betweenness_centrality', 'closeness_centrality', 'node_traversals',
@@ -55,7 +54,7 @@ def betweenness_centrality(paths, normalized=False):
     dict
     """
     assert isinstance(paths, Paths), "paths must be an instance of pathpy.Paths"
-    node_centralities = _co.defaultdict(lambda: 0)
+    node_centralities = defaultdict(lambda: 0)
     shortest_paths = paths.shortest_paths()
 
     for s in shortest_paths:
@@ -92,12 +91,12 @@ def closeness_centrality(paths, normalized=False):
     -------
     dict
     """
-    node_centralities = _co.defaultdict(lambda: 0)
+    node_centralities = defaultdict(lambda: 0)
     shortest_path_lengths = paths.distance_matrix()
 
     for x in shortest_path_lengths:
         for d in shortest_path_lengths[x]:
-            if x != d and shortest_path_lengths[x][d] < _np.inf:
+            if x != d and shortest_path_lengths[x][d] < np.inf:
                 node_centralities[x] += 1.0 / shortest_path_lengths[x][d]
 
     # assign zero values to nodes not occurring
@@ -124,16 +123,16 @@ def node_traversals(paths):
     -------
     dict
     """
-    _Log.add('Calculating node traversals...', _Severity.INFO)
+    Log.add('Calculating node traversals...', Severity.INFO)
 
     # entries capture the number of times nodes are "visited by paths"
     # Note: this is identical to the subpath count of zero-length paths
-    traversals = _co.defaultdict(lambda: 0)
+    traversals = defaultdict(lambda: 0)
 
     for p in paths.paths[0]:
         traversals[p[0]] += paths.paths[0][p].sum()
 
-    _Log.add('finished.', _Severity.INFO)
+    Log.add('finished.', Severity.INFO)
 
     return traversals
 
@@ -153,7 +152,7 @@ def visitation_probabilities(paths):
     -------
     dict
     """
-    _Log.add('Calculating visitation probabilities...', _Severity.INFO)
+    Log.add('Calculating visitation probabilities...', Severity.INFO)
 
     # entries capture the probability that a given node is visited on an arbitrary path
     # Note: this is identical to the subpath count of zero-length paths
@@ -168,7 +167,7 @@ def visitation_probabilities(paths):
     for v in visit_probabilities:
         visit_probabilities[v] /= visits
 
-    _Log.add('finished.', _Severity.INFO)
+    Log.add('finished.', Severity.INFO)
 
     return visit_probabilities
 
@@ -205,10 +204,10 @@ def slow_down_factor(paths, k=2, lanczos_vectors=15, maxiter=1000):
     # NOTE to myself: most of the time goes for construction of the 2nd order
     # NOTE            null graph, then for the 2nd order null transition matrix
 
-    gk = _HigherOrderNetwork(paths, k=k)
-    gkn = _HigherOrderNetwork(paths, k=k, null_model=True)
+    gk = HigherOrderNetwork(paths, k=k)
+    gkn = HigherOrderNetwork(paths, k=k, null_model=True)
 
-    _Log.add('Calculating slow down factor ... ', _Severity.INFO)
+    Log.add('Calculating slow down factor ... ', Severity.INFO)
 
     # Build transition matrices
     Tk = gk.transition_matrix()
@@ -219,19 +218,19 @@ def slow_down_factor(paths, k=2, lanczos_vectors=15, maxiter=1000):
     # NOTE: in order to be more confident to find the one with the largest
     # NOTE: magnitude, see
     # NOTE: https://github.com/scipy/scipy/issues/4987
-    w2 = _sla.eigs(Tk, which="LM", k=2, ncv=lanczos_vectors, return_eigenvectors=False,
+    w2 = sla.eigs(Tk, which="LM", k=2, ncv=lanczos_vectors, return_eigenvectors=False,
+                  maxiter=maxiter)
+    eigen_values2_sorted = np.sort(-np.absolute(w2))
+
+    w2n = sla.eigs(Tkn, which="LM", k=2, ncv=lanczos_vectors, return_eigenvectors=False,
                    maxiter=maxiter)
-    eigen_values2_sorted = _np.sort(-_np.absolute(w2))
+    eigen_values2n_sorted = np.sort(-np.absolute(w2n))
 
-    w2n = _sla.eigs(Tkn, which="LM", k=2, ncv=lanczos_vectors, return_eigenvectors=False,
-                    maxiter=maxiter)
-    eigen_values2n_sorted = _np.sort(-_np.absolute(w2n))
+    Log.add('finished.', Severity.INFO)
 
-    _Log.add('finished.', _Severity.INFO)
-
-    abs_eigen_values2 = _np.abs(eigen_values2_sorted[1])
-    abs_eigen_values2n = _np.abs(eigen_values2n_sorted[1])
-    return _np.log(abs_eigen_values2n) / _np.log(abs_eigen_values2)
+    abs_eigen_values2 = np.abs(eigen_values2_sorted[1])
+    abs_eigen_values2n = np.abs(eigen_values2n_sorted[1])
+    return np.log(abs_eigen_values2n) / np.log(abs_eigen_values2)
 
 
 def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxiter=1000):
@@ -276,19 +275,19 @@ def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxi
         'Only methods MLE or Miller are supported'
 
     # Generate k-order network
-    gk = _HigherOrderNetwork(paths, k=k)
-    g1 = _HigherOrderNetwork(paths, k=1)
+    gk = HigherOrderNetwork(paths, k=k)
+    g1 = HigherOrderNetwork(paths, k=1)
 
-    _Log.add('Calculating entropy growth rate ratio ... ', _Severity.INFO)
+    Log.add('Calculating entropy growth rate ratio ... ', Severity.INFO)
 
     # Compute entropy growth rate of observed transition matrix
     adj_matrix = g1.adjacency_matrix(weighted=False, transposed=True)
     tran_mat_k = gk.transition_matrix()
-    leading_eigen_vec_k = _HigherOrderNetwork.leading_eigenvector(
+    leading_eigen_vec_k = HigherOrderNetwork.leading_eigenvector(
         tran_mat_k, normalized=True, lanczos_vecs=lanczos_vectors, maxiter=maxiter
     )
 
-    tran_mat_k.data *= _np.log2(tran_mat_k.data)
+    tran_mat_k.data *= np.log2(tran_mat_k.data)
 
     # Apply Miller correction to the entropy estimation
     if method == 'Miller':
@@ -304,26 +303,26 @@ def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxi
         for p in paths.paths[k]:
             num_obs += paths.paths[k][p].sum()
         print('N = ', num_obs)
-        h_mat_k = (- _np.sum(tran_mat_k * leading_eigen_vec_k) +
+        h_mat_k = (- np.sum(tran_mat_k * leading_eigen_vec_k) +
                    (possible_k_paths - 1) / (2 * num_obs))
     else:
         # simple MLE estimation
-        h_mat_k = - _np.sum(tran_mat_k * leading_eigen_vec_k)
+        h_mat_k = - np.sum(tran_mat_k * leading_eigen_vec_k)
 
-    h_mat_k = _np.absolute(h_mat_k)
+    h_mat_k = np.absolute(h_mat_k)
 
     # Compute entropy rate of null model
-    gk_n = _HigherOrderNetwork(paths, k=k, null_model=True)
+    gk_n = HigherOrderNetwork(paths, k=k, null_model=True)
 
     # For the entropy rate of the null model, no Miller correction is needed
     # since we assume that transitions correspond to the true probabilities
     trans_mat_null = gk_n.transition_matrix()
-    leading_eigen_v_null = _HigherOrderNetwork.leading_eigenvector(trans_mat_null)
-    trans_mat_null.data *= _np.log2(trans_mat_null.data)
-    h_mat_null = -_np.sum(trans_mat_null * leading_eigen_v_null)
-    h_mat_null = _np.absolute(h_mat_null)
+    leading_eigen_v_null = HigherOrderNetwork.leading_eigenvector(trans_mat_null)
+    trans_mat_null.data *= np.log2(trans_mat_null.data)
+    h_mat_null = -np.sum(trans_mat_null * leading_eigen_v_null)
+    h_mat_null = np.absolute(h_mat_null)
 
-    _Log.add('finished.', _Severity.INFO)
+    Log.add('finished.', Severity.INFO)
 
     # Return ratio
     return h_mat_k / h_mat_null
@@ -344,7 +343,7 @@ def betweenness_preference_matrix(paths, v):
 
     """
     # create first-order network
-    g = _HigherOrderNetwork(paths)
+    g = HigherOrderNetwork(paths)
 
     in_degree = len(g.predecessors[v])
     out_degree = len(g.successors[v])
@@ -352,7 +351,7 @@ def betweenness_preference_matrix(paths, v):
     index_succ = {}
     index_pred = {}
 
-    B_v = _np.zeros(shape=(in_degree, out_degree))
+    B_v = np.zeros(shape=(in_degree, out_degree))
 
     # Create an index-to-node mapping for predecessors and successors
     i = 0
@@ -413,23 +412,23 @@ def betweenness_preference(paths, v, normalized=False, method='MLE'):
 
     # Normalize matrix (equation (3) of the paper)
     # NOTE: P_v has the same shape as B_v
-    P_v = _np.zeros(shape=B_v.shape)
-    S = _np.sum(B_v)
+    P_v = np.zeros(shape=B_v.shape)
+    S = np.sum(B_v)
 
     if S > 0:
         P_v = B_v / S
 
     # Compute marginal probabilities
     # Marginal probabilities P^v_d = \sum_s'{P_{s'd}}
-    marginal_d = _np.sum(P_v, axis=0)
+    marginal_d = np.sum(P_v, axis=0)
 
     # Marginal probabilities P^v_s = \sum_d'{P_{sd'}}
-    marginal_s = _np.sum(P_v, axis=1)
+    marginal_s = np.sum(P_v, axis=1)
 
     if method == 'Miller':
 
         # total number of samples, i.e. observed two-paths
-        N = _np.sum(B_v)
+        N = np.sum(B_v)
 
         # print('N = ', N)
         # print('B = ', B_v)
@@ -450,12 +449,12 @@ def betweenness_preference(paths, v, normalized=False, method='MLE'):
         H_ds = 0
         for s in range(len(marginal_s)):
             # number of two paths s -> v -> * observed in the data
-            N_s = _np.sum(B_v[s, :])
+            N_s = np.sum(B_v[s, :])
 
             # print('N(s=' + str(s) + ') = ' +  str(N_s))
 
             # probabilities of all destinations, given the particular source s
-            p_ds = B_v[s, :] / _np.sum(B_v[s, :])
+            p_ds = B_v[s, :] / np.sum(B_v[s, :])
 
             # print('P(D|S=' + str(s) + ') = '+ str(p_ds))
 
@@ -481,22 +480,22 @@ def betweenness_preference(paths, v, normalized=False, method='MLE'):
         # H_ds = 0
 
         # for s in range(len(marginal_s)):
-        #    print('s = ' + str(s) + ': ' + str(_np.sum(P_v[s,:])))
-        #    p_ds = P_v[s,:]/_np.sum(P_v[s,:])
+        #    print('s = ' + str(s) + ': ' + str(np.sum(P_v[s,:])))
+        #    p_ds = P_v[s,:]/np.sum(P_v[s,:])
         #    H_ds += marginal_s[s] * Paths.__Entropy(p_ds)
 
         # Alternative calculation (without explicit entropies)
         # build mask for non-zero elements
-        row, col = _np.nonzero(P_v)
+        row, col = np.nonzero(P_v)
         pv = P_v[(row, col)]
-        marginal = _np.outer(marginal_s, marginal_d)
-        log_argument = _np.divide(pv, marginal[(row, col)])
-        I = _np.dot(pv, _np.log2(log_argument))
+        marginal = np.outer(marginal_s, marginal_d)
+        log_argument = np.divide(pv, marginal[(row, col)])
+        I = np.dot(pv, np.log2(log_argument))
 
     # I = H_d - H_ds
 
     if normalized:
-        I = I / _np.min([H_s, H_d])
+        I = I / np.min([H_s, H_d])
 
     return I
 
@@ -524,16 +523,16 @@ def _entropy(prob, possible_outcomes=None, sample_size=None, method='MLE'):
     """
     assert method in ["MLE", "Miller"], "method must be one of 'MLE' or 'Miller'"
     if method == 'MLE':
-        idx = _np.nonzero(prob)
-        return -_np.inner(_np.log2(prob[idx]), prob[idx])
+        idx = np.nonzero(prob)
+        return -np.inner(np.log2(prob[idx]), prob[idx])
     elif method == 'Miller':
         assert (possible_outcomes is not None) and (sample_size is not None)
         if sample_size == 0:
             return 0
 
-        idx = _np.nonzero(prob)
+        idx = np.nonzero(prob)
 
         addition = (possible_outcomes - 1) / (2 * sample_size)
-        return -_np.inner(_np.log2(prob[idx]), prob[idx]) + addition
+        return -np.inner(np.log2(prob[idx]), prob[idx]) + addition
     else:
         raise PathpyError("method {} not supported".format(method))

@@ -22,15 +22,12 @@
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
 
-import collections as _co
-
+from collections import defaultdict
 import numpy as _np
-
 import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
 
-from pathpy import Log
-from pathpy.log import Severity
+from pathpy.utils import Log, Severity
 
 
 class HigherOrderNetwork:
@@ -97,16 +94,16 @@ class HigherOrderNetwork:
         self.separator = separator
 
         # A dictionary containing the sets of successors of all nodes
-        self.successors = _co.defaultdict(set)
+        self.successors = defaultdict(set)
 
         # A dictionary containing the sets of predecessors of all nodes
-        self.predecessors = _co.defaultdict(set)
+        self.predecessors = defaultdict(set)
 
         # A dictionary containing the out-degrees of all nodes
-        self.outdegrees = _co.defaultdict(lambda: 0.0)
+        self.outdegrees = defaultdict(lambda: 0.0)
 
         # A dictionary containing the in-degrees of all nodes
-        self.indegrees = _co.defaultdict(lambda: 0.0)
+        self.indegrees = defaultdict(lambda: 0.0)
 
         # NOTE: edge weights, as well as in- and out weights of nodes are
         # numpy arrays consisting of two weight components [w0, w1]. w0
@@ -118,13 +115,13 @@ class HigherOrderNetwork:
         # weight of edge (a-b, b-c) is (0,1).
 
         # A dictionary containing edges as well as edge weights
-        self.edges = _co.defaultdict(lambda: _np.array([0., 0.]))
+        self.edges = defaultdict(lambda: _np.array([0., 0.]))
 
         # A dictionary containing the weighted in-degrees of all nodes
-        self.inweights = _co.defaultdict(lambda: _np.array([0., 0.]))
+        self.inweights = defaultdict(lambda: _np.array([0., 0.]))
 
         # A dictionary containing the weighted out-degrees of all nodes
-        self.outweights = _co.defaultdict(lambda: _np.array([0., 0.]))
+        self.outweights = defaultdict(lambda: _np.array([0., 0.]))
 
         if k > 1:
             # For k>1 we need the first-order network to generate the null model
@@ -443,7 +440,7 @@ class HigherOrderNetwork:
         Log.add('Calculating distance matrix in higher-order network '
                 '(k = %s) ...' % self.order, Severity.INFO)
 
-        dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
+        dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
         # assign first the default weight of 1
         for e in self.edges:
@@ -472,8 +469,8 @@ class HigherOrderNetwork:
         Log.add('Calculating shortest paths in higher-order network '
                 '(k = %s) ...' % self.order, Severity.INFO)
 
-        dist = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
-        shortest_paths = _co.defaultdict(lambda: _co.defaultdict(set))
+        dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+        shortest_paths = defaultdict(lambda: defaultdict(set))
 
         for e in self.edges:
             dist[e[0]][e[1]] = 1
@@ -509,7 +506,7 @@ class HigherOrderNetwork:
         """
 
         dist = self.distance_matrix()
-        dist_first = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
+        dist_first = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
         # calculate distances between first-order nodes based on distance in
         # higher-order topology
@@ -551,9 +548,9 @@ class HigherOrderNetwork:
         # nonlocal variables (!)
         index = 0
         S = []
-        indices = _co.defaultdict(lambda: None)
-        low_link = _co.defaultdict(lambda: None)
-        on_stack = _co.defaultdict(lambda: False)
+        indices = defaultdict(lambda: None)
+        low_link = defaultdict(lambda: None)
+        on_stack = defaultdict(lambda: False)
 
         # Tarjan's algorithm
         def strong_connect(v):
@@ -588,7 +585,7 @@ class HigherOrderNetwork:
             return component
 
         # Get largest strongly connected component
-        components = _co.defaultdict(set)
+        components = defaultdict(set)
         max_size = 0
         max_head = None
         for v in self.nodes:
@@ -816,12 +813,15 @@ class HigherOrderNetwork:
         all_chars = string.ascii_letters + string.digits
         div_id = "".join(random.choice(all_chars) for x in range(8))
 
-        template_file = 'higherordernet_require.html'
         if not use_requirejs:
             template_file = 'higherordernet.html'
+        else:
+            template_file = 'higherordernet_require.html'
 
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'html_templates',
-                               template_file)) as f:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
+
+        with open(os.path.join(html_dir, template_file)) as f:
             html_str = f.read()
 
         html_template = Template(html_str)

@@ -56,7 +56,7 @@ test: ## run tests quickly with the default Python
 	pytest
 
 test-all: ## run tests on every Python version with tox
-	pytest --runslow -vv
+	pytest --runslow 
 
 coverage: ## check code coverage quickly with the default Python
 	pytest --cov pathpy --runslow --latex --cov-report html --cov-report term --doctest-modules

@@ -22,16 +22,16 @@
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
 
-import collections as _co
-import sys as _sys
-import numpy as _np
+from collections import defaultdict
+import sys
+import numpy as np
 
-from pathpy import Paths as _Paths
-from pathpy import Log as _Log
+from pathpy import Paths
+from pathpy.utils import Log
 
 
-def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
-                                maxSubPathLength=_sys.maxsize):
+def paths_from_temporal_network(tempnet, delta=1, maxLength=sys.maxsize,
+                                maxSubPathLength=sys.maxsize):
     """create from a temporal network a Paths object
 
     Calculates the frequency of all time-respecting paths up to maximum length
@@ -78,10 +78,10 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
 
     """
 
-    if maxLength == _sys.maxsize:  # pragma: no cover
-        _Log.add('Extracting time-respecting paths for delta = ' + str(delta) + ' ...')
+    if maxLength == sys.maxsize:  # pragma: no cover
+        Log.add('Extracting time-respecting paths for delta = ' + str(delta) + ' ...')
     else:  # pragma: no cover
-        _Log.add('Extracting time-respecting paths up to length ' + str(maxLength) +
+        Log.add('Extracting time-respecting paths up to length ' + str(maxLength) +
                  ' for delta = ' + str(delta) + ' ...')
 
     # for dictionary p.paths paths[k] contains a list of all
@@ -89,13 +89,13 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
     # a two-dimensional counter whose first component counts the number of
     # occurrences of p as subpath of a longer path and whose second component counts
     # the number of occurrences of p as "real" path
-    p = _Paths()
+    p = Paths()
 
     p.max_subpath_length = maxSubPathLength
     # a dictionary containing paths that can still be extended
     # by future time-stamped links
     # candidates[t][v] is a set of paths which end at time t in node v
-    candidates = _co.defaultdict(lambda: _co.defaultdict(lambda: set()))
+    candidates = defaultdict(lambda: defaultdict(lambda: set()))
 
     # Note that here we only extract **longest** time-respecting
     # paths, since we will use later the expandSubpaths function to calculate statistics
@@ -173,11 +173,11 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=_sys.maxsize,
         path = (x[0][0],)
         for edge in x:
             path += (edge[1],)
-        p.paths[len(x)][path] += _np.array([0, 1])
+        p.paths[len(x)][path] += np.array([0, 1])
 
     # expand sub paths of longest paths
     p.expand_subpaths()
 
-    _Log.add('finished.')
+    Log.add('finished.')
 
     return p

@@ -21,13 +21,12 @@
 
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
-import collections as _co
-import sys as _sys
-import copy as _copy
+from collections import defaultdict
+import sys
+import copy
 
-import numpy as _np
-from pathpy import Log
-from pathpy.log import Severity
+import numpy as np
+from pathpy.utils import Log, Severity
 
 
 class Paths:
@@ -54,8 +53,8 @@ class Paths:
         #    subpath of a longer path, and j refers to the number of times p
         #    occurs as a *real* or *longest* path (i.e. not being a subpath
         #    of a longer path)
-        self.paths = _co.defaultdict(
-            lambda: _co.defaultdict(lambda: _np.array([0.0, 0.0])))
+        self.paths = defaultdict(
+            lambda: defaultdict(lambda: np.array([0.0, 0.0])))
 
         # The character used to separate nodes on paths
         self.separator = ','
@@ -67,7 +66,7 @@ class Paths:
         #  set the maximum sub path length to K. By default, sub paths of any length
         # will be calculated. Note that, independent of the sub path calculation
         # longest path of any length will be considered in the likelihood calculation!
-        self.max_subpath_length = _sys.maxsize
+        self.max_subpath_length = sys.maxsize
 
     def summary(self):
         """
@@ -84,17 +83,17 @@ class Paths:
         average_length = 0
         for k in sorted(self.paths):
             paths_ = self.paths[k]
-            values_ = _np.array(list(paths_.values()))
-            v_0 = _np.sum(values_[:, 0])
-            v_1 = _np.sum(values_[:, 1])
+            values_ = np.array(list(paths_.values()))
+            v_0 = np.sum(values_[:, 0])
+            v_1 = np.sum(values_[:, 1])
             total_paths += [v_0 + v_1]
             sub_path_sum += [v_0]
             l_path_sum += [v_1]
             average_length += v_1 * k
             if paths_:
                 max_path_length = max(max_path_length, k)
-        if _np.sum(l_path_sum) > 0:
-            average_length = average_length / _np.sum(l_path_sum)
+        if np.sum(l_path_sum) > 0:
+            average_length = average_length / np.sum(l_path_sum)
 
         summary_fmt = (
             "Total path count: \t\t{lpsum} \n"
@@ -109,10 +108,10 @@ class Paths:
                           '[ {unique_paths_longer} / {spsum} / {total_paths} ]\n'
 
         summary_info = {
-            "lpsum": _np.sum(l_path_sum),
+            "lpsum": np.sum(l_path_sum),
             "unique_paths": self.unique_paths(),
-            "spsum": _np.sum(sub_path_sum),
-            "total_paths": _np.sum(total_paths),
+            "spsum": np.sum(sub_path_sum),
+            "total_paths": np.sum(total_paths),
             "len_nodes": len(self.paths[0]),
             "len_first_path": len(self.paths[1]),
             "maxL": max_path_length,
@@ -145,7 +144,7 @@ class Paths:
 
 
         """
-        lengths = _co.defaultdict(lambda: _np.array([0., 0.]))
+        lengths = defaultdict(lambda: np.array([0., 0.]))
 
         for k in self.paths:
             for p in self.paths[k]:
@@ -165,7 +164,7 @@ class Paths:
             Default operator +, which returns the sum of two Path objects
         """
         p_sum = Paths()
-        p_sum.paths = _copy.deepcopy(self.paths)
+        p_sum.paths = copy.deepcopy(self.paths)
         for p_length in other.paths:
             for p in other.paths[p_length]:
                 p_sum.paths[p_length][p] += other.paths[p_length][p]
@@ -341,7 +340,7 @@ class Paths:
         p = Paths()
 
         p.separator = separator
-        p.max_subpath_length = _sys.maxsize
+        p.max_subpath_length = sys.maxsize
 
         with open(filename, 'r') as f:
             Log.add('Reading edge data ... ')
@@ -366,9 +365,9 @@ class Paths:
         return p
 
     @classmethod
-    def read_file(cls, filename, separator=',', frequency=False, maxlines=_sys.maxsize,
-                  max_ngram_length=_sys.maxsize, expand_sub_paths=True,
-                  max_subpath_length=_sys.maxsize):
+    def read_file(cls, filename, separator=',', frequency=False, maxlines=sys.maxsize,
+                  max_ngram_length=sys.maxsize, expand_sub_paths=True,
+                  max_subpath_length=sys.maxsize):
         """Read path data in ngram format.
 
         Reads path data from a file containing multiple lines of n-grams of the form
@@ -673,7 +672,7 @@ class Paths:
 
         return contained_paths
 
-    def filter_nodes(self, node_filter, min_length=0, max_length=_sys.maxsize):
+    def filter_nodes(self, node_filter, min_length=0, max_length=sys.maxsize):
         """Returns a new paths object which contains only paths between nodes in a given
         filter set. For each of the paths in the current Paths object, the set of
         maximally contained subpaths between nodes in node_filter is extracted.
@@ -741,7 +740,7 @@ class Paths:
         Calculates shortest path distances between all pairs of
         nodes based on the observed shortest paths (and subpaths)
         """
-        shortest_path_lengths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
+        shortest_path_lengths = defaultdict(lambda: defaultdict(lambda: np.inf))
 
         Log.add('Calculating distance matrix based on empirical paths ...', Severity.INFO)
         # Node: no need to initialize shortest_path_lengths[v][v] = 0
@@ -763,8 +762,8 @@ class Paths:
         Calculates all observed shortest paths (and subpaths) between
         all pairs of nodes
         """
-        shortest_paths = _co.defaultdict(lambda: _co.defaultdict(set))
-        shortest_path_lengths = _co.defaultdict(lambda: _co.defaultdict(lambda: _np.inf))
+        shortest_paths = defaultdict(lambda: defaultdict(set))
+        shortest_path_lengths = defaultdict(lambda: defaultdict(lambda: np.inf))
 
         Log.add('Calculating shortest paths based on empirical paths ...', Severity.INFO)
 

@@ -22,13 +22,13 @@
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
 
-import collections as _co
+from collections import defaultdict
+import numpy as np
 
-import numpy as _np
+from pathpy.utils import Log
 
-from pathpy import Log
 
-_np.seterr(all='warn')
+np.seterr(all='warn')
 
 
 class MarkovSequence:
@@ -61,7 +61,7 @@ class MarkovSequence:
         assert self.sequence, "Error: Empty sequence"
 
         # MLE fit of transition probabilities
-        self.P[k] = _co.defaultdict(lambda: _co.defaultdict(lambda: 0.0))
+        self.P[k] = defaultdict(lambda: defaultdict(lambda: 0.0))
 
         Log.add('Fitting Markov model with order k = ' + str(k))
 
@@ -101,7 +101,7 @@ class MarkovSequence:
             mem += (s,)
 
         for s in self.sequence[k:]:
-            L += _np.log(self.P[k][mem][s])
+            L += np.log(self.P[k][mem][s])
 
             # shift memory by one element
             mem = mem[1:] + (s,)
@@ -109,7 +109,7 @@ class MarkovSequence:
         if log:
             return L
 
-        return _np.exp(L)
+        return np.exp(L)
 
     def bic(self, k=1, m=1):
         """ Returns the Bayesian Information Criterion
@@ -132,7 +132,7 @@ class MarkovSequence:
         # effectively reducing the degrees of freedom by a factor of s, i.e. we have
         # s^2-s^1. Generalizing this to order k, we arrive at
         # s^k * (s-1) = s^(k+1)-s^k degrees of freedom
-        bic = _np.log(n) * (s**k - s**m) * (s-1) - 2.0 * (L_k-L_m)
+        bic = np.log(n) * (s ** k - s ** m) * (s - 1) - 2.0 * (L_k - L_m)
 
         return bic
 
@@ -186,7 +186,7 @@ class MarkovSequence:
             orders.append(maxOrder)
 
             # return order at which likelihood is maximized
-            return orders[_np.argmax(values)]
+            return orders[np.argmax(values)]
 
         # return order at which BIC/AIC are minimized
-        return orders[_np.argmin(values)]
+        return orders[np.argmin(values)]
