@@ -29,8 +29,7 @@ import numpy as _np
 import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
 
-from pathpy import Log
-from pathpy.log import Severity
+from pathpy.utils import Log, Severity
 
 
 class Network:
@@ -230,12 +229,15 @@ class Network:
         all_chars = string.ascii_letters + string.digits
         div_id = "".join(random.choice(all_chars) for x in range(8))
 
-        template_file = 'higherordernet_require.html'
         if not use_requirejs:
             template_file = 'higherordernet.html'
+        else:
+            template_file = 'higherordernet_require.html'
 
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'html_templates',
-                               template_file)) as f:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
+
+        with open(os.path.join(html_dir, template_file)) as f:
             html_str = f.read()
 
         html_template = Template(html_str)
