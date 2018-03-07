@@ -6,6 +6,7 @@ __version__ = '2.0.0'
 
 from .log import Log, Severity
 from .temporal_network import TemporalNetwork
+from .network import Network
 from .paths import Paths
 from .higher_order_network import HigherOrderNetwork
 from .multi_order_model import MultiOrderModel
