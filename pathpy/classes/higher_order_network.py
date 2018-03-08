@@ -25,11 +25,10 @@
 from collections import defaultdict
 import numpy as _np
 import scipy.sparse as _sparse
-import scipy.sparse.linalg as _sla
 
-from pathpy.utils import Log, Severity
 from pathpy.classes.network import Network
 from pathpy.algorithms import shortest_paths
+
 
 class HigherOrderNetwork(Network):
     """
@@ -93,15 +92,15 @@ class HigherOrderNetwork(Network):
         # For separator '-', the name of a second-order node will be 'a-b'.
         self.separator = separator
 
-        # NOTE: In a higher-order network, edge weights as well as in- and out 
-        # weights of nodes are numpy arrays consisting of two weight components [w0, w1]. 
+        # NOTE: In a higher-order network, edge weights as well as in- and out
+        # weights of nodes are numpy arrays consisting of two weight components [w0, w1].
         # w0 counts the weight of an edge based on its occurrence in a subpaths
         # while w1 counts the weight of an edge based on its occurrence in
         # a longest path. As an illustrating example, consider the single
         # path a -> b -> c. In the first-order network, the weights of edges
         # (a,b) and (b,c) are both (1,0). In the second-order network, the
         # weight of edge (a-b, b-c) is (0,1).
-        # Here, we will store these weights (as well as in- and out-degrees in 
+        # Here, we will store these weights (as well as in- and out-degrees in
         # node and edge attributes)
 
         if k > 1:

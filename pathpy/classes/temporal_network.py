@@ -821,7 +821,7 @@ class TemporalNetwork:
 
         # for the inner HTML generated from the default templates, add surrounding DOCTYPE and body
         # needed for a stand-alone file
-        if template_file == None:
+        if template_file is None:
             html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
         with open(filename, 'w+') as f:
             f.write(html)

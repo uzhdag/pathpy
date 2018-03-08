@@ -17,22 +17,22 @@ def test_init(random_paths, k):
     assert len(multi.layers) == k+1
 
 
-@pytest.mark.slow
-@pytest.mark.parametrize('k', (1, 2))
-def test_parallel(random_paths, k):
-    """assert that the parallel calculation is equal to the
-    sequential"""
-    p = random_paths(90, 0, 20)
-    multi_seq = pp.MultiOrderModel(p, max_order=k)
-
-    pp.ENABLE_MULTICORE_SUPPORT = True
-    assert pp.ENABLE_MULTICORE_SUPPORT
-
-    multi_parallel = pp.MultiOrderModel(p, max_order=k)
-
-    assert multi_parallel.model_size(k) == multi_seq.model_size(k)
-    for k in multi_parallel.transition_matrices:
-        assert np.sum(multi_parallel.transition_matrices[k] - multi_seq.transition_matrices[k]) == pytest.approx(0)
+# @pytest.mark.slow
+# @pytest.mark.parametrize('k', (1, 2))
+# def test_parallel(random_paths, k):
+#     """assert that the parallel calculation is equal to the
+#     sequential"""
+#     p = random_paths(90, 0, 20)
+#     multi_seq = pp.MultiOrderModel(p, max_order=k)
+#
+#     pp.ENABLE_MULTICORE_SUPPORT = True
+#     assert pp.ENABLE_MULTICORE_SUPPORT
+#
+#     multi_parallel = pp.MultiOrderModel(p, max_order=k)
+#
+#     assert multi_parallel.model_size(k) == multi_seq.model_size(k)
+#     for k in multi_parallel.transition_matrices:
+#         assert np.sum(multi_parallel.transition_matrices[k] - multi_seq.transition_matrices[k]) == pytest.approx(0)
 
 
 # TODO: how to properly test this function?

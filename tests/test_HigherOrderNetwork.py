@@ -26,7 +26,7 @@ import pathpy as pp
 import pytest
 import numpy as np
 import itertools
-from pathpy.algorithms import shortest_paths 
+from pathpy.algorithms import shortest_paths
 
 
 slow = pytest.mark.slow

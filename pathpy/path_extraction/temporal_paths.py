@@ -30,8 +30,8 @@ from pathpy import Paths
 from pathpy.utils import Log
 
 
-def paths_from_temporal_network(tempnet, delta=1, maxLength=sys.maxsize,
-                                maxSubPathLength=sys.maxsize):
+def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
+                                max_subpath_length=sys.maxsize):
     """create from a temporal network a Paths object
 
     Calculates the frequency of all time-respecting paths up to maximum length
@@ -55,7 +55,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=sys.maxsize,
         (u,v;t) (v,w;t+1). Every time-stamped edge is further considered a path of
         length one, i.e. for maxLength=1 this function will simply return the
         statistics of time-stamped edges.
-    maxLength : int
+    max_length : int
         Indicates the maximum length up to which time-respecting paths should be
         calculated, which can be limited due to computational efficiency.
         A value of k will generate all time-respecting paths consisting of up to k
@@ -63,7 +63,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=sys.maxsize,
         order of k requires to extract time-respecting paths with *at least* length k.
         If a limitation of the maxLength is not required for computational reasons,
         this parameter should not be set (as it will change the statistics of paths)
-    maxSubPathLength : int
+    max_subpath_length : int
         This can be used to limit the calculation of sub path statistics to a given
         maximum length. This is useful, as the statistics of sub paths of length k
         are only needed to fit a higher-order model with order k. Hence, if we know
@@ -78,10 +78,10 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=sys.maxsize,
 
     """
 
-    if maxLength == sys.maxsize:  # pragma: no cover
+    if max_length == sys.maxsize:  # pragma: no cover
         Log.add('Extracting time-respecting paths for delta = ' + str(delta) + ' ...')
     else:  # pragma: no cover
-        Log.add('Extracting time-respecting paths up to length ' + str(maxLength) +
+        Log.add('Extracting time-respecting paths up to length ' + str(max_length) +
                  ' for delta = ' + str(delta) + ' ...')
 
     # for dictionary p.paths paths[k] contains a list of all
@@ -91,7 +91,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=sys.maxsize,
     # the number of occurrences of p as "real" path
     p = Paths()
 
-    p.max_subpath_length = maxSubPathLength
+    p.max_subpath_length = max_subpath_length
     # a dictionary containing paths that can still be extended
     # by future time-stamped links
     # candidates[t][v] is a set of paths which end at time t in node v
@@ -137,7 +137,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=sys.maxsize,
 
                             # we add the newly found path as a candidate for paths
                             # which can be continued by future edges
-                            if len(new_path) < maxLength:
+                            if len(new_path) < max_length:
                                 candidates[t][e[1]].add(new_path)
 
                             # delete candidate c, because from now on
@@ -150,7 +150,7 @@ def paths_from_temporal_network(tempnet, delta=1, maxLength=sys.maxsize,
                 longest_paths.add(((e[0], e[1], t),))
                 # add edge as candidate path of length one that can be extended by
                 # future edges
-                if maxLength > 1:
+                if max_length > 1:
                     candidates[t][e[1]].add(((e[0], e[1], t),))
 
         # we finished processing time stamp t, so

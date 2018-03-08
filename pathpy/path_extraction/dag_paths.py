@@ -24,12 +24,12 @@
 
 import sys
 
-from pathpy import Paths
+from pathpy.classes.paths import Paths
 from pathpy.utils import Log, Severity
 from pathpy import DAG
 
 
-def paths_from_dag(dag, node_mapping=None, maxSubPathLength=sys.maxsize):
+def paths_from_dag(dag, node_mapping=None, max_subpath_length=sys.maxsize):
     """    Extracts pathway statistics from a directed acyclic graph.
     For this, all paths between all roots (zero incoming links)
     and all leafs (zero outgoing link) will be constructed.
@@ -38,7 +38,7 @@ def paths_from_dag(dag, node_mapping=None, maxSubPathLength=sys.maxsize):
     ----------
     dag: DAG
     node_mapping
-    maxSubPathLength
+    max_subpath_length
 
     Returns
     -------
@@ -54,7 +54,7 @@ def paths_from_dag(dag, node_mapping=None, maxSubPathLength=sys.maxsize):
     else:
         # path object which will hold the detected (projected) paths
         p = Paths()
-        p.max_subpath_length = maxSubPathLength
+        p.max_subpath_length = max_subpath_length
         Log.add('Creating paths from directed acyclic graph', Severity.INFO)
         n = 0
 

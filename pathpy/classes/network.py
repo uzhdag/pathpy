@@ -34,29 +34,31 @@ from pathpy.utils import Log, Severity
 
 class Network:
     """
-    Instances of this class capture a graph or network 
+    Instances of this class capture a graph or network
     that can be directed, undirected, unweighted or weighted
     """
 
     def __init__(self, directed=False):
         """
-        Generates an empty network.       
+        Generates an empty network.
         """
 
-        self.directed = directed 
+        self.directed = directed
 
         # A dictionary containing nodes as well as node properties
-        self.nodes = _co.defaultdict(lambda: {})        
+        self.nodes = _co.defaultdict(dict)
 
         # A dictionary containing edges as well as edge properties
-        self.edges = _co.defaultdict(lambda: {})
+        if not directed:
+            self.edges = UnorderedDict()
+        else:
+            self.edges = _co.defaultdict(dict)
 
-         # A dictionary containing the sets of successors of all nodes
+        # A dictionary containing the sets of successors of all nodes
         self.successors = _co.defaultdict(set)
 
         # A dictionary containing the sets of predecessors of all nodes
-        self.predecessors = _co.defaultdict(set)       
-
+        self.predecessors = _co.defaultdict(set)
 
     @classmethod
     def read_edges(cls, filename, separator=',', weighted=False, directed=False):
@@ -76,18 +78,18 @@ class Network:
             path to edgelist file
         separator : str
             character separating the nodes
-        weight : bool
+        weighted : bool
             is a weight given? if ``True`` it is the last element in the edge
             (i.e. ``a,b,2``)
-        undirected : bool
+        directed : bool
             are the edges directed or undirected
-        
+
         Returns
         -------
         Network
             a ``Network`` object obtained from the edgelist
         """
-        n = Network(directed)
+        n = cls(directed)
 
         with open(filename, 'r') as f:
             Log.add('Reading edge list ... ')
@@ -113,7 +115,7 @@ class Network:
 
                 source target
 
-        and where each row refers to a link. Any additional columns will be used as 
+        and where each row refers to a link. Any additional columns will be used as
         edge properties
 
         Important: Since columns are accessed by name this function requires that a
@@ -126,13 +128,13 @@ class Network:
         ----------
         cursor:
             The SQLite cursor to fetch rows
-        directed: bool        
+        directed: bool
 
         Returns
         -------
 
         """
-        n = Network(directed=directed)
+        n = cls(directed=directed)
 
         assert cursor.connection.row_factory, \
             'Cannot access columns by name. Please set ' \
@@ -163,8 +165,7 @@ class Network:
                 self.nodes[v]['outdegree'] = 0
             else:
                 self.nodes[v]['degree'] = 0
-    
-    
+
     def remove_node(self, v):
         """
         Removes a node from the network
@@ -194,7 +195,7 @@ class Network:
             del self.nodes[v]
             del self.successors[v]
             del self.predecessors[v]
-           
+
 
     def add_edge(self, v, w, **kwargs):
         """
@@ -225,13 +226,13 @@ class Network:
             self.nodes[v]['degree'] = len(self.successors[v])
             self.nodes[w]['degree'] = len(self.successors[w])
 
-            S = [self.edges[tuple(x for x in sorted([v,w]))]['weight'] for w in self.successors[v]]
+            S = [self.edges[tuple(x for x in sorted([v, w]))]['weight'] for w in self.successors[v]]
             if len(S) > 0:
-                self.nodes[v]['outweight'] =  sum(S)
+                self.nodes[v]['outweight'] = sum(S)
                 self.nodes[v]['inweight'] = self.nodes[v]['outweight']
             S = [self.edges[tuple(x for x in sorted([w,v]))]['weight'] for v in self.successors[w]]
-            if len(S)>0:
-                self.nodes[w]['outweight'] =  sum( S )
+            if len(S) > 0:
+                self.nodes[w]['outweight'] = sum(S)
                 self.nodes[w]['inweight'] = self.nodes[w]['outweight']
         else:
             self.nodes[v]['outdegree'] = len(self.successors[v])
@@ -239,37 +240,38 @@ class Network:
             self.nodes[w]['outdegree'] = len(self.successors[w])
             self.nodes[w]['indegree'] = len(self.predecessors[w])
 
-            # Note: Weights will be 0 for nodes with empty successors or predecessors. This is a problem 
-            # for higher-order networks, where the zero weight is assumed to be a vector (0,0), Not updating
-            # weights in this case will ensure that we keep the initial value of weights
+            # Note: Weights will be 0 for nodes with empty successors or predecessors. This is a
+            # problem for higher-order networks, where the zero weight is assumed to be a vector
+            # (0,0), Not updating weights in this case will ensure that we keep the initial value
+            # of weights
 
-            S = [ self.edges[(v,w)]['weight'] for w in self.successors[v] ]
+            S = [self.edges[(v, w)]['weight'] for w in self.successors[v]]
             if len(S) > 0:
-                self.nodes[v]['outweight'] =  sum( S )
-            S = [ self.edges[(w,v)]['weight'] for w in self.predecessors[v] ]
+                self.nodes[v]['outweight'] = sum(S)
+            S = [self.edges[(w, v)]['weight'] for w in self.predecessors[v]]
             if len(S) > 0:
-                self.nodes[v]['inweight'] =  sum( S )
-            S = [ self.edges[(w,v)]['weight'] for v in self.successors[w] ]
+                self.nodes[v]['inweight'] = sum(S)
+            S = [self.edges[(w, v)]['weight'] for v in self.successors[w]]
             if len(S) > 0:
-                self.nodes[w]['outweight'] =  sum( S )
-            S = [ self.edges[(v,w)]['weight'] for v in self.predecessors[w] ]
+                self.nodes[w]['outweight'] = sum(S)
+            S = [self.edges[(v, w)]['weight'] for v in self.predecessors[w]]
             if len(S) > 0:
-                self.nodes[w]['inweight'] =  sum( S )
+                self.nodes[w]['inweight'] = sum(S)
 
 
     def find_nodes(self, select_node = lambda v: True):
-        """ 
+        """
         Returns all nodes that satisfy a given condition
         """
-        return [ n for n in self.nodes if select_node(self.nodes[n])]
+        return [n for n in self.nodes if select_node(self.nodes[n])]
 
-    def find_edges(self, select_nodes = lambda v,w: True, select_edges = lambda e: True):
-        """ 
-        Returns all edges that satisfy a given condition. Edges can be selected based 
+    def find_edges(self, select_nodes=lambda v, w: True, select_edges=lambda e: True):
+        """
+        Returns all edges that satisfy a given condition. Edges can be selected based
         on attributes of the adjacent nodes as well as attributes of the edge
         """
-        return [ e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e])) ]
-        
+        return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
+
     def vcount(self):
         """ Returns the number of nodes """
         return len(self.nodes)
@@ -294,7 +296,7 @@ class Network:
         column t and can be accessed via A[s,t].
 
         Parameters
-        ----------       
+        ----------
         weighted: bool
             if set to False, the function returns a binary adjacency matrix.
             If set to True, adjacency matrix entries will contain the weight of an edge.
@@ -323,7 +325,7 @@ class Network:
         # create array with non-zero entries
         if not weighted:
             data = _np.ones(len(self.edges.keys()))
-        else:           
+        else:
             data = _np.array([float(e['weight']) for e in self.edges.values()])
 
         shape = (self.vcount(), self.vcount())
@@ -335,7 +337,7 @@ class Network:
         on the network
 
         Parameters
-        ----------    
+        ----------
 
         Returns
         -------
@@ -358,7 +360,7 @@ class Network:
             weight = self.edges[(s, t)]['weight']
             if weight > 0:
                 row.append(node_to_coord[t])
-                col.append(node_to_coord[s])               
+                col.append(node_to_coord[s])
                 assert D[s] > 0, \
                     'Encountered zero out-degree for node "{s}" ' \
                     'while weight of link ({s}, {t}) is non-zero.'.format(s=s, t=t)
@@ -381,7 +383,7 @@ class Network:
 
         Parameters
         ----------
-    
+
         Returns
         -------
 
@@ -505,3 +507,71 @@ class Network:
         html = self._to_html(width=width, height=height, use_requirejs=False)
         with open(filename, 'w+') as f:
             f.write(html)
+
+
+class UnorderedDict(dict):
+    """A dictionary that applies an arbitrary key-altering
+       function before accessing the keys
+
+       Source: https://stackoverflow.com/questions/3387691/how-to-perfectly-override-a-dict
+       """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.store = _co.defaultdict(dict)
+        self.update(dict(*args, **kwargs))  # use the free update to set keys
+
+    def __getitem__(self, key):
+        return self.store[self.__keytransform__(key)]
+
+    def __setitem__(self, key, value):
+        self.store[self.__keytransform__(key)] = value
+
+    def __delitem__(self, key):
+        del self.store[self.__keytransform__(key)]
+
+    def __contains__(self, item):
+        return self.__keytransform__(item) in self.store
+
+    def __iter__(self):
+        return iter(self.store)
+
+    def __len__(self):
+        return len(self.store)
+
+    def __missing__(self, key):
+        return {}
+
+    def keys(self):
+        return self.store.keys()
+
+    def values(self):
+        return self.store.values()
+
+    def items(self):
+        return self.store.items()
+
+    def __keytransform__(self, key):
+        return tuple(sorted(key))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
