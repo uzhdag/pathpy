@@ -153,7 +153,7 @@ class Network:
         Adds a node to a network
         """
         if v not in self.nodes:
-            self.nodes[v] = { **self.nodes[v], **kwargs }
+            self.nodes[v] = {**self.nodes[v], **kwargs}
 
             # set default values if not set already
             if 'inweight' not in self.nodes[v]:
@@ -174,7 +174,7 @@ class Network:
             # remove all incident edges and update neighbors
             if not self.directed:
                 for w in self.successors[v]:
-                    edge = tuple(x for x in sorted([v,w]))
+                    edge = (v,w)
                     self.nodes[w]['degree'] -= 1
                     self.nodes[w]['inweight'] -= self.edges[edge]['weight']
                     self.nodes[w]['outweight'] -= self.edges[edge]['weight']
@@ -204,14 +204,12 @@ class Network:
         self.add_node(v)
         self.add_node(w)
 
-        if not self.directed:
-            edge = tuple(x for x in sorted([v,w]))
-        else:
-            edge = (v,w)
-        self.edges[edge] = { **self.edges[edge], **kwargs}
+        e = (v, w)
 
-        if 'weight' not in self.edges[edge]:
-            self.edges[edge]['weight'] = 1.0
+        self.edges[e] = {**self.edges[e], **kwargs}
+
+        if 'weight' not in self.edges[e]:
+            self.edges[e]['weight'] = 1.0
 
         # update predecessor and successor lists
         self.successors[v].add(w)
@@ -226,12 +224,12 @@ class Network:
             self.nodes[v]['degree'] = len(self.successors[v])
             self.nodes[w]['degree'] = len(self.successors[w])
 
-            S = [self.edges[tuple(x for x in sorted([v, w]))]['weight'] for w in self.successors[v]]
-            if len(S) > 0:
+            S = [self.edges[e]['weight'] for w in self.successors[v]]
+            if S:
                 self.nodes[v]['outweight'] = sum(S)
                 self.nodes[v]['inweight'] = self.nodes[v]['outweight']
-            S = [self.edges[tuple(x for x in sorted([w,v]))]['weight'] for v in self.successors[w]]
-            if len(S) > 0:
+            S = [self.edges[e]['weight'] for v in self.successors[w]]
+            if S:
                 self.nodes[w]['outweight'] = sum(S)
                 self.nodes[w]['inweight'] = self.nodes[w]['outweight']
         else:
@@ -245,17 +243,17 @@ class Network:
             # (0,0), Not updating weights in this case will ensure that we keep the initial value
             # of weights
 
-            S = [self.edges[(v, w)]['weight'] for w in self.successors[v]]
-            if len(S) > 0:
+            S = [self.edges[(v, x)]['weight'] for x in self.successors[v]]
+            if S:
                 self.nodes[v]['outweight'] = sum(S)
-            S = [self.edges[(w, v)]['weight'] for w in self.predecessors[v]]
-            if len(S) > 0:
+            S = [self.edges[(x, v)]['weight'] for x in self.predecessors[v]]
+            if S:
                 self.nodes[v]['inweight'] = sum(S)
-            S = [self.edges[(w, v)]['weight'] for v in self.successors[w]]
-            if len(S) > 0:
+            S = [self.edges[(w, x)]['weight'] for x in self.successors[w]]
+            if S:
                 self.nodes[w]['outweight'] = sum(S)
-            S = [self.edges[(v, w)]['weight'] for v in self.predecessors[w]]
-            if len(S) > 0:
+            S = [self.edges[(x, w)]['weight'] for x in self.predecessors[w]]
+            if S:
                 self.nodes[w]['inweight'] = sum(S)
 
 
