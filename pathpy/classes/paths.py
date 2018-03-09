@@ -580,6 +580,9 @@ class Paths:
         """
         assert path, 'Error: paths needs to contain at least one element'
 
+        for x in path:
+            assert self.separator not in x, 'Error: Node name contains separator character. Choose different separator.'
+
         path_str = path if isinstance(path, str) else tuple(map(str, path))
 
         self.paths[len(path) - 1][path_str] += frequency
@@ -622,6 +625,9 @@ class Paths:
 
         """
         path = tuple(ngram.split(separator))
+        for x in path:
+            assert self.separator not in x, 'Error: Node name contains separator character. Choose different separator.'
+            
         path_length = len(path) - 1
 
         # add the occurrences as *longest* path to the second component of the numpy array
