@@ -98,7 +98,7 @@ class Network:
                 assert len(fields) >= 2, 'Error: malformed line: {0}'.format(line)
 
                 if weighted:
-                    n.add_edge(fields[0], fields[1], weight = int(fields[2]))
+                    n.add_edge(fields[0], fields[1], weight=int(fields[2]))
                 else:
                     n.add_edge(fields[0], fields[1])
 
@@ -174,7 +174,7 @@ class Network:
             # remove all incident edges and update neighbors
             if not self.directed:
                 for w in self.successors[v]:
-                    edge = (v,w)
+                    edge = (v, w)
                     self.nodes[w]['degree'] -= 1
                     self.nodes[w]['inweight'] -= self.edges[edge]['weight']
                     self.nodes[w]['outweight'] -= self.edges[edge]['weight']
@@ -184,14 +184,14 @@ class Network:
             else:
                 for w in self.successors[v]:
                     self.nodes[w]['indegree'] -= 1
-                    self.nodes[w]['inweight'] -= self.edges[(v,w)]['weight']
+                    self.nodes[w]['inweight'] -= self.edges[(v, w)]['weight']
                     self.predecessors[w].remove(v)
-                    del self.edges[(v,w)]
+                    del self.edges[(v, w)]
                 for w in self.predecessors[v]:
                     self.nodes[w]['outdegree'] -= 1
-                    self.nodes[w]['outweight'] -= self.edges[(w,v)]['weight']
+                    self.nodes[w]['outweight'] -= self.edges[(w, v)]['weight']
                     self.successors[w].remove(v)
-                    del self.edges[(w,v)]
+                    del self.edges[(w, v)]
             del self.nodes[v]
             del self.successors[v]
             del self.predecessors[v]
@@ -257,7 +257,7 @@ class Network:
                 self.nodes[w]['inweight'] = sum(S)
 
 
-    def find_nodes(self, select_node = lambda v: True):
+    def find_nodes(self, select_node=lambda v: True):
         """
         Returns all nodes that satisfy a given condition
         """
@@ -458,8 +458,7 @@ class Network:
         def fix_node_name(v):
             if v[0].isdigit():
                 return "n_" + v
-            else:
-                return v
+            return v
 
         network_data = {
             'nodes': [{'id': fix_node_name(v), 'group': 1} for v in self.nodes],
@@ -551,25 +550,3 @@ class UnorderedDict(dict):
 
     def __keytransform__(self, key):
         return tuple(sorted(key))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

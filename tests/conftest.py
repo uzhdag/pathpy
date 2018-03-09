@@ -1,8 +1,10 @@
-import pathpy as pp
-import pytest
-import numpy as np
 import os
 import random
+
+import pytest
+import numpy as np
+
+import pathpy as pp
 
 test_directory = os.path.dirname(os.path.abspath(__file__))
 test_data_dir = os.path.join(test_directory, 'test_data')
@@ -80,16 +82,16 @@ def random_paths():
 
 
 def generate_random_network(n=10, m=20, directed=True, weighted=True):
-    
+
     net = pp.Network(directed)
     for i in range(n):
         net.add_node(str(i))
     for i in range(m):
-        v,w = random.sample(list(net.nodes), 2)
+        v, w = random.sample(list(net.nodes), 2)
         if not weighted:
             net.add_edge(v, w)
         else:
-            net.add_edge(v,w, weight=random.randint(0, 10))
+            net.add_edge(v, w, weight=random.randint(0, 10))
     return net
 
 
