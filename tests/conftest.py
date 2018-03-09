@@ -82,7 +82,7 @@ def random_paths():
 
 
 def generate_random_network(n=10, m=20, directed=True, weighted=True):
-
+    """Generate a random Network"""
     net = pp.Network(directed)
     for i in range(n):
         net.add_node(str(i))
@@ -97,6 +97,7 @@ def generate_random_network(n=10, m=20, directed=True, weighted=True):
 
 @pytest.fixture(scope='function')
 def random_network():
+    """Generate a random network"""
     return generate_random_network
 
 
