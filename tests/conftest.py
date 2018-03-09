@@ -2,6 +2,7 @@ import pathpy as pp
 import pytest
 import numpy as np
 import os
+import random
 
 test_directory = os.path.dirname(os.path.abspath(__file__))
 test_data_dir = os.path.join(test_directory, 'test_data')
@@ -76,6 +77,25 @@ def generate_random_path(size, rnd_seed, num_nodes=None):
 def random_paths():
     """Generate a Path with random path sequences"""
     return generate_random_path
+
+
+def generate_random_network(n=10, m=20, directed=True, weighted=True):
+    
+    net = pp.Network(directed)
+    for i in range(n):
+        net.add_node(str(i))
+    for i in range(m):
+        v,w = random.sample(list(net.nodes), 2)
+        if not weighted:
+            net.add_edge(v, w)
+        else:
+            net.add_edge(v,w, weight=random.randint(0, 10))
+    return net
+
+
+@pytest.fixture(scope='function')
+def random_network():
+    return generate_random_network
 
 
 @pytest.fixture()
