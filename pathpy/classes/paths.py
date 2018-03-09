@@ -40,7 +40,7 @@ class Paths:
     given maximum time difference delta.
     """
 
-    def __init__(self):
+    def __init__(self, separator=','):
         """
         Creates an empty Paths object
         """
@@ -57,7 +57,7 @@ class Paths:
             lambda: defaultdict(lambda: np.array([0.0, 0.0])))
 
         # The character used to separate nodes on paths
-        self.separator = ','
+        self.separator = separator
 
         # This can be used to limit the calculation of sub path statistics to a given
         # maximum length. This is useful, as the statistics of sub paths of length k
