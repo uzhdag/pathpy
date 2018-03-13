@@ -203,54 +203,6 @@ def test_get_distance_matrix_empty():
     shortest_paths_dict = p.distance_matrix()
     assert len(shortest_paths_dict) == 0
 
-
-def test_betweenness_centrality(path_from_ngram_file):
-    p = path_from_ngram_file
-    betweenness_centrality = pp.path_measures.betweenness_centrality(p, normalized=False)
-    betweenness = {n: c for n, c in betweenness_centrality.items()}
-    expected = {'b': 2.0, 'a': 3.0, 'e': 0, 'c': 3.0, 'd': 5.0}
-    assert betweenness == expected
-
-
-def test_betweenness_centrality_norm(path_from_ngram_file):
-    p = path_from_ngram_file
-    betweenness_centrality = pp.path_measures.betweenness_centrality(p, normalized=True)
-    betweenness = max(c for c in betweenness_centrality.values())
-    expected_norm_max = 1
-    assert pytest.approx(betweenness) == expected_norm_max
-
-
-def test_closeness_centrality(path_from_ngram_file):
-    p = path_from_ngram_file
-    closeness_centrality = pp.path_measures.closeness_centrality(p, normalized=False)
-    closeness_sum = sum(c for c in closeness_centrality.values())
-    expected_sum = 9.833333333333332
-    assert closeness_sum == pytest.approx(expected_sum)
-
-    nodes = {n for n in closeness_centrality}
-    expected_nodes = {'a', 'b', 'c', 'd', 'e'}
-    assert nodes == expected_nodes
-
-
-def test_closeness_centrality_norm(path_from_ngram_file):
-    p = path_from_ngram_file
-    closeness_centrality = pp.path_measures.closeness_centrality(p, normalized=True)
-    closeness_max = max(c for c in closeness_centrality.values())
-    expected_max = 1
-    assert closeness_max == pytest.approx(expected_max)
-
-
-def test_visitation_probabilities(path_from_ngram_file):
-    p = path_from_ngram_file
-    v_prob = pp.path_measures.visitation_probabilities(p)
-    prob_sum = sum(p for p in v_prob.values())
-    assert prob_sum == pytest.approx(1)
-
-    max_prob = max(p for p in v_prob.values())
-    expected_max = 0.3125
-    assert max_prob == pytest.approx(expected_max)
-
-
 @slow
 def test_entropy_growth_rate_ratio_mle(random_paths):
     p = random_paths(100, 500)
