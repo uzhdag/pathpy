@@ -30,6 +30,7 @@ import scipy.sparse as _sparse
 import scipy.sparse.linalg as _sla
 
 from pathpy.utils import Log, Severity
+from pathpy.utils.exceptions import PathpyError, PathpyNotImplemented
 
 
 class Network:
