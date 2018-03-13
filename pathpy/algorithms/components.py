@@ -30,6 +30,8 @@ from pathpy import Network
 from pathpy.utils import Log, Severity
 from pathpy.utils import PathpyError
 
+__all__ = ['reduce_to_gcc']
+
 
 def reduce_to_gcc(network):
     """Reduces a network to its largest (strongly) connected

@@ -62,6 +62,8 @@ def distance_matrix(network):
 
     return dist
 
+
+
 def shortest_paths(network):
     """
     Calculates all shortest paths between all pairs of
