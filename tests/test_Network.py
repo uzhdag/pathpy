@@ -152,13 +152,15 @@ def test_export_netwokx():
     g = nx.generators.karate_club_graph()
     for i, edge in enumerate(g.edges):
         g.edges[edge]['custom'] = i
-        g.edges[edge]['weight'] = (i % 4) + 1
+        g.edges[edge]['weight'] = (i % 4) + 100
 
     for i, node in enumerate(g.nodes):
         g.nodes[node]['custom'] = "{} unique string".format(i)
 
     net = network_from_networkx(g)
     g_back = network_to_networkx(net)
+
+    nx_degrees = g.degree(weight='weight')
 
     assert len(g_back) == len(g)
     assert len(g_back.edges) == len(g.edges)
@@ -171,4 +173,5 @@ def test_export_netwokx():
 
     for node in g_back.nodes:
         assert g_back.nodes[node]['custom'] == g.nodes[node]['custom']
-
+        assert nx_degrees[node] == net.nodes[node]['inweight']
+        assert nx_degrees[node] == net.nodes[node]['outweight']
