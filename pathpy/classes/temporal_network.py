@@ -219,7 +219,7 @@ class TemporalNetwork:
                 elif header[i] == 'node2' or header[i] == 'target':
                     target_ix = i
                 elif header[i] == 'time' or header[i] == 'timestamp':
-                    time_ix = i
+                    time_ix = i            
 
             assert (source_ix >= 0 and target_ix >= 0), \
                 "Detected invalid header columns: %s" % header
@@ -236,7 +236,7 @@ class TemporalNetwork:
             line = f.readline()
             n = 1
             while line and n <= maxlines:
-                fields = line.rstrip().split(sep)
+                fields = line.rstrip().split(sep)                
                 try:
                     if time_ix >= 0:
                         timestamp = fields[time_ix]
@@ -250,13 +250,16 @@ class TemporalNetwork:
                             t = int(mktime(x.timetuple()))
                     else:
                         t = n
-                    if t >= 0:
+                    if t >= 0 and fields[source_ix] != '' and fields[target_ix] != '':
                         tedge = (fields[source_ix], fields[target_ix], t)
                         tedges.append(tedge)
                         if not directed:
                             tedges.append((fields[target_ix], fields[source_ix], t))
                     else:  # pragma: no cover
-                        msg = 'Ignoring negative timestamp in line {}'.format(n+1)
+                        if fields[source_ix] == '' or fields[target_ix] == '':
+                            msg = 'Ignoring edge with empty node label in line {}'.format(n+1)
+                        else: 
+                            msg = 'Ignoring negative timestamp in line {}'.format(n+1)
                         Log.add(msg, Severity.WARNING)
                 except (IndexError, ValueError):  # pragma: no cover
                     s_line = line.strip()
