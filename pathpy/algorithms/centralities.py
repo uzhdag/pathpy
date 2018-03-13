@@ -64,9 +64,9 @@ def betweenness_centrality(network, normalized=False):
                     if s != d != x:
                         node_centralities[x] += 1.0 / len(all_paths[s][d])
     if normalized:
-        m = max(node_centralities.values())
+        max_centr = max(node_centralities.values())
         for v in node_centralities:
-            node_centralities[v] /= m
+            node_centralities[v] /= max_centr
 
     # assign zero values to nodes not occurring on shortest paths
     for v in network.nodes:
@@ -102,12 +102,14 @@ def _bw(higher_order_net, normalized=False):
     assert isinstance(higher_order_net, HigherOrderNetwork), \
         "arguments must be an instance of HigherOrderNetwork"
 
-    Log.add('Calculating betweenness centralities (k = %s) ...' % higher_order_net.order, Severity.INFO)
+    Log.add('Calculating betweenness centralities (k = %s) ...' % \
+        higher_order_net.order, Severity.INFO)
 
     all_paths = shortest_paths(higher_order_net)
     node_centralities = defaultdict(lambda: 0)
 
     shortest_paths_first_order = defaultdict(lambda: defaultdict(set))
+    shortest_paths_first_order_lengths = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
     for path_1_ord_k in all_paths:
         for path_2_ord_k in all_paths:
@@ -118,8 +120,22 @@ def _bw(higher_order_net, normalized=False):
             # connecting first-order node s1 to d1
             for path_ord_k in all_paths[path_1_ord_k][path_2_ord_k]:
                 # convert k-th order path to first-order path and add
-                shortest_paths_first_order[source_k1][dest_k1].add(
-                    higher_order_net.higher_order_path_to_first_order(path_ord_k))
+                #shortest_paths_first_order[source_k1][dest_k1].add(
+                #    higher_order_net.higher_order_path_to_first_order(path_ord_k))
+
+                p1 = higher_order_net.higher_order_path_to_first_order(path_ord_k)
+                # obtain start node and end node
+                s1 = p1[0]
+                d1 = p1[-1]
+                # compute the length of the first-order path
+                l = len(p1) - 1
+                # if path is a shortest path add it to dictionary
+                if l < shortest_paths_first_order_lengths[s1][d1]:
+                    shortest_paths_first_order_lengths[s1][d1] = l
+                    shortest_paths_first_order[s1][d1] = set()
+                    shortest_paths_first_order[s1][d1].add(p1)
+                elif l == shortest_paths_first_order_lengths[s1][d1]:
+                    shortest_paths_first_order[s1][d1].add(p1)
 
     for source_k1 in shortest_paths_first_order:
         for dest_k1 in shortest_paths_first_order[source_k1]:
@@ -128,11 +144,8 @@ def _bw(higher_order_net, normalized=False):
                 # on path from s1 to d1
                 for v in path_k1[1:-1]:
                     if source_k1 != v != dest_k1:
-                        # print('node ' + x + ': ' + str(1.0 / len(shortest_paths[vk][
-                        # wk])))
-                        node_centralities[v] += 1.0 / (len(shortest_paths_first_order[source_k1][dest_k1]) + higher_order_net.order - 1)
-                        # else:
-                        #    node_centralities[v] += 1.0
+                        l_p = len(shortest_paths_first_order[source_k1][dest_k1])
+                        node_centralities[v] += 1.0 / l_p
     if normalized:
         max_centr = max(node_centralities.values())
         for v in node_centralities:
@@ -146,6 +159,7 @@ def _bw(higher_order_net, normalized=False):
     Log.add('finished.', Severity.INFO)
 
     return node_centralities
+
 
 
 @betweenness_centrality.register(Paths)
@@ -168,7 +182,7 @@ def _bw(paths, normalized=False):
     node_centralities = defaultdict(lambda: 0)
 
     Log.add('Calculating betweenness centralities based on paths ...', Severity.INFO)
-    
+
     all_paths = paths.shortest_paths()
 
     for s in all_paths:
@@ -178,9 +192,9 @@ def _bw(paths, normalized=False):
                     if s != d != x:
                         node_centralities[x] += 1.0 / len(all_paths[s][d])
     if normalized:
-        m = max(node_centralities.values())
+        max_centr = max(node_centralities.values())
         for v in node_centralities:
-            node_centralities[v] /= m
+            node_centralities[v] /= max_centr
 
     # assign zero values to nodes not occurring on shortest paths
     nodes = paths.nodes()
@@ -227,13 +241,14 @@ def closeness_centrality(network, normalized=False):
         node_centralities[v] += 0
 
     if normalized:
-        m = max(node_centralities.values())
+        max_centr = max(node_centralities.values())
         for v in network.nodes:
-            node_centralities[v] /= m
+            node_centralities[v] /= max_centr
 
     Log.add('finished.', Severity.INFO)
 
     return node_centralities
+
 
 
 @closeness_centrality.register(Paths)
@@ -332,6 +347,7 @@ def node_traversals(paths):
     Log.add('finished.', Severity.INFO)
 
     return traversals
+
 
 
 def visitation_probabilities(paths):
@@ -442,6 +458,7 @@ def eigenvector_centrality(network, projection='scaled', include_sub_paths=True)
     Log.add('finished.', Severity.INFO)
 
     return first_order_eigen_vec_cent
+
 
 
 def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
