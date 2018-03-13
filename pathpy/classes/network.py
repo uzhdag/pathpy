@@ -484,9 +484,9 @@ class Network:
         div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
         if not use_requirejs:
-            template_file = 'higherordernet.html'
+            template_file = 'network.html'
         else:
-            template_file = 'higherordernet_require.html'
+            template_file = 'network_require.html'
 
         module_dir = os.path.dirname(os.path.realpath(__file__))
         html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
