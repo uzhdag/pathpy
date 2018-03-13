@@ -506,6 +506,74 @@ class Network:
             f.write(html)
 
 
+
+def network_from_networkx(graph):
+    """method to load a networkx graph into a pathpy.Network instance
+
+    Parameters
+    ----------
+    garph
+
+    Returns
+    -------
+    Network
+    """
+    try:
+        import networkx as nx
+    except ImportError:
+        raise PathpyError("To load a network from networkx it must be installed")
+
+    if isinstance(graph, nx.DiGraph):
+        directed = True
+    elif isinstance(graph, nx.Graph):
+        directed = False
+    else:
+        raise PathpyNotImplemented("At the moment only DiGraph and Graph are supported.")
+
+    net = Network(directed=directed)
+    for node_id in graph.nodes:
+        net.add_node(node_id, **graph.node[node_id])
+
+    for edge in graph.edges:
+        net.add_edge(edge[0], edge[1], **graph.edges[edge])
+
+    return net
+
+
+def network_to_networkx(network):
+    """method to export a pathpy Network to a networkx compatible graph
+
+    Parameters
+    ----------
+    network: Network
+
+    Returns
+    -------
+    networkx Graph or DiGraph
+    """
+    # keys to exclude since they are handled differently in networkx
+    excluded_node_props = {"degree", "inweight", "outweight", "indegree", "outdegree"}
+    try:
+        import networkx as nx
+    except ImportError:
+        raise PathpyError("To export a network to networkx it must be installed")
+
+    directed = network.directed
+    if directed:
+        graph = nx.DiGraph()
+    else:
+        graph = nx.Graph()
+
+    for node_id, node_props in network.nodes.items():
+        valid_props = {k: v for k, v in node_props.items() if k not in excluded_node_props}
+        graph.add_node(node_id, **valid_props)
+
+    for edge, edge_props in network.edges.items():
+        graph.add_edge(*edge, **edge_props)
+
+    return graph
+
+
 class UnorderedDict(dict):
     """A dictionary that applies an arbitrary key-altering
        function before accessing the keys

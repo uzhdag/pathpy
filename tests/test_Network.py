@@ -125,3 +125,50 @@ def test_add_edge(random_network, directed, weighted):
     if not directed:
         assert w in net.predecessors[v]
         assert v in net.successors[w]
+
+
+def test_import_from_networkx():
+    # TODO: add test for weighted networks
+    from pathpy.classes.network import network_from_networkx
+    import networkx as nx
+
+    g = nx.generators.barabasi_albert_graph(20, 10)
+    for i, edge in enumerate(g.edges):
+        g.edges[edge]['custom'] = i
+
+    net = network_from_networkx(g)
+    assert net.vcount() == len(g)
+    assert net.ecount() == len(g.edges)
+    for edge in net.edges:
+        assert net.edges[edge]['custom'] == g.edges[edge]['custom']
+
+
+def test_export_netwokx():
+    # TODO: test directed graph
+    from pathpy.classes.network import network_from_networkx
+    from pathpy.classes.network import network_to_networkx
+    import networkx as nx
+
+    g = nx.generators.karate_club_graph()
+    for i, edge in enumerate(g.edges):
+        g.edges[edge]['custom'] = i
+        g.edges[edge]['weight'] = (i % 4) + 1
+
+    for i, node in enumerate(g.nodes):
+        g.nodes[node]['custom'] = "{} unique string".format(i)
+
+    net = network_from_networkx(g)
+    g_back = network_to_networkx(net)
+
+    assert len(g_back) == len(g)
+    assert len(g_back.edges) == len(g.edges)
+    assert dict(g_back.degree) == dict(g.degree)
+    for edge in g_back.edges:
+        assert net.edges[edge]['weight'] == g.edges[edge]['weight']
+        assert net.edges[edge]['custom'] == g.edges[edge]['custom']
+        assert g_back.edges[edge]['custom'] == g.edges[edge]['custom']
+        assert g_back.edges[edge]['weight'] == g.edges[edge]['weight']
+
+    for node in g_back.nodes:
+        assert g_back.nodes[node]['custom'] == g.nodes[node]['custom']
+
