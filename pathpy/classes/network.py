@@ -224,11 +224,11 @@ class Network:
             self.nodes[v]['degree'] = len(self.successors[v])
             self.nodes[w]['degree'] = len(self.successors[w])
 
-            S = [self.edges[e]['weight'] for w in self.successors[v]]
+            S = [self.edges[(v,w)]['weight'] for w in self.successors[v]]
             if S:
                 self.nodes[v]['outweight'] = sum(S)
                 self.nodes[v]['inweight'] = self.nodes[v]['outweight']
-            S = [self.edges[e]['weight'] for v in self.successors[w]]
+            S = [self.edges[(v,w)]['weight'] for v in self.predecessors[w]]
             if S:
                 self.nodes[w]['outweight'] = sum(S)
                 self.nodes[w]['inweight'] = self.nodes[w]['outweight']
