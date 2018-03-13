@@ -62,7 +62,7 @@ class Network:
         self.predecessors = _co.defaultdict(set)
 
     @classmethod
-    def read_edges(cls, filename, separator=',', weighted=False, directed=False):
+    def read_edges(cls, filename, separator=',', weighted=False, directed=False, header=False):
         """
         Reads a network from an edge list file
 
@@ -84,28 +84,36 @@ class Network:
             (i.e. ``a,b,2``)
         directed : bool
             are the edges directed or undirected
+        header: bool
+            if true skip the first row, useful if header row in file
 
         Returns
         -------
         Network
             a ``Network`` object obtained from the edgelist
         """
-        n = cls(directed)
+        net = cls(directed)
 
         with open(filename, 'r') as f:
             Log.add('Reading edge list ... ')
+            header_offset = 0
+            if header:
+                f.readline()
+                header_offset = 1
+
             for n, line in enumerate(f):
                 fields = line.rstrip().split(separator)
-                assert len(fields) >= 2, 'Error: malformed line: {0}'.format(line)
+                fields = [field.strip() for field in fields]
+                assert len(fields) >= 2, 'Error: malformed line: {0}'.format(line+header_offset)
 
                 if weighted:
-                    n.add_edge(fields[0], fields[1], weight=int(fields[2]))
+                    net.add_edge(fields[0], fields[1], weight=int(fields[2]))
                 else:
-                    n.add_edge(fields[0], fields[1])
+                    net.add_edge(fields[0], fields[1])
 
         Log.add('finished.')
 
-        return n
+        return net
 
 
     @classmethod

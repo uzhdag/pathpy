@@ -175,3 +175,14 @@ def test_export_netwokx():
         assert g_back.nodes[node]['custom'] == g.nodes[node]['custom']
         assert nx_degrees[node] == net.nodes[node]['inweight']
         assert nx_degrees[node] == net.nodes[node]['outweight']
+
+
+def test_read_edges(test_data_directory):
+    import os
+    import pathpy
+
+    edge_file = os.path.join(test_data_directory, "example_int.tedges")
+
+    net = pathpy.Network.read_edges(edge_file, weighted=True, header=True, directed=True)
+    assert net.vcount() == 5
+    assert net.ecount() == 6
