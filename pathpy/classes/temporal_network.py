@@ -293,16 +293,37 @@ class TemporalNetwork:
                 for (v, w, t) in self.time[time]:
                     f.write(str(v) + sep + str(w) + sep + str(t)+'\n')
 
+
+    def filter_nodes(self, nodes):
+        """Returns a copy of the temporal network where time-stamped edges are filtered 
+        according to a given set of nodes.
+
+        Parameters
+        ----------
+        node_filter: iterable
+            a list or set of nodes that shall be included in the returned temporal network
+
+        Returns
+        -------
+        """
+        def edge_filter(v, w, t):
+            if v in nodes and w in nodes: 
+                return True
+            return False
+
+        return self.filter_edges(edge_filter)
+
     def filter_edges(self, edge_filter):
-        """Filter time-stamped edges according to a given filter expression. This can be
-        used, e.g., to create time slice networks by filtering edges within certain time
-        windows.
+        """Returns a copy of the temporal network where time-stamped edges are filtered 
+        according to a given filter expression. This can be used, e.g., to create time 
+        slice networks by filtering edges within certain time windows, or to reduce a 
+        temporal network to interactions between a subset of nodes.
 
         Parameters
         ----------
         edge_filter: callable
             an arbitrary filter function of the form filter_func(v, w, time) that returns
-            True for time-stamped edges that shall pass the filter, and False for all
+            True for time-stamped edges that shall pass the filter, and False for time-stamped
             edges that shall be filtered out.
 
         Returns
