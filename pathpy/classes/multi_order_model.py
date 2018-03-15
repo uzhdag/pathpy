@@ -25,10 +25,11 @@
 import numpy as np
 from scipy.stats import chi2
 
-import pathpy
 from pathpy.utils import Log, Severity
+from pathpy.utils.exceptions import PathpyError, PathsTooShort
 from .higher_order_network import HigherOrderNetwork
 from .paths import Paths
+
 
 np.seterr(all='warn')
 
@@ -53,58 +54,96 @@ class MultiOrderModel:
             'Error: Construction of multi-order model with maximum order M ' \
             'requires sub path statistics up to length M'
 
-        # A dictionary containing the layers of HigherOrderNetworks, where
-        # layers[k] contains the network of order k
-        self.layers = {}
-
-        # the maximum order of this multi-order model
-        self.max_order = max_order
-
         # the paths object from which this multi-order model was created
         self.paths = paths
 
+        # A dictionary containing the layers of HigherOrderNetworks, where
+        # layers[k] contains the network of order k
+        self.layers = {}
         # a dictionary of transition matrices for all layers of the model
         self.transition_matrices = {}
 
-        if pathpy.ENABLE_MULTICORE_SUPPORT:
-            try:
-                import pathos as _pa
-            except ImportError:  # pragma: no cover
-                raise ImportError('Error while importing module "pathos",'
-                                  'to use the parallel feature "pathos" '
-                                  'needs to be installed')
+        self.add_layers(max_order)
 
-            def parallel(order_k):  # pragma: no cover
-                Log.add('Generating ' + str(order_k) + '-th order network layer ...')
-                p_layer = HigherOrderNetwork(paths, order_k, paths.separator, False)
-
-                # compute transition matrices for all layers. In order to use the
-                # maximally available statistics, we always use sub paths in the
-                # calculation
-                trans_mat = p_layer.transition_matrix(include_subpaths=True)
-
-                Log.add('... finished')
-                return [order_k, p_layer, trans_mat]
-
-            pool = _pa.multiprocessing.ProcessPool()
-            results = pool.map(parallel, range(max_order + 1))
-
-            # save results
-            for k, layer, transition_mat in results:
-                self.layers[k] = layer
-                self.transition_matrices[k] = transition_mat
-
+    @property
+    def max_order(self):
+        """the current maximum order of the multi-order model"""
+        orders = list(self.layers.keys())
+        if not orders:
+            return -1
         else:
-            for k in range(max_order + 1):
-                Log.add('Generating ' + str(k) + '-th order network layer ...')
-                self.layers[k] = HigherOrderNetwork(paths, k, paths.separator, False)
+            return max(orders)
 
-                # compute transition matrices for all layers. In order to use the
-                # maximally available statistics, we always use sub paths in the
-                # calculation
-                self.transition_matrices[k] = self.layers[k].transition_matrix(include_subpaths=True)
+    def __add_layers_parallel(self, orders):
+        paths = self.paths
 
-            Log.add('finished.')
+        assert all(isinstance(order, int) for order in orders), \
+            "The orders are not all of type <int>"
+
+        try:
+            import pathos as _pa
+        except ImportError:  # pragma: no cover
+            raise ImportError('Error while importing module "pathos",'
+                              'to use the parallel feature "pathos" '
+                              'needs to be installed')
+
+        def parallel(order_k):  # pragma: no cover
+            Log.add('Generating ' + str(order_k) + '-th order network layer ...')
+            p_layer = HigherOrderNetwork(paths, order_k, paths.separator, False)
+
+            # compute transition matrices for all layers. In order to use the
+            # maximally available statistics, we always use sub paths in the
+            # calculation
+            trans_mat = p_layer.transition_matrix(include_subpaths=True)
+
+            Log.add('... finished')
+            return [order_k, p_layer, trans_mat]
+
+        pool = _pa.multiprocessing.ProcessPool()
+        results = pool.map(parallel, orders)
+
+        # save results
+        for k, layer, transition_mat in results:
+            self.layers[k] = layer
+            self.transition_matrices[k] = transition_mat
+
+    def __add_layers_sequential(self, orders):
+        paths = self.paths
+
+        for k in sorted(orders):
+            Log.add('Generating %d-th order layer ...' % k)
+            self.layers[k] = HigherOrderNetwork(paths, k, paths.separator, False)
+
+            # compute transition matrices for all layers. In order to use the
+            # maximally available statistics, we always use sub paths in the
+            # calculation
+            self.transition_matrices[k] = self.layers[k].transition_matrix(include_subpaths=True)
+
+        Log.add('finished.')
+
+    def add_layers(self, max_order):
+        """Add higher order layers
+
+        Parameters
+        ----------
+        max_order: int
+            up to which order to add higher order layers, if below the current maximum the
+            operation will have no effect and the HigherOrderNetwork will remain unchanged.
+
+        """
+        from pathpy import ENABLE_MULTICORE_SUPPORT
+
+        if max_order < 0:
+            raise PathpyError("max_order must be a positive integer not %d" % max_order)
+
+        if max_order <= self.max_order:
+            Log.add("Layers up to order %d already added. Nothing changed." % self.max_order)
+
+        orders_to_add = list(range(self.max_order+1, max_order+1))
+        if len(orders_to_add) > 1 and ENABLE_MULTICORE_SUPPORT:
+            self.__add_layers_parallel(orders_to_add)
+        else:
+            self.__add_layers_sequential(orders_to_add)
 
     def summary(self):
         """
@@ -240,7 +279,7 @@ class MultiOrderModel:
         """
         return self.summary()
 
-    def likelihood(self, paths, max_order=None, log=True):
+    def likelihood(self, paths=None, max_order=None, log=True):
         """Calculates the likelihood of a multi-order
         network model up to a maximum order max_order based on all
         path statistics.
@@ -314,7 +353,7 @@ class MultiOrderModel:
         else:
             return np.exp(f)
 
-    def layer_likelihood(self, paths, l=1, consider_longer_paths=True, log=True,
+    def layer_likelihood(self, paths=None, l=1, consider_longer_paths=True, log=True,
                          min_path_length=None):
         """
         Calculates the (log-)likelihood of the **first** l layers of a multi-order
@@ -345,6 +384,8 @@ class MultiOrderModel:
             the (log-)likelihood of the model layer given the path statistics
         """
         # m is the maximum length of any path in the data
+        if paths is None:
+            paths = self.paths
         max_len_obs = max(paths.paths)
 
         assert max_len_obs >= l and len(paths.paths[l]) > 0, \
@@ -505,7 +546,7 @@ class MultiOrderModel:
             size += self.layers[i].model_size()
         return int(size)
 
-    def likelihood_ratio_test(self, paths, max_order_null=0, max_order=1,
+    def likelihood_ratio_test(self, paths=None, max_order_null=0, max_order=1,
                               assumption='paths', significance_threshold=0.01):
         """
         Performs a likelihood-ratio test between two multi-order models with given
@@ -526,7 +567,7 @@ class MultiOrderModel:
         Parameters
         ----------
         paths:
-            the path data to be used in the liklihood ratio test
+            the path data to be used in the likelihood ratio test
         max_order_null:
             maximum order of the multi-order model to be used as a null hypothesis
         max_order: int
@@ -569,7 +610,7 @@ class MultiOrderModel:
         Log.add('Likelihood ratio test, p = ' + str(p))
         return (p < significance_threshold), p
 
-    def estimate_order(self, paths=None, max_order=None, significance_threshold=0.01):
+    def estimate_order(self, paths=None, stop_at_order=100, significance_threshold=0.01):
         """Selects the optimal maximum order of a multi-order network model for the
         observed paths, based on a likelihood ratio test with p-value threshold of p
 
@@ -581,36 +622,47 @@ class MultiOrderModel:
         paths: Paths
              The path statistics for which to perform the order selection.
              It defaults to the path statistics the MultiOrderModel was created from.
-        max_order: int
+        stop_at_order: int
             The maximum order up to which the multi-order model shall be tested.
-        significance_threshold
+            If the test fails earlier the remaining orders will not be computed.
+            The default is 100
+        significance_threshold: float
             the threshold for the p-value below which to accept the alternative hypothesis
+
         Returns
         -------
         int
 
         """
-        if max_order is None:
-            max_order = self.max_order
-        assert max_order <= self.max_order, \
-            'Error: max_order cannot be larger than maximum order of multi-order network'
-        assert max_order > 1, 'Error: max_order must be larger than one'
+        import warnings
+        assert stop_at_order > 1, 'Error: stop_at_order must be larger than one'
 
-        if paths is None:
-            paths = self.paths
-
+        # Test for highest order that passes, likelihood ratio test against null model
         max_accepted_order = 1
+        for k in range(2, stop_at_order + 1):
 
-        # Test for highest order that passes
-        # likelihood ratio test against null model
-        for k in range(2, max_order + 1):
-            accept = self.likelihood_ratio_test(
+            if k >= self.max_order:
+                try:
+                    self.add_layers(k)
+                except PathsTooShort:
+                    msg = ("optimal order is at least %d, but could be higher. Paths are too short"
+                           "to create higher orders layers." % max_accepted_order)
+                    warnings.warn(msg)
+                    break
+
+            accept, p_value = self.likelihood_ratio_test(
                 paths, max_order_null=k - 1, max_order=k,
                 significance_threshold=significance_threshold
-            )[0]
+            )
             if accept:
                 max_accepted_order = k
+            else:
+                break
 
+        if stop_at_order == max_accepted_order:
+            msg = ("order is at least %d, but could be higher, "
+                   "try to increase `max_accepted_order`" % stop_at_order)
+            warnings.warn(msg)
         return max_accepted_order
 
     def test_network_hypothesis(self, paths, method='AIC'):

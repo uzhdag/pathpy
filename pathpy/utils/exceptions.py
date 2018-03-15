@@ -41,3 +41,7 @@ class EmptySCCError(PathpyException):
     This exception is thrown whenever a non-empty strongly
     connected component is needed, but we encounter an empty one
     """
+
+
+class PathsTooShort(PathpyException):
+    """This exception if thrown if the available paths are too short for the operation"""
