@@ -268,7 +268,7 @@ class DAG(object):
                 file.write(sep.join(edge)+'\n')
 
     @classmethod
-    def read_file(cls, filename, sep=',', maxlines=sys.maxsize, mapping=None):
+    def read_file(cls, filename, sep=',', maxlines=None, mapping=None, header=False):
         """
         Reads a directed acyclic graph from a file
         containing an edge list of the form
@@ -277,10 +277,6 @@ class DAG(object):
 
         where ',' can be an arbitrary separator character
         """
-
-        assert (filename != ''), 'Empty filename given'
-
-        # Read header
         with open(filename, 'r') as f:
             edges = []
 
@@ -289,20 +285,20 @@ class DAG(object):
 
             Log.add('Reading edge list ...')
 
-            line = f.readline()
-            n = 1
-            while line and n <= maxlines:
+            if header:  # Read header
+                f.readline()
+            for i, line in enumerate(f):
+                if maxlines and i > maxlines:
+                    break
                 fields = line.rstrip().split(sep)
+                fields = [field.strip() for field in fields]
                 try:
                     if mapping is None or (fields[0] in mapping and fields[1] in mapping):
                         edges.append((fields[0], fields[1]))
 
                 except (IndexError, ValueError):  # pragma: no cover
-                    msg = 'Ignoring malformed data in line {n}: ' \
-                          '"{line}"'.format(n=(n+1), line=line.strip())
+                    msg = 'Ignoring malformed data in ' \
+                          'line {}: "{}"'.format((i+qheader), line.strip())
                     Log.add(msg, Severity.WARNING)
-                line = f.readline()
-                n += 1
-        # end of with open()
 
         return cls(edges=edges)
