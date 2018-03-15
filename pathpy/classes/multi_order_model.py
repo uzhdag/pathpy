@@ -372,12 +372,12 @@ class MultiOrderModel:
         n = 0
 
         # Initialize likelihood
-        likelihood = 0        
+        likelihood = 0
 
         # compute likelihood for all longest paths
         # up to the maximum path length maxL
         for k in range(min_path_length, maxL + 1):
-            for p in paths.paths[k]:                
+            for p in paths.paths[k]:
                 # Only consider observations as *longest* path
                 if paths.paths[k][p][1] > 0:
 
@@ -569,7 +569,7 @@ class MultiOrderModel:
         Log.add('Likelihood ratio test, p = ' + str(p))
         return (p < significance_threshold), p
 
-    def estimate_order(self, paths, max_order=None, significance_threshold=0.01):
+    def estimate_order(self, paths=None, max_order=None, significance_threshold=0.01):
         """Selects the optimal maximum order of a multi-order network model for the
         observed paths, based on a likelihood ratio test with p-value threshold of p
 
@@ -579,7 +579,8 @@ class MultiOrderModel:
         Parameters
         ----------
         paths: Paths
-             The path statistics for which to perform the order selection
+             The path statistics for which to perform the order selection.
+             It defaults to the path statistics the MultiOrderModel was created from.
         max_order: int
             The maximum order up to which the multi-order model shall be tested.
         significance_threshold
@@ -594,6 +595,9 @@ class MultiOrderModel:
         assert max_order <= self.max_order, \
             'Error: max_order cannot be larger than maximum order of multi-order network'
         assert max_order > 1, 'Error: max_order must be larger than one'
+
+        if paths is None:
+            paths = self.paths
 
         max_accepted_order = 1
 
