@@ -76,10 +76,6 @@ class MultiOrderModel:
 
     def __add_layers_parallel(self, orders):
         paths = self.paths
-
-        assert all(isinstance(order, int) for order in orders), \
-            "The orders are not all of type <int>"
-
         try:
             import pathos as _pa
         except ImportError:  # pragma: no cover
@@ -661,7 +657,7 @@ class MultiOrderModel:
 
         if stop_at_order == max_accepted_order:
             msg = ("order is at least %d, but could be higher, "
-                   "try to increase `max_accepted_order`" % stop_at_order)
+                   "try to increase `stop_at_order`" % stop_at_order)
             warnings.warn(msg)
         return max_accepted_order
 
