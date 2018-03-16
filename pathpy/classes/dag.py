@@ -24,9 +24,10 @@
 
 from collections import defaultdict
 from pathpy.utils import Log, Severity
+from .network import Network
 
 
-class DAG(object):
+class DAG(Network):
     """
         Represents a directed acyclic graph (DAG) which
         can be used to generate pathway statistics.
@@ -37,8 +38,7 @@ class DAG(object):
         Constructs a directed acyclic graph from an edge list
         """
 
-        self.nodes = set()
-        self.edges = set()
+        super().__init__(directed=True)
 
         # Whether or not this graph is acyclic. None indicates that it is unknown
         self.is_acyclic = None
@@ -51,12 +51,6 @@ class DAG(object):
 
         # Set of nodes with no outgoing edges
         self.leafs = set()
-
-        # The dictionary of successors of each node
-        self.successors = defaultdict(set)
-
-        # The dictionary of predecessors of each node
-        self.predecessors = defaultdict(set)
 
         if edges is not None:
             self.add_edges(edges)
@@ -253,11 +247,8 @@ class DAG(object):
             # Remove all back links
             for e in list(self.edge_classes):
                 if self.edge_classes[e] == 'back':
-                    self.edges.remove(e)
+                    self.remove_edge(*e)
                     removed_links += 1
-                    self.successors[e[0]].remove(e[1])
-                    self.predecessors[e[1]].remove(e[0])
-                    del self.edge_classes[e]
             self.topsort()
             assert self.is_acyclic, "Error: make_acyclic did not generate acyclic graph!"
             Log.add('Removed ' + str(removed_links) +
@@ -277,30 +268,45 @@ class DAG(object):
         summary += 'Acyclic:\t' + str(self.is_acyclic) + '\n'
         return summary
 
+    def isolate_nodes(self):
+        """Return a set of isolated nodes"""
+        return self.leafs & self.roots
+
     def __str__(self):
         """
         Returns the default string representation of this object
         """
         return self.summary()
 
-    def add_edge(self, source, target):
+    def add_edge(self, source, target, **kwargs):
         """
         Adds a directed edge to the graph
         """
 
         if source not in self.nodes:
-            self.nodes.add(source)
+            self.add_node(source, **kwargs)
             self.roots.add(source)
         if target not in self.nodes:
-            self.nodes.add(target)
+            self.add_node(target, **kwargs)
             self.leafs.add(target)
 
         self.leafs.discard(source)
         self.roots.discard(target)
-        self.edges.add((source, target))
-        self.successors[source].add(target)
-        self.predecessors[target].add(source)
+        super().add_edge(source, target)
         self.is_acyclic = None
+
+    def remove_edge(self, source, target):
+        """remove an edge"""
+        super().remove_edge(source, target)
+
+        # if no more predecessors for the target then it becomes a root
+        if not self.predecessors[target]:
+            self.roots.add(target)
+
+        # if no more successors for the source node then it becomes a leaf
+        if not self.successors[source]:
+            self.leafs.add(target)
+
 
     def write_file(self, filename, sep=','):
         """Writes a dag as an adjaceny list to file

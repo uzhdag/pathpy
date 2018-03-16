@@ -4,7 +4,7 @@ import pytest
 
 @pytest.mark.parametrize('edge_list', (
         [(1, 2), (2, 3), (5, 2)],
-        list(zip(range(9), range(2, 11))) + list(zip(range(10), range(2, 12))),  # redund
+        list(zip(range(9), range(2, 11))) + list(zip(range(10), range(2, 12))),  # redundant
         list(zip(range(8), range(2, 10))) + list(zip(range(8), range(8)))  # self-loops
 ))
 def test_dag_init(edge_list):
@@ -46,8 +46,10 @@ def test_dag_path_extraction_cyclic(dag_object: pp.DAG):
 
 def test_route_from_node(dag_object: pp.DAG):
     root = 'a'
-    routes = dag_object.routes_from_node(root)
-    assert routes is None
+    routes = list(sorted(dag_object.routes_from_node(root)))
+    expected = [['a', 'b', 'e'], ['a', 'b', 'f', 'g'], ['a', 'c', 'b', 'e'],
+                ['a', 'c', 'b', 'f', 'g'], ['a', 'c', 'g']]
+    assert routes == expected
 
 
 def test_route_to_node(dag_object: pp.DAG):
@@ -57,9 +59,9 @@ def test_route_to_node(dag_object: pp.DAG):
     route_e = dag_object.routes_to_node('e')
     assert route_e == [['a', 'b', 'e'], ['a', 'c', 'b', 'e']]
 
-    route_g = dag_object.routes_to_node('g')
+    route_g = list(sorted(dag_object.routes_to_node('g')))
     assert len(route_g) == 3
-    expected = [['a', 'c', 'g'], ['a', 'b', 'f', 'g'], ['a', 'c', 'b', 'f', 'g']]
+    expected = list(sorted([['a', 'c', 'g'], ['a', 'b', 'f', 'g'], ['a', 'c', 'b', 'f', 'g']]))
     for rout, e_route in zip(route_g, expected):
         assert rout == e_route
 
@@ -116,4 +118,13 @@ def test_dag_io(dag_object, tmpdir):
     # filter_nodes out nodes not in the mapping
     mapping = {'a': 'A', 'b': 'B', 'c': 'A'}
     dag_back_map = pp.DAG.read_file(file_path, mapping=mapping)
-    assert dag_back_map.nodes == {'a', 'b', 'c'}
+    assert set(dag_back_map.nodes.keys()) == {'a', 'b', 'c'}
+
+
+def test_remove_edge(dag_object: pp.DAG):
+    dag_object.remove_edge('b', 'f')
+    dag_object.remove_edge('b', 'e')
+    assert 'f' in dag_object.roots
+    assert 'e' in dag_object.roots
+    assert 'e' in dag_object.leafs
+    assert 'e' in dag_object.isolate_nodes()

@@ -205,6 +205,55 @@ class Network:
             del self.successors[v]
             del self.predecessors[v]
 
+    def remove_edge(self, source, target):
+        """
+        remove an edge from the network
+
+        Parameters
+        ----------
+        source
+        target
+
+        Returns
+        -------
+
+        """
+        if not (source in self.nodes and target in self.nodes):
+            return None
+
+        if self.directed:
+            # take care of source
+            self.nodes[source]['outdegree'] -= 1
+            self.nodes[source]['outweight'] -= self.edges[(source, target)]['weight']
+            self.successors[source].remove(target)
+
+            # take care of target
+            self.nodes[target]['indegree'] -= 1
+            self.nodes[target]['outweight'] -= self.edges[(source, target)]['weight']
+            self.predecessors[target].remove(source)
+
+            del self.edges[(source, target)]
+        else:
+            # take care of source
+            self.nodes[source]['outdegree'] -= 1
+            self.nodes[source]['indegree'] -= 1
+            self.nodes[source]['outweight'] -= self.edges[(source, target)]['weight']
+            self.nodes[source]['inweight'] -= self.edges[(source, target)]['weight']
+            self.successors[source].remove(target)
+            self.predecessors[source].remove(target)
+
+            # take care of target
+            self.nodes[target]['outdegree'] -= 1
+            self.nodes[target]['indegree'] -= 1
+            self.nodes[target]['outweight'] -= self.edges[(source, target)]['weight']
+            self.nodes[target]['inweight'] -= self.edges[(source, target)]['weight']
+            self.successors[target].remove(source)
+            self.predecessors[target].remove(source)
+
+            del self.edges[(source, target)]
+
+
+
 
     def add_edge(self, v, w, **kwargs):
         """
