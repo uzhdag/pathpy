@@ -91,7 +91,7 @@ class DAG(object):
         """
 
         # Collect temporary paths, indexed by the target node
-        temp_paths = defaultdict(lambda: [])
+        temp_paths = defaultdict(list)
         temp_paths[v] = [(v,)]
 
         # set of unprocessed nodes
@@ -291,14 +291,13 @@ class DAG(object):
                 if maxlines and i > maxlines:
                     break
                 fields = line.rstrip().split(sep)
-                fields = [field.strip() for field in fields]
                 try:
                     if mapping is None or (fields[0] in mapping and fields[1] in mapping):
                         edges.append((fields[0], fields[1]))
 
                 except (IndexError, ValueError):  # pragma: no cover
                     msg = 'Ignoring malformed data in ' \
-                          'line {}: "{}"'.format((i+qheader), line.strip())
+                          'line {}: "{}"'.format((i+header), line.strip())
                     Log.add(msg, Severity.WARNING)
 
         return cls(edges=edges)

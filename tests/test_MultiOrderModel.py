@@ -67,3 +67,40 @@ def test_write_state_file(random_paths, k, tmpdir):
 
     for i in range(1, k+1):
         multi.save_state_file(file_path + '.' + str(i), layer=i)
+
+
+def test_estimate_order_1():
+    """Example without second-order correlations"""
+    paths = pp.Paths()
+
+    paths.add_path_ngram('a,c')
+    paths.add_path_ngram('b,c')
+    paths.add_path_ngram('c,d')
+    paths.add_path_ngram('c,e')
+
+    for k in range(4):
+        paths.add_path_ngram('a,c,d')
+        paths.add_path_ngram('b,c,e')
+        paths.add_path_ngram('b,c,d')
+        paths.add_path_ngram('a,c,e')
+
+    m = pp.MultiOrderModel(paths, max_order=2)
+    assert m.estimate_order() == 1, \
+        "Error, wrongly detected higher-order correlations"
+
+
+def test_estimate_order_2():
+    # Example with second-order correlations
+    paths = pp.Paths()
+
+    paths.add_path_ngram('a,c')
+    paths.add_path_ngram('b,c')
+    paths.add_path_ngram('c,d')
+    paths.add_path_ngram('c,e')
+
+    for k in range(4):
+        paths.add_path_ngram('a,c,d')
+        paths.add_path_ngram('b,c,e')
+
+    m = pp.MultiOrderModel(paths)
+    assert m.estimate_order() == 2

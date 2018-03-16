@@ -15,61 +15,6 @@ import pytest
 slow = pytest.mark.slow
 
 
-def test_estimate_order_1():
-    """Example without second-order correlations"""
-    paths = pp.Paths()
-
-    paths.add_path_ngram('a,c')
-    paths.add_path_ngram('b,c')
-    paths.add_path_ngram('c,d')
-    paths.add_path_ngram('c,e')
-
-    for k in range(4):
-        paths.add_path_ngram('a,c,d')
-        paths.add_path_ngram('b,c,e')
-        paths.add_path_ngram('b,c,d')
-        paths.add_path_ngram('a,c,e')
-
-    m = pp.MultiOrderModel(paths, max_order=2)
-    assert m.estimate_order(paths) == 1, \
-        "Error, wrongly detected higher-order correlations"
-
-
-def test_estimate_order_2():
-    # Example with second-order correlations
-    paths = pp.Paths()
-
-    paths.add_path_ngram('a,c')
-    paths.add_path_ngram('b,c')
-    paths.add_path_ngram('c,d')
-    paths.add_path_ngram('c,e')
-
-    for k in range(4):
-        paths.add_path_ngram('a,c,d')
-        paths.add_path_ngram('b,c,e')
-
-    m = pp.MultiOrderModel(paths, max_order=2)
-    assert m.estimate_order(paths) == 2, \
-        "Error, did not detect second-order correlations"
-
-    g1 = pp.HigherOrderNetwork(paths, k=1)
-    assert g1.vcount() == 5, \
-        "Error, wrong number of nodes in first-order network"
-    assert g1.ecount() == 4, \
-        "Error, wrong number of links in first-order network"
-
-    g2 = pp.HigherOrderNetwork(paths, k=2)
-    assert g2.vcount() == 4, \
-        "Error, wrong number of nodes in second-order network"
-    assert g2.ecount() == 2, \
-        "Error, wrong number of links in second-order network"
-
-    pp.algorithms.components.reduce_to_gcc(g2)
-    assert g2.vcount() == 1, \
-        "Error, wrong number of nodes in giant connected component"
-    assert g2.ecount() == 0, \
-        "Error, wrong number of links in giant connected component"
-
 
 @pytest.mark.parametrize('method', ('BIC', 'AIC'))
 def test_markov_sequence(method):

@@ -26,6 +26,7 @@ from collections import defaultdict
 import numpy as _np
 import scipy.sparse as _sparse
 
+from pathpy.utils.exceptions import PathsTooShort
 from pathpy.classes.network import Network
 from pathpy.algorithms import shortest_paths
 
@@ -77,8 +78,10 @@ class HigherOrderNetwork(Network):
         assert method in ['FirstOrderTransitions', 'KOrderPi'], \
             'Error: unknown method to build null model'
 
-        assert paths.paths.keys() and max(paths.paths.keys()) >= k, \
-            'Error: constructing a model of order k requires paths of at least length k'
+        if not (paths.paths.keys() and max(paths.paths.keys()) >= k):
+            msg = ('Constructing a model of order %d requires paths of at least length %d, '
+                   'found paths of max length %d ' % (k, k, max(paths.paths.keys())))
+            raise PathsTooShort(msg)
 
         super().__init__(directed=True)
 
