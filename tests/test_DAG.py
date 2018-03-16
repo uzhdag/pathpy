@@ -44,6 +44,26 @@ def test_dag_path_extraction_cyclic(dag_object: pp.DAG):
         pp.path_extraction.paths_from_dag(dag_object)
 
 
+def test_route_from_node(dag_object: pp.DAG):
+    root = 'a'
+    routes = dag_object.routes_from_node(root)
+    assert routes is None
+
+
+def test_route_to_node(dag_object: pp.DAG):
+    route_i = dag_object.routes_to_node('i')
+    assert route_i == [['h', 'i']]
+
+    route_e = dag_object.routes_to_node('e')
+    assert route_e == [['a', 'b', 'e'], ['a', 'c', 'b', 'e']]
+
+    route_g = dag_object.routes_to_node('g')
+    assert len(route_g) == 3
+    expected = [['a', 'c', 'g'], ['a', 'b', 'f', 'g'], ['a', 'c', 'b', 'f', 'g']]
+    for rout, e_route in zip(route_g, expected):
+        assert rout == e_route
+
+
 def test_dag_path_mapping(dag_object):
     dag = dag_object
     dag.topsort()

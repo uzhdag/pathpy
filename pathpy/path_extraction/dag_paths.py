@@ -21,7 +21,6 @@
 
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
-
 import sys
 
 from pathpy.classes.paths import Paths
@@ -56,22 +55,19 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=sys.maxsize, separ
         p = Paths(separator=separator)
         p.max_subpath_length = max_subpath_length
         Log.add('Creating paths from directed acyclic graph', Severity.INFO)
-        n = 0
 
         # construct all paths originating from root nodes
+        n = 0
         for s in dag.roots:
             if n % 100 == 0:
                 msg = 'Processed {} / {} root nodes'.format(n, len(dag.roots))
                 Log.add(msg, Severity.TIMING)
-            if node_mapping is None:
-                paths = dag.construct_paths(s)
-                # add detected paths to paths object
-                for d in paths:
-                    for x in paths[d]:
-                        p.add_path_tuple(x, expand_subpaths=False, frequency=(0, 1))
-            else:
-                dag.construct_mapped_paths(s, node_mapping, p)
+
+            extracted_paths = dag.routes_from_node(s, node_mapping)
+            for path in extracted_paths:   # add detected paths to paths object
+                p.add_path_tuple(path, expand_subpaths=False, frequency=(0, 1))
             n += 1
+
         p.expand_subpaths()
         Log.add('finished.', Severity.INFO)
         return p

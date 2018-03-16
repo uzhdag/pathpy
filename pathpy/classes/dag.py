@@ -23,7 +23,6 @@
 #    Web:    http://www.ingoscholtes.net
 
 from collections import defaultdict
-import sys
 from pathpy.utils import Log, Severity
 
 
@@ -58,25 +57,9 @@ class DAG(object):
 
         # The dictionary of predecessors of each node
         self.predecessors = defaultdict(set)
-        self_loops = 0
-        redundant_edges = 0
+
         if edges is not None:
-            for e in edges:
-                is_redundant = False
-                has_self_loop = False
-                if e[0] == e[1]:
-                    has_self_loop = True
-                    self_loops += 1
-                if (e[0], e[1]) in self.edges:
-                    is_redundant = True
-                    redundant_edges += 1
-                if not has_self_loop and not is_redundant:
-                    self.add_edge(e[0], e[1])
-            if self_loops > 0:
-                Log.add('Warning: omitted %d self-loops' % self_loops, Severity.WARNING)
-            if redundant_edges > 0:
-                Log.add('Warning: omitted %d redundant edges' % redundant_edges,
-                        Severity.WARNING)
+            self.add_edges(edges)
 
         # placeholder properties for topological sort
         self.parent = {}
@@ -85,14 +68,54 @@ class DAG(object):
         self.edge_classes = {}
         self.top_sort_count = 0
 
-    def construct_paths(self, v):
+    def add_edges(self, edges):
+        """Add a list of edges
+
+        Parameters
+        ----------
+        edges: list
+            a list of edges [(s_1, t_1), (s_1, t_2), ...]
+
+        """
+        self_loops = 0
+        redundant_edges = 0
+        for e in edges:
+            is_redundant = False
+            has_self_loop = False
+            if e[0] == e[1]:
+                has_self_loop = True
+                self_loops += 1
+            if (e[0], e[1]) in self.edges:
+                is_redundant = True
+                redundant_edges += 1
+            if not has_self_loop and not is_redundant:
+                self.add_edge(e[0], e[1])
+        if self_loops > 0:
+            Log.add('Warning: omitted %d self-loops' % self_loops, Severity.WARNING)
+        if redundant_edges > 0:
+            Log.add('Warning: omitted %d redundant edges' % redundant_edges,
+                    Severity.WARNING)
+
+    def routes_from_node(self, v, node_mapping=None):
         """
         Constructs all paths from node v to any leaf nodes
-        """
 
+        Parameters
+        ----------
+        v:
+            node from which to start
+        node_mapping: dict
+            an optional mapping from node to a different set.
+
+        Returns
+        -------
+        list
+            a list of lists, where each list contains one path from the source
+            node v until a leaf node is reached
+        """
         # Collect temporary paths, indexed by the target node
         temp_paths = defaultdict(list)
-        temp_paths[v] = [(v,)]
+        temp_paths[v] = [[v]]
 
         # set of unprocessed nodes
         queue = {v}
@@ -106,39 +129,67 @@ class DAG(object):
             if self.successors[x]:
                 for w in self.successors[x]:
                     for p in temp_paths[x]:
-                        temp_paths[w].append(p + (w,))
+                        temp_paths[w].append(p + [w])
                     queue.add(w)
                 del temp_paths[x]
 
-        return temp_paths
+        # flatten list
+        final_paths = []
+        for possible_paths in temp_paths.values():
+            for path in possible_paths:
+                if node_mapping:
+                    path = [node_mapping[k] for k in path]
+                final_paths.append(path)
 
-    def construct_mapped_paths(self, v, node_mapping, paths):
+        return final_paths
+
+    def routes_to_node(self, v, node_mapping=None):
         """
-        Constructs all paths from node v to any leaf nodes,
-        while applying a surjective projection function
-        given in terms of a mapping.
+        Constructs all paths to node v from any root node
+
+        Parameters
+        ----------
+        v:
+            node from which to start
+        node_mapping: dict
+            an optional mapping from node to a different set.
+
+        Returns
+        -------
+        list
+            a list of lists, where each list contains one path from the source
+            node v until a leaf node is reached
         """
+        # Collect temporary paths, indexed by the target node
+        temp_paths = defaultdict(list)
+        temp_paths[v] = [[v]]
 
-        # (mapped) paths that can be continued
-        # for a given endpoint node (key)
-        continuable = defaultdict(list)
-        continuable[v] = [(node_mapping[v],)]
+        # set of unprocessed nodes
+        queue = {v}
 
-        while continuable:
+        while queue:
+            # take one unprocessed node
+            x = queue.pop()
 
-            # process one node for which path can possibly continued
-            x, cp = continuable.popitem()
+            # successors of x expand all temporary
+            # paths, currently ending in x
+            if self.predecessors[x]:
+                for w in self.predecessors[x]:
+                    for p in temp_paths[x]:
+                        temp_paths[w].append(p + [w])
+                    queue.add(w)
+                del temp_paths[x]
 
-            if not self.successors[x]:
-                # x is a leaf, so any path ending in x are longest paths in the DAG
-                for p in cp:
-                    paths.add_path_tuple(p, expand_subpaths=False, frequency=(0, 1))
+        # flatten list
+        final_paths = []
+        for possible_paths in temp_paths.values():
+            for path in possible_paths:
+                path = list(reversed(path))
+                if node_mapping:
+                    path = [node_mapping[k] for k in path]
+                final_paths.append(path)
 
-            else:
-                # extend all paths to x by successors of x
-                for p in cp:
-                    for w in self.successors[x]:
-                        continuable[w].append(p + (node_mapping[w],))
+        return final_paths
 
     def dfs_visit(self, v, parent=None):
         """Recursively visits nodes in the graph, classifying edges as (1) tree, (2)
