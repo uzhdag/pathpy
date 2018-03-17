@@ -559,7 +559,8 @@ class Paths:
                     for s in range(path_length - k + 1):
                         # Add frequency as a subpath to *first* entry of occurrence
                         # counter
-                        self.paths[k][path[s:s + k + 1]] += np.array([frequency, 0])
+                        path_slice = path[s:s + k + 1]
+                        self.paths[k][path_slice][0] += frequency
 
     def add_path_tuple(self, path, expand_subpaths=True, frequency=np.array([0, 1])):
         """Adds a tuple of elements as a path. If the elements are not strings,
@@ -583,8 +584,9 @@ class Paths:
         assert path, 'Error: paths needs to contain at least one element'
 
         for x in path:
-            if self.separator in x:
-                raise PathpyError('Error: Node name contains separator character. Choose different separator.')
+            if isinstance(x, str) and self.separator in x:
+                raise PathpyError('Error: Node name contains separator character. '
+                                  'Choose different separator.')
 
         path_str = path if isinstance(path, str) else tuple(map(str, path))
 
@@ -629,8 +631,9 @@ class Paths:
         """
         path = tuple(ngram.split(separator))
         for x in path:
-            if self.separator in x:
-                raise PathpyError('Error: Node name contains separator character. Choose different separator.')
+            if isinstance(x, str) and self.separator in x:
+                raise PathpyError('Error: Node name contains separator character.'
+                                  'Choose different separator.')
 
         path_length = len(path) - 1
 

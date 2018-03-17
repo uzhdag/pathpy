@@ -88,19 +88,16 @@ def test_dag_path_mapping_to_many(dag_object):
     dag.topsort()
 
     mapping = {
-        'a': {1, 2},
-        'b': {2, 5},
-        'c': {5},
-        'e': {1, 2},
-        'f': {2, 3},
-        'g': {2, 5},
-        'h': {1},
-        'i': {1, 5},
+        'a': {1, 2}, 'b': {2, 5},
+        'c': {5}, 'e': {1, 2},
+        'f': {2, 3}, 'g': {2, 5},
+        'h': {1}, 'i': {1, 5},
         'j': {4}
     }
     paths_mapped2 = pp.path_extraction.paths_from_dag(dag, node_mapping=mapping)
 
-    assert paths_mapped2.observation_count is None
+    assert paths_mapped2.observation_count == 55
+    assert set(paths_mapped2.nodes()) == {'1', '2', '3', '4', '5'}
 
 
 edges1, types1 = [(1, 2), (1, 3), (2, 3)], ({1}, {2}, {3})
@@ -148,27 +145,6 @@ def test_remove_edge(dag_object: pp.DAG):
     assert 'e' in dag_object.roots
     assert 'e' in dag_object.leafs
     assert 'e' in dag_object.isolate_nodes()
-
-
-def test_set_path_expansion(dag_object: pp.DAG):
-    from collections import defaultdict
-    mapping = {'a': {1, 2},
-               'b': {2, 5},
-               'c': {5},
-               'e': {1, 2},
-               'f': {2, 3},
-               'g': {2, 5},
-               'h': {1},
-               'i': {1, 5},
-               'j': {4}
-               }
-
-    path_count = defaultdict(lambda: 0)
-    # for root in dag_object.roots:
-        # for set_path in dag_object.routes_from_node(root):
-
-
-
 
 
 

@@ -250,5 +250,13 @@ def test_pickle(random_paths, tmpdir):
     assert paths.observation_count == paths.observation_count
 
 
+# def test_expand_subpaths(random_paths):
+#     paths = random_paths(2000, 0, 400)
+#     paths.expand_subpaths()
+#
+#
+# import pytest
+# pytest.main(__file__)
+
 
 
