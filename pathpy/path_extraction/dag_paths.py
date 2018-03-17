@@ -24,7 +24,6 @@
 import sys
 import itertools as it
 import functools as ft
-import random
 from collections import defaultdict
 
 from tqdm import tqdm
@@ -54,9 +53,11 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
 
     """
     # Try to topologically sort the graph if not already sorted
-
-    test_key = list(node_mapping.keys())[0]
-    ONE_TO_MANY = isinstance(node_mapping[test_key], set)
+    if node_mapping:
+        test_key = list(node_mapping.keys())[0]
+        ONE_TO_MANY = isinstance(node_mapping[test_key], set)
+    else:
+        ONE_TO_MANY = False
 
     if dag.is_acyclic is None:
         dag.topsort()
@@ -84,8 +85,7 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
             path_counter = defaultdict(lambda: 0)
             for root in tqdm(dag.roots, unit='roots', desc='count unique paths'):
                 for set_path in dag.routes_from_node(root, node_mapping):
-                    blown_up_paths = blowup_set_paths(set_path)
-                    for blown_up_path in blown_up_paths:
+                    for blown_up_path in expand_set_paths(set_path):
                         path_counter[blown_up_path] += 1
 
             for path, count in tqdm(path_counter.items(), unit='path', desc='add paths'):
@@ -97,7 +97,7 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
         return p
 
 
-def blowup_set_paths(set_path):
+def expand_set_paths(set_path):
     """returns all possible paths which are consistent with the sequence of sets
 
     Parameters
@@ -107,29 +107,36 @@ def blowup_set_paths(set_path):
 
     Examples
     -------
-    >>> node_path = [{'320', '324'}, {'324'}, {'324', '429'}]
-    >>> blowup_set_paths(node_path)
-    [('324', '324', '324'),
-    ('320', '324', '429'),
-    ('324', '324', '324'),
-    ('320', '324', '429')]
+    >>> node_path = [{1, 2}, {2, 5}, {1, 2}]
+    >>> list(expand_set_paths(node_path))
+    [(1, 2, 1), (2, 2, 1), (1, 5, 1), (2, 5, 1), (1, 2, 2), (2, 2, 2), (1, 5, 2), (2, 5, 2)]
+    >>> node_path = [{1, 2}, {5}, {2, 5}]
+    >>> list(expand_set_paths(node_path))
+    [(1, 5, 2), (2, 5, 2), (1, 5, 5), (2, 5, 5)]
 
 
-
-    Returns
-    -------
-    list
-        a list of paths
+    Yields
+    ------
+    tuple
+        a possible path
     """
     # how many possible combinations are there
-    node_sizes = (len(n) for n in set_path)
+    node_sizes = [len(n) for n in set_path]
     num_possibilities = ft.reduce(lambda x, y: x * y, node_sizes, 1)
 
-    all_paths = []
-    iterator = [it.cycle(node_set) for node_set in set_path]
+    # create a list of lists such that each iterator is repeated the number of times
+    # his predecessors have completed their cycle
+    all_periodics = []
+    current_length = 1
+    for node_set in set_path:
+        periodic_num = []
+        for num in node_set:
+            periodic_num.extend([num] * current_length)
+        current_length *= len(node_set)
+        all_periodics.append(periodic_num)
+
+    iterator = [it.cycle(periodic) for periodic in all_periodics]
     for i, elements in enumerate(zip(*iterator)):
         if i >= num_possibilities:
             break
-        all_paths.append(elements)
-    return all_paths
-
+        yield elements

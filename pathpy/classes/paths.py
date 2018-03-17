@@ -28,6 +28,8 @@ import copy
 import numpy as np
 from pathpy.utils import Log, Severity
 from pathpy.utils.exceptions import PathpyError
+from pathpy.utils.default_containers import nested_zero_default as _nested_zero_default
+from pathpy.utils.default_containers import zero_array_default as _zero_array_default
 
 
 class Paths:
@@ -54,8 +56,7 @@ class Paths:
         #    subpath of a longer path, and j refers to the number of times p
         #    occurs as a *real* or *longest* path (i.e. not being a subpath
         #    of a longer path)
-        self.paths = defaultdict(
-            lambda: defaultdict(lambda: np.array([0.0, 0.0])))
+        self.paths = _nested_zero_default()
 
         # The character used to separate nodes on paths
         self.separator = separator
@@ -145,7 +146,7 @@ class Paths:
 
 
         """
-        lengths = defaultdict(lambda: np.array([0., 0.]))
+        lengths = _zero_array_default()
 
         for k in self.paths:
             for p in self.paths[k]:

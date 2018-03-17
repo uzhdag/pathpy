@@ -230,3 +230,25 @@ def test_path_multiplication(random_paths, factor):
     mult_inplace *= factor
 
     assert sum(mult_paths.paths[2][TEST_PATH]) == sum(mult_inplace.paths[2][TEST_PATH])
+
+
+def test_pickle(random_paths, tmpdir):
+    import pickle
+    from pathpy import Paths
+
+    dir_path = tmpdir.join("test_path.pkl")
+    paths = random_paths(90, 0, 20)
+
+    with open(str(dir_path), 'wb') as f:
+        pickle.dump(paths, f)
+
+    with open(str(dir_path), 'rb') as f:
+        paths_back = pickle.load(f)  # type: Paths
+
+    assert paths.diameter() == paths_back.diameter()
+    assert paths.paths.keys() == paths_back.paths.keys()
+    assert paths.observation_count == paths.observation_count
+
+
+
+
