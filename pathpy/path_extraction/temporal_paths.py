@@ -24,7 +24,6 @@
 
 from collections import defaultdict
 import sys
-import numpy as np
 
 from pathpy import Paths
 from pathpy.utils import Log
@@ -173,7 +172,7 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
         path = (x[0][0],)
         for edge in x:
             path += (edge[1],)
-        p.paths[len(x)][path] += np.array([0, 1])
+        p.paths[len(x)][path][1] += 1
 
     # expand sub paths of longest paths
     p.expand_subpaths()

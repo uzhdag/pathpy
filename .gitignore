@@ -110,5 +110,5 @@ prof/*
 # ==================
 
 .vscode/
-docs/_build/*
+docs/_build/
 .pytest_cache/v/cache/lastfailed

@@ -562,7 +562,7 @@ class Paths:
                         path_slice = path[s:s + k + 1]
                         self.paths[k][path_slice][0] += frequency
 
-    def add_path_tuple(self, path, expand_subpaths=True, frequency=np.array([0, 1])):
+    def add_path_tuple(self, path, expand_subpaths=True, frequency=(0, 1)):
         """Adds a tuple of elements as a path. If the elements are not strings,
         a conversion to strings will be made. This function can be used to
         to set custom subpath statistics, via the frequency tuple (see below).
@@ -605,7 +605,7 @@ class Paths:
                     for i in range(s, s + k + 1):
                         subpath += (path_str[i],)
                     # add subpath weight to first component of occurrences
-                    self.paths[k][subpath] += np.array([frequency[1], 0])
+                    self.paths[k][subpath][0] += frequency[1]
 
     def add_path_ngram(self, ngram, separator=',', expand_subpaths=True, frequency=None):
         """Adds the path(s) of a single n-gram to the path statistics object.
@@ -639,20 +639,20 @@ class Paths:
 
         # add the occurrences as *longest* path to the second component of the numpy array
         if frequency is not None:
-            self.paths[path_length][path] += np.array([0, frequency])
+            self.paths[path_length][path][1] += frequency
         else:
-            self.paths[path_length][path] +=  np.array([0, 1])
+            self.paths[path_length][path][1] += 1
 
         if expand_subpaths:
             max_length = min(self.max_subpath_length + 1, len(path) - 1)
             if frequency is not None:
                 for k in range(max_length):
                     for s in range(path_length - k + 1):
-                        self.paths[k][path[s:s + k + 1]] +=  np.array([frequency, 0])
+                        self.paths[k][path[s:s + k + 1]][0] += frequency
             else:
                 for k in range(max_length):
                     for s in range(path_length - k + 1):
-                        self.paths[k][path[s:s + k + 1]] +=  np.array([1, 0])
+                        self.paths[k][path[s:s + k + 1]][0] += 1
 
     @staticmethod
     def contained_paths(p, node_filter):
