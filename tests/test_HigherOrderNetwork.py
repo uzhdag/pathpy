@@ -206,7 +206,7 @@ def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nod
     distance_matrix_first_order"""
     p = random_paths(paths, 10, num_nodes)
     hon = pp.HigherOrderNetwork(p, k=1)
-    dist = hon.distance_matrix_first_order()
+    dist = shortest_paths.distance_matrix(hon)
     dist_alt = shortest_paths.distance_matrix(hon)
     m = dict_of_dicts_to_matrix(dist)
     m_alt = dict_of_dicts_to_matrix(dist_alt)
@@ -221,7 +221,7 @@ def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nod
 def test_distance_matrix_first_order(random_paths, n_nodes, k, paths, e_sum):
     p = random_paths(paths, 10, n_nodes)
     hon_k, hon_1 = pp.HigherOrderNetwork(p, k=k), pp.HigherOrderNetwork(p, k=1)
-    dist_k = hon_k.distance_matrix_first_order()
+    dist_k = shortest_paths.distance_matrix(hon_k)
     dist_1 = shortest_paths.distance_matrix(hon_1)
     total_distance = 0
     for source, target in itertools.product(hon_1.nodes, hon_1.nodes):

@@ -266,7 +266,7 @@ def betweenness_preference(paths, v, normalized=False, method='MLE'):
     assert method in ['MLE', 'Miller'], "method must be one of 'MLE' or 'Miller'"
 
     # If the network is empty, just return zero
-    if not paths.nodes():
+    if not paths.nodes:
         return 0.0
 
     # First create the betweenness preference matrix (equation (2) of the paper)

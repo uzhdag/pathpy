@@ -28,7 +28,6 @@ import scipy.sparse as _sparse
 
 from pathpy.utils.exceptions import PathsTooShort
 from pathpy.classes.network import Network
-from pathpy.algorithms import shortest_paths
 
 
 class HigherOrderNetwork(Network):
@@ -388,26 +387,6 @@ class HigherOrderNetwork(Network):
         if assumption == 'paths':
             return self.dof_paths
         return self.dof_ngrams
-
-    def distance_matrix_first_order(self):
-        """
-        Projects a distance matrix from a higher-order to first-order nodes, while path
-        lengths are calculated based on the higher-order topology
-        """
-
-        dist = shortest_paths.distance_matrix(self)
-        dist_first = defaultdict(lambda: defaultdict(lambda: _np.inf))
-
-        # calculate distances between first-order nodes based on distance in
-        # higher-order topology
-        for vk in dist:
-            for wk in dist[vk]:
-                v1 = self.higher_order_node_to_path(vk)[0]
-                w1 = self.higher_order_node_to_path(wk)[-1]
-                if dist[vk][wk] + self.order - 1 < dist_first[v1][w1]:
-                    dist_first[v1][w1] = dist[vk][wk] + self.order - 1
-
-        return dist_first
 
     def higher_order_path_to_first_order(self, path):
         """Maps a path in the higher-order network to a path in the first-order network.

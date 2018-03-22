@@ -26,12 +26,9 @@ import itertools as it
 import functools as ft
 from collections import defaultdict
 
-from tqdm import tqdm
-
 from pathpy.classes.paths import Paths
 from pathpy.utils import Log, Severity
 from pathpy import DAG
-
 
 def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=','):
     """    Extracts pathway statistics from a directed acyclic graph.
@@ -77,18 +74,18 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
 
         # construct all paths originating from root nodes for 1 to 1
         if not ONE_TO_MANY:
-            for s in tqdm(dag.roots, unit='roots'):
+            for s in dag.roots:
                 extracted_paths = dag.routes_from_node(s, node_mapping)
                 for path in extracted_paths:   # add detected paths to paths object
                     p.add_path_tuple(path, expand_subpaths=False, frequency=(0, 1))
         else:
             path_counter = defaultdict(lambda: 0)
-            for root in tqdm(dag.roots, unit='roots', desc='count unique paths'):
+            for root in dag.roots:
                 for set_path in dag.routes_from_node(root, node_mapping):
                     for blown_up_path in expand_set_paths(set_path):
                         path_counter[blown_up_path] += 1
 
-            for path, count in tqdm(path_counter.items(), unit='path', desc='add paths'):
+            for path, count in path_counter.items():
                 p.add_path_tuple(path, expand_subpaths=False, frequency=(0, count))
 
         Log.add('Expanding Subpaths', Severity.INFO)

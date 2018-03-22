@@ -9,7 +9,7 @@ Created on Fri Feb 20 11:59:22 2015
 import pathpy as pp
 import numpy as _np
 import pytest
-
+import pathpy.algorithms.shortest_paths as shortest_paths
 # mark to be used as decorator on slow functions such that they are only run
 # when explicitly called with `$ pytest --runslow`
 slow = pytest.mark.slow
@@ -68,7 +68,7 @@ def test_temp_net_extraction(temporal_network_object):
 def test_betweenness_preference_empty():
     t = pp.TemporalNetwork()
     paths = pp.path_extraction.paths_from_temporal_network(t, delta=3)
-    assert len(paths.nodes()) == 0
+    assert len(paths.nodes) == 0
 
     betweenness_pref = pp.path_measures.betweenness_preference(paths, 'e', method='MLE')
     expected = 0.0
@@ -113,7 +113,7 @@ def test_slow_down_factor_random(random_paths):
 
 def test_get_distance_matrix_temporal(temporal_network_object):
     p = pp.path_extraction.paths_from_temporal_network(temporal_network_object)
-    shortest_paths_dict = p.distance_matrix()
+    shortest_paths_dict = shortest_paths.distance_matrix(p)
 
     path_distances = dict()
     for k in shortest_paths_dict:
@@ -145,7 +145,7 @@ def test_get_distance_matrix_temporal(temporal_network_object):
 
 def test_get_distance_matrix_empty():
     p = pp.Paths()
-    shortest_paths_dict = p.distance_matrix()
+    shortest_paths_dict = shortest_paths.distance_matrix(p)
     assert len(shortest_paths_dict) == 0
 
 @slow

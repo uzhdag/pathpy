@@ -292,6 +292,7 @@ class Paths:
         """
         return self.summary()
 
+    @property
     def nodes(self):
         """
         Returns the list of nodes for the underlying
@@ -747,57 +748,3 @@ class Paths:
                     freq = (0, self.paths[p_length][x][1])
                     p.add_path_tuple(new_p, expand_subpaths=True, frequency=freq)
         return p
-
-    def distance_matrix(self):
-        """
-        Calculates shortest path distances between all pairs of
-        nodes based on the observed shortest paths (and subpaths)
-        """
-        shortest_path_lengths = defaultdict(lambda: defaultdict(lambda: np.inf))
-
-        Log.add('Calculating distance matrix based on empirical paths ...', Severity.INFO)
-        # Node: no need to initialize shortest_path_lengths[v][v] = 0
-        # since paths of length zero are contained in self.paths
-
-        for p_length in self.paths:
-            for p in self.paths[p_length]:
-                start = p[0]
-                end = p[-1]
-                if p_length < shortest_path_lengths[start][end]:
-                    shortest_path_lengths[start][end] = p_length
-
-        Log.add('finished.', Severity.INFO)
-
-        return shortest_path_lengths
-
-    def shortest_paths(self):
-        """
-        Calculates all observed shortest paths (and subpaths) between
-        all pairs of nodes
-        """
-        shortest_paths = defaultdict(lambda: defaultdict(set))
-        shortest_path_lengths = defaultdict(lambda: defaultdict(lambda: np.inf))
-
-        Log.add('Calculating shortest paths based on empirical paths ...', Severity.INFO)
-
-        for p_length in self.paths:
-            for p in self.paths[p_length]:
-                s = p[0]
-                d = p[-1]
-                # we found a path of length l from s to d
-                if p_length < shortest_path_lengths[s][d]:
-                    shortest_path_lengths[s][d] = p_length
-                    shortest_paths[s][d] = set()
-                    shortest_paths[s][d].add(p)
-                elif p_length == shortest_path_lengths[s][d]:
-                    shortest_paths[s][d].add(p)
-
-        Log.add('finished.', Severity.INFO)
-
-        return shortest_paths
-
-    def diameter(self):
-        """
-        Return the maximal path length.
-        """
-        return len(self.paths) - 1

@@ -22,21 +22,26 @@
 
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
+from functools import singledispatch
 from collections import defaultdict
 
 import numpy as _np
 
-from pathpy.classes.network import Network
 from pathpy.utils import Log, Severity
-from pathpy.utils import PathpyError
+from pathpy.utils import PathpyNotImplemented
+from pathpy.classes import HigherOrderNetwork
+from pathpy.classes import Network
+from pathpy.classes import Paths
 
+__all__ = ['distance_matrix', 'shortest_paths', 'diameter']
 
-__all__ = ['distance_matrix', 'shortest_paths']
-
-
+@singledispatch
 def distance_matrix(network):
     """Calculates shortest path distances between all pairs of nodes
     in a network using the Floyd-Warshall algorithm."""
+
+    assert isinstance(network, Network), \
+        "network must be an instance of Network"
 
     Log.add('Calculating distance matrix in network ', Severity.INFO)
 
@@ -63,24 +68,103 @@ def distance_matrix(network):
     return dist
 
 
+@distance_matrix.register(Paths)
+def _dm(paths):
+    """
+    Calculates shortest path distances between all pairs of
+    nodes based on the observed shortest paths (and subpaths)
+    """
+    dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
+    Log.add('Calculating distance matrix based on empirical paths ...', Severity.INFO)
+    # Node: no need to initialize shortest_path_lengths[v][v] = 0
+    # since paths of length zero are contained in self.paths
+
+    for v in paths.nodes:
+        dist[v][v] = 0
+
+    for p_length in paths.paths:
+        for p in paths.paths[p_length]:
+            start = p[0]
+            end = p[-1]
+            if p_length < dist[start][end]:
+                dist[start][end] = p_length
+
+    Log.add('finished.', Severity.INFO)
+
+    return dist
+
+
+@distance_matrix.register(HigherOrderNetwork)
+def _dm_ho(network):
+    """
+    Returns a projection of the distance matrix in a higher-order network 
+    to first-order nodes.
+    """
+
+    assert isinstance(network, HigherOrderNetwork), \
+        "network must be an instance of Network"
+
+    Log.add('Calculating distance matrix in higher-order network ', Severity.INFO)
+
+    dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    # assign the default weight of 1
+    for e in network.edges:
+        dist[e[0]][e[1]] = 1
+        if not network.directed:
+            dist[e[1]][e[0]] = 1
+
+    for k in network.nodes:
+        for v in network.nodes:
+            for w in network.nodes:
+                if dist[v][w] > dist[v][k] + dist[k][w]:
+                    dist[v][w] = dist[v][k] + dist[k][w]
+    
+    dist_first = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    # set distances of nodes to order-1
+    for v in network.nodes:
+        v1 = network.higher_order_node_to_path(v)[0]
+        w1 = network.higher_order_node_to_path(v)[-1]
+
+    for v in network.paths.nodes:
+        dist_first[v][v] = 0        
+
+    # calculate distances between first-order nodes based on distance in
+    # higher-order topology
+    for vk in dist:
+        for wk in dist[vk]:
+            v1 = network.higher_order_node_to_path(vk)[0]
+            w1 = network.higher_order_node_to_path(wk)[-1]
+            if dist[vk][wk] + network.order - 1 < dist_first[v1][w1]:
+                dist_first[v1][w1] = dist[vk][wk] + network.order - 1
+
+    Log.add('finished.', Severity.INFO)
+
+    return dist_first
+
+
+@singledispatch
 def shortest_paths(network):
     """
     Calculates all shortest paths between all pairs of
     nodes using the Floyd-Warshall algorithm.
     """
+    assert isinstance(network, Network), \
+        "network must be an instance of Network"
 
     Log.add('Calculating shortest paths in network ', Severity.INFO)
 
     dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
-    shortest_paths = defaultdict(lambda: defaultdict(set))
+    s_p = defaultdict(lambda: defaultdict(set))
 
     for e in network.edges:
         dist[e[0]][e[1]] = 1
-        shortest_paths[e[0]][e[1]].add(e)
+        s_p[e[0]][e[1]].add(e)
         if not network.directed:
             dist[e[1]][e[0]] = 1
-            shortest_paths[e[1]][e[0]].add((e[1], e[0]))
+            s_p[e[1]][e[0]].add((e[1], e[0]))
 
     for k in network.nodes:
         for v in network.nodes:
@@ -88,19 +172,62 @@ def shortest_paths(network):
                 if v != w:
                     if dist[v][w] > dist[v][k] + dist[k][w]:
                         dist[v][w] = dist[v][k] + dist[k][w]
-                        shortest_paths[v][w] = set()
-                        for p in list(shortest_paths[v][k]):
-                            for q in list(shortest_paths[k][w]):
-                                shortest_paths[v][w].add(p + q[1:])
+                        s_p[v][w] = set()
+                        for p in list(s_p[v][k]):
+                            for q in list(s_p[k][w]):
+                                s_p[v][w].add(p + q[1:])
                     elif dist[v][w] == dist[v][k] + dist[k][w]:
-                        for p in list(shortest_paths[v][k]):
-                            for q in list(shortest_paths[k][w]):
-                                shortest_paths[v][w].add(p + q[1:])
+                        for p in list(s_p[v][k]):
+                            for q in list(s_p[k][w]):
+                                s_p[v][w].add(p + q[1:])
 
     for v in network.nodes:
         dist[v][v] = 0
-        shortest_paths[v][v].add((v,))
+        s_p[v][v].add((v,))
 
     Log.add('finished.', Severity.INFO)
 
-    return shortest_paths
+    return s_p
+
+
+@shortest_paths.register(Paths)
+def _sp(paths):
+    """
+    Calculates all observed shortest paths (and subpaths) between
+    all pairs of nodes
+    """
+
+    assert isinstance(paths, Paths), \
+        "paths must be an instance of Paths"
+
+    s_p = defaultdict(lambda: defaultdict(set))
+    s_p_lengths = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    Log.add('Calculating shortest paths based on empirical paths ...', Severity.INFO)
+
+    for p_length in paths.paths:
+        for p in paths.paths[p_length]:
+            s = p[0]
+            d = p[-1]
+            # we found a path of length l from s to d
+            if p_length < s_p_lengths[s][d]:
+                s_p_lengths[s][d] = p_length
+                s_p[s][d] = set()
+                s_p[s][d].add(p)
+            elif p_length == s_p_lengths[s][d]:
+                s_p[s][d].add(p)
+
+    Log.add('finished.', Severity.INFO)
+
+    return s_p
+
+
+@singledispatch
+def diameter(network):
+    """
+    Return the maximal path length.
+    """
+    assert isinstance(network, Network), \
+        "network must be an instance of Network"
+
+    raise PathpyNotImplemented()

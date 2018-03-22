@@ -97,7 +97,7 @@ def test_dag_path_mapping_to_many(dag_object):
     paths_mapped2 = pp.path_extraction.paths_from_dag(dag, node_mapping=mapping)
 
     assert paths_mapped2.observation_count == 55
-    assert set(paths_mapped2.nodes()) == {'1', '2', '3', '4', '5'}
+    assert set(paths_mapped2.nodes) == {'1', '2', '3', '4', '5'}
 
 
 edges1, types1 = [(1, 2), (1, 3), (2, 3)], ({1}, {2}, {3})
