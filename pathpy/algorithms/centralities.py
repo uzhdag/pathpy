@@ -181,7 +181,7 @@ def _bw(paths, normalized=False):
     assert isinstance(paths, Paths), "argument must be an instance of pathpy.Paths"
     node_centralities = defaultdict(lambda: 0)
 
-    Log.add('Calculating betweenness centralities based on paths ...', Severity.INFO)
+    Log.add('Calculating betweenness centralities in paths ...', Severity.INFO)
 
     all_paths = shortest_paths(paths)
 
@@ -225,16 +225,16 @@ def closeness_centrality(network, normalized=False):
     if not isinstance(network, Network):
         raise PathpyNotImplemented("`network` must be an instance of Network")
 
-    dist = distance_matrix(network)
+    distances = distance_matrix(network)
     node_centralities = defaultdict(lambda: 0)
 
     Log.add('Calculating closeness centralities in network ...', Severity.INFO)
 
     # calculate closeness values
-    for v_node in dist:
-        for w_node in dist[v_node]:
-            if v_node != w_node and dist[v_node][w_node] < _np.inf:
-                node_centralities[v_node] += 1.0 / dist[v_node][w_node]
+    for x in network.nodes:
+        for d in network.nodes:
+            if d != x and distances[d][x] < _np.inf:
+                node_centralities[x] += 1.0 / distances[d][x]
 
     # assign centrality zero to nodes not occurring on higher-order shortest paths
     for v in network.nodes:
@@ -267,15 +267,17 @@ def _cl(paths, normalized=False):
     dict
     """
     node_centralities = defaultdict(lambda: 0)
-    shortest_path_lengths = distance_matrix(paths)
+    distances = distance_matrix(paths)
+    nodes = paths.nodes
 
-    for x in shortest_path_lengths:
-        for d in shortest_path_lengths[x]:
-            if x != d and shortest_path_lengths[x][d] < _np.inf:
-                node_centralities[x] += 1.0 / shortest_path_lengths[x][d]
+    for x in nodes:
+        # calculate closeness centrality of x
+        for d in nodes:
+            if x != d and distances[d][x] < _np.inf:
+                node_centralities[x] += 1.0 / distances[d][x]
 
     # assign zero values to nodes not occurring
-    nodes = paths.nodes
+    
     for v in nodes:
         node_centralities[v] += 0
 
@@ -290,23 +292,24 @@ def _cl(paths, normalized=False):
 
 @closeness_centrality.register(HigherOrderNetwork)
 def _cl(higher_order_net, normalized=False):
+
     if not isinstance(higher_order_net, HigherOrderNetwork):
         raise PathpyNotImplemented("`higher_order_net` must be an instance of HigherOrderNetwork")
 
-    dist_first = distance_matrix(higher_order_net)
+    distances = distance_matrix(higher_order_net)
     node_centralities = defaultdict(lambda: 0)
+    nodes = higher_order_net.paths.nodes
 
     Log.add('Calculating closeness centralities (k = %s) ...' % higher_order_net.order,
             Severity.INFO)
+    
+    for x in nodes:
+        # calculate closeness centrality of x
+        for d in nodes:
+            if x != d and distances[d][x] < _np.inf:
+                node_centralities[x] += 1.0 / distances[d][x]
 
-    # calculate closeness values
-    for v_node in dist_first:
-        for w_node in dist_first[v_node]:
-            if v_node != w_node and dist_first[v_node][w_node] < _np.inf:
-                node_centralities[v_node] += 1.0 / dist_first[v_node][w_node]
-
-    # assign centrality zero to nodes not occurring on higher-order shortest paths
-    nodes = higher_order_net.paths.nodes
+    # assign centrality zero to those nodes for which no higher-order path exists
     for v in nodes:
         node_centralities[v] += 0
 

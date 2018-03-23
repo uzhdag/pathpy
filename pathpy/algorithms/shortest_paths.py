@@ -43,8 +43,6 @@ def distance_matrix(network):
     assert isinstance(network, Network), \
         "network must be an instance of Network"
 
-    Log.add('Calculating distance matrix in network ', Severity.INFO)
-
     dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
     # assign first the default weight of 1
@@ -62,8 +60,6 @@ def distance_matrix(network):
             for w in network.nodes:
                 if dist[v][w] > dist[v][k] + dist[k][w]:
                     dist[v][w] = dist[v][k] + dist[k][w]
-
-    Log.add('finished.', Severity.INFO)
 
     return dist
 
@@ -98,49 +94,49 @@ def _dm(paths):
 @distance_matrix.register(HigherOrderNetwork)
 def _dm_ho(network):
     """
-    Returns a projection of the distance matrix in a higher-order network 
-    to first-order nodes.
+    Returns a matrix capturing distances between (first-order)
+    nodes, based on a given higher-order topology. 
+    As an example, the second-order network [a-b] -> [b-c]
+    will lead to the distance matrix:
+    dist[a][c] = 2
     """
 
     assert isinstance(network, HigherOrderNetwork), \
-        "network must be an instance of Network"
-
-    Log.add('Calculating distance matrix in higher-order network ', Severity.INFO)
+        "network must be an instance of HigherOrderNetwork"
 
     dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
-    # assign the default weight of 1
+    # Note: higher-order networks are always directed
     for e in network.edges:
         dist[e[0]][e[1]] = 1
-        if not network.directed:
-            dist[e[1]][e[0]] = 1
 
+    # k, v, and w are *higher-order* nodes, i.e. paths of length k
     for k in network.nodes:
         for v in network.nodes:
             for w in network.nodes:
                 if dist[v][w] > dist[v][k] + dist[k][w]:
                     dist[v][w] = dist[v][k] + dist[k][w]
     
+    # project distances to first-order nodes
     dist_first = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
-    # set distances of nodes to order-1
+    # set distances between nodes based on higher-order nodes (paths)
     for v in network.nodes:
         v1 = network.higher_order_node_to_path(v)[0]
         w1 = network.higher_order_node_to_path(v)[-1]
+        dist_first[v1][w1] = network.order - 1
 
+    # setr diagonal entries to zero
     for v in network.paths.nodes:
-        dist_first[v][v] = 0        
+        dist_first[v][v] = 0
 
-    # calculate distances between first-order nodes based on distance in
-    # higher-order topology
+    # set distances between first-order nodes
     for vk in dist:
         for wk in dist[vk]:
             v1 = network.higher_order_node_to_path(vk)[0]
             w1 = network.higher_order_node_to_path(wk)[-1]
             if dist[vk][wk] + network.order - 1 < dist_first[v1][w1]:
                 dist_first[v1][w1] = dist[vk][wk] + network.order - 1
-
-    Log.add('finished.', Severity.INFO)
 
     return dist_first
 
@@ -153,8 +149,6 @@ def shortest_paths(network):
     """
     assert isinstance(network, Network), \
         "network must be an instance of Network"
-
-    Log.add('Calculating shortest paths in network ', Severity.INFO)
 
     dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
     s_p = defaultdict(lambda: defaultdict(set))
@@ -185,8 +179,6 @@ def shortest_paths(network):
         dist[v][v] = 0
         s_p[v][v].add((v,))
 
-    Log.add('finished.', Severity.INFO)
-
     return s_p
 
 
@@ -203,8 +195,6 @@ def _sp(paths):
     s_p = defaultdict(lambda: defaultdict(set))
     s_p_lengths = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
-    Log.add('Calculating shortest paths based on empirical paths ...', Severity.INFO)
-
     for p_length in paths.paths:
         for p in paths.paths[p_length]:
             s = p[0]
@@ -216,8 +206,6 @@ def _sp(paths):
                 s_p[s][d].add(p)
             elif p_length == s_p_lengths[s][d]:
                 s_p[s][d].add(p)
-
-    Log.add('finished.', Severity.INFO)
 
     return s_p
 

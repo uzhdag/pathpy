@@ -124,7 +124,7 @@ def test_distance_matrix_equal_across_objects(random_paths):
 @pytest.mark.parametrize('paths, n_nodes, k, e_var, e_sum', (
         (7, 9, 1, 1.015394, 121),
         (60, 20, 1, 0.346694, 577),
-        (7, 9, 2, 2.69493, 314),
+        (7, 9, 2, 3.628105, 116),
 ))
 def test_distance_matrix(random_paths, paths, n_nodes, k, e_var, e_sum):
     p = random_paths(paths, 20, num_nodes=n_nodes)
@@ -216,7 +216,7 @@ def test_distance_matrix_first_order_eq_dist_matrix(random_paths, paths, num_nod
 @pytest.mark.parametrize('paths, n_nodes, k, e_sum', (
         (7, 9, 1, 79),
         (60, 20, 1, 613),
-        (10, 9, 2, 161),  # creates problems
+        (10, 9, 2, 140),  # creates problems
 ))
 def test_distance_matrix_first_order(random_paths, n_nodes, k, paths, e_sum):
     p = random_paths(paths, 10, n_nodes)
