@@ -109,13 +109,22 @@ class Paths:
         k_path_info_fmt = 'Paths of length k = {k}\t\t{lpsum} ' \
                           '[ {unique_paths_longer} / {spsum} / {total_paths} ]\n'
 
+        if 0 not in self.paths:
+            len_0 = 0
+        else:
+            len_0 = len(self.paths[0])
+        if 1 not in self.paths:
+            len_1 = 0
+        else:
+            len_1 = len(self.paths[1])        
+
         summary_info = {
             "lpsum": np.sum(l_path_sum),
             "unique_paths": self.unique_paths(),
             "spsum": np.sum(sub_path_sum),
             "total_paths": np.sum(total_paths),
-            "len_nodes": len(self.paths[0]),
-            "len_first_path": len(self.paths[1]),
+            "len_nodes": len_0,
+            "len_first_path": len_1,
             "maxL": max_path_length,
             "avgL": average_length
         }
@@ -276,6 +285,9 @@ class Paths:
             number of unique paths satisfying parameter ``l``
         """
         num_l = 0.0
+        if not self.paths:
+            return num_l
+        
         max_length = l
         if consider_longer_paths:
             max_length = max(self.paths) if self.paths else 0
@@ -608,7 +620,7 @@ class Paths:
                     # add subpath weight to first component of occurrences
                     self.paths[k][subpath][0] += frequency[1]
 
-    def add_path_ngram(self, ngram, separator=',', expand_subpaths=True, frequency=None):
+    def add_path_ngram(self, ngram, separator=',', expand_subpaths=True, frequency=(0, 1)):
         """Adds the path(s) of a single n-gram to the path statistics object.
 
         Parameters
@@ -639,21 +651,20 @@ class Paths:
         path_length = len(path) - 1
 
         # add the occurrences as *longest* path to the second component of the numpy array
-        if frequency is not None:
-            self.paths[path_length][path][1] += frequency
-        else:
-            self.paths[path_length][path][1] += 1
+        self.paths[path_length][path][1] += frequency[1]
 
         if expand_subpaths:
-            max_length = min(self.max_subpath_length + 1, len(path) - 1)
-            if frequency is not None:
-                for k in range(max_length):
-                    for s in range(path_length - k + 1):
-                        self.paths[k][path[s:s + k + 1]][0] += frequency
-            else:
-                for k in range(max_length):
-                    for s in range(path_length - k + 1):
-                        self.paths[k][path[s:s + k + 1]][0] += 1
+            max_length = min(self.max_subpath_length + 1, path_length)
+            for k in range(0, max_length):
+                for s in range(len(path) - k):
+                    # for all start indices from 0 to n-k
+
+                    subpath = ()
+                    # construct subpath
+                    for i in range(s, s + k + 1):
+                        subpath += (path[i],)
+                    # add subpath weight to first component of occurrences
+                    self.paths[k][subpath][0] += frequency[1]
 
     @staticmethod
     def contained_paths(p, node_filter):
