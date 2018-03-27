@@ -157,6 +157,18 @@ class Network:
         return n
 
 
+    @classmethod
+    def from_paths(cls, paths):
+        
+        network = cls()
+
+        for p in paths.paths[1]:
+            network.add_edge(p[0], p[1], weight=paths.paths[2][p].sum())
+
+        return network
+
+
+
     def add_node(self, v, **kwargs):
         """
         Adds a node to a network
@@ -520,7 +532,7 @@ class Network:
         """Returns the default string representation of this graphical model instance"""
         return self.summary()
 
-    def _to_html(self, width=600, height=600, use_requirejs=True):
+    def _to_html(self, width=600, height=600, use_requirejs=True, clusters=None):
         import json
         import os
         from string import Template
@@ -531,14 +543,19 @@ class Network:
                 return "n_" + v
             return v
 
-        network_data = {
-            'nodes': [{'id': fix_node_name(v), 'group': 1} for v in self.nodes],
+        network_data = {            
             'links': [
                 {'source': fix_node_name(e[0]),
                  'target': fix_node_name(e[1]),
                  'value': 1} for e in self.edges.keys()
             ]
         }
+
+        if clusters != None:
+            network_data['nodes'] = [{'id': fix_node_name(v), 'group': clusters[v]} for v in self.nodes]
+        else:
+            network_data['nodes'] = [{'id': fix_node_name(v), 'group': 'None'} for v in self.nodes]
+
 
         import string
         import random
@@ -564,15 +581,15 @@ class Network:
             'height': height,
             'div_id': div_id})
 
-    def _repr_html_(self, use_requirejs=True):
+    def _repr_html_(self, use_requirejs=True, clusters=None):
         """
         display an interactive D3 visualisation of the higher-order network in jupyter
         """
         from IPython.core.display import display, HTML
-        display(HTML(self._to_html(use_requirejs=use_requirejs)))
+        display(HTML(self._to_html(use_requirejs=use_requirejs, clusters=clusters)))
 
-    def write_html(self, filename, width=600, height=600):
-        html = self._to_html(width=width, height=height, use_requirejs=False)
+    def write_html(self, filename, width=600, height=600, clusters=None):
+        html = self._to_html(width=width, height=height, use_requirejs=False, clusters=clusters)
         with open(filename, 'w+') as f:
             f.write(html)
 

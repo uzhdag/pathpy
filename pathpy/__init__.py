@@ -16,6 +16,7 @@ from .algorithms import path_measures
 from .algorithms import shortest_paths
 from .algorithms import components
 from .algorithms import centralities
+from .algorithms import infomap
 from .path_extraction import paths_from_dag
 from .path_extraction import paths_from_origin_destination
 from .path_extraction import paths_from_temporal_network
