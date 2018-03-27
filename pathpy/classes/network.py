@@ -402,19 +402,18 @@ class Network:
         row = []
         col = []
         data = []
+
         # calculate weighted out-degrees
         D = {n: self.nodes[n]['outweight'] for n in self.nodes}
 
         node_to_coord = self.node_to_name_map()
 
-        for (s, t) in self.edges:
-            # either s->t has been observed as a longest path, or we are interested in
-            # subpaths as well
-
+        for s, t in self.edges:
             # the following makes sure that we do not accidentally consider zero-weight
             # edges (automatically added by default_dic)
             weight = self.edges[(s, t)]['weight']
             if weight > 0:
+                # add transition from s to t
                 row.append(node_to_coord[t])
                 col.append(node_to_coord[s])
                 assert D[s] > 0, \
@@ -425,6 +424,20 @@ class Network:
                     raise ValueError('Encountered transition probability {p} outside '
                                      '[0,1] range.'.format(p=prob))
                 data.append(prob)
+                # add transition from t to s 
+                if not self.directed:
+                    row.append(node_to_coord[s])
+                    col.append(node_to_coord[t])
+                    assert D[t] > 0, \
+                    'Encountered zero out-degree for node "{t}" ' \
+                    'while weight of link ({t}, {s}) is non-zero.'.format(s=s, t=t)
+                prob = weight / D[t]
+                if prob < 0 or prob > 1:  # pragma: no cover
+                    raise ValueError('Encountered transition probability {p} outside '
+                                     '[0,1] range.'.format(p=prob))
+                data.append(prob)
+
+
 
         data = _np.array(data)
         data = data.reshape(data.size, )
