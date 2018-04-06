@@ -101,7 +101,7 @@ class Paths:
             "Total path count: \t\t{lpsum} \n"
             "[Unique / Sub paths / Total]: \t[{unique_paths} / {spsum} / {total_paths}]\n"
             "Nodes:\t\t\t\t{len_nodes} \n"
-            "Edges:\t\t\t\t{len_first_path}\n"
+            "Edges:\t\t\t\t{len_edges}\n"
             "Max. path length:\t\t{maxL}\n"
             "Avg path length:\t\t{avgL} \n"
         )
@@ -109,6 +109,7 @@ class Paths:
         k_path_info_fmt = 'Paths of length k = {k}\t\t{lpsum} ' \
                           '[ {unique_paths_longer} / {spsum} / {total_paths} ]\n'
 
+        # Count number of nodes and edges
         if 0 not in self.paths:
             len_0 = 0
         else:
@@ -124,7 +125,7 @@ class Paths:
             "spsum": np.sum(sub_path_sum),
             "total_paths": np.sum(total_paths),
             "len_nodes": len_0,
-            "len_first_path": len_1,
+            "len_edges": len_1,
             "maxL": max_path_length,
             "avgL": average_length
         }
