@@ -51,7 +51,7 @@ def random_walk(network, l, n=1):
     for i in range(n):
         # choose random start node
         path = (random.choice(nodes),)
-        for j in range(l-1):
+        for j in range(l):
             # get transition probability vector T[idx ->  . ]
             prob = _np.array(T[idx_map[path[-1]],:])[0,:]
             nz = prob.nonzero()[0]
@@ -61,6 +61,7 @@ def random_walk(network, l, n=1):
                 # add node to path
                 path = path + (next_node,)
             else:
+                print('no neighbor')
                 break
         p.add_path_tuple(path)
     return p
