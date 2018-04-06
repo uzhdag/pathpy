@@ -160,12 +160,26 @@ class Network:
     @classmethod
     def from_paths(cls, paths):
         
-        network = cls()
+        network = cls(directed=True)
 
+        # check all sub-paths of length one
         for p in paths.paths[1]:
-            network.add_edge(p[0], p[1], weight=paths.paths[2][p].sum())
+            network.add_edge(p[0], p[1], weight=paths.paths[1][p].sum())
 
         return network
+
+
+    def to_unweighted(self):
+        """
+        Returns an unweighted copy of the directed or undirected network.
+        In this copy all edge and node properties of the original network 
+        are removed.
+        """
+        n = Network(directed = self.directed)
+
+        for (v,w) in self.edges:
+            n.add_edge(v, w)
+        return n
 
 
 
@@ -415,7 +429,7 @@ class Network:
         col = []
         data = []
 
-        # calculate weighted out-degrees
+        # calculate weighted out-degrees of all nodes
         D = {n: self.nodes[n]['outweight'] for n in self.nodes}
 
         node_to_coord = self.node_to_name_map()
@@ -429,25 +443,26 @@ class Network:
                 row.append(node_to_coord[t])
                 col.append(node_to_coord[s])
                 assert D[s] > 0, \
-                    'Encountered zero out-degree for node "{s}" ' \
+                    'Encountered zero out-weight or out-degree for node "{s}" ' \
                     'while weight of link ({s}, {t}) is non-zero.'.format(s=s, t=t)
                 prob = weight / D[s]
                 if prob < 0 or prob > 1:  # pragma: no cover
                     raise ValueError('Encountered transition probability {p} outside '
                                      '[0,1] range.'.format(p=prob))
                 data.append(prob)
-                # add transition from t to s 
+
+                # add transition from t to s for undirected network
                 if not self.directed:
                     row.append(node_to_coord[s])
                     col.append(node_to_coord[t])
                     assert D[t] > 0, \
                     'Encountered zero out-degree for node "{t}" ' \
                     'while weight of link ({t}, {s}) is non-zero.'.format(s=s, t=t)
-                prob = weight / D[t]
-                if prob < 0 or prob > 1:  # pragma: no cover
-                    raise ValueError('Encountered transition probability {p} outside '
-                                     '[0,1] range.'.format(p=prob))
-                data.append(prob)
+                    prob = weight / D[t]
+                    if prob < 0 or prob > 1:  # pragma: no cover
+                        raise ValueError('Encountered transition probability {p} outside '
+                                        '[0,1] range.'.format(p=prob))
+                    data.append(prob)
 
 
 
@@ -543,7 +558,7 @@ class Network:
                 return "n_" + v
             return v
 
-        network_data = {            
+        network_data = {
             'links': [
                 {'source': fix_node_name(e[0]),
                  'target': fix_node_name(e[1]),
@@ -575,8 +590,14 @@ class Network:
 
         html_template = Template(html_str)
 
+        if self.directed:
+            directedness = 'true'
+        else:
+            directedness = 'false'
+
         return html_template.substitute({
             'network_data': json.dumps(network_data),
+            'directed' : directedness,
             'width': width,
             'height': height,
             'div_id': div_id})
