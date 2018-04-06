@@ -35,7 +35,7 @@ __all__ = ['modular_description_length']
 
 
 @singledispatch
-def modular_description_length(network, M):
+def modular_description_length(network, module_map):
     """
     Calculates the modular description length L(M) of a random 
     walk trajectory on the given network, using the mapping of nodes
@@ -45,21 +45,72 @@ def modular_description_length(network, M):
     M. Rosvall and C. T. Bergstrom: Maps of random walks on complex
     networks reveal community structure, PNAS, Vol. 105, No. 4, Jan. 2008
     """
+    """
+    Calculates the modular description length L(M) of random walks 
+    in an undirected network, using the mapping of nodes
+    to modules given in the dictionary M. The calculation 
+    is based on the MapEquation proposed in:
+
+    M. Rosvall and C. T. Bergstrom: Maps of random walks on complex
+    networks reveal community structure, PNAS, Vol. 105, No. 4, Jan. 2008
+    """
     assert isinstance(network, Network), "argument must be an instance of pathpy.Network"
+    assert not network.directed, "this function is currently only implemented for undirected and unweighted networks"
 
-    raise PathpyNotImplemented()
+    module_to_nodes = defaultdict(list)
 
-    q = 0.0 
-    H_Q = 0.0 
-    S = 0.0
+    for v in network.nodes:
+        module_to_nodes[module_map[v]].append(v)
 
-    pi = Network.leading_eigenvector(network.transition_matrix())
+    # count edges within and across modules
+    across_count = 0
+    total = 0
+    total_within = 0
+    within_count = defaultdict(lambda: 0)
+    module_count = defaultdict(lambda: 0)
+    node_count = defaultdict(lambda: 0)
+    for (v,w) in network.edges:
+        total += 1
+        module_count[module_map[v]] += 1
+        module_count[module_map[w]] += 1
+        
+        if module_map[v] != module_map[w]:
+            across_count += 1
+        else:
+            node_count[v] += 1
+            node_count[w] += 1
+            within_count[module_map[v]] += 1
+            total_within += 1
 
-    return q * H_Q + S
+    #print('total_within = {0}'.format(total_within))
+    #print('across_count = {0}'.format(across_count))
+    #print('total = {0}'.format(total))
+
+    # contribution of module changes to code length
+    q = across_count/total
+    H_Q = 0
+    for m in module_count:
+        x = module_count[m] / (2*total)
+        H_Q += x * _np.log2(x)
+    #print('H_Q = {0}'.format(H_Q))
+
+    # contribution of node changes to code length
+    S = 0
+    for m in within_count:
+        p_i = within_count[m]/total_within
+        #print('p_i = {0}'.format(p_i))
+        H_Pi = 0
+        for n in module_to_nodes[m]:
+            x = node_count[n] / within_count[m]
+            H_Pi += x * _np.log2(x)
+        #print('H_Pi = {0}'.format(H_Pi))
+        S += - p_i * H_Pi
+
+    return - q * H_Q + S
 
 
 @modular_description_length.register(Paths)
-def _mdl(paths, module_map):
+def _mdl_paths(paths, module_map):
     """
     Calculates the modular description length L(M) of paths in the 
     given paths objects, using the mapping of nodes
@@ -107,7 +158,7 @@ def _mdl(paths, module_map):
                     else: # or count exit transition
                         exit_prob[current_module] += paths.paths[l][p][1]                        
                         # and update current module
-                        current_module = module_map[x]
+                        current_module = module_map[x] 
                         
     # STEP 1: Calculate contribution of transitions BETWEEN modules ...
 
@@ -170,33 +221,52 @@ def _mdl(paths, module_map):
     return -(q * H_Q + S)
 
 
+def find_communities(obj, iterations=100, initial_map=None, T=0.1, t_i=1):
+    """
+    A simple simulated annealing algorithm to optimize the modular description length 
+    calculated either based on a Paths or Network object
+    """
+    assert isinstance(obj, Paths) or isinstance(obj, Network), 'Can only find communities based on paths or undirected network'
+    nodes = [v for v in obj.nodes]
 
-def find_communities(paths, iterations=100):
+    if initial_map != None:
+        module_map = initial_map
+    else:
+        module_map = {}
+        i = 0
+        for n in nodes:
+            module_map[n] = str(i)            
+            i += 1
 
-    module_map = {}
-    nodes = [v for v in paths.nodes]
+    mdl = modular_description_length(obj, module_map) 
 
-    i = 0
-    for n in paths.nodes:
-        module_map[n] = str(i)
-        i += 1
+    if mdl == _np.nan:
+        raise PathpyError('Could not calculate initial MDL')
 
-    mdl = modular_description_length(paths, module_map)
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
 
-    for i in range(iterations):
-        # pick random pair of nodes
-        v = _np.random.choice(nodes)
-        w = _np.random.choice(nodes)
-        if v != w:
-            old = module_map[v]
-            module_map[v] = module_map[w]
-            try:
-                mdl_new = modular_description_length(paths, module_map)
-            except:
-                module_map[v] = old
-            if mdl_new > mdl:
-                module_map[v] = old
-            else:
+        for i in range(iterations):
+            # pick a random pair of nodes
+            c = _np.random.choice(_np.array(nodes), 2, replace=False)
+            n1 = c[0]
+            n2 = c[1]
+
+            # merge nodes into same module
+            old_module = module_map[n1]
+            module_map[n1] = module_map[n2]
+
+            mdl_new = modular_description_length(obj, module_map)
+            # accept change if it decreases MDL or based on temperature
+            if mdl_new != _np.nan and (mdl_new <= mdl or _np.random.ranf() < _np.exp(-(mdl_new-mdl)/T)):
                 mdl = mdl_new
+            else: # revert change
+                module_map[n1] = old_module
+
+            # cooling schedule
+            if i % t_i == 0:
+                T = T/1.1
+
     return module_map
 
