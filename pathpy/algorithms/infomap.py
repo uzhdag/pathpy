@@ -66,44 +66,53 @@ def modular_description_length(network, module_map):
     across_count = 0
     total = 0
     total_within = 0
+    total_exit = 0
     within_count = defaultdict(lambda: 0)
     module_count = defaultdict(lambda: 0)
+    exit_count = defaultdict(lambda: 0)
+    exit_count_node = defaultdict(lambda: 0)
     node_count = defaultdict(lambda: 0)
     for (v,w) in network.edges:
         total += 1
         module_count[module_map[v]] += 1
         module_count[module_map[w]] += 1
-        
         if module_map[v] != module_map[w]:
             across_count += 1
+            exit_count[module_map[v]] += 1
+            exit_count_node[v] += 1
+            exit_count[module_map[w]] += 1
+            exit_count_node[w] += 1
+            total_exit += 2
         else:
             node_count[v] += 1
             node_count[w] += 1
             within_count[module_map[v]] += 1
             total_within += 1
 
-    #print('total_within = {0}'.format(total_within))
-    #print('across_count = {0}'.format(across_count))
-    #print('total = {0}'.format(total))
+    Log.add('total_within = {0}'.format(total_within), Severity.DEBUG)
+    Log.add('across_count = {0}'.format(across_count), Severity.DEBUG)
+    Log.add('total = {0}'.format(total), Severity.DEBUG)
 
     # contribution of module changes to code length
     q = across_count/total
+    Log.add('q = {0}'.format(q), Severity.DEBUG)
     H_Q = 0
     for m in module_count:
         x = module_count[m] / (2*total)
         H_Q += x * _np.log2(x)
-    #print('H_Q = {0}'.format(H_Q))
+    Log.add('H_Q = {0}'.format(-H_Q), Severity.DEBUG)
 
     # contribution of node changes to code length
     S = 0
-    for m in within_count:
-        p_i = within_count[m]/total_within
-        #print('p_i = {0}'.format(p_i))
+    for m in module_to_nodes:
+        # problem if there are no links within clusters!
+        p_i = (within_count[m]+exit_count[m])/ (total_within + total_exit)
+        Log.add('p_i = {0}'.format(p_i), Severity.DEBUG)
         H_Pi = 0
         for n in module_to_nodes[m]:
-            x = node_count[n] / within_count[m]
+            x = (node_count[n] + exit_count_node[n]) / (2*within_count[m]+exit_count[m])
             H_Pi += x * _np.log2(x)
-        #print('H_Pi = {0}'.format(H_Pi))
+        Log.add('H_Pi = {0}'.format(-H_Pi), Severity.DEBUG)
         S += - p_i * H_Pi
 
     return - q * H_Q + S
@@ -179,8 +188,8 @@ def _mdl_paths(paths, module_map):
         H_Q += exit_prob[i] * _np.log2(exit_prob[i])
 
     Log.add('q = {0}'.format(q), severity=Severity.DEBUG)
-    Log.add('H_Q = {0}'.format(H_Q), severity=Severity.DEBUG)
-    Log.add('q * H(Q) = {0}'.format(q*H_Q), severity=Severity.DEBUG)
+    Log.add('H_Q = {0}'.format(-H_Q), severity=Severity.DEBUG)
+    Log.add('q * H(Q) = {0}'.format(-q*H_Q), severity=Severity.DEBUG)
 
     # STEP 2: Calculate the sum (S) that accounts for the contribution 
     # of transitions WITHIN modules
