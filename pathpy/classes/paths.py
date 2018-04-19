@@ -117,7 +117,7 @@ class Paths:
         if 1 not in self.paths:
             len_1 = 0
         else:
-            len_1 = len(self.paths[1])        
+            len_1 = len(self.paths[1])
 
         summary_info = {
             "lpsum": np.sum(l_path_sum),
@@ -288,7 +288,7 @@ class Paths:
         num_l = 0.0
         if not self.paths:
             return num_l
-        
+
         max_length = l
         if consider_longer_paths:
             max_length = max(self.paths) if self.paths else 0
@@ -636,11 +636,9 @@ class Paths:
             by default all subpaths of the given ngram are generated, i.e.
             for the trigram a;b;c a path a->b->c of length two will be generated
             as well as two subpaths a->b and b->c of length one
-        frequency: int
-            the number of occurrences (i.e. frequency) of the ngram
-
-        Returns
-        -------
+        frequency: tuple
+            the number of occurrences (i.e. frequency) of the ngram (n_subpaths, n_observed)
+            the default is (0, 1) (i.e. 0 subpaths and one observed longest path)
 
         """
         path = tuple(ngram.split(separator))
