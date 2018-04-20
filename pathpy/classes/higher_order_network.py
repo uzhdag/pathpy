@@ -294,6 +294,17 @@ class HigherOrderNetwork(Network):
         """
         return self.adjacency_matrix().count_nonzero()
 
+    def first_order_nodes(self):
+        """
+        Returns a set of nodes projected to a first-order network
+        """
+        nodes = set()
+        for v in self.nodes:
+            for w in self.higher_order_node_to_path(v):
+                nodes.add(w)
+        return nodes
+
+
     def higher_order_node_to_path(self, node):
         """Helper function that transforms a node in a higher-order network of order k
         into a corresponding path of length k-1. For a higher-order node 'a-b-c-d'

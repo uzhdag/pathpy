@@ -547,7 +547,7 @@ class Network:
         """Returns the default string representation of this graphical model instance"""
         return self.summary()
 
-    def _to_html(self, width=600, height=600, use_requirejs=True, clusters=None):
+    def _to_html(self, width=600, height=600, use_requirejs=True, clusters=None, sizes=None, template_file=None, **kwargs):
         import json
         import os
         from string import Template
@@ -566,26 +566,34 @@ class Network:
             ]
         }
 
-        if clusters != None:
-            network_data['nodes'] = [{'id': fix_node_name(v), 'group': clusters[v]} for v in self.nodes]
-        else:
-            network_data['nodes'] = [{'id': fix_node_name(v), 'group': 'None'} for v in self.nodes]
+        def get_cluster(v):
+            if clusters == None or v not in clusters:
+                return 'None'
+            else:
+                return clusters[v]
 
+        def get_size(v):
+            if sizes == None or v not in sizes:
+                return 6
+            else:
+                return sizes[v]
+
+        network_data['nodes'] = [{'id': fix_node_name(v), 'group': get_cluster(v), 'size': get_size(v)} for v in self.nodes]
 
         import string
         import random
 
         div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
 
-        if not use_requirejs:
-            template_file = 'network.html'
-        else:
-            template_file = 'network_require.html'
+        if template_file is None:
+            module_dir = os.path.dirname(os.path.realpath(__file__))
+            html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
+            if not use_requirejs:
+                template_file = os.path.join(html_dir, 'network.html')
+            else:
+                template_file = os.path.join(html_dir, 'network_require.html')
 
-        module_dir = os.path.dirname(os.path.realpath(__file__))
-        html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
-
-        with open(os.path.join(html_dir, template_file)) as f:
+        with open(template_file) as f:
             html_str = f.read()
 
         html_template = Template(html_str)
@@ -595,22 +603,28 @@ class Network:
         else:
             directedness = 'false'
 
-        return html_template.substitute({
+        default_args = {
             'network_data': json.dumps(network_data),
             'directed' : directedness,
             'width': width,
             'height': height,
-            'div_id': div_id})
+            'div_id': div_id
+        }
 
-    def _repr_html_(self, use_requirejs=True, clusters=None):
+        # replace all placeholders in template
+        html = Template(html_str).substitute({**default_args, **kwargs})
+
+        return html
+
+    def _repr_html_(self, use_requirejs=True, clusters=None, sizes=None):
         """
         display an interactive D3 visualisation of the higher-order network in jupyter
         """
         from IPython.core.display import display, HTML
-        display(HTML(self._to_html(use_requirejs=use_requirejs, clusters=clusters)))
+        display(HTML(self._to_html(use_requirejs=use_requirejs, clusters=clusters, sizes=sizes)))
 
-    def write_html(self, filename, width=600, height=600, clusters=None):
-        html = self._to_html(width=width, height=height, use_requirejs=False, clusters=clusters)
+    def write_html(self, filename, width=600, height=600, clusters=None, sizes=None, template_file=None, **kwargs):
+        html = self._to_html(width=width, height=height, use_requirejs=False, clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)
         with open(filename, 'w+') as f:
             f.write(html)
 

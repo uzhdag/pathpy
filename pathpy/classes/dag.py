@@ -62,6 +62,55 @@ class DAG(Network):
         self.edge_classes = {}
         self.top_sort_count = 0
 
+
+    @classmethod
+    def from_temporal_network(cls, tempnet, delta=1):
+        """Creates a directed acyclic graph from a temporal network 
+            for a given maximum time difference delta
+
+        Parameters
+        ----------
+        tempnet: pp.TemporalNetwork
+            the temporal network instance to create the instance from
+
+        delta: int
+            the maximum time difference t'- t between two time-stamped edges 
+            (a,b,t) and (a,b,t') below which an edge b_t -> a_{t'} will be added 
+
+        """
+        dag = cls()
+
+        node_map = {}
+        arrival_times = defaultdict(set)
+
+        for (v, w, t) in tempnet.tedges:
+            
+            v_t = "{0}_{1}".format(v, t)
+
+            if v in arrival_times:
+                outdated = set()
+                for t_prev in arrival_times[v]:
+                    # adjust start time to last arrival time if 
+                    # time difference is less than delta
+                    if t-t_prev<delta:
+                        if t-t_prev > 0:                    
+                            # TODO: avoid adding self-loops v_t -> v_{t+delta}
+                            # 
+                            x_t = "{0}_{1}".format(v, t_prev)
+                            dag.add_edge(x_t, v_t)
+                    else:
+                        outdated.add(t_prev)
+                arrival_times[v] = arrival_times[v] - outdated
+            
+            w_t = "{0}_{1}".format(w, t+1)
+            node_map[v_t] = v
+            node_map[w_t] = w
+            arrival_times[w].add(t+1)
+            dag.add_edge(v_t, w_t)        
+
+        return dag, node_map
+
+
     def add_edges(self, edges):
         """Add a list of edges
 

@@ -26,13 +26,14 @@ from collections import defaultdict
 import sys
 
 from pathpy import Paths
+from pathpy import DAG
+from pathpy.path_extraction import paths_from_dag
 from pathpy.utils import Log
 
 
 def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
                                 max_subpath_length=sys.maxsize):
-    """create from a temporal network a Paths object
-
+    """
     Calculates the frequency of all time-respecting paths up to maximum length
     of maxLength, assuming a maximum temporal distance of delta between consecutive
     time-stamped links on a path. This (static) method returns an instance of the
@@ -139,10 +140,12 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
                             if len(new_path) < max_length:
                                 candidates[t][e[1]].add(new_path)
 
-                            # delete candidate c, because from now on
-                            # we only extend new_path
-                            candidates[t_prev][e[0]].discard(c)
+                            # if we delete candidate c we can only extend new_path from now on
+                            # In this case, for every path we only consider the first link that 
+                            # extends it to a longer path
 
+                            # candidates[t_prev][e[0]].discard(c)
+            
             # if edge e does not continue a previous path
             # we start a new longest path
             if root:
@@ -180,3 +183,9 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
     Log.add('finished.')
 
     return p
+
+
+def paths_from_temporal_network_dag(tempnet, delta=1, max_subpath_length=None):
+
+    dag, node_map = DAG.from_temporal_network(tempnet, delta)
+    return paths_from_dag(dag, node_map, max_subpath_length=max_subpath_length)

@@ -230,7 +230,7 @@ def _mdl_paths(paths, module_map):
     return -(q * H_Q + S)
 
 
-def find_communities(obj, iterations=100, initial_map=None, T=0.1, t_i=1):
+def find_communities_sa(obj, iterations=100, initial_map=None, T=0.1, t_i=1):
     """
     A simple simulated annealing algorithm to optimize the modular description length 
     calculated either based on a Paths or Network object
@@ -278,4 +278,3 @@ def find_communities(obj, iterations=100, initial_map=None, T=0.1, t_i=1):
                 T = T/1.1
 
     return module_map
-

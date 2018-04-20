@@ -61,7 +61,7 @@
         .selectAll("circle")
         .data(graph.nodes)
         .enter().append("circle")
-        .attr("r", radius)
+        .attr("r", function(d) { return d.size; })
         .attr("fill", function(d) { return color(d.group); })
         .call(d3.drag()
             .on("start", dragstarted)
