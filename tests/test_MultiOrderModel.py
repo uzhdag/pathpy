@@ -104,3 +104,14 @@ def test_estimate_order_2():
 
     m = pp.MultiOrderModel(paths)
     assert m.estimate_order() == 2
+
+
+def test_save_statefile(random_paths, tmpdir):
+    file_path = str(tmpdir.join("statefile.sf"))
+    print(file_path)
+    p = random_paths(3, 20, 6)
+    multi = pp.MultiOrderModel(p, max_order=2)
+    multi.save_state_file(file_path, layer=2)
+    with open(file_path) as f:
+        for line in f:
+            assert '{' not in line  # make sure that we did not write a dictionary
