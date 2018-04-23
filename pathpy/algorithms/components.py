@@ -38,6 +38,8 @@ def reduce_to_gcc(network):
     component (using Tarjan's algorithm).
     """
 
+    # TODO: LV with the new network implementation the procedure removes edges but the in-degree
+    # TODO: and the out-degree dictionaries are not updated and are out of sync.
     # nonlocal variables (!)
     index = 0
     S = []

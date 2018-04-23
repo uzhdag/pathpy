@@ -13,6 +13,7 @@ test_data_dir = os.path.join(test_directory, 'test_data')
 def pytest_addoption(parser):
     parser.addoption("--runslow", action="store_true", help="run slow tests")
     parser.addoption("--latex", action="store_true", help="set `pdflatex` as available")
+    parser.addoption("--networkx", action="store_true", help="set `networkx` as available")
 
 
 def pytest_runtest_setup(item):
@@ -21,6 +22,9 @@ def pytest_runtest_setup(item):
 
     if 'latex' in item.keywords and not item.config.getvalue("latex"):
         pytest.skip("need --latex option to run")
+
+    if 'networkx' in item.keywords and not item.config.getvalue("networkx"):
+        pytest.skip("need --networkx option to run")
 
 
 @pytest.fixture()
@@ -81,8 +85,9 @@ def random_paths():
     return generate_random_path
 
 
-def generate_random_network(n=10, m=20, directed=True, weighted=True):
+def generate_random_network(n=10, m=20, directed=True, weighted=True, seed=0):
     """Generate a random Network"""
+    random.seed(seed)
     net = pp.Network(directed)
     for i in range(n):
         net.add_node(str(i))
@@ -99,6 +104,43 @@ def generate_random_network(n=10, m=20, directed=True, weighted=True):
 def random_network():
     """Generate a random network"""
     return generate_random_network
+
+
+def generate_random_temporal_network(n=10, m=20, min_t=0, max_t=100, seed=0):
+    """
+
+    Parameters
+    ----------
+    n: int
+        number of nodes
+    m: int
+        number of edges
+    min_t: int
+        starting time
+    max_t: int
+        end time
+    seed: int
+        seed for random number generator
+
+    Returns
+    -------
+
+    """
+    random.seed(seed)
+    node_set = [str(i) for i in range(n)]
+    source_nodes = [random.sample(node_set, 1)[0] for _ in range(m)]
+    target_nodes = [random.sample(node_set, 1)[0] for _ in range(m)]
+    times = [random.randint(min_t, max_t) for _ in range(m)]
+
+    tedges = list(zip(source_nodes, target_nodes, times))
+
+    return pp.TemporalNetwork(tedges)
+
+
+@pytest.fixture(scope='function')
+def random_temp_network():
+    """Generate a random network"""
+    return generate_random_temporal_network
 
 
 @pytest.fixture()
