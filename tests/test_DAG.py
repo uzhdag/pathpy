@@ -147,6 +147,56 @@ def test_remove_edge(dag_object: pp.DAG):
     assert 'e' in dag_object.isolate_nodes()
 
 
+def test_dag_from_temporal_network_basic():
+    tn = pp.TemporalNetwork()
+    tn.add_edge('a', 'b', 1)
+    tn.add_edge('b', 'c', 2)
+    tn.add_edge('a', 'c', 2)
+
+    dag, mapping = pp.DAG.from_temporal_network(tn, delta=1)
+    assert dag.routes_to_node('c_3') == [['a_2', 'c_3'], ['a_1', 'b_2', 'c_3']]
 
 
+def test_dag_from_temporal_network():
+    """
+    The patterns is:
+    1. o x x
+        \
+    2. x o o
+          /
+    3. x o x
+          \
+    4. x o o
+        / /
+    5. o o x
+    """
+    tn = pp.TemporalNetwork()
+    tn.add_edge('a', 'b', 1)
+    tn.add_edge('c', 'b', 2)
+    tn.add_edge('b', 'c', 3)
+    tn.add_edge('b', 'c', 3)
+    tn.add_edge('c', 'b', 4)
+    tn.add_edge('b', 'a', 4)
+
+    dag, mapping = pp.DAG.from_temporal_network(tn, delta=1)
+    assert dag.routes_to_node('c_4') == [['c_2', 'b_3', 'c_4']]
+    assert dag.routes_to_node('a_5') == [['b_4', 'a_5']]
+
+    dag, mapping = pp.DAG.from_temporal_network(tn, delta=2)
+    assert dag.routes_to_node('c_4') == [['c_2', 'b_3', 'c_4'], ['a_1', 'b_2', 'b_3', 'c_4']]
+    assert dag.routes_to_node('a_5') == [
+        ['c_2', 'b_3', 'b_4', 'a_5'],
+        ['a_1', 'b_2', 'b_3', 'b_4', 'a_5']  # TODO: why is b_3 listed here? it is not on the path
+    ]
+
+    # network as before but with the node at 3 moved from b to a
+    tn = pp.TemporalNetwork()
+    tn.add_edge('a', 'b', 1)
+    tn.add_edge('c', 'a', 2)
+    tn.add_edge('a', 'c', 3)
+    tn.add_edge('c', 'b', 4)
+    tn.add_edge('b', 'a', 4)
+    dag, mapping = pp.DAG.from_temporal_network(tn, delta=3)
+    assert dag.routes_to_node('c_4') == [['c_2', 'a_3', 'c_4']]
+    assert dag.routes_to_node('a_5') == [['a_1', 'b_2', 'b_4', 'a_5']]
 
