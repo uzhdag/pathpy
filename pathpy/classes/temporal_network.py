@@ -712,7 +712,7 @@ class TemporalNetwork:
 
 
     def _to_html(self, width=600, height=600, ms_per_frame=50, ts_per_frame=20, radius=6,
-                look_behind=1500, look_ahead=150, template_file=None, use_requirejs=True, **kwargs):
+                look_behind=1500, look_ahead=150, template_file=None, **kwargs):
         """
         Generates an html snippet with an interactive d3js visualisation of the
         temporal network. This function can be used to embed interactive visualisations
@@ -806,10 +806,7 @@ class TemporalNetwork:
         if template_file is None:
             module_dir = os.path.dirname(os.path.realpath(__file__))
             html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
-            if not use_requirejs:
-                template_file = os.path.join(html_dir, 'tempnet.html')
-            else:
-                template_file = os.path.join(html_dir, 'tempnet_require.html')
+            template_file = os.path.join(html_dir, 'tempnet.html')            
 
         with open(template_file) as f:
             html_str = f.read()
@@ -832,17 +829,17 @@ class TemporalNetwork:
         return html
 
 
-    def _repr_html_(self, use_requirejs=True, width=600, height=600, msperframe=50, tsperframe=20, radius=6,
+    def _repr_html_(self, width=600, height=600, msperframe=50, tsperframe=20, radius=6,
             look_behind=1500, look_ahead=150):
         from IPython.core.display import display, HTML
-        display(HTML(self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius, use_requirejs=use_requirejs)))
+        display(HTML(self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius)))
 
 
     def write_html(self, filename, width=600, height=600, msperframe=50, tsperframe=20, radius=6,
             look_behind=1500, look_ahead=150, template_file=None, **kwargs):
 
         html = self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius,
-            template_file=template_file, use_requirejs=False, **kwargs)
+            template_file=template_file, **kwargs)
 
         # for the inner HTML generated from the default templates, add surrounding DOCTYPE and body
         # needed for a stand-alone file

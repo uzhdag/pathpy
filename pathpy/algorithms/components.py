@@ -30,12 +30,14 @@ from pathpy import Network
 from pathpy.utils import Log, Severity
 from pathpy.utils import PathpyError
 
-__all__ = ['reduce_to_gcc']
+__all__ = ['connected_components']
 
 
-def reduce_to_gcc(network):
-    """Reduces a network to its largest (strongly) connected
-    component (using Tarjan's algorithm).
+def connected_components(network):
+    """
+    Returns a list of instances of the class Network that represent the 
+    (strongly) connected components of a network. Connected components
+    are calculated using Tarjan's algorithm.
     """
 
     # nonlocal variables (!)
@@ -66,7 +68,7 @@ def reduce_to_gcc(network):
             elif on_stack[w]:
                 low_link[v] = min(low_link[v], indices[w])
 
-        # Generate SCC of node v
+        # generate SCC of node v
         component = set()
         if low_link[v] == indices[v]:
             while True:
@@ -77,7 +79,7 @@ def reduce_to_gcc(network):
                     break
         return component
 
-    # Get largest strongly connected component
+    # compute strongly connected components
     components = defaultdict(set)
     max_size = 0
     max_head = None

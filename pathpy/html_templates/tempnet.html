@@ -46,9 +46,28 @@
         id='${div_id}_restart_txt'>restart</text>
 </svg>
 
-<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-
+<script charset="utf-8" src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
 <script charset="utf-8">
+// the following code ensures that the visualisation works
+// both standalone as well as in jupyter notebook 
+// (which uses requireJS)
+
+try {
+    require.config({
+        paths: {
+            d3: "https://d3js.org/d3.v4.min"
+        }
+    });
+}
+catch(err) {
+    console.log('no requireJS found');
+    // define fake require function 
+    function require(x, f){
+        f(d3);
+    }
+}
+
+require(["d3"], function(d3) {
     d3.selection.prototype.moveToFront = function() {
         return this.each(function(){
             this.parentNode.appendChild(this);
@@ -337,4 +356,5 @@
         }
         return false;
     }
+});
 </script>

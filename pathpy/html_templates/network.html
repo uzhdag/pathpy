@@ -1,19 +1,45 @@
 <style>
     .links line {
-    stroke: #999;
-    stroke-opacity: 0.6;
+    stroke: #aaa;
+    stroke-opacity: 0.7;
+    stroke-width: .5px;
+    }
+    .arrows svg:path {
+        stroke: #666;
     }
     .nodes circle {
     stroke: #fff;
-    stroke-width: 1.5px;
+    stroke-width: 0.5px;
     }
 </style>
 
-<svg width="$width" height="$height" id="$div_id"></svg>
+<svg width="$width" height="$height" id="$div_id">        
+    <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer"
+        id='${div_id}_svg_txt'>[save svg]</text>
+</svg>
 
-<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
-
+<script charset="utf-8" src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
 <script charset="utf-8">
+// the following code ensures that the visualisation works
+// both standalone as well as in jupyter notebook 
+// (which uses requireJS)
+
+try {
+    require.config({
+        paths: {
+            d3: "https://d3js.org/d3.v4.min"
+        }
+    });
+}
+catch(err) {
+    console.log('no requireJS found');
+    // define fake require function 
+    function require(x, f){
+        f(d3);
+    }
+}
+
+require(["d3"], function(d3) {
     var svg = d3.select("#"+"$div_id"),
         radius = 6,
         width = +svg.attr("width"),
@@ -30,18 +56,21 @@
         .force("center", d3.forceCenter(width / 2, height / 2))
         .alphaTarget(0);
 
-    svg.append("svg:defs").selectAll("marker")
-        .data(["end"])      // Different link/path types can be defined here
-    .enter().append("svg:marker")    // This section adds in the arrows
-        .attr("id", String)        
-        .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 20)
+    svg.append("defs").selectAll("marker")
+        .data(["end"])
+    .enter().append("marker")
+        .attr("id", String)
+        .attr("viewBox", "0 -5 20 20")
+        .attr("refX", 34)
         .attr("refY", 0)
-        .attr("markerWidth", 6)
-        .attr("markerHeight", 6)
+        .attr("markerWidth", 15)
+        .attr("markerHeight", 15)
         .attr("orient", "auto")
-    .append("svg:path")
-        .attr("d", "M0,-5L10,0L0,5");
+    .append("path")
+        // draws a filled path (triangle) between three points
+        .attr("d", "M0,-5 L20,0 L0,5 z")
+        .attr("fill", '#999')
+        .attr("stroke", 'none');
 
     var g = svg.append("g")
         .attr("class", "everything");
@@ -50,8 +79,9 @@
         .attr("class", "links")
         .selectAll("line")
         .data(graph.links)
-        .enter().append("line")
-        .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+        .enter().append("line");
+        //.attr("stroke-width", 1)
+        //.attr("stroke", '#999');
 
     if (directed)
         link.attr("marker-end", "url(#end)");
@@ -75,6 +105,9 @@
         .on("zoom", zoom_actions);
     zoom_handler(svg);        
 
+    // attach event handler for svg export
+    d3.select('#${div_id}_svg_txt').on("click", save_svg);
+
     simulation
         .nodes(graph.nodes)
         .on("tick", ticked);
@@ -82,7 +115,7 @@
     simulation.force("link")
         .links(graph.links);
 
-  function ticked() {
+    function ticked() {
         link.attr("x1", function(d) { return d.source.x; })
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
@@ -112,4 +145,29 @@
     d.fx = null;
     d.fy = null;
     }
+
+    function to_svg() {
+        // Returns a SVG representation of the current state of the visualisation
+	    var svg  = document.getElementById('$div_id');
+	    var xml = (new XMLSerializer).serializeToString(svg);
+        return xml;
+    }
+
+    function save_svg() {
+        var svg  = document.getElementById('$div_id');
+        var xml = (new XMLSerializer).serializeToString(svg);        
+        var blob = new Blob([xml], {type: 'text/xml'});
+        if(window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveBlob(blob, 'network.svg');
+        }
+        else{
+            var elem = window.document.createElement('a');
+            elem.href = window.URL.createObjectURL(blob);
+            elem.download = 'network.svg';
+            document.body.appendChild(elem);
+            elem.click();
+            document.body.removeChild(elem);
+        }
+    }
+});
 </script>
