@@ -1,5 +1,6 @@
 import pathpy as pp
 import pytest
+import numpy as np
 
 
 @pytest.mark.parametrize('edge_list', (
@@ -199,4 +200,76 @@ def test_dag_from_temporal_network():
     dag, mapping = pp.DAG.from_temporal_network(tn, delta=3)
     assert dag.routes_to_node('c_4') == [['c_2', 'a_3', 'c_4']]
     assert dag.routes_to_node('a_5') == [['a_1', 'b_2', 'b_4', 'a_5']]
+
+
+@pytest.mark.networkx
+def test_strong_connected_components(random_network):
+    from pathpy.classes.network import network_to_networkx
+    from networkx import strongly_connected_components
+    from pathpy.algorithms.components import reduce_to_gcc
+
+    wrong_gcc = 0
+    for i in range(200):
+        hn = random_network(n=10, m=30, directed=True, seed=i)
+
+        hn_nx = network_to_networkx(hn)
+        size_largest_nx = len(max(strongly_connected_components(hn_nx), key=len))
+
+        reduce_to_gcc(hn)  # need to run after because reduce_to_gss changes in place
+
+        size_largest = len(hn.nodes)
+
+        if size_largest_nx != size_largest:
+            # print(f'seed {i} | nx: {size_largest_nx}, pp: {size_largest}')
+            wrong_gcc += 1
+
+    assert wrong_gcc < 1, f'wrong results {wrong_gcc/i:0.1%}'
+
+
+@pytest.mark.networkx
+def test_strong_connected_tmp(random_temp_network):
+    from pathpy.path_extraction.temporal_paths import paths_from_temporal_network_dag
+    from pathpy.algorithms.components import reduce_to_gcc
+    from pathpy.classes.network import network_to_networkx
+    from networkx import strongly_connected_components
+    from pathpy.utils.log import Log, Severity
+    Log.set_min_severity(Severity.WARNING)
+    comp_sizes_nx = []
+    comp_sizes_pp = []
+    for delta in range(1, 900, 50):
+        print(delta)
+        tn = random_temp_network(n=10, m=100, min_t=0, max_t=800, seed=90)  # type: pp.TemporalNetwork
+        obs_times = np.array([t[-1] for t in tn.tedges])
+        obs_times.sort()
+
+        p = paths_from_temporal_network_dag(tn, delta=delta)
+        hn = pp.HigherOrderNetwork(p, k=2)
+        total_size = len(hn.nodes)
+
+        # using NetworkX
+        nx_network = network_to_networkx(hn)
+        giant_size_nx = len(max(strongly_connected_components(nx_network), key=len))
+        comp_sizes_nx.append([delta, giant_size_nx, total_size, giant_size_nx/total_size])
+
+        # using pathpy
+        reduce_to_gcc(hn)
+        giant_size_pp = len(hn.nodes)
+        comp_sizes_pp.append([delta, giant_size_pp, total_size, giant_size_pp / total_size])
+        # if abs(giant_size_nx - giant_size_pp) > 8:
+        #     pass
+
+    # import pandas as pd
+    # df_nx = pd.DataFrame(comp_sizes_nx, columns=['delta', 'gcc_size', 'n_nodes', 'giant_prop'])
+    # df_pp = pd.DataFrame(comp_sizes_pp, columns=['delta', 'gcc_size', 'n_nodes', 'giant_prop'])
+    # print(df_nx)
+    # print(df_pp)
+    # print(df_nx - df_pp)
+    assert comp_sizes_nx == 13
+
+
+
+
+
+
+
 
