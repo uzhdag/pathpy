@@ -44,6 +44,7 @@ class Network:
         Generates an empty network.
         """
 
+        # Boolean value that inidcates whether the network is directed or undirected
         self.directed = directed
 
         # A dictionary containing nodes as well as node properties
@@ -60,6 +61,7 @@ class Network:
 
         # A dictionary containing the sets of predecessors of all nodes
         self.predecessors = _co.defaultdict(set)
+
 
     @classmethod
     def read_edges(cls, filename, separator=',', weighted=False, directed=False, header=False):
@@ -104,12 +106,13 @@ class Network:
             for n, line in enumerate(f):
                 fields = line.rstrip().split(separator)
                 fields = [field.strip() for field in fields]
-                assert len(fields) >= 2, 'Error: malformed line: {0}'.format(line+header_offset)
-
-                if weighted:
-                    net.add_edge(fields[0], fields[1], weight=int(fields[2]))
+                if len(fields) < 2:
+                    Log.add('Ignoring malformed line {0}: {1}'.format(n, line+header_offset), Severity.WARNING)
                 else:
-                    net.add_edge(fields[0], fields[1])
+                    if weighted:
+                        net.add_edge(fields[0], fields[1], weight=int(fields[2]))
+                    else:
+                        net.add_edge(fields[0], fields[1])
 
         Log.add('finished.')
 
@@ -171,9 +174,9 @@ class Network:
 
     def to_unweighted(self):
         """
-        Returns an unweighted copy of the directed or undirected network.
+        Returns an unweighted copy of a directed or undirected network.
         In this copy all edge and node properties of the original network 
-        are removed.
+        are removed, but the directionality of links is retained.
         """
         n = Network(directed = self.directed)
 
@@ -181,6 +184,18 @@ class Network:
             n.add_edge(v, w)
         return n
 
+
+    def to_undirected(self):
+        """
+        Returns an undirected copy of the network, in which all 
+        node and edge properties are removed.
+        """
+        n = Network(directed = False)
+
+        for (v,w) in self.edges:
+            if v!=w:
+                n.add_edge(v, w)
+        return n
 
 
     def add_node(self, v, **kwargs):
@@ -231,6 +246,7 @@ class Network:
             del self.successors[v]
             del self.predecessors[v]
 
+
     def remove_edge(self, source, target):
         """
         remove an edge from the network
@@ -239,10 +255,6 @@ class Network:
         ----------
         source
         target
-
-        Returns
-        -------
-
         """
         if not (source in self.nodes and target in self.nodes):
             return None
@@ -255,22 +267,20 @@ class Network:
 
             # take care of target
             self.nodes[target]['indegree'] -= 1
-            self.nodes[target]['outweight'] -= self.edges[(source, target)]['weight']
+            self.nodes[target]['inweight'] -= self.edges[(source, target)]['weight']
             self.predecessors[target].remove(source)
 
             del self.edges[(source, target)]
         else:
             # take care of source
-            self.nodes[source]['outdegree'] -= 1
-            self.nodes[source]['indegree'] -= 1
+            self.nodes[source]['degree'] -= 1
             self.nodes[source]['outweight'] -= self.edges[(source, target)]['weight']
             self.nodes[source]['inweight'] -= self.edges[(source, target)]['weight']
             self.successors[source].remove(target)
             self.predecessors[source].remove(target)
 
             # take care of target
-            self.nodes[target]['outdegree'] -= 1
-            self.nodes[target]['indegree'] -= 1
+            self.nodes[target]['degree'] -= 1
             self.nodes[target]['outweight'] -= self.edges[(source, target)]['weight']
             self.nodes[target]['inweight'] -= self.edges[(source, target)]['weight']
             self.successors[target].remove(source)
@@ -279,12 +289,12 @@ class Network:
             del self.edges[(source, target)]
 
 
-
-
     def add_edge(self, v, w, **kwargs):
         """
         Adds an edge to a network
         """
+
+        # Add nodes if they don't exist
         self.add_node(v)
         self.add_node(w)
 
@@ -312,6 +322,7 @@ class Network:
             if S:
                 self.nodes[v]['outweight'] = sum(S)
                 self.nodes[v]['inweight'] = self.nodes[v]['outweight']
+
             S = [self.edges[(v,w)]['weight'] for v in self.predecessors[w]]
             if S:
                 self.nodes[w]['outweight'] = sum(S)
@@ -343,24 +354,30 @@ class Network:
 
     def find_nodes(self, select_node=lambda v: True):
         """
-        Returns all nodes that satisfy a given condition
+        Returns all nodes that satisfy a given condition. In the select_node 
+        lambda function, node attributes can be accessed by calling v['attr']
         """
         return [n for n in self.nodes if select_node(self.nodes[n])]
+
 
     def find_edges(self, select_nodes=lambda v, w: True, select_edges=lambda e: True):
         """
         Returns all edges that satisfy a given condition. Edges can be selected based
-        on attributes of the adjacent nodes as well as attributes of the edge
+        on attributes of the adjacent nodes as well as attributes of the edge. In the select_edges 
+        lambda function, edge attributes can be accessed by calling e['attr']
         """
         return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
+
 
     def vcount(self):
         """ Returns the number of nodes """
         return len(self.nodes)
 
+
     def ecount(self):
         """ Returns the number of links """
         return len(self.edges)
+
 
     def total_edge_weight(self):
         """ Returns the sum of all edge weights """
@@ -368,20 +385,22 @@ class Network:
             return _np.sum(e['weight'] for e in self.edges.values())
         return 0
 
+
     def node_to_name_map(self):
         """Returns a dictionary that can be used to map nodes to matrix/vector indices"""
         return {v: idx for idx, v in enumerate(self.nodes)}
 
+
     def adjacency_matrix(self, weighted=True, transposed=False):
-        """Returns a sparse adjacency matrix of the higher-order network. By default,
-        the entry corresponding to a directed link source -> target is stored in row s and
+        """Returns a sparse adjacency matrix of the higher-order network. Unless transposed
+        is set to true, the entry corresponding to a directed link s->t is stored in row s and
         column t and can be accessed via A[s,t].
 
         Parameters
         ----------
         weighted: bool
             if set to False, the function returns a binary adjacency matrix.
-            If set to True, adjacency matrix entries will contain the weight of an edge.
+            If set to True, adjacency matrix entries contain edge weights.
         transposed: bool
             whether to transpose the matrix or not.
 
@@ -393,25 +412,33 @@ class Network:
         col = []
         data = []
 
-        node_to_coord = self.node_to_name_map()
+        edgeC = self.ecount()
+        if not self.directed:
+            edgeC *= 2
 
-        if transposed:
-            for s, t in self.edges:
+        node_to_coord = self.node_to_name_map()
+        
+        for s, t in self.edges:
+            row.append(node_to_coord[s])
+            col.append(node_to_coord[t])
+            if not self.directed:
                 row.append(node_to_coord[t])
                 col.append(node_to_coord[s])
-        else:
-            for s, t in self.edges:
-                row.append(node_to_coord[s])
-                col.append(node_to_coord[t])
 
         # create array with non-zero entries
         if not weighted:
-            data = _np.ones(len(self.edges.keys()))
+            data = _np.ones(edgeC)
         else:
             data = _np.array([float(e['weight']) for e in self.edges.values()])
+            if not self.directed:
+                data = _np.column_stack((data, data)).flatten()
 
         shape = (self.vcount(), self.vcount())
-        return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+        A = _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+
+        if transposed:
+            return A.transpose()
+        return A
 
 
     def transition_matrix(self):
@@ -464,8 +491,6 @@ class Network:
                                         '[0,1] range.'.format(p=prob))
                     data.append(prob)
 
-
-
         data = _np.array(data)
         data = data.reshape(data.size, )
 
@@ -473,7 +498,7 @@ class Network:
         return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
 
-    def laplacian_matrix(self):
+    def laplacian_matrix(self, weighted=False, transposed=False):
         """
         Returns the transposed normalized Laplacian matrix corresponding to the network.
 
@@ -484,10 +509,16 @@ class Network:
         -------
 
         """
-        transition_matrix = self.transition_matrix()
-        identity_matrix = _sparse.identity(self.vcount())
-
-        return identity_matrix - transition_matrix
+        if weighted:
+            A = self.transition_matrix().transpose()
+            D = _sparse.identity(self.vcount())
+        else:
+            A = self.adjacency_matrix(weighted=False)
+            D = _sparse.diags(_np.array([float(self.nodes[v]['degree']) for v in self.nodes]))
+        L = D - A
+        if transposed:
+            return L.transpose()
+        return L
 
 
     @staticmethod
@@ -593,8 +624,6 @@ class Network:
         with open(template_file) as f:
             html_str = f.read()
 
-        html_template = Template(html_str)
-
         if self.directed:
             directedness = 'true'
         else:
@@ -626,7 +655,6 @@ class Network:
         html = self._to_html(width=width, height=height, clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)
         with open(filename, 'w+') as f:
             f.write(html)
-
 
 
 def network_from_networkx(graph):

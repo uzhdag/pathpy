@@ -236,7 +236,7 @@ class TemporalNetwork:
             line = f.readline()
             n = 1
             while line and n <= maxlines:
-                fields = line.rstrip().split(sep)                
+                fields = line.rstrip().split(sep)
                 try:
                     if time_ix >= 0:
                         timestamp = fields[time_ix]
@@ -256,14 +256,15 @@ class TemporalNetwork:
                         if not directed:
                             tedges.append((fields[target_ix], fields[source_ix], t))
                     else:  # pragma: no cover
+                        s_line = line.strip()
                         if fields[source_ix] == '' or fields[target_ix] == '':
-                            msg = 'Ignoring edge with empty node label in line {}'.format(n+1)
+                            msg = 'Empty node in line {0}: {1}'.format(n+1, s_line)
                         else: 
-                            msg = 'Ignoring negative timestamp in line {}'.format(n+1)
+                            msg = 'Negative timestamp in line {0}: {1}'.format(n+1, s_line)
                         Log.add(msg, Severity.WARNING)
                 except (IndexError, ValueError):  # pragma: no cover
                     s_line = line.strip()
-                    msg = 'Ignoring malformed data in line {}: "{}"'.format(n+1, s_line)
+                    msg = 'Malformed line {0}: {1}'.format(n+1, s_line)
                     Log.add(msg, Severity.WARNING)
                 line = f.readline()
                 n += 1

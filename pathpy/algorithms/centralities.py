@@ -23,7 +23,8 @@ __all__ = ["rank_centralities", "closeness_centrality", "betweenness_centrality"
 
 
 def rank_centralities(centralities):
-    """Returns a dictionary with node centrality values as a rank_centralities list
+    """Returns a list of (node, centrality) tuples in which tuples are ordered 
+    by centrality in descending order
 
     Parameters
     ----------
@@ -32,13 +33,14 @@ def rank_centralities(centralities):
 
     Examples
     --------
-    >>> centralities = {('a', 'b', 'c'): .2, ('b', 'a', 'b'): .8}
+    >>> centralities = {'a': .2, 'b': .8, 'c': .5}
     >>> rank_centralities(centralities)
-    [(('b', 'a', 'b'), 0.8), (('a', 'b', 'c'), 0.2)]
+    [('b', 0.8), ('c', 0.5), ('a', 0.2)]
 
     Returns
     -------
-    list
+    list 
+        list of (node,centrality) tuples
 
     """
     ranked_nodes = sorted(centralities.items(), key=operator.itemgetter(1))

@@ -223,7 +223,7 @@ def test_strong_connected_components(random_network):
             # print(f'seed {i} | nx: {size_largest_nx}, pp: {size_largest}')
             wrong_gcc += 1
 
-    assert wrong_gcc < 1, f'wrong results {wrong_gcc/i:0.1%}'
+    assert wrong_gcc < 1, 'wrong results {wrong_gcc/i:0.1%}'
 
 
 @pytest.mark.networkx

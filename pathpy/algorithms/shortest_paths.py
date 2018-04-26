@@ -120,13 +120,13 @@ def _dm_ho(network):
     # project distances to first-order nodes
     dist_first = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
-    # set distances between nodes based on higher-order nodes (paths)
+    # set distance between nodes based on higher-order nodes (paths)
     for v in network.nodes:
         v1 = network.higher_order_node_to_path(v)[0]
         w1 = network.higher_order_node_to_path(v)[-1]
         dist_first[v1][w1] = network.order - 1
 
-    # setr diagonal entries to zero
+    # set diagonal entries to zero
     for v in network.paths.nodes:
         dist_first[v][v] = 0
 
@@ -185,8 +185,9 @@ def shortest_paths(network):
 @shortest_paths.register(Paths)
 def _sp(paths):
     """
-    Calculates all observed shortest paths (and subpaths) between
-    all pairs of nodes
+    Calculates the set of shortest 
+    paths between each pair of nodes based on 
+    a given set of empirically observed paths
     """
 
     assert isinstance(paths, Paths), \
@@ -197,16 +198,20 @@ def _sp(paths):
 
     for p_length in paths.paths:
         for p in paths.paths[p_length]:
-            s = p[0]
-            d = p[-1]
-            # we found a path of length l from s to d
-            if p_length < s_p_lengths[s][d]:
-                s_p_lengths[s][d] = p_length
-                s_p[s][d] = set()
-                s_p[s][d].add(p)
-            elif p_length == s_p_lengths[s][d]:
-                s_p[s][d].add(p)
-
+            if _np.sum(paths.paths[p_length][p])>0:
+                # make sure we only consider paths with non-zero 
+                # observation count (as path or sub-path)
+                s = p[0]
+                d = p[-1]
+                # we found a shorter path of length l between s and d
+                if p_length < s_p_lengths[s][d]:
+                    # update shortest path length
+                    s_p_lengths[s][d] = p_length
+                    # redefine set
+                    s_p[s][d] = set()
+                    s_p[s][d].add(p)
+                elif p_length == s_p_lengths[s][d]:
+                    s_p[s][d].add(p)
     return s_p
 
 

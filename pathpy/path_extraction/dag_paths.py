@@ -30,7 +30,28 @@ from pathpy.classes.paths import Paths
 from pathpy.utils import Log, Severity
 from pathpy import DAG
 
-def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=','):
+
+def remove_repetitions(path: tuple):
+    """Remove repeated nodes in the path
+
+    Parameters
+    ----------
+    path
+
+    Returns
+    -------
+
+    Examples
+    -------
+    >>> remove_repetitions((1, 2, 2, 3, 4, 1))
+    (1, 2, 3, 4, 1)
+    >>> remove_repetitions((1, 2, 2, 2, 3)) == remove_repetitions((1, 2, 2, 3, 3))
+    True
+    """
+    return tuple(p[0] for p in it.groupby(path))
+
+
+def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',', repetitions=True):
     """    Extracts pathway statistics from a directed acyclic graph.
     For this, all paths between all roots (zero incoming links)
     and all leafs (zero outgoing link) will be constructed.
@@ -77,7 +98,10 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
             for s in dag.roots:
                 extracted_paths = dag.routes_from_node(s, node_mapping)
                 for path in extracted_paths:   # add detected paths to paths object
-                    p.add_path_tuple(path, expand_subpaths=False, frequency=(0, 1))
+                    if repetitions:
+                        p.add_path_tuple(path, expand_subpaths=False, frequency=(0, 1))
+                    else:
+                        p.add_path_tuple(remove_repetitions(path), expand_subpaths=False, frequency=(0, 1))
         else:
             path_counter = defaultdict(lambda: 0)
             for root in dag.roots:
@@ -86,7 +110,10 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
                         path_counter[blown_up_path] += 1
 
             for path, count in path_counter.items():
-                p.add_path_tuple(path, expand_subpaths=False, frequency=(0, count))
+                if repetitions:
+                    p.add_path_tuple(path, expand_subpaths=False, frequency=(0, count))
+                else:
+                    p.add_path_tuple(remove_repetitions(path), expand_subpaths=False, frequency=(0, count))
 
         Log.add('Expanding Subpaths', Severity.INFO)
         p.expand_subpaths()

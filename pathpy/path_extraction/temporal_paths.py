@@ -144,7 +144,7 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
                             # In this case, for every path we only consider the first link that 
                             # extends it to a longer path
 
-                            # candidates[t_prev][e[0]].discard(c)
+                            candidates[t_prev][e[0]].discard(c)
             
             # if edge e does not continue a previous path
             # we start a new longest path
@@ -188,4 +188,4 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
 def paths_from_temporal_network_dag(tempnet, delta=1, max_subpath_length=None):
 
     dag, node_map = DAG.from_temporal_network(tempnet, delta)
-    return paths_from_dag(dag, node_map, max_subpath_length=max_subpath_length)
+    return paths_from_dag(dag, node_map, max_subpath_length=max_subpath_length, repetitions=False)

@@ -247,7 +247,7 @@ def find_communities_sa(obj, iterations=100, initial_map=None, T=0.1, t_i=1):
             module_map[n] = str(i)            
             i += 1
 
-    mdl = modular_description_length(obj, module_map) 
+    mdl = modular_description_length(obj, module_map)
 
     if mdl == _np.nan:
         raise PathpyError('Could not calculate initial MDL')

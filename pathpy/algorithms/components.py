@@ -25,6 +25,7 @@
 from collections import defaultdict
 
 import numpy as _np
+import scipy.sparse.linalg as _sla
 
 from pathpy import Network
 from pathpy.utils import Log, Severity
@@ -33,7 +34,28 @@ from pathpy.utils import PathpyError
 __all__ = ['connected_components']
 
 
-def connected_components(network):
+def connected_components(network, lanczos_vecs=15, maxiter=1000):
+
+    L = network.laplacian_matrix(weighted=True)
+    n = network.vcount()-2
+    vals, vecs = _sla.eigs(L, k=n, which="SM", ncv=lanczos_vecs, maxiter=maxiter, return_eigenvectors=True)
+
+    components = defaultdict(set)
+    c = 0
+
+    # use eigenvectors of zero eigenvalues to map nodes to components
+    for i in range(n):
+        if _np.isclose(vals[i], 0, atol=1.e-12):
+            print(vecs[:,i])
+            min = _np.min(vecs[:,i])
+            for i in _np.where(_np.isclose(vecs[:,i], min))[0]:
+                components[c].add(i)
+            c += 1
+    return components
+
+
+
+def reduce_to_gcc(network):
     """
     Returns a list of instances of the class Network that represent the 
     (strongly) connected components of a network. Connected components
@@ -98,3 +120,4 @@ def connected_components(network):
     for v in list(network.nodes):
         if v not in scc:
             network.remove_node(v)
+

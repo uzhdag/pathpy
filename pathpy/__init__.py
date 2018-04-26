@@ -20,6 +20,7 @@ from .algorithms import infomap
 from .path_extraction import paths_from_dag
 from .path_extraction import paths_from_origin_destination
 from .path_extraction import paths_from_temporal_network
+from .visualisation import sankey_diagram
 import pathpy.utils
 
 global ENABLE_MULTICORE_SUPPORT
