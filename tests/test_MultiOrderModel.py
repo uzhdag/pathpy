@@ -108,10 +108,38 @@ def test_estimate_order_2():
 
 def test_save_statefile(random_paths, tmpdir):
     file_path = str(tmpdir.join("statefile.sf"))
-    print(file_path)
     p = random_paths(3, 20, 6)
     multi = pp.MultiOrderModel(p, max_order=2)
     multi.save_state_file(file_path, layer=2)
     with open(file_path) as f:
         for line in f:
             assert '{' not in line  # make sure that we did not write a dictionary
+
+
+def test_single_path_likelihood(random_paths):
+    p1 = random_paths(size=10, rnd_seed=20, num_nodes=10)  # type: pp.Paths
+    p2 = random_paths(size=100, rnd_seed=0, num_nodes=50)
+    p12 = p1 + p2
+    mom = pp.MultiOrderModel(p12, max_order=3)
+    lkh1 = mom.likelihood(p1)
+    lkh2 = mom.likelihood(p2)
+    lkh12 = mom.likelihood(p12)
+
+    assert lkh1 > lkh2  # second paths must be
+    assert (lkh1 + lkh2) == pytest.approx(lkh12)
+
+    assert mom.path_likelihood(('1', '2'), layer=0, freq=4) < 0
+
+    lkl_last = None
+    for i in range(3):  # likelihoods must be increasing
+        lkl = mom.path_likelihood(('6', '7', '2', '0', '6'), layer=i, freq=9)
+        if lkl_last is not None:
+            assert lkl >= lkl_last
+            lkl_last = lkl
+
+    path_likelihoods = []
+    for p, freq in p12.paths[3].items():  # print the path with the highest likelihood
+        lkl = mom.path_likelihood(p, layer=2, freq=freq.sum(), log=False)
+        path_likelihoods.append((lkl, p))
+
+    assert max(path_likelihoods)[1] == ('23', '32', '19', '8')
