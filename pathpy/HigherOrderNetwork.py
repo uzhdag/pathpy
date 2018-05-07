@@ -236,17 +236,18 @@ class HigherOrderNetwork:
             # assign link weights in k-order null model
             for p in possiblePaths:
                 v = p[0]
+                    w = p[1]
                 # add k-order nodes and edges
                 for l in range(1, k):
                     v = v + separator + p[l]
-                w = p[1]
-                for l in range(2, k + 1):
-                    w = w + separator + p[l]
-                if v not in self.nodes:
-                    self.nodes.append(v)
-                if w not in self.nodes:
-                    self.nodes.append(w)
-
+                #w = p[1]
+                #for l in range(2, k + 1):
+                    w = w + separator + p[l + 1]
+                #if v not in self.nodes:
+                self.nodes.append(v)
+                #if w not in self.nodes:
+                self.nodes.append(w)
+                self.nodes = list(set(self.nodes))
                 # NOTE: under the null model's assumption of independent events, we
                 # have P(B|A) = P(A ^ B)/P(A) = P(A)*P(B)/P(A) = P(B)
                 # In other words: we are encoding a k-1-order Markov process in a k-order
