@@ -367,7 +367,7 @@ class HigherOrderNetwork(Network):
         return [self.separator.join(path[n:n + k]) for n in range(len(path) - k + 1)]
 
     def node_to_name_map(self):
-        """Returns a dictionary that can be used to map nodes to matrix/vector indices"""
+        """Returns a dictionary that can be used to map node names to matrix/vector indices"""
         return {v: idx for idx, v in enumerate(self.nodes)}
 
     def degrees_of_freedom(self, assumption="paths"):

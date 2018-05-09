@@ -21,17 +21,18 @@
     .node text {
     font-size: 15;
     font-weight: bold;
-    fill: #aaa;
+    fill: #000;
     }
     .link {
     fill: none;
+    fill-opacity: 0;
     stroke: #000;
     stroke-opacity: .9;
     }
 </style>
 
 <svg width="$width" height="$height" id="$div_id">
-        <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer"
+        <text x="0" y="0" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer"
         id='${div_id}_svg_txt'>[save svg]</text>
 </svg>
 
@@ -99,12 +100,12 @@
         var xml = (new XMLSerializer).serializeToString(svg);        
         var blob = new Blob([xml], {type: 'text/xml'});
         if(window.navigator.msSaveOrOpenBlob) {
-            window.navigator.msSaveBlob(blob, 'sankey.svg');
+            window.navigator.msSaveBlob(blob, 'alluvial.svg');
         }
         else{
             var elem = window.document.createElement('a');
             elem.href = window.URL.createObjectURL(blob);
-            elem.download = 'sankey.svg';
+            elem.download = 'alluvial.svg';
             document.body.appendChild(elem);
             elem.click();
             document.body.removeChild(elem);
