@@ -234,8 +234,7 @@ def test_strong_connected_tmp(random_temp_network):
     from networkx import strongly_connected_components
     from pathpy.utils.log import Log, Severity
     Log.set_min_severity(Severity.WARNING)
-    comp_sizes_nx = []
-    comp_sizes_pp = []
+
     for delta in range(1, 900, 50):
         print(delta)
         tn = random_temp_network(n=10, m=100, min_t=0, max_t=800, seed=90)  # type: pp.TemporalNetwork
@@ -249,26 +248,12 @@ def test_strong_connected_tmp(random_temp_network):
         # using NetworkX
         nx_network = network_to_networkx(hn)
         giant_size_nx = len(max(strongly_connected_components(nx_network), key=len))
-        comp_sizes_nx.append([delta, giant_size_nx, total_size, giant_size_nx/total_size])
 
         # using pathpy
         reduce_to_gcc(hn)
         giant_size_pp = len(hn.nodes)
-        comp_sizes_pp.append([delta, giant_size_pp, total_size, giant_size_pp / total_size])
-        # if abs(giant_size_nx - giant_size_pp) > 8:
-        #     pass
 
-    # import pandas as pd
-    # df_nx = pd.DataFrame(comp_sizes_nx, columns=['delta', 'gcc_size', 'n_nodes', 'giant_prop'])
-    # df_pp = pd.DataFrame(comp_sizes_pp, columns=['delta', 'gcc_size', 'n_nodes', 'giant_prop'])
-    # print(df_nx)
-    # print(df_pp)
-    # print(df_nx - df_pp)
-    assert comp_sizes_nx == 13
-
-
-
-
+        assert giant_size_nx == giant_size_pp
 
 
 

@@ -26,9 +26,9 @@ import numpy as np
 from scipy.stats import chi2
 
 from pathpy.utils import Log, Severity
-from pathpy.utils.exceptions import PathpyError, PathsTooShort
-from .higher_order_network import HigherOrderNetwork
-from .paths import Paths
+from pathpy.utils.exceptions import PathpyError, PathsTooShort, PathpyNotImplemented
+from pathpy.classes.higher_order_network import HigherOrderNetwork
+from pathpy.classes.paths import Paths
 
 
 np.seterr(all='warn')
@@ -418,72 +418,10 @@ class MultiOrderModel:
         for k in range(min_path_length, maxL + 1):
             for p in paths.paths[k]:
                 # Only consider observations as *longest* path
-                if paths.paths[k][p][1] > 0:
-
-                    # Add m_i observations of path p to total number of observations n
-                    n += paths.paths[k][p][1]
-
-                    # special case: to calculate the likelihood of the path based on a
-                    # zero-order model we use the 'start' -> v transitions in the
-                    # respective model instance
-                    if l == 0:
-                        for s in range(len(p)):
-                            likelihood += np.log(self.transition_matrices[0][indexmaps[0][p[s]], indexmaps[0]['start']]) * paths.paths[k][p][1]
-
-                    # general case: compute likelihood of path based on
-                    # hierarchy of higher-order models as follows ...
-                    else:
-
-                        # 1.) transform the path into a sequence of (two or more)
-                        # l-th-order nodes
-                        nodes = self.layers[l].path_to_higher_order_nodes(p)
-                        # print('l-th order path = ', str(nodes))
-
-                        # 2.) nodes[0] is the prefix of the k-th order transitions,
-                        # which we can transform into multiple transitions in lower
-                        # order models. Example: for a path a-b-c-d of length three,
-                        # the node sequence at order l=3 is ['a-b-c', 'b-c-d'] and thus
-                        #  the prefix is 'a-b-c'.
-                        prefix = nodes[0]
-
-                        # 3.) We extract the transitions for the prefix based on models
-                        #  of orders k_<l. In our example, we have the transitions ...
-                        # (a-b, b-c) for k_=2 (a, b) for k_=1, and (start, a) for k_=0
-                        transitions = {}
-
-                        # for all k_<l in descending order
-                        for k_ in range(l - 1, -1, -1):
-                            x = prefix.split(self.layers[k_].separator)
-                            transitions[k_] = self.layers[k_].path_to_higher_order_nodes(
-                                x)
-                            prefix = transitions[k_][0]
-
-                        # 4.) Using Bayes theorem, we calculate the likelihood of a
-                        # path a-b-c-d-e of length four for l=4 as a single transition
-                        # in a fourth-order model, and four additional transitions in
-                        # the k_=0, 1, 2 and 3-order models, i.e. we have ...
-                        # P(a-b-c-d-e) = P(e|a-b-c-d) * [ P(d|a-b-c) * P(c|a-b) * P(b|a)
-                        # * P(a) ] If we were to model the same path based on model
-                        # hierarchy with a maximum order of l=2, we instead have three
-                        # transitions in the second-order model and two additional
-                        # transitions in the k_=0 and k_=1 order models for the prefix
-                        # 'a-b' ... P(a-b-c-d-e) = P(e|c-d) * P(d|b-c) * P(c|a-b) * [
-                        # P(b|a) * P(a) ]
-
-                        # First multiply the transitions in the l-th order model ...
-                        transition_matrix = self.transition_matrices[l]
-                        factor_ = paths.paths[k][p][1]
-                        for s in range(len(nodes)-1):
-                            idx_s1 = indexmaps[l][nodes[s + 1]]
-                            idx_s0 = indexmaps[l][nodes[s]]
-                            trans_mat = transition_matrix[idx_s1, idx_s0]
-                            likelihood += np.log(trans_mat) * factor_
-
-                        # ... then multiply additional transition probabilities for the
-                        #  prefix ...
-                        for k_ in range(l):
-                            likelihood += np.log(self.transition_matrices[k_][indexmaps[k_][transitions[k_][1]], indexmaps[k_][transitions[k_][0]]]) * factor_
-
+                freq = paths.paths[k][p][1]
+                if freq > 0:
+                    n += freq  # Add m_i observations of path p to total number of observations n
+                    likelihood += self.path_likelihood(p, freq, l, log=True, index_maps=indexmaps)
             if n == 0:
                 likelihood = 0
         if log:
@@ -492,6 +430,129 @@ class MultiOrderModel:
         else:
             assert 0 <= likelihood <= 1, 'Likelihood out of bounds'
             return np.exp(likelihood), n
+
+    def path_likelihood(self, path, freq=1, layer=1, log=True, index_maps=None):
+        """compute the path likelihood for a single path based on the observed transitions
+
+        Parameters
+        ----------
+        path: tuple
+            the path for which the likelihood should be computed, the path must be a tuple whose
+            elements represent the path, i.e. ('a', 'b', 'd')
+        freq: int
+            the frequency of the path
+        layer: int
+            the layer up to which the likelihood should be computed
+        log: bool
+            true if the log-likelihood should be returned
+        index_maps: dict
+            a dictionary mapping the nodes for all orders to their index in the transition matrix.
+            For simple calls this is computed automatically, however if the a lot of paths will be
+            calculated it is best to pre-compute it and pass it.
+
+        Returns
+        -------
+        float:
+            likelihood or log-likelihood of path
+
+        Raises
+        -----
+        PathpyNotImplemented
+
+        Examples
+        -------
+        >>> layer = 2
+        >>> p = Paths()
+        >>> p.add_path_tuple(('1', '3', '2'))
+        >>> p.add_path_tuple(('3', '2', '1'))
+        >>> p.add_path_tuple(('1', '2', '1'))
+        >>> mom = MultiOrderModel(p, max_order=layer)
+        >>> # a precomputed index map can be obtained as follows
+        >>> index_maps = {k: mom.layers[k].node_to_name_map() for k in range(0, layer+1)}
+        >>> format(mom.path_likelihood(('1', '2', '1'), log=False, layer=layer), '.2f')
+        '0.22'
+        >>> # trying to compute the likelihood of an nonexistent path
+        >>> format(mom.path_likelihood(('1', '2', '2'), log=False, layer=layer), '.2f')
+        Traceback (most recent call last):
+        ...
+        pathpy.utils.exceptions.PathpyNotImplemented: The path segment '(2,2)' has not been \
+observed and therefore the likelihood cannot be computed.
+
+
+        """
+        if index_maps is None:
+            index_maps = {k: self.layers[k].node_to_name_map() for k in range(0, layer+1)}
+
+        likelihood = 0
+        # special case: to calculate the likelihood of the path based on a
+        # zero-order model we use the 'start' -> v transitions in the
+        # respective model instance
+        if layer == 0:
+            try:
+                for s in range(len(path)):
+                    source = index_maps[0]['start']
+                    target = index_maps[0][path[s]]
+                    likelihood += np.log(self.transition_matrices[0][target, source]) * freq
+            except KeyError as e:
+                msg = ("The path segment '({})' has not been observed and therefore the "
+                       "likelihood cannot be computed.").format(e.args[0])
+                raise PathpyNotImplemented(msg)
+
+        # general case: compute likelihood of path based on hierarchy of higher-order models
+        else:
+            # 1.) transform the path into a sequence of (two or more) l-th-order nodes
+            nodes = self.layers[layer].path_to_higher_order_nodes(path)
+            # print('l-th order path = ', str(nodes))
+
+            # 2.) nodes[0] is the prefix of the k-th order transitions,  which we can transform
+            # into multiple transitions in lower order models. Example: for a path a-b-c-d of
+            # length three, the node sequence at order l=3 is ['a-b-c', 'b-c-d'] and thus the
+            # prefix is 'a-b-c'.
+            prefix = nodes[0]
+
+            # 3.) We extract the transitions for the prefix based on models of orders k_<l. In
+            # our example, we have the transitions ... (a-b, b-c) for k_=2 (a, b) for k_=1,
+            # and (start, a) for k_=0
+            transitions = {}
+
+            # for all k_<l in descending order
+            for k_ in range(layer - 1, -1, -1):
+                x = prefix.split(self.layers[k_].separator)
+                transitions[k_] = self.layers[k_].path_to_higher_order_nodes(x)
+                prefix = transitions[k_][0]
+
+            # 4.) Using Bayes theorem, we calculate the likelihood of a path a-b-c-d-e of length
+            # four for l=4 as a single transition in a fourth-order model, and four additional
+            # transitions in the k_=0, 1, 2 and 3-order models, i.e. we have ... P(a-b-c-d-e) =
+            # P(e|a-b-c-d) * [ P(d|a-b-c) * P(c|a-b) * P(b|a) * P(a) ] If we were to model the
+            # same path based on model hierarchy with a maximum order of l=2, we instead have
+            # three transitions in the second-order model and two additional transitions in the
+            # k_=0 and k_=1 order models for the prefix 'a-b' ... P(a-b-c-d-e) = P(e|c-d) * P(
+            # d|b-c) * P(c|a-b) * [ P(b|a) * P(a) ]
+
+            # First multiply the transitions in the l-th order model ...
+            transition_matrix = self.transition_matrices[layer]
+            try:
+                for s in range(len(nodes)-1):
+                    idx_s1 = index_maps[layer][nodes[s + 1]]
+                    idx_s0 = index_maps[layer][nodes[s]]
+                    trans_mat = transition_matrix[idx_s1, idx_s0]
+                    likelihood += np.log(trans_mat) * freq
+                # ... then multiply additional transition probabilities for the prefix ...
+                for k_ in range(layer):
+                    trans_idx0 = index_maps[k_][transitions[k_][0]]
+                    trans_idx1 = index_maps[k_][transitions[k_][1]]
+                    trans_mat = self.transition_matrices[k_]
+                    likelihood += np.log(trans_mat[trans_idx1, trans_idx0]) * freq
+            except KeyError as e:
+                msg = ("The path segment '({})' has not been observed and therefore the "
+                       "likelihood cannot be computed.").format(e.args[0])
+                raise PathpyNotImplemented(msg)
+
+        if log:
+            return likelihood
+        else:
+            return np.exp(likelihood)
 
     def degrees_of_freedom(self, max_order=None, assumption="paths"):
         """
