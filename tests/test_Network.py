@@ -133,6 +133,8 @@ def test_import_from_networkx():
     import networkx as nx
 
     g = nx.generators.barabasi_albert_graph(20, 10)
+    relabeling = {i: str(i) for i in g}
+    nx.relabel_nodes(g, relabeling, copy=False)
     for i, edge in enumerate(g.edges):
         g.edges[edge]['custom'] = i
 
@@ -150,6 +152,10 @@ def test_export_netwokx():
     import networkx as nx
 
     g = nx.generators.karate_club_graph()
+    # pathpy.Network will implicitely recast all labels to str so to have
+    # a comparable network to start with do the same here
+    relabel = {i: str(i) for i in g}
+    nx.relabel_nodes(g, relabel, copy=False)
     for i, edge in enumerate(g.edges):
         g.edges[edge]['custom'] = i
         g.edges[edge]['weight'] = (i % 4) + 100
