@@ -453,15 +453,18 @@ class Paths:
                         # Omit empty fields
                         v = fields[i].strip()
                         if v:
-                            path += (v,)
-                    frequency = float(fields[len(fields) - 1])
-                    if len(path) <= max_ngram_length:
-                        p.paths[len(path) - 1][path] += (0, frequency)
-                        max_length = max(max_length, len(path) - 1)
-                    else:  # cut path at max_ngram_length
-                        mnl = max_ngram_length
-                        p.paths[mnl - 1][path[:mnl]] += (0, frequency)
-                        max_length = max(max_length, max_ngram_length - 1)
+                            path += (v,)                                         
+                    freq = float(fields[len(fields) - 1])
+                    if freq >0:
+                        if len(path) <= max_ngram_length:
+                            p.paths[len(path) - 1][path] += (0, freq)
+                            max_length = max(max_length, len(path) - 1)
+                        else:  # cut path at max_ngram_length
+                            mnl = max_ngram_length
+                            p.paths[mnl - 1][path[:mnl]] += (0, freq)
+                            max_length = max(max_length, max_ngram_length - 1)
+                    else:
+                        Log.add('Non-positive path count in line {0}'.format(n), Severity.WARNING)
                 else:
                     for field in fields:
                         # Omit empty fields

@@ -1,1 +1,1 @@
-from .sankey_diagram import *
+from .alluvial_diagram import *

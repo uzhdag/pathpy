@@ -60,6 +60,7 @@ class MultiOrderModel:
         # A dictionary containing the layers of HigherOrderNetworks, where
         # layers[k] contains the network of order k
         self.layers = {}
+        
         # a dictionary of transition matrices for all layers of the model
         self.transition_matrices = {}
 
