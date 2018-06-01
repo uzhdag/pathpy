@@ -824,16 +824,17 @@ class TemporalNetwork:
             'look_behind': look_behind
         }
 
-        # replace all placeholders in template
+        # replace all placeholders in the template
         html = Template(html_str).substitute({**default_args, **kwargs})
 
         return html
 
 
     def _repr_html_(self, width=600, height=600, msperframe=50, tsperframe=20, radius=6,
-            look_behind=1500, look_ahead=150):
+            look_behind=1500, look_ahead=150, template_file=None, **kwargs):
         from IPython.core.display import display, HTML
-        display(HTML(self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius)))
+        display(HTML(self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius,
+            template_file=template_file, **kwargs)))
 
 
     def write_html(self, filename, width=600, height=600, msperframe=50, tsperframe=20, radius=6,
@@ -842,8 +843,8 @@ class TemporalNetwork:
         html = self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius,
             template_file=template_file, **kwargs)
 
-        # for the inner HTML generated from the default templates, add surrounding DOCTYPE and body
-        # needed for a stand-alone file
+        # for the inner HTML generated from the default templates, we add the surrounding DOCTYPE and body
+        # needed for a stand-alone HTML file
         if template_file is None:
             html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
         with open(filename, 'w+') as f:

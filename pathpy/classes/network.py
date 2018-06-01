@@ -643,12 +643,12 @@ class Network:
         return html
 
 
-    def _repr_html_(self, clusters=None, sizes=None):
+    def _repr_html_(self, clusters=None, sizes=None, template_file=None, **kwargs):
         """
         display an interactive D3 visualisation of the higher-order network in jupyter
         """
         from IPython.core.display import display, HTML
-        display(HTML(self._to_html(clusters=clusters, sizes=sizes)))
+        display(HTML(self._to_html(clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)))
 
 
     def write_html(self, filename, width=600, height=600, clusters=None, sizes=None, template_file=None, **kwargs):
