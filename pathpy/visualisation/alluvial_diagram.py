@@ -165,7 +165,7 @@ def diffusion_to_flow_net(paths, markov=True, initial_node=None, steps=5):
         # adjust weights using BFS
         while Q:
             v = Q.pop()
-            print(v)
+            # print(v)
             inweight = flow_net.nodes[v]['inweight']
             outweight = flow_net.nodes[v]['outweight']
 
