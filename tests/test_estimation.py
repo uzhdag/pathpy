@@ -51,9 +51,9 @@ def test_estimate_order_strongly_connected():
     assert g2.ecount() == 4, "Error, wrong number of links in second-order network"
 
     # test mapping of higher-order nodes and paths
-    assert g2.higher_order_node_to_path('a-b') == ('a', 'b'), \
+    assert g2.higher_order_node_to_path('a,b') == ('a', 'b'), \
         "Error: mapping from higher-order node to first-order path failed"
-    assert g2.higher_order_path_to_first_order(('a-b', 'b-c')) == ('a', 'b', 'c'), \
+    assert g2.higher_order_path_to_first_order(('a,b', 'b,c')) == ('a', 'b', 'c'), \
         "Error: mapping from higher-order path to first-order path failed"
 
 

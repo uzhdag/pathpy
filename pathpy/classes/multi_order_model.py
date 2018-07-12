@@ -86,7 +86,7 @@ class MultiOrderModel:
 
         def parallel(order_k):  # pragma: no cover
             Log.add('Generating ' + str(order_k) + '-th order network layer ...')
-            p_layer = HigherOrderNetwork(paths, order_k, paths.separator, False)
+            p_layer = HigherOrderNetwork(paths, k=order_k, null_model=False)
 
             # compute transition matrices for all layers. In order to use the
             # maximally available statistics, we always use sub paths in the
@@ -109,7 +109,7 @@ class MultiOrderModel:
 
         for k in sorted(orders):
             Log.add('Generating %d-th order layer ...' % k)
-            self.layers[k] = HigherOrderNetwork(paths, k, paths.separator, False)
+            self.layers[k] = HigherOrderNetwork(paths, k, null_model=False)
 
             # compute transition matrices for all layers. In order to use the
             # maximally available statistics, we always use sub paths in the
