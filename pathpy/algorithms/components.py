@@ -62,12 +62,13 @@ def reduce_to_gcc(network):
     are calculated using Tarjan's algorithm.
     """
 
-    # nonlocal variables (!)
+    # these are used as nonlocal variables (!)
     index = 0
     S = []
     indices = defaultdict(lambda: None)
     low_link = defaultdict(lambda: None)
     on_stack = defaultdict(lambda: False)
+    components = {}
 
     # Tarjan's algorithm
     def strong_connect(v):
@@ -76,6 +77,7 @@ def reduce_to_gcc(network):
         nonlocal indices
         nonlocal low_link
         nonlocal on_stack
+        nonlocal components
 
         indices[v] = index
         low_link[v] = index
@@ -90,32 +92,27 @@ def reduce_to_gcc(network):
             elif on_stack[w]:
                 low_link[v] = min(low_link[v], indices[w])
 
-        # generate SCC of node v
-        component = set()
+        # create component of node v
         if low_link[v] == indices[v]:
+            components[v] = set()
             while True:
                 w = S.pop()
                 on_stack[w] = False
-                component.add(w)
+                components[v].add(w)
                 if v == w:
                     break
-        return component
 
-    # compute strongly connected components
-    components = defaultdict(set)
-    max_size = 0
-    max_head = None
+    # compute strongly connected components    
     for v in network.nodes:
         if indices[v] is None:
-            components[v] = strong_connect(v)
+            strong_connect(v)
             # print('node {v}, size = {n}, component = {component}'.format(v=v, component=components[v], n = len(components[v]) ))
 
-    for v in network.nodes:
-        if len(components[v]) > max_size:
-            max_head = v
+    max_size = 0
+    for v in components:
+        if len(components[v]) > max_size:            
+            scc = components[v]
             max_size = len(components[v])
-
-    scc = components[max_head]
 
     # Reduce higher-order network to SCC
     for v in list(network.nodes):
