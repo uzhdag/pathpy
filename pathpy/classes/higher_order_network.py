@@ -105,7 +105,7 @@ class HigherOrderNetwork(Network):
             g1 = HigherOrderNetwork(paths, k=1)
             g1_node_mapping = g1.node_to_name_map()
             A = g1.adjacency_matrix(include_subpaths=True, weighted=False,
-                                    transposed=True)
+                                    transposed=True)            
 
         if not null_model:
             # Calculate the frequency of all paths of
@@ -130,6 +130,20 @@ class HigherOrderNetwork(Network):
                     self.add_node(w, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
                     # add weight val to directed edge (v,w)
                     self.add_edge(v, w, weight=val)
+            
+                # create all possible higher-order nodes
+                if k > 1:
+
+                    nodes = HigherOrderNetwork.generate_possible_paths(g1, k-1)
+                    for p in nodes:
+                        v = p[0]                
+                        for l in range(1, k):
+                            v = v + self.separator + p[l]
+                        
+                        # create nodes and make sure that in- and out-weights are numpy arrays
+                        if v not in self.nodes:
+                            self.add_node(v, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
+
             # Note: For all sequences of length k which (i) have never been observed, but
             #       (ii) do actually represent paths of length k in the first-order
             #       network, we may want to include some 'escape' mechanism along the
@@ -137,36 +151,22 @@ class HigherOrderNetwork(Network):
 
         else:
             # generate the *expected* frequencies of all possible
-            # paths based on independently occurring (first-order) links
+            # paths of length k based on independently occurring (first-order) links
+            possible_paths = HigherOrderNetwork.generate_possible_paths(g1, k)
 
-            # generate all possible paths of length k
-            # based on edges in the first-order network
-            possiblePaths = list(g1.edges.keys())
-
-            for _ in range(k - 1):
-                E_new = list()
-                for e1 in possiblePaths:
-                    for e2 in g1.edges:
-                        if e1[-1] == e2[0]:
-                            p = e1 + (e2[1],)
-                            E_new.append(p)
-                possiblePaths = E_new
-
-            # validate that the number of unique generated paths corresponds to the sum
+            # validate that the number of unique paths corresponds to the sum
             # of entries in A**k
             A_sum = _np.sum(A ** k)
-            assert A_sum == len(possiblePaths), \
-                'Expected {ak} paths but got {re}'.format(ak=A_sum, re=len(possiblePaths))
+            assert A_sum == len(possible_paths), \
+                'Expected {ak} paths but got {re}'.format(ak=A_sum, re=len(possible_paths))
 
-            # A = g1.adjacency_matrix(includeSubPaths=True, weighted=True,
-            # transposed=False)
             T = g1.transition_matrix(include_subpaths=True)
 
-            # use possible paths (a,b,c,...) to create nodes and links in k-th-order null model
-            for p in possiblePaths:
+            # create nodes and links in k-th-order null model
+            for p in possible_paths:
 
                 # create higher-order nodes (a,b,c,...) and (b,c,d,...)
-                v = p[0]                
+                v = p[0]
                 for l in range(1, k):
                     v = v + self.separator + p[l]
 
@@ -188,7 +188,7 @@ class HigherOrderNetwork(Network):
                 # We use first-order transition probabilities to create an expected frequency 
                 # of paths of length k. For a path (a,b,c) we use the subpath count of (a,b) and 
                 # "distribute" it to links (a,b,*) according to transition probabilities
-                expected_vw = paths.paths[k-1][p[:k]][0] * p_vw
+                expected_vw = paths.paths[k-1][p[:k]].sum() * p_vw
 
                 self.add_edge(v, w, weight = _np.array([0, expected_vw]))
 
@@ -242,6 +242,29 @@ class HigherOrderNetwork(Network):
             self.dof_paths = paths_k - non_zero
 
 
+    @staticmethod
+    def generate_possible_paths(network, k):
+        """ Returns all paths of length k that can
+        possibly exist in a given network """
+
+        assert k > 0, 'This function only calculates possible paths of length k > 0'
+
+        # start with edges, i.e. paths of length one
+        possible_paths = list(network.edges.keys())
+
+        # extend all of those paths by an edge k-1 times
+        for _ in range(k - 1):
+            E_new = list()
+            for e1 in possible_paths:
+                for e2 in network.edges:
+                    if e1[-1] == e2[0]:
+                        p = e1 + (e2[1],)
+                        E_new.append(p)
+            possible_paths = E_new
+        
+        return possible_paths
+
+
     def total_edge_weight(self):
         """ Returns the sum of all edge weights """
         if self.edges:
@@ -285,8 +308,9 @@ class HigherOrderNetwork(Network):
         return tuple(node.split(self.separator))
 
     def path_to_higher_order_nodes(self, path, k=None):
-        """Helper function that transforms a path into a sequence of k-order nodes
-        using the separator character of the HigherOrderNetwork instance
+        """Helper function that transforms a path of first-order nodes into a 
+        sequence of k-order nodes using the separator character of the 
+        HigherOrderNetwork instance
 
         Parameters
         ----------
@@ -320,7 +344,7 @@ class HigherOrderNetwork(Network):
 
         if k is None:
             k = self.order
-        assert len(path) > k, 'Error: Path must be longer than k'
+        assert len(path) >= k, 'Error: Path length must be at least k'
 
         if k == 0 and len(path) == 1:
             return ['start', path[0]]
