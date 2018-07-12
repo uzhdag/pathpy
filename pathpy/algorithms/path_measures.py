@@ -176,8 +176,8 @@ def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxi
 
     h_mat_k = np.absolute(h_mat_k)
 
-    # Compute entropy rate of null model
-    gk_n = HigherOrderNetwork(paths, k=k, null_model=True)
+    # Compute entropy rate of first-order model
+    gk_n = HigherOrderNetwork(paths, k=1, null_model=False)
 
     # For the entropy rate of the null model, no Miller correction is needed
     # since we assume that transitions correspond to the true probabilities
@@ -189,6 +189,8 @@ def entropy_growth_rate_ratio(paths, method='MLE', k=2, lanczos_vectors=15, maxi
 
     Log.add('finished.', Severity.INFO)
 
+    print('entropy rate (k) = ', h_mat_k)
+    print('entropy rate (1) = ', h_mat_null)
     # Return ratio
     return h_mat_k / h_mat_null
 

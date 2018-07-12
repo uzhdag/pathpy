@@ -522,7 +522,7 @@ class Network:
 
 
     @staticmethod
-    def leading_eigenvector(A, normalized=True, lanczos_vecs=15, maxiter=1000):
+    def leading_eigenvector(A, normalized=True, lanczos_vecs=None, maxiter=None):
         """Compute normalized leading eigenvector of a given matrix A.
 
         Parameters
@@ -537,9 +537,7 @@ class Network:
             of scipy's underlying function eigs.
         maxiter: int
             scaling factor for the number of iterations to be used in the
-            approximate calculation of eigenvectors and eigenvalues. The number of
-            iterations passed to scipy's underlying eigs function will be n*maxiter
-            where n is the number of rows/columns of the Laplacian matrix.
+            approximate calculation of eigenvectors and eigenvalues.
 
         Returns
         -------
@@ -551,7 +549,10 @@ class Network:
         # NOTE: ncv sets additional auxiliary eigenvectors that are computed
         # NOTE: in order to be more confident to find the one with the largest
         # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
-        w, pi = _sla.eigs(A, k=1, which="LM", ncv=lanczos_vecs, maxiter=maxiter)
+        if lanczos_vecs == None or maxiter == None:
+            w, pi = _sla.eigs(A, k=1, which="LM")
+        else:
+            w, pi = _sla.eigs(A, k=1, which="LM", ncv=lanczos_vecs, maxiter=maxiter)
         pi = pi.reshape(pi.size, )
         if normalized:
             pi /= sum(pi)
@@ -578,7 +579,7 @@ class Network:
         """Returns the default string representation of this graphical model instance"""
         return self.summary()
 
-    def _to_html(self, width=600, height=600, clusters=None, sizes=None, template_file=None, **kwargs):
+    def _to_html(self, width=800, height=800, clusters=None, sizes=None, template_file=None, **kwargs):
         import json
         import os
         from string import Template
@@ -651,7 +652,7 @@ class Network:
         display(HTML(self._to_html(clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)))
 
 
-    def write_html(self, filename, width=600, height=600, clusters=None, sizes=None, template_file=None, **kwargs):
+    def write_html(self, filename, width=800, height=800, clusters=None, sizes=None, template_file=None, **kwargs):
         html = self._to_html(width=width, height=height, clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)
         with open(filename, 'w+') as f:
             f.write(html)

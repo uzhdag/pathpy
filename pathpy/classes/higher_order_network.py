@@ -38,8 +38,7 @@ class HigherOrderNetwork(Network):
     of a network topology.
     """
 
-    def __init__(self, paths, k=1, separator='-', null_model=False,
-                 method='FirstOrderTransitions', lanczos_vecs=15, maxiter=1000):
+    def __init__(self, paths, k=1, null_model=False, separator=None):
         """Generates a k-th-order representation based on the given path statistics.
 
         Parameters
@@ -54,28 +53,17 @@ class HigherOrderNetwork(Network):
             frequency of each interaction. For k>1, a k-th order node corresponds to a
             sequence of k nodes. The weight of a k-th order link captures the frequency
             of a path of length k.
-        separator: str
-            The separator character to be used in higher-order node names.
         null_model: bool
-            For the default value False, link weights are generated based on the
-            statistics of paths of length k in the underlying path statistics instance.
-            If True, link weights are generated from the first-order model (k=1) based on
-            the assumption of independent links (i.e. corresponding) to a first-order
-            Markov model.
-        method: str
-            specifies how the null model link weights in the k-th order model are
-            calculated. For the default method='FirstOrderTransitions', the weight
-            w('v_1-v_2-...v_k', 'v_2-...-v_k-v_k+1') of a k-order edge is set to the
-            transition probability transition_matrices['v_k', 'v_k+1'] in the first order network.
-            For method='KOrderPi' the entry pi['v1-...-v_k'] in the stationary
-            distribution of the k-order network is used instead.
-        lanczos_vecs: int
-        maxiter: int
+            For the default value False, link weights capture the frequencies of paths of length k 
+            in the underlying paths object. If True, link weights capture expected frequencies
+            under the assumption of independent links (i.e. corresponding to a first-order
+            Markov model).
+        separator: str
+            The separator character to be used in higher-order node names. If this parameter 
+            is not specified, the separator character of the underlying paths object will be 
+            used.
         """
         assert not null_model or (null_model and k > 1)
-
-        assert method in ['FirstOrderTransitions', 'KOrderPi'], \
-            'Error: unknown method to build null model'
 
         if not (paths.paths.keys() and max(paths.paths.keys()) >= k):
             msg = ('Constructing a model of order %d requires paths of at least length %d, '
@@ -92,7 +80,10 @@ class HigherOrderNetwork(Network):
 
         # The separator character used to label higher-order nodes.
         # For separator '-', the name of a second-order node will be 'a-b'.
-        self.separator = separator
+        if separator is None:
+            self.separator = paths.separator
+        else:
+            self.separator = separator
 
         # NOTE: In a higher-order network, edge weights as well as in- and out
         # weights of nodes are numpy arrays consisting of two weight components [w0, w1].
@@ -133,14 +124,12 @@ class HigherOrderNetwork(Network):
             else:
                 for key, val in iterator:
                     # Generate names of k-order nodes v and w
-                    v = separator.join(key[0:-1])
-                    w = separator.join(key[1:])
+                    v = self.separator.join(key[0:-1])
+                    w = self.separator.join(key[1:])
                     self.add_node(v, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
                     self.add_node(w, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
                     # add weight val to directed edge (v,w)
                     self.add_edge(v, w, weight=val)
-
-
             # Note: For all sequences of length k which (i) have never been observed, but
             #       (ii) do actually represent paths of length k in the first-order
             #       network, we may want to include some 'escape' mechanism along the
@@ -169,67 +158,39 @@ class HigherOrderNetwork(Network):
             assert A_sum == len(possiblePaths), \
                 'Expected {ak} paths but got {re}'.format(ak=A_sum, re=len(possiblePaths))
 
-            if method == 'KOrderPi':
-                # compute stationary distribution of a random walker in the k-th order
-                # network
-                g_k = HigherOrderNetwork(paths, k, separator, null_model=False)
-                transition_m = g_k.transition_matrix(include_subpaths=True)
-                pi_k = Network.leading_eigenvector(
-                    transition_m,
-                    normalized=True,
-                    lanczos_vecs=lanczos_vecs,
-                    maxiter=maxiter
-                )
-                gk_node_mapping = g_k.node_to_name_map()
-            else:
-                # A = g1.adjacency_matrix(includeSubPaths=True, weighted=True,
-                # transposed=False)
-                T = g1.transition_matrix(include_subpaths=True)
+            # A = g1.adjacency_matrix(includeSubPaths=True, weighted=True,
+            # transposed=False)
+            T = g1.transition_matrix(include_subpaths=True)
 
-            # assign link weights in k-order null model
+            # use possible paths (a,b,c,...) to create nodes and links in k-th-order null model
             for p in possiblePaths:
-                v = p[0]
-                # add k-order nodes and edges
+
+                # create higher-order nodes (a,b,c,...) and (b,c,d,...)
+                v = p[0]                
                 for l in range(1, k):
-                    v = v + separator + p[l]
+                    v = v + self.separator + p[l]
+
                 w = p[1]
                 for l in range(2, k + 1):
-                    w = w + separator + p[l]
+                    w = w + self.separator + p[l]                    
+
+                # create nodes and make sure that in- and out-weights are numpy arrays
                 self.add_node(v, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
                 self.add_node(w, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
 
-                # NOTE: under the null model's assumption of independent events, we
-                # have P(B|A) = P(A ^ B)/P(A) = P(A)*P(B)/P(A) = P(B)
-                # In other words: we are encoding a k-1-order Markov process in a k-order
-                # Markov model and for the transition probabilities T_AB in the k-order
-                #  model
-                # we simply have to set the k-1-order probabilities, i.e. T_AB = P(B)
+                # In the null model, we encode a first-order Markov process in a k-th-order
+                # model. For the transition probabilities e.g. (a,b) -> (b,c) in a second-order
+                # null model, we simply use the first-order transition probabilities, i.e. P(b->c).             
+                # Note that transition_matrices are transposed (!)
+                v_1, w_1 = g1_node_mapping[p[-2]], g1_node_mapping[p[-1]]
+                p_vw = T[w_1, v_1]
 
-                # Solution A: Use entries of stationary distribution,
-                # which give stationary visitation frequencies of k-order node w
-                if method == 'KOrderPi':
-                    if w in gk_node_mapping:
-                        w_coordinate = gk_node_mapping[w]
-                        eigen_value = pi_k[w_coordinate]
-                        if _np.abs(_np.imag(eigen_value)) < 1e-16:
-                            self.add_edge(v, w, weight = _np.array([0, _np.real(eigen_value)]))
+                # We use first-order transition probabilities to create an expected frequency 
+                # of paths of length k. For a path (a,b,c) we use the subpath count of (a,b) and 
+                # "distribute" it to links (a,b,*) according to transition probabilities
+                expected_vw = paths.paths[k-1][p[:k]][0] * p_vw
 
-                # Solution B: Use relative edge weight in first-order network
-                # Note that A is *not* transposed
-                # self.edges[(v,w)] = A[(g1.nodes.index(p[-2]),g1.nodes.index(p[-1]))]
-                # / A.sum()
-
-                # Solution C: Use transition probability in first-order network
-                # Note that transition_matrices is transposed (!)
-                elif method == 'FirstOrderTransitions':
-                    v_i, w_i = g1_node_mapping[p[-1]], g1_node_mapping[p[-2]]
-                    p_vw = T[v_i, w_i]
-                    self.add_edge(v, w, weight = _np.array([0, p_vw]))
-
-                # Solution D: calculate k-path weights based on entries of squared
-                # k-1-order adjacency matrix
-
-                # Note: Solution B and C are equivalent
+                self.add_edge(v, w, weight = _np.array([0, expected_vw]))
 
         # Compute degrees of freedom of models
         if k == 0:

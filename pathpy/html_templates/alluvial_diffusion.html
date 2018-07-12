@@ -17,16 +17,17 @@
     fill-opacity: .95;
     shape-rendering: crispEdges;
     stroke-width: 0;
+    fill: #fff;
     }
     .node text {
     font-size: 15;
     font-weight: bold;
-    fill: #000;
+    fill: lightblue;
     }
     .link {
     fill: none;
     fill-opacity: 0;
-    stroke: #000;
+    stroke: #fff;
     stroke-opacity: .9;
     }
 </style>
@@ -44,10 +45,10 @@ id='${div_id}_svg_txt'>[save svg]</text>
     chart        
         .name(label)
         .colorNodes(function(name, node) {
-        return color(node) || '#9f9fa3';
+        return color(node) || '#ffffff';
         })
         .colorLinks(function(link) {
-        return color(link.source) || color(link.target) || '#9f9fa3';
+        return color(link.source) || color(link.target) || '#ffffff';
         })
         .nodeWidth(30)
         .nodePadding(30)

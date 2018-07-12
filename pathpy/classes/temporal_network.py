@@ -830,14 +830,14 @@ class TemporalNetwork:
         return html
 
 
-    def _repr_html_(self, width=600, height=600, msperframe=50, tsperframe=20, radius=6,
+    def _repr_html_(self, width=800, height=800, msperframe=50, tsperframe=20, radius=6,
             look_behind=1500, look_ahead=150, template_file=None, **kwargs):
         from IPython.core.display import display, HTML
         display(HTML(self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius,
             template_file=template_file, **kwargs)))
 
 
-    def write_html(self, filename, width=600, height=600, msperframe=50, tsperframe=20, radius=6,
+    def write_html(self, filename, width=800, height=800, msperframe=50, tsperframe=20, radius=6,
             look_behind=1500, look_ahead=150, template_file=None, **kwargs):
 
         html = self._to_html(width, height, msperframe, tsperframe=tsperframe, radius=radius,

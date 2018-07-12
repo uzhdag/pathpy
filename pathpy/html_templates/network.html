@@ -23,7 +23,7 @@
 // the following code ensures that the visualisation works
 // both standalone as well as in jupyter notebook 
 // (which uses requireJS)
-try {
+/* try {
     require.config({
         paths: {
             d3: "https://d3js.org/d3.v4.min"
@@ -34,9 +34,9 @@ catch(err) {
     console.log('no requireJS found');
     // define fake require function    
     function require(x, func){ func(d3); }
-}
+} */
 
-require(["d3"], function(d3) {
+// require(["d3"], function(d3) {
     var svg = d3.select("#"+"$div_id"),
         radius = 6,
         width = +svg.attr("width"),
@@ -166,5 +166,5 @@ require(["d3"], function(d3) {
             document.body.removeChild(elem);
         }
     }
-});
+// });
 </script>

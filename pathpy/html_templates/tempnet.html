@@ -46,14 +46,14 @@
         id='${div_id}_restart_txt'>restart</text>
 </svg>
 
-<script charset="utf-8" src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+<!-- <script charset="utf-8" src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script> -->
 <script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
 <script charset="utf-8">
 // the following code ensures that the visualisation works
 // both standalone as well as in jupyter notebook 
 // (which uses requireJS)
 
-try {
+/* try {
     require.config({
         paths: {
             d3: "https://d3js.org/d3.v4.min"
@@ -68,7 +68,7 @@ catch(err) {
     }
 }
 
-require(["d3"], function(d3) {
+require(["d3"], function(d3) { */
     d3.selection.prototype.moveToFront = function() {
         return this.each(function(){
             this.parentNode.appendChild(this);
@@ -357,5 +357,5 @@ require(["d3"], function(d3) {
         }
         return false;
     }
-});
+// });
 </script>

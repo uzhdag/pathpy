@@ -624,7 +624,7 @@ class Paths:
                     # add subpath weight to first component of occurrences
                     self.paths[k][subpath][0] += frequency[1]
 
-    def add_path_ngram(self, ngram, separator=',', expand_subpaths=True, frequency=(0, 1)):
+    def add_path_ngram(self, ngram, frequency=(0, 1), separator=',', expand_subpaths=True):
         """Adds the path(s) of a single n-gram to the path statistics object.
 
         Parameters
@@ -633,15 +633,16 @@ class Paths:
             An ngram representing a path between nodes, separated by the separator
             character, e.g. the 4-gram a;b;c;d represents a path of length three
             (with separator ';')
+        frequency: tuple, int
+            the number of occurrences (i.e. frequency) of the ngram (n_subpaths, n_observed)
+            the default is (0, 1) (i.e. 0 subpaths and one observed longest path). If an integer x
+            is passed, it will be automatically converted to (0, x).
         separator: str
             The character used as separator for the ngrams (';' by default)
         expand_subpaths: bool
             by default all subpaths of the given ngram are generated, i.e.
             for the trigram a;b;c a path a->b->c of length two will be generated
-            as well as two subpaths a->b and b->c of length one
-        frequency: tuple
-            the number of occurrences (i.e. frequency) of the ngram (n_subpaths, n_observed)
-            the default is (0, 1) (i.e. 0 subpaths and one observed longest path)
+            as well as two subpaths a->b and b->c of length one        
 
         """
         path = tuple(ngram.split(separator))
@@ -653,6 +654,8 @@ class Paths:
         path_length = len(path) - 1
 
         # add the occurrences as *longest* path to the second component of the numpy array
+        if isinstance(frequency, int):
+            frequency = (0, frequency)
         self.paths[path_length][path][1] += frequency[1]
 
         if expand_subpaths:
