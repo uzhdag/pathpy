@@ -62,8 +62,6 @@ def reduce_to_gcc(network):
     are calculated using Tarjan's algorithm.
     """
 
-    # TODO: LV with the new network implementation the procedure removes edges but the in-degree
-    # TODO: and the out-degree dictionaries are not updated and are out of sync.
     # nonlocal variables (!)
     index = 0
     S = []
@@ -110,14 +108,18 @@ def reduce_to_gcc(network):
     for v in network.nodes:
         if indices[v] is None:
             components[v] = strong_connect(v)
-            if len(components[v]) > max_size:
-                max_head = v
-                max_size = len(components[v])
+            # print('node {v}, size = {n}, component = {component}'.format(v=v, component=components[v], n = len(components[v]) ))
+
+    for v in network.nodes:
+        if len(components[v]) > max_size:
+            max_head = v
+            max_size = len(components[v])
 
     scc = components[max_head]
 
     # Reduce higher-order network to SCC
     for v in list(network.nodes):
         if v not in scc:
+            # TODO: LV with the new network implementation the procedure removes edges but the in-degree
+            # TODO: and the out-degree dictionaries are not updated and are out of sync.
             network.remove_node(v)
-

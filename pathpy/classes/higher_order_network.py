@@ -164,7 +164,6 @@ class HigherOrderNetwork(Network):
 
             # create nodes and links in k-th-order null model
             for p in possible_paths:
-
                 # create higher-order nodes (a,b,c,...) and (b,c,d,...)
                 v = p[0]
                 for l in range(1, k):
@@ -186,8 +185,9 @@ class HigherOrderNetwork(Network):
                 p_vw = T[w_1, v_1]
 
                 # We use first-order transition probabilities to create an expected frequency 
-                # of paths of length k. For a path (a,b,c) we use the subpath count of (a,b) and 
-                # "distribute" it to links (a,b,*) according to transition probabilities
+                # of paths of length k. For a path (a,b,c) we use the count of (a,b) and 
+                # "distribute" it to all possible paths (a,b,*) according to the first-order 
+                # transition probabilities of (b,*)
                 expected_vw = paths.paths[k-1][p[:k]].sum() * p_vw
 
                 self.add_edge(v, w, weight = _np.array([0, expected_vw]))
