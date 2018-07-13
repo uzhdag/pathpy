@@ -59,7 +59,13 @@ test-all: ## run tests on every Python version with tox
 	pytest --runslow 
 
 coverage: ## check code coverage quickly with the default Python
-	pytest --cov pathpy --runslow --latex --cov-report html --cov-report term --doctest-modules
+	pytest --cov pathpy \
+		--runslow \
+		--latex \
+		--networkx \
+		--cov-report html \
+		--cov-report term \
+		--doctest-modules
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/pathpy.rst

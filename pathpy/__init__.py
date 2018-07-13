@@ -2,7 +2,7 @@
 
 __author__ = """Ingo Scholtes"""
 __email__ = 'ischoltes@ethz.ch'
-__version__ = '2.0.0'
+__version__ = '2.0.0.dev1'
 
 from .classes import DAG
 from .classes import Paths

@@ -2,44 +2,44 @@
 # -*- coding: utf-8 -*-
 
 """The setup script."""
+
 from setuptools import setup, find_packages
+from pathpy import __version__
 
-with open('README.rst') as readme_file:
+
+with open('README.rst') as readme_file, open('HISTORY.rst') as history_file:
     readme = readme_file.read()
-
-with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ["numpy", "scipy"]
+install_requirements = ['numpy', 'scipy']
 
 setup_requirements = ['pytest-runner']
-
-test_requirements = ['pytest']
 
 setup(
     author="Ingo Scholtes",
     author_email='ischoltes@ethz.ch',
+    license='AGPL-3.0+',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Information Analysis',
-        'License :: OSI Approved :: AGPL-3.0+ License',
+        'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
-    description="A python package for the analysis of sequential data on pathways and temporal networks from the perspective of higher-order network models.",
-    install_requires=requirements,
+    description="A python package for the analysis of sequential data on pathways and "
+                "temporal networks from the perspective of higher-order network models.",
+    install_requires=install_requirements,
+    setup_requires=setup_requirements,
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='pathpy',
+    python_requires='>=3.5',
+    keywords='network analysis temporal networks pathways sequence modeling graph mining',
     name='pathpy',
-    packages=find_packages(include=['pathpy']),
-    setup_requires=setup_requirements,
+    packages=find_packages(),
     test_suite='tests',
-    tests_require=test_requirements,
     url='https://github.com/IngoScholtes/pathpy',
-    version='2.0.0',
-    zip_safe=False,
-    data_files=[('.', ['DESCRIPTION.rst', 'README.rst', 'HISTORY.rst'])]
+    version=__version__,
+    zip_safe=False
 )
