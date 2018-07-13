@@ -31,7 +31,7 @@ from pathpy.utils import Log, Severity
 from pathpy import DAG
 
 
-def remove_repetitions(path: tuple):
+def remove_repetitions(path):
     """Remove repeated nodes in the path
 
     Parameters

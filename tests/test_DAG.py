@@ -202,7 +202,7 @@ def test_dag_from_temporal_network():
 def test_strong_connected_components(random_network):
     from pathpy.classes.network import network_to_networkx
     from networkx import strongly_connected_components
-    from pathpy.algorithms.components import reduce_to_gcc
+    from pathpy.algorithms.components import connected_components
 
     wrong_gcc = 0
     for i in range(200):
@@ -211,9 +211,8 @@ def test_strong_connected_components(random_network):
         hn_nx = network_to_networkx(hn)
         size_largest_nx = len(max(strongly_connected_components(hn_nx), key=len))
 
-        reduce_to_gcc(hn)  # need to run after because reduce_to_gss changes in place
-
-        size_largest = len(hn.nodes)
+        components = connected_components(hn)
+        size_largest = max(len(c) for c in components)
 
         if size_largest_nx != size_largest:
             # print(f'seed {i} | nx: {size_largest_nx}, pp: {size_largest}')
@@ -225,7 +224,7 @@ def test_strong_connected_components(random_network):
 @pytest.mark.networkx
 def test_strong_connected_tmp(random_temp_network):
     from pathpy.path_extraction.temporal_paths import paths_from_temporal_network_dag
-    from pathpy.algorithms.components import reduce_to_gcc
+    from pathpy.algorithms.components import connected_components
     from pathpy.classes.network import network_to_networkx
     from networkx import strongly_connected_components
     from pathpy.utils.log import Log, Severity
@@ -239,15 +238,16 @@ def test_strong_connected_tmp(random_temp_network):
 
         p = paths_from_temporal_network_dag(tn, delta=delta)
         hn = pp.HigherOrderNetwork(p, k=2)
-        total_size = len(hn.nodes)
 
         # using NetworkX
         nx_network = network_to_networkx(hn)
         giant_size_nx = len(max(strongly_connected_components(nx_network), key=len))
 
         # using pathpy
-        reduce_to_gcc(hn)
-        giant_size_pp = len(hn.nodes)
+        components = connected_components(hn)
+        if giant_size_nx > 3:
+            print(giant_size_nx)
+        giant_size_pp = max(len(c) for c in components)
 
         assert giant_size_nx == giant_size_pp
 
