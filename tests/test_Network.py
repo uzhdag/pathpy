@@ -205,9 +205,7 @@ def test_diagonal_values():
     assert adj[1, 1] == 0
     assert adj.diagonal().sum() == 1
 
-
-def test_diagonal_values_directed():
-    from pathpy.classes.network import Network
+    # test directed case
     net = Network(directed=True)
     net.add_edge('a', 'b')
     net.add_edge('a', 'a')

@@ -373,13 +373,6 @@ class Network:
         """ Returns the number of nodes """
         return len(self.nodes)
 
-    def self_loops(self):
-        """ Returns the edges which are self-loop"""
-        loops_nodes = {}
-        for edge, weight in self.edges.items():
-            if edge[0] == edge[1]:
-                loops_nodes[edge] = weight
-        return loops_nodes
 
     def ecount(self):
         """ Returns the number of links """
@@ -421,7 +414,7 @@ class Network:
 
         edgeC = self.ecount()
         if not self.directed:
-            n_self_loops = len(self.self_loops())
+            n_self_loops = sum(s == t for (s, t) in self.edges)
             edgeC *= 2
             edgeC -= n_self_loops
 
@@ -432,16 +425,16 @@ class Network:
             col.append(node_to_coord[t])
             if weighted:
                 data.append(e['weight'])
+            else:
+                data.append(1)
 
             if not self.directed and t != s:
                 row.append(node_to_coord[t])
                 col.append(node_to_coord[s])
                 if weighted:
                     data.append(e['weight'])
-
-        # create array with non-zero entries
-        if not weighted:
-            data = _np.ones(edgeC)
+                else:
+                    data.append(1)
 
         shape = (self.vcount(), self.vcount())
         A = _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
