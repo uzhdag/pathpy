@@ -192,3 +192,28 @@ def test_read_edges(test_data_directory):
     net = pathpy.Network.read_edges(edge_file, weighted=True, header=True, directed=True)
     assert net.vcount() == 5
     assert net.ecount() == 6
+
+
+def test_diagonal_values():
+    from pathpy.classes.network import Network
+    net = Network()
+    net.add_edge('a', 'b')
+    net.add_edge('a', 'a')
+    adj = net.adjacency_matrix().todense()
+    assert adj.sum() == 3
+    assert adj[0, 0] == 1
+    assert adj[1, 1] == 0
+    assert adj.diagonal().sum() == 1
+
+
+def test_diagonal_values_directed():
+    from pathpy.classes.network import Network
+    net = Network(directed=True)
+    net.add_edge('a', 'b')
+    net.add_edge('a', 'a')
+    adj = net.adjacency_matrix().todense()
+    assert adj.sum() == 2
+    assert adj[0, 0] == 1
+    assert adj[1, 1] == 0
+    assert adj.diagonal().sum() == 1
+
