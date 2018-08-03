@@ -362,7 +362,7 @@ class MultiOrderModel:
         paths: Paths
             the path statistics for which to calculate the layer likelihood
         l: int
-            number of layers for which likelihood shall be calculated Paths of length l
+            number of layers for which likelihood shall be calculated. Paths of length l
             (and possibly longer) will be used to calculate the likelihood of model layers
             for all orders up to l
         consider_longer_paths: bool
@@ -385,9 +385,6 @@ class MultiOrderModel:
         if paths is None:
             paths = self.paths
         max_len_obs = max(paths.paths)
-
-        assert max_len_obs >= l and len(paths.paths[l]) > 0, \
-            'Error: there are no paths of length l or longer'
 
         if min_path_length is None:
             min_path_length = l
