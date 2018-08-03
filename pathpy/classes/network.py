@@ -162,7 +162,7 @@ class Network:
 
     @classmethod
     def from_paths(cls, paths):
-        
+
         network = cls(directed=True)
 
         # check all sub-paths of length one
@@ -175,7 +175,7 @@ class Network:
     def to_unweighted(self):
         """
         Returns an unweighted copy of a directed or undirected network.
-        In this copy all edge and node properties of the original network 
+        In this copy all edge and node properties of the original network
         are removed, but the directionality of links is retained.
         """
         n = Network(directed = self.directed)
@@ -187,7 +187,7 @@ class Network:
 
     def to_undirected(self):
         """
-        Returns an undirected copy of the network, in which all 
+        Returns an undirected copy of the network, in which all
         node and edge properties are removed.
         """
         n = Network(directed = False)
@@ -354,7 +354,7 @@ class Network:
 
     def find_nodes(self, select_node=lambda v: True):
         """
-        Returns all nodes that satisfy a given condition. In the select_node 
+        Returns all nodes that satisfy a given condition. In the select_node
         lambda function, node attributes can be accessed by calling v['attr']
         """
         return [n for n in self.nodes if select_node(self.nodes[n])]
@@ -363,7 +363,7 @@ class Network:
     def find_edges(self, select_nodes=lambda v, w: True, select_edges=lambda e: True):
         """
         Returns all edges that satisfy a given condition. Edges can be selected based
-        on attributes of the adjacent nodes as well as attributes of the edge. In the select_edges 
+        on attributes of the adjacent nodes as well as attributes of the edge. In the select_edges
         lambda function, edge attributes can be accessed by calling e['attr']
         """
         return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
@@ -414,24 +414,27 @@ class Network:
 
         edgeC = self.ecount()
         if not self.directed:
+            n_self_loops = sum(s == t for (s, t) in self.edges)
             edgeC *= 2
+            edgeC -= n_self_loops
 
         node_to_coord = self.node_to_name_map()
-        
-        for s, t in self.edges:
+
+        for (s, t), e in self.edges.items():
             row.append(node_to_coord[s])
             col.append(node_to_coord[t])
-            if not self.directed:
+            if weighted:
+                data.append(e['weight'])
+            else:
+                data.append(1)
+
+            if not self.directed and t != s:
                 row.append(node_to_coord[t])
                 col.append(node_to_coord[s])
-
-        # create array with non-zero entries
-        if not weighted:
-            data = _np.ones(edgeC)
-        else:
-            data = _np.array([float(e['weight']) for e in self.edges.values()])
-            if not self.directed:
-                data = _np.column_stack((data, data)).flatten()
+                if weighted:
+                    data.append(e['weight'])
+                else:
+                    data.append(1)
 
         shape = (self.vcount(), self.vcount())
         A = _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
@@ -619,8 +622,8 @@ class Network:
 
         if template_file is None:
             module_dir = os.path.dirname(os.path.realpath(__file__))
-            html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')            
-            template_file = os.path.join(html_dir, 'network.html') 
+            html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
+            template_file = os.path.join(html_dir, 'network.html')
 
         with open(template_file) as f:
             html_str = f.read()
