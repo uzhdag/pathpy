@@ -167,7 +167,8 @@ def _mdl_paths(paths, module_map):
                     else: # or count exit transition
                         exit_prob[current_module] += paths.paths[l][p][1]                        
                         # and update current module
-                        current_module = module_map[x] 
+                        current_module = module_map[x]
+                exit_prob[current_module] += paths.paths[l][p][1]
                         
     # STEP 1: Calculate contribution of transitions BETWEEN modules ...
 
