@@ -129,7 +129,7 @@ def diffusion_to_flow_net(paths, markov=True, initial_node=None, steps=5):
     g1 = HigherOrderNetwork(paths, k=1)
     map_1 = g1.node_to_name_map()
 
-    prob = _np.zeros(g1.vcount())
+    prob = _np.zeros(g1.ncount())
     prob = prob.transpose()
     if initial_node is None:
         initial_node = g1.nodes[0]    

@@ -158,17 +158,17 @@ class MultiOrderModel:
             dof_path=self.degrees_of_freedom(assumption='paths'),
             dof_ngram=self.degrees_of_freedom(assumption='ngrams')
         )
-        layer_fmt = ("Layer k = {k} \t {vcount} nodes, {ecount} links, {sum_path} paths, "
+        layer_fmt = ("Layer k = {k} \t {ncount} nodes, {ecount} links, {sum_path} paths, "
                      "DoF (paths/ngrams) = {dof_paths} / {dof_ngram} \n")
 
         for k in range(self.max_order + 1):
-            vcount = self.layers[k].vcount()
+            ncount = self.layers[k].ncount()
             ecount = self.layers[k].ecount()
             sum_path = self.layers[k].total_edge_weight().sum()
             dof_paths = int(self.layers[k].degrees_of_freedom('paths'))
             dof_ngram = int(self.layers[k].degrees_of_freedom('ngrams'))
 
-            layer_sum = layer_fmt.format(k=k, vcount=vcount, ecount=ecount,
+            layer_sum = layer_fmt.format(k=k, ncount=ncount, ecount=ecount,
                                          sum_path=sum_path, dof_paths=dof_paths,
                                          dof_ngram=dof_ngram)
             summary += layer_sum
@@ -217,7 +217,7 @@ class MultiOrderModel:
             for node_idx in sorted_indices:
                 file.write('{0} "{1}"\n'.format(node_idx, reverse_index[node_idx]))
         else:
-            file.write('*Vertices {0}\n'.format(self.layers[1].vcount()))
+            file.write('*Vertices {0}\n'.format(self.layers[1].ncount()))
             for i in self.layers[1].nodes:
                 first = first_layer_map[i]
                 second = self.layers[1].nodes[i]
@@ -225,7 +225,7 @@ class MultiOrderModel:
                 file.write('{0} "{1}"\n'.format(first, second))
 
         # Write higher-order nodes to states section
-        file.write('*States {0}\n'.format(self.layers[layer].vcount()))
+        file.write('*States {0}\n'.format(self.layers[layer].ncount()))
         for v in self.layers[layer].nodes:
             if infomap_indexing:
                 v_ix = infomap_indexing[layer][v]

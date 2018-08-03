@@ -199,8 +199,8 @@ class HigherOrderNetwork(Network):
             # Since probabilities must sum to one, the effective degree
             # of freedom is one less than the number of nodes
             # This holds for both the paths and the ngrams model
-            self.dof_paths = self.vcount() - 2
-            self.dof_ngrams = self.vcount() - 2
+            self.dof_paths = self.ncount() - 2
+            self.dof_ngrams = self.ncount() - 2
         else:
             # for a first-order model, self is the first-order network
             if k == 1:
@@ -209,7 +209,7 @@ class HigherOrderNetwork(Network):
                                         transposed=True)
 
             # Degrees of freedom in a higher-order ngram model
-            s = g1.vcount()
+            s = g1.ncount()
 
             # The degrees of freedom of the higher-order model, under the ngram
             # assumption
@@ -412,12 +412,12 @@ class HigherOrderNetwork(Network):
         summary_fmt = (
             'Higher-order network of order k = {order}\n'
             '\n'
-            'Nodes:\t\t\t\t{vcount}\n'
+            'Nodes:\t\t\t\t{ncount}\n'
             'Links:\t\t\t\t{ecount}\n'
             'Total weight (subpaths/longest paths):\t{sub_w}/{uni_w}\n'
         )
         summary = summary_fmt.format(
-            order=self.order, vcount=self.vcount(), ecount=self.ecount(),
+            order=self.order, ncount=self.ncount(), ecount=self.ecount(),
             sub_w=self.total_edge_weight()[0], uni_w=self.total_edge_weight()[1]
         )
         return summary
@@ -467,7 +467,7 @@ class HigherOrderNetwork(Network):
             else:
                 data = _np.array([float(self.edges[e]['weight'][1]) for e in self.edges])
 
-        shape = (self.vcount(), self.vcount())
+        shape = (self.ncount(), self.ncount())
         return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
 
@@ -524,7 +524,7 @@ class HigherOrderNetwork(Network):
         data = _np.array(data)
         data = data.reshape(data.size, )
 
-        shape = self.vcount(), self.vcount()
+        shape = self.ncount(), self.ncount()
         return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
 
@@ -543,6 +543,6 @@ class HigherOrderNetwork(Network):
 
         """
         transition_matrix = self.transition_matrix(include_subpaths)
-        identity_matrix = _sparse.identity(self.vcount())
+        identity_matrix = _sparse.identity(self.ncount())
 
         return identity_matrix - transition_matrix

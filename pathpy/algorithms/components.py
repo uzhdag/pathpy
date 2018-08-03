@@ -37,7 +37,7 @@ __all__ = ['connected_components']
 def connected_components(network, lanczos_vecs=15, maxiter=1000):
 
     L = network.laplacian_matrix(weighted=True)
-    n = network.vcount()-2
+    n = network.ncount()-2
     vals, vecs = _sla.eigs(L, k=n, which="SM", ncv=lanczos_vecs, maxiter=maxiter, return_eigenvectors=True)
 
     components = defaultdict(set)

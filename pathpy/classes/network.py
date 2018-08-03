@@ -369,7 +369,7 @@ class Network:
         return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
 
 
-    def vcount(self):
+    def ncount(self):
         """ Returns the number of nodes """
         return len(self.nodes)
 
@@ -436,7 +436,7 @@ class Network:
                 else:
                     data.append(1)
 
-        shape = (self.vcount(), self.vcount())
+        shape = (self.ncount(), self.ncount())
         A = _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
         if transposed:
@@ -497,7 +497,7 @@ class Network:
         data = _np.array(data)
         data = data.reshape(data.size, )
 
-        shape = self.vcount(), self.vcount()
+        shape = self.ncount(), self.ncount()
         return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
 
 
@@ -514,7 +514,7 @@ class Network:
         """
         if weighted:
             A = self.transition_matrix().transpose()
-            D = _sparse.identity(self.vcount())
+            D = _sparse.identity(self.ncount())
         else:
             A = self.adjacency_matrix(weighted=False)
             D = _sparse.diags(_np.array([float(self.nodes[v]['degree']) for v in self.nodes]))
@@ -568,14 +568,14 @@ class Network:
         summary_fmt = (
             '{directed_str} network\n'
             '\n'
-            'Nodes:\t\t\t\t{vcount}\n'
+            'Nodes:\t\t\t\t{ncount}\n'
             'Links:\t\t\t\t{ecount}\n'
         )
         if self.directed:
             directed_str = 'Directed'
         else:
             directed_str = 'Undirected'
-        summary = summary_fmt.format(directed_str=directed_str, vcount=self.vcount(), ecount=self.ecount())
+        summary = summary_fmt.format(directed_str=directed_str, ncount=self.ncount(), ecount=self.ecount())
         return summary
 
     def __str__(self):

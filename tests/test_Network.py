@@ -20,7 +20,7 @@ def test_add_node(random_network, directed, weighted):
 
     assert net.directed == directed
 
-    vc_before = net.vcount()
+    vc_before = net.ncount()
     ec_before = net.ecount()
 
     assert 'v' not in net.nodes
@@ -39,7 +39,7 @@ def test_add_node(random_network, directed, weighted):
     assert net.nodes['v']['inweight'] == 0
     assert net.nodes['v']['outweight'] == 0
 
-    assert net.vcount() == vc_before + 1
+    assert net.ncount() == vc_before + 1
     assert net.ecount() == ec_before
 
 
@@ -54,7 +54,7 @@ def test_remove_node(random_network, directed, weighted):
     to_remove = random.choice(list(net.nodes))
 
     # collect values before removal
-    v_c = net.vcount()
+    v_c = net.ncount()
     e_c = net.ecount()
     t_w = net.total_edge_weight()
 
@@ -67,7 +67,7 @@ def test_remove_node(random_network, directed, weighted):
 
     # test values after removal
     assert to_remove not in net.nodes
-    assert net.vcount() == v_c-1
+    assert net.ncount() == v_c-1
     assert net.ecount() == e_c - len(incident_edges)
     assert net.total_edge_weight() == t_w - weight_incident
 
@@ -102,7 +102,7 @@ def test_add_edge(random_network, directed, weighted):
         weight_to_add = 1
 
     # collect values before removal
-    v_c = net.vcount()
+    v_c = net.ncount()
     e_c = net.ecount()
     t_w = net.total_edge_weight()
 
@@ -114,7 +114,7 @@ def test_add_edge(random_network, directed, weighted):
     # test values after removal
     assert v in net.nodes
     assert w in net.nodes
-    assert net.vcount() == v_c
+    assert net.ncount() == v_c
     assert net.ecount() == e_c + 1
     assert net.total_edge_weight() == t_w + weight_to_add
     assert (v, w) in net.edges
@@ -139,7 +139,7 @@ def test_import_from_networkx():
         g.edges[edge]['custom'] = i
 
     net = network_from_networkx(g)
-    assert net.vcount() == len(g)
+    assert net.ncount() == len(g)
     assert net.ecount() == len(g.edges)
     for edge in net.edges:
         assert net.edges[edge]['custom'] == g.edges[edge]['custom']
@@ -190,7 +190,7 @@ def test_read_edges(test_data_directory):
     edge_file = os.path.join(test_data_directory, "example_int.tedges")
 
     net = pathpy.Network.read_edges(edge_file, weighted=True, header=True, directed=True)
-    assert net.vcount() == 5
+    assert net.ncount() == 5
     assert net.ecount() == 6
 
 

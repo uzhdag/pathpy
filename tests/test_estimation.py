@@ -42,12 +42,12 @@ def test_estimate_order_strongly_connected():
 
     g1 = pp.HigherOrderNetwork(paths, k=1)
     pp.algorithms.components.reduce_to_gcc(g1)
-    assert g1.vcount() == 5, "Error, wrong number of nodes in first-order network"
+    assert g1.ncount() == 5, "Error, wrong number of nodes in first-order network"
     assert g1.ecount() == 8, "Error, wrong number of links in first-order network"
 
     g2 = pp.HigherOrderNetwork(paths, k=2)
     pp.algorithms.components.reduce_to_gcc(g2)
-    assert g2.vcount() == 4, "Error, wrong number of nodes in second-order network"
+    assert g2.ncount() == 4, "Error, wrong number of nodes in second-order network"
     assert g2.ecount() == 4, "Error, wrong number of links in second-order network"
 
     # test mapping of higher-order nodes and paths
