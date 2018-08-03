@@ -52,18 +52,26 @@ def remove_repetitions(path):
 
 
 def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',', repetitions=True):
-    """    Extracts pathway statistics from a directed acyclic graph.
-    For this, all paths between all roots (zero incoming links)
-    and all leafs (zero outgoing link) will be constructed.
+    """ Calculates path statistics in a directed acyclic graph.
+    For this, all paths between all roots (nodes with indegree zero)
+    and all leafs (nodes with outdegree zero) will be constructed.
 
     Parameters
     ----------
     dag: DAG
+        the directed acyclic graph instance to calulate paths in
     node_mapping: dict
         can be a simple mapping (1-to-1) or a 1-to-many (a dict with sets as values)
     max_subpath_length: int
+        This can be used to limit the calculation of sub path statistics to a given
+        maximum length. This is useful, as the statistics of sub paths of length k
+        are only needed to fit a higher-order model with order k. Hence, if we know
+        that the model selection is limited to a given maximum order K, we can safely
+        set the maximum sub path length to K. By default, sub paths of any length
+        will be calculated. Note that, independent of the sub path calculation
+        longest path of any length will be considered in the likelihood calculation!
     separator: str
-        separator to use to separate nodes on paths
+        separator to use to separate nodes in the generated Paths object
 
     Returns
     -------

@@ -34,11 +34,15 @@ from pathpy.utils import Log
 def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
                                 max_subpath_length=sys.maxsize):
     """
-    Calculates the frequency of all time-respecting paths up to maximum length
+    Calculates the frequency of time-respecting paths up to maximum length
     of maxLength, assuming a maximum temporal distance of delta between consecutive
-    time-stamped links on a path. This (static) method returns an instance of the
-    class Paths, which can subsequently be used to generate higher-order network
-    representations based on the path statistics.
+    time-stamped links on a path. This method uses a fast but heuristic approach that
+    only considers the FIRST continuation of a time-respecting path. I.e., for time-
+    stamped links (a,b,1), (b,c,5), (b,d,7) and a delta=6 only the time-respecting
+    path (a,b,c) will be found, while (a,b,d) is ignored.
+    
+    This (static) method returns an instance of the class Paths, which can
+    be used to generate higher- and multi-order models of time-respecting paths.
 
     Parameters
     ----------
@@ -186,6 +190,54 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
 
 
 def paths_from_temporal_network_dag(tempnet, delta=1, max_subpath_length=None):
+    """
+    Calculates the frequency of time-respecting paths up to maximum length
+    of maxLength, assuming a maximum temporal distance of delta between consecutive
+    time-stamped links on a path. This method first creates a directed and acyclic
+    time-unfolded graph based on the given parameter delta. This directed acyclic
+    graph is then used to calculate all time-respecting paths for a given delta.
+    I.e., for time-stamped links (a,b,1), (b,c,5), (b,d,7) and a delta=6 only the
+    time-respecting path (a,b,c) will be found, while (a,b,d) is ignored.
+    
+    This (static) method returns an instance of the class Paths, which can
+    be used to generate higher- and multi-order models of time-respecting paths.
 
+    Parameters
+    ----------
+    tempnet : pathpy.TemporalNetwork
+        TemporalNetwork to extract the time-respecting paths from
+    delta : int
+        Indicates the maximum temporal distance up to which time-stamped
+        links will be considered to contribute to time-respecting paths.
+        For (u,v;3) and (v,w;7) a time-respecting path (u,v)->(v,w) will be inferred
+        for all 0 < delta <= 4, while no time-respecting path will be inferred for
+        delta > 4. If the max time diff is not set specifically, a default value of
+        delta=1 will be used, meaning that a time-respecting path u -> v -> w will
+        only be inferred if there are *directly consecutive* time-stamped links
+        (u,v;t) (v,w;t+1). Every time-stamped edge is considered a time-respecting path of
+        length one.
+    max_length : int
+        Indicates the maximum length up to which time-respecting paths should be
+        calculated, which can be limited due to computational efficiency.
+        A value of k will generate all time-respecting paths consisting of up to k
+        time-stamped links. Note that generating a multi-order model with a maximum
+        order of k requires to extract time-respecting paths with *at least* length k.
+        If a limitation of the maxLength is not required for computational reasons,
+        this parameter should not be set (as it will change the statistics of paths). 
+        For maxLength=1 this function will simply return the statistics of time-stamped edges.
+    max_subpath_length : int
+        This can be used to limit the calculation of sub path statistics to a given
+        maximum length. This is useful, as the statistics of sub paths of length k
+        are only needed to fit a higher-order model with order k. Hence, if we know
+        that the model selection is limited to a given maximum order K, we can safely
+        set the maximum sub path length to K. By default, sub paths of any length
+        will be calculated. Note that, independent of the sub path calculation
+        longest path of any length will be considered in the likelihood calculation!
+
+    Returns
+    -------
+    Paths
+
+    """
     dag, node_map = DAG.from_temporal_network(tempnet, delta)
     return paths_from_dag(dag, node_map, max_subpath_length=max_subpath_length, repetitions=False)
