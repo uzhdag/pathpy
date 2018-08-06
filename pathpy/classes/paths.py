@@ -702,10 +702,10 @@ class Paths:
 
         return contained_paths
 
-    def filter_nodes(self, node_filter, min_length=0, max_length=sys.maxsize):
+    def filter_nodes(self, node_filter, min_length=0, max_length=sys.maxsize, split_paths=True):
         """Returns a new paths object which contains only paths between nodes in a given
         filter set. For each of the paths in the current Paths object, the set of
-        maximally contained subpaths between nodes in node_filter is extracted.
+        maximally contained subpaths between nodes in node_filter is extracted by default.
         This method is useful when studying (sub-)paths passing through a subset of nodes.
 
         Parameters
@@ -716,6 +716,9 @@ class Paths:
             the minimum length of paths to extract (default 0)
         max_length: int
             the maximum length of paths to extract (default sys.maxsize)
+        split_paths: bool
+            If true, this function will consider subpaths of the paths. If False, either a 
+            full path is taken or the path is discarded.
 
         Returns
         -------
@@ -728,10 +731,11 @@ class Paths:
                     # determine all contained subpaths which only pass through
                     # nodes in node_filter
                     contained = Paths.contained_paths(x, node_filter)
-                    for s in contained:
-                        if min_length <= len(s) - 1 <= max_length:
-                            freq = (0, self.paths[p_length][x][1])
-                            p.add_path_tuple(s, expand_subpaths=True, frequency=freq)
+                    if len(contained) == 1 or split_paths:
+                        for s in contained:
+                            if min_length <= len(s) - 1 <= max_length:
+                                freq = (0, self.paths[p_length][x][1])
+                                p.add_path_tuple(s, expand_subpaths=True, frequency=freq)
         return p
 
     def project_paths(self, mapping):
