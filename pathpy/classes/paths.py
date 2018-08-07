@@ -590,9 +590,10 @@ class Paths:
             The path tuple to be added, e.g. ('a', 'b', 'c')
         expand_subpaths: bool
             Whether or not to calculate subpath statistics for this path
-        frequency: tuple
+        frequency: tuple, int
             A tuple (x,y) indicating the frequency of this path as subpath
-            (first component) and longest path (second component). Default is (0,1).
+            (first component) and longest path (second component). The default is (0,1).
+            If an integer x is passed, it will be automatically converted to (0, x).
 
         Returns
         -------
@@ -607,6 +608,8 @@ class Paths:
 
         path_str = path if isinstance(path, str) else tuple(map(str, path))
 
+        if isinstance(frequency, int):
+            frequency = (0, frequency)
         self.paths[len(path) - 1][path_str] += frequency
 
         if expand_subpaths:
@@ -642,7 +645,7 @@ class Paths:
         expand_subpaths: bool
             by default all subpaths of the given ngram are generated, i.e.
             for the trigram a;b;c a path a->b->c of length two will be generated
-            as well as two subpaths a->b and b->c of length one        
+            as well as two subpaths a->b and b->c of length one   
 
         """
         path = tuple(ngram.split(separator))
