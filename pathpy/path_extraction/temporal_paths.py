@@ -80,6 +80,28 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
     -------
     Paths
 
+    Examples
+    --------
+    >>> t = pp.TemporalNetwork()
+    >>> t.add_edge('a', 'b', 1)
+    >>> t.add_edge('b', 'c', 5)
+    >>> t.add_edge('b', 'd', 7)
+
+    >>> p = pp.path_extraction.paths_from_temporal_network(t, delta=6)
+    >>> print(p)
+    >>> [Severity.INFO]	Extracting time-respecting paths for delta = 7 ...
+    >>> [Severity.INFO]	Calculating sub path statistics ...
+    >>> [Severity.INFO]	finished.
+    >>> Total path count: 		2.0 
+    >>> [Unique / Sub paths / Total]: 	[2.0 / 7.0 / 9.0]
+    >>> Nodes:				4 
+    >>> Edges:				3
+    >>> Max. path length:		2
+    >>> Avg path length:		1.5 
+    >>> Paths of length k = 0		0.0 [ 0.0 / 5.0 / 5.0 ]
+    >>> Paths of length k = 1		1.0 [ 1.0 / 2.0 / 3.0 ]
+    >>> Paths of length k = 2		1.0 [ 1.0 / 0.0 / 1.0 ]
+
     """
 
     if max_length == sys.maxsize:  # pragma: no cover
@@ -238,6 +260,10 @@ def paths_from_temporal_network_dag(tempnet, delta=1, max_subpath_length=None):
     -------
     Paths
 
+    Examples
+    ...
+    ---------
+
     """
     dag, node_map = DAG.from_temporal_network(tempnet, delta)
-    return paths_from_dag(dag, node_map, max_subpath_length=max_subpath_length, repetitions=False)
+    return paths_from_dag(dag, node_map, max_subpath_length=max_subpath_length)

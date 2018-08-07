@@ -567,7 +567,6 @@ class Network:
         """
         summary_fmt = (
             '{directed_str} network\n'
-            '\n'
             'Nodes:\t\t\t\t{ncount}\n'
             'Links:\t\t\t\t{ecount}\n'
         )
@@ -582,84 +581,13 @@ class Network:
         """Returns the default string representation of this graphical model instance"""
         return self.summary()
 
-    def _to_html(self, width=800, height=800, clusters=None, sizes=None, template_file=None, **kwargs):
-        import json
-        import os
-        from string import Template
-
-        # prefix nodes starting with number
-        def fix_node_name(v):
-            if v[0].isdigit():
-                return "n_" + v
-            return v
-
-        network_data = {
-            'links': [
-                {'source': fix_node_name(e[0]),
-                 'target': fix_node_name(e[1]),
-                 'value': 1} for e in self.edges.keys()
-            ]
-        }
-
-        def get_cluster(v):
-            if clusters == None or v not in clusters:
-                return 'None'
-            else:
-                return clusters[v]
-
-        def get_size(v):
-            if sizes == None or v not in sizes:
-                return 6
-            else:
-                return sizes[v]
-
-        network_data['nodes'] = [{'id': fix_node_name(v), 'group': get_cluster(v), 'size': get_size(v)} for v in self.nodes]
-
-        import string
-        import random
-
-        div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
-
-        if template_file is None:
-            module_dir = os.path.dirname(os.path.realpath(__file__))
-            html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')
-            template_file = os.path.join(html_dir, 'network.html')
-
-        with open(template_file) as f:
-            html_str = f.read()
-
-        if self.directed:
-            directedness = 'true'
-        else:
-            directedness = 'false'
-
-        default_args = {
-            'network_data': json.dumps(network_data),
-            'directed' : directedness,
-            'width': width,
-            'height': height,
-            'div_id': div_id
-        }
-
-        # replace all placeholders in template
-        html = Template(html_str).substitute({**default_args, **kwargs})
-
-        return html
-
-
     def _repr_html_(self, clusters=None, sizes=None, template_file=None, **kwargs):
         """
         display an interactive D3 visualisation of the higher-order network in jupyter
         """
         from IPython.core.display import display, HTML
-        display(HTML(self._to_html(clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)))
-
-
-    def write_html(self, filename, width=800, height=800, clusters=None, sizes=None, template_file=None, **kwargs):
-        html = self._to_html(width=width, height=height, clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)
-        with open(filename, 'w+') as f:
-            f.write(html)
-
+        from pathpy.visualisation.html_export import generate_html
+        display(HTML(generate_html(self, clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)))
 
 def network_from_networkx(graph):
     """method to load a networkx graph into a pathpy.Network instance
