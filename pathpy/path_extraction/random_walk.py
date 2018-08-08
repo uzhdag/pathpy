@@ -65,4 +65,3 @@ def random_walk(network, l, n=1):
                 break
         p.add_path_tuple(path)
     return p
-

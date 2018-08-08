@@ -21,6 +21,7 @@
 
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
+from collections import defaultdict
 
 from pathpy import Paths
 from pathpy.utils import Log
@@ -28,13 +29,41 @@ from pathpy.algorithms.shortest_paths import shortest_paths
 
 import numpy as np
 
+def read_origin_destination(filename, separator=','):
+    """Reads origin/destination statistics from a csv file
+    with the following structure:
 
-__all__ = ["paths_from_origin_destination", "read_origin_destination"]
+    origin1,destination1,weight
+    origin2,destination2,weight
+    origin3,destination3,weight
 
+    Parameters
+    ----------
+    filename: str
+        path to the file containing the origin/destination statistics
+    separator: str
+        arbitrary separation character (default: ',')
+
+    Returns
+    -------
+    list
+    """
+    origin_destination_list = []
+    Log.add('Reading origin/destination statistics from file ...')
+
+    with open(filename, 'r') as f:
+        line = f.readline()
+        while line:
+            fields = line.rstrip().split(separator)
+            origin_destination_list.append((fields[0].strip(), fields[1].strip(), float(fields[2].strip())))
+            line = f.readline()
+    Log.add('Finished.')
+
+    return origin_destination_list
 
 def paths_from_origin_destination(origin_destination_list, network,
                                   distribute_weight=True):
-    """extracts shortest path statistics based on origin/destination data.
+    """Extracts shortest path statistics based on origin/destination data.
     Such data capture the statistics of the origin (i.e. the start node) and destination
     (i.e. the target) node of itineraries in a given network.
 
@@ -49,13 +78,16 @@ def paths_from_origin_destination(origin_destination_list, network,
     Parameters
     ----------
     origin_destination_list: list
-        a list of tuples (o, d, w) containing the origin (o), destination (d),
-        and float weight (w) of paths.
+        A list of tuples (o, d, w) containing the origin (o), destination (d),
+        and (possibly float) weight w of paths.
     network:
-        the network topology for which shortest paths will be calculated. Names of nodes
+        The network topology for which shortest paths will be calculated. Names of nodes
         in the network must match the node names used in the origin destination list.
     distribute_weight: bool
-
+        If set to True, the weight of an origin-destination pair will be equally distributed 
+        (in terms of whole integer observations) across multiple shortest paths between the 
+        origin and destination. If False, the weight will be assigned to a randomly chosen
+        shortest path. Default is True.
 
     Returns
     -------
@@ -67,7 +99,6 @@ def paths_from_origin_destination(origin_destination_list, network,
     all_paths = shortest_paths(network)
 
     paths = Paths()
-
     # OD is a list of tuples of the form (origin_node, destination_node, weight)
     # that indicates that the shortest path from origin_node to destination_node was
     # observed weight times
@@ -92,35 +123,33 @@ def paths_from_origin_destination(origin_destination_list, network,
     return paths
 
 
-def read_origin_destination(filename, separator=','):
-    """Helper function to read origin/destination statistics from a csv file.
-    The file is assumed to have the following structure:
-
-    origin1,destination1,weight
-    origin2,destination2,weight
-    origin3,destination3,weight
+def paths_to_origin_destination(paths):
+    """
+    Returns a list that contains path frequencies between all 
+    origin destination pairs in a path object. The result can e.g. be used to 
+    create shortest path models that preserve the origin-destination statistics in real 
+    path data.
 
     Parameters
     ----------
-    filename: str
-        the path to the file from which to reach origin/destination statistics
-    separator: str
-        arbitrary separation character (default: ',')
-
+    paths: Paths
+        collection of weighted paths based on which origin destination
+        statistics shall be computed
+    
     Returns
     -------
-    list
+    list of tuples (o, d, w) where o is origin, d is destination, and w is the weight
     """
-    origin_destination_list = []
-    Log.add('Reading origin/destination statistics from file ...')
+    od_stats = defaultdict(lambda: 0.0)
 
-    with open(filename, 'r') as f:
-        line = f.readline()
-        while line:
-            fields = line.rstrip().split(separator)
-            origin_destination_list.append((fields[0].strip(), fields[1].strip(), float(fields[2].strip())))
-            line = f.readline()
-    Log.add('Finished.')
-
-    return origin_destination_list
-
+    Log.add('Calculating origin/destination statistics from paths ...')
+    # iterate through all paths and create path statistics
+    for x in paths.paths:
+        for p in paths.paths[x]:
+            o = p[0]
+            d = p[-1]
+            if paths.paths[x][p][1] > 0:
+                od_stats[o, d] += paths.paths[x][p][1]
+    od_list = [ (od[0], od[1], f) for od, f in od_stats.items()]
+    Log.add('finished.')
+    return od_list

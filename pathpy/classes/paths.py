@@ -675,7 +675,7 @@ class Paths:
         Returns
         -------
         list
-        
+
         """
 
         contained_paths = []
