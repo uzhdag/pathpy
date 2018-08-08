@@ -1,3 +1,7 @@
+"""
+Spectral and information-theoretic measures that can be calculated 
+based on higher-order models of paths.
+"""
 # -*- coding: utf-8 -*-
 
 #    pathpy is an OpenSource python package for the analysis of time series data

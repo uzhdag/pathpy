@@ -1,8 +1,6 @@
 import pathpy as pp
 import pytest
 
-from pathpy import spectral
-
 
 # absolute eigenvalue difference tolerance
 EIGEN_ABS_TOL = 1e-2
@@ -18,7 +16,7 @@ def test_eigen_value_gap(random_paths, k, sub, e_gap):
     p = random_paths(200, 0, 40)
     hon = pp.HigherOrderNetwork(p, k=k)
     np.random.seed(0)
-    eigen_gap = spectral.eigenvalue_gap(hon, include_sub_paths=sub, lanczos_vectors=90)
+    eigen_gap = pp.algorithms.spectral.eigenvalue_gap(hon, include_sub_paths=sub, lanczos_vectors=90)
     assert eigen_gap
 
 
@@ -32,7 +30,7 @@ def test_fiedler_vector_sparse(random_paths, k, norm, e_sum, e_var):
     import numpy as np
     p = random_paths(90, 0, 20)
     hon = pp.HigherOrderNetwork(p, k=k)
-    fv = spectral.fiedler_vector_sparse(hon, normalized=norm)
+    fv = pp.algorithms.spectral.fiedler_vector_sparse(hon, normalized=norm)
     assert fv.var() == pytest.approx(e_var, abs=EIGEN_ABS_TOL)
     assert np.sum(fv) == pytest.approx(e_sum, abs=EIGEN_ABS_TOL)
 
@@ -47,7 +45,7 @@ def test_fiedler_vector_dense(random_paths, k, e_sum, e_var):
     import numpy as np
     p = random_paths(90, 0, 20)
     hon = pp.HigherOrderNetwork(p, k=k)
-    fv = spectral.fiedler_vector_dense(hon)
+    fv = pp.algorithms.spectral.fiedler_vector_dense(hon)
     assert fv.var() == pytest.approx(e_var, abs=EIGEN_ABS_TOL)
     assert np.sum(fv) == pytest.approx(e_sum, abs=EIGEN_ABS_TOL)
 
@@ -62,5 +60,5 @@ def test_algebraic_connectivity(random_paths, k, e_sum):
     import pathpy
     p = random_paths(120, 0, 40)
     hon = pp.HigherOrderNetwork(p, k=k)
-    ac = spectral.algebraic_connectivity(hon, lanczos_vectors=60, maxiter=40)
+    ac = pp.algorithms.spectral.algebraic_connectivity(hon, lanczos_vectors=60, maxiter=40)
     assert ac == pytest.approx(e_sum, rel=1e-7)

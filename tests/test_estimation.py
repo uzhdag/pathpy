@@ -9,7 +9,6 @@ Created on Fri Feb 20 11:59:22 2015
 import pathpy as pp
 import numpy as _np
 import pytest
-import pathpy.algorithms.shortest_paths as shortest_paths
 # mark to be used as decorator on slow functions such that they are only run
 # when explicitly called with `$ pytest --runslow`
 slow = pytest.mark.slow
@@ -70,7 +69,7 @@ def test_betweenness_preference_empty():
     paths = pp.path_extraction.paths_from_temporal_network(t, delta=3)
     assert len(paths.nodes) == 0
 
-    betweenness_pref = pp.path_measures.betweenness_preference(paths, 'e', method='MLE')
+    betweenness_pref = pp.algorithms.path_measures.betweenness_preference(paths, 'e', method='MLE')
     expected = 0.0
     assert betweenness_pref == pytest.approx(expected)
 
@@ -80,7 +79,7 @@ def test_betweenness_preference_mle(temporal_network_object):
 
     # Extract (time-respecting) paths
     p = pp.path_extraction.paths_from_temporal_network(t, delta=1)
-    betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', method='MLE')
+    betweenness_pref = pp.algorithms.path_measures.betweenness_preference(p, 'e', method='MLE')
     expected = 1.2954618442383219
     assert betweenness_pref == pytest.approx(expected)
 
@@ -89,7 +88,7 @@ def test_betweenness_preference_miller(temporal_network_object):
     t = temporal_network_object
     p = pp.path_extraction.paths_from_temporal_network(t, delta=1)
 
-    betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', method='Miller')
+    betweenness_pref = pp.algorithms.path_measures.betweenness_preference(p, 'e', method='Miller')
     expected = 0.99546184423832196
     assert betweenness_pref == pytest.approx(expected)
 
@@ -98,14 +97,14 @@ def test_betweenness_preference_normalized(temporal_network_object):
     t = temporal_network_object
     p = pp.path_extraction.paths_from_temporal_network(t, delta=1)
     # test normalize
-    betweenness_pref = pp.path_measures.betweenness_preference(p, 'e', normalized=True)
+    betweenness_pref = pp.algorithms.path_measures.betweenness_preference(p, 'e', normalized=True)
     expected_norm = 1
     assert betweenness_pref == pytest.approx(expected_norm)
 
 
 def test_slow_down_factor_random(random_paths):
     paths = random_paths(90, 90)
-    slow_down_factor = pp.path_measures.slow_down_factor(paths)
+    slow_down_factor = pp.algorithms.path_measures.slow_down_factor(paths)
     expected = 4.05
     assert slow_down_factor == pytest.approx(expected, rel=1e-2), \
         "Got slowdown factor %f but expected %f +- 1e-2" % (slow_down_factor, expected)
@@ -113,7 +112,7 @@ def test_slow_down_factor_random(random_paths):
 
 def test_get_distance_matrix_temporal(temporal_network_object):
     p = pp.path_extraction.paths_from_temporal_network(temporal_network_object)
-    shortest_paths_dict = shortest_paths.distance_matrix(p)
+    shortest_paths_dict = pp.algorithms.shortest_paths.distance_matrix(p)
 
     path_distances = dict()
     for k in shortest_paths_dict:
@@ -145,13 +144,13 @@ def test_get_distance_matrix_temporal(temporal_network_object):
 
 def test_get_distance_matrix_empty():
     p = pp.Paths()
-    shortest_paths_dict = shortest_paths.distance_matrix(p)
+    shortest_paths_dict = pp.algorithms.shortest_paths.distance_matrix(p)
     assert len(shortest_paths_dict) == 0
 
 @slow
 def test_entropy_growth_rate_ratio_mle(random_paths):
     p = random_paths(100, 500)
-    mle_ratio = pp.path_measures.entropy_growth_rate_ratio(p, method="MLE")
+    mle_ratio = pp.algorithms.path_measures.entropy_growth_rate_ratio(p, method="MLE")
     mle_expected = 0.10515408343772015
     assert mle_ratio == pytest.approx(mle_expected)
 
@@ -159,6 +158,6 @@ def test_entropy_growth_rate_ratio_mle(random_paths):
 @slow
 def test_entropy_growth_rate_ratio_miller(random_paths):
     p = random_paths(100, 500)
-    miller_ratio = pp.path_measures.entropy_growth_rate_ratio(p, method="Miller")
+    miller_ratio = pp.algorithms.path_measures.entropy_growth_rate_ratio(p, method="Miller")
     miller_expected = 0.88685603746914599
     assert miller_ratio == pytest.approx(miller_expected)

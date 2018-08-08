@@ -1,3 +1,7 @@
+"""
+Implementations of centrality measures for networks, higher-order networks and paths
+"""
+
 from functools import singledispatch
 from collections import defaultdict
 import operator

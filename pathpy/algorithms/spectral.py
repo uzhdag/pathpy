@@ -1,3 +1,6 @@
+"""
+Collection of first- and higher-order spectral measures.
+"""
 # -*- coding: utf-8 -*-
 
 #    pathpy is an OpenSource python package for the analysis of time series data
@@ -22,13 +25,6 @@
 
 #    E-mail: ischoltes@ethz.ch
 #    Web:    http://www.ingoscholtes.net
-"""
-This class can be used to calculate path statistics based on
-origin-destination data available for a known network topology.
-The path statistics generated from such data will be based on
-the assumption that each observed path from an origin to a destination
-node follows a shortest path in the network topology.
-"""
 from collections import defaultdict
 import operator
 

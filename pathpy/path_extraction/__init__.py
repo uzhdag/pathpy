@@ -1,4 +1,7 @@
-"""provides methods to generate path statistics based on origin destination data, temporal networks, or random walks in a network"""
+"""
+Provides methods to generate path statistics based on origin destination statistics,
+directed acyclic graphs, temporal networks, or random walks in a network.
+"""
 from .dag_paths import paths_from_dag
 
 from .temporal_paths import paths_from_temporal_network

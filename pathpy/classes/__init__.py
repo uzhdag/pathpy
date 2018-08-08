@@ -1,3 +1,7 @@
+"""
+An internal module that groups basic classes of pathpy. Please use top-level namespace instead.
+"""
+
 from .paths import Paths
 from .dag import DAG
 from .network import Network

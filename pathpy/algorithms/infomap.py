@@ -1,3 +1,6 @@
+"""
+Implementation of the flow compression algorithm InfoMap
+"""
 # -*- coding: utf-8 -*-
 
 #    pathpy is an OpenSource python package for the analysis of time series data

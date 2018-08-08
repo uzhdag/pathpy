@@ -1,3 +1,7 @@
+"""
+Algorithms to calculate connected components in networks.
+"""
+
 # -*- coding: utf-8 -*-
 
 #    pathpy is an OpenSource python package for the analysis of time series data

@@ -35,8 +35,9 @@ np.seterr(all='warn')
 
 
 class MultiOrderModel:
-    """A hierarchy of higher-order networks which jointly represent
-        a multi-order model for path statistics.
+    """
+    A hierarchy of higher-order networks which jointly represent
+    a multi-order model for path statistics.
 
     Attributes
     ----------

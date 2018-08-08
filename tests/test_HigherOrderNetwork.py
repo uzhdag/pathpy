@@ -230,4 +230,4 @@ def test_d3_html(random_paths, tmpdir):
     file_path = str(tmpdir.mkdir("sub").join("d3_hon.html"))
     p = random_paths(50, 10, 20)
     hon = pp.HigherOrderNetwork(p, k=3)
-    hon.write_html(file_path)
+    pp.visualisation.export_html(hon, file_path)

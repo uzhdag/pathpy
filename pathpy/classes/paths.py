@@ -34,13 +34,11 @@ from pathpy.utils.default_containers import zero_array_default as _zero_array_de
 
 class Paths:
     """
-    Instances of this class represent path statistics
-    which can be analyzed using higher- and multi-order network
-    models. The origin of the path statistics can be (i) n-gram
-    files which provide us with a list of paths in terms of n-grams
-    of varying lengths, or (ii) a temporal network instance which
-    provides us with a set of time-respecting paths based on a
-    given maximum time difference delta.
+    Path statistics that can be analyzed using higher- and multi-order network
+    models. This object can be read from sequence data, or it can be generated
+    from random walks, directed acyclic graphs, time-stamped network data, 
+    origin/destination statistics, etc. via the functions provided in the submodule 
+    path_extraction.
     """
 
     def __init__(self, separator=','):

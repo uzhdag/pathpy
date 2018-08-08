@@ -86,7 +86,7 @@ def test_temporal_summary(temporal_network_object):
 def test_export_tikz_unfolded_network(temporal_network_object, tmpdir):
     t = temporal_network_object  # type: pp.TemporalNetwork
     file_path = str(tmpdir.mkdir("sub").join("multi_order_state"))
-    t.write_tikz(file_path)
+    pp.visualisation.export_tikz(t, file_path)
 
 
 def test_from_sqlite_int(test_data_directory, ):
@@ -121,7 +121,7 @@ def test_from_sqlite_timestamps(test_data_directory, ):
 def test_write_html(temporal_network_object, tmpdir):
     file_path = str(tmpdir.mkdir("sub").join("d3_temp.html"))
     t = temporal_network_object
-    t.write_html(file_path)
+    pp.visualisation.export_html(t, file_path)
 
 
 @mark.latex

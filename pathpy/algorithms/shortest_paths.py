@@ -1,3 +1,6 @@
+"""
+Algorithms to calculate shortest paths and distances in higher-order networks and paths.
+"""
 # -*- coding: utf-8 -*-
 
 #    pathpy is an OpenSource python package for the analysis of time series data

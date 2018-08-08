@@ -32,9 +32,11 @@ np.seterr(all='warn')
 
 
 class MarkovSequence:
-    """ Instances of this class can be used to fit
-        standard higher-order Markov models for
-        sequences generated from concatenated paths """
+    """
+    A class that can be used to fit
+    higher-order Markov chain models for
+    sequences generated from concatenated paths
+    """
 
     def __init__(self, sequence):
         """

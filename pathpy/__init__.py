@@ -1,20 +1,23 @@
-﻿"""base module of pathpy"""
+﻿"""
+An OpenSource python package to analyze and 
+visualize time series data on complex networks.
+"""
 
 __author__ = """Ingo Scholtes"""
 __email__ = 'scholtes@ifi.uzh.ch'
 __version__ = '2.0.0'
 
 from .classes import *
-from .path_extraction import *
-from .visualisation import *
-import pathpy.utils
+import pathpy.path_extraction
+import pathpy.visualisation
+import pathpy.algorithms.centralities
+import pathpy.algorithms.components
+import pathpy.algorithms.shortest_paths
+import pathpy.algorithms.centralities
+import pathpy.algorithms.spectral
+import pathpy.algorithms.path_measures
 
-from .algorithms import centralities
-from .algorithms import shortest_paths
-from .algorithms import path_measures
-from .algorithms import components
-from .algorithms import infomap
-from .algorithms import spectral
+import pathpy.utils
 
 global ENABLE_MULTICORE_SUPPORT
 ENABLE_MULTICORE_SUPPORT = False

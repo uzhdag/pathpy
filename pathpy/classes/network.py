@@ -35,7 +35,9 @@ from pathpy.utils.exceptions import PathpyError, PathpyNotImplemented
 
 class Network:
     """
-    A graph or network that can be directed, undirected, unweighted or weighted.
+    A graph or network that can be directed, undirected, unweighted or weighted
+    and whose edges can contain arbitrary attributes. This is the base class for 
+    HigherOrderNetwork.
 
     Attributes:
     -----------

@@ -1,6 +1,3 @@
-
-__all__ = ["svg_to_pdf", 'svg_to_png']
-
 def svg_to_pdf(svg_file, output_file):
     # uses svglib to render a SVG to PDF
     from svglib.svglib import svg2rlg

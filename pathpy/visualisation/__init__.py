@@ -10,3 +10,6 @@ from .html import export_html
 from .html import plot
 
 from .tikz import export_tikz
+
+from .pdf import svg_to_pdf
+from .pdf import svg_to_png
