@@ -577,9 +577,6 @@ class TemporalNetwork:
         t.nodes = self.nodes
         return t
 
-    def _repr_html_(self, width=800, height=800, msperframe=50, tsperframe=20, radius=6,
-                    template_file=None, **kwargs):
-        from IPython.core.display import display, HTML
-        from pathpy.visualisation.html_export import generate_html
-        display(HTML(generate_html(self, width, height, msperframe, tsperframe=tsperframe, radius=radius,
-            template_file=template_file, **kwargs)))
+    def _repr_html_(self):
+        from pathpy.visualisation.html import plot
+        plot(self)

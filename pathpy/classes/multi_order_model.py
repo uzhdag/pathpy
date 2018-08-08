@@ -35,12 +35,19 @@ np.seterr(all='warn')
 
 
 class MultiOrderModel:
-    """Instances of this class represent a hierarchy of
-        higher-order networks which collectively represent
-        a multi-order model for path statistics. """
+    """A hierarchy of higher-order networks which jointly represent
+        a multi-order model for path statistics.
+
+    Attributes
+    ----------
+    paths: Paths
+        The Paths instance that this multi-order model was generated from.
+    layers: dict
+        A dictionary where layers[k] contains the higher-order model with order k
+    """
 
     def __init__(self, paths, max_order=1):
-        """Generates a hierarchy of higher-order models for the given path statistics,
+        """Generates a hierarchy of higher-order models for the given path statistics
         up to a given maximum order
 
         Parameters
@@ -57,8 +64,8 @@ class MultiOrderModel:
         # the paths object from which this multi-order model was created
         self.paths = paths
 
-        # A dictionary containing the layers of HigherOrderNetworks, where
-        # layers[k] contains the network of order k
+        """A dictionary containing the layers of HigherOrderNetworks, where
+        # layers[k] contains the network of order k"""
         self.layers = {}
         
         # a dictionary of transition matrices for all layers of the model
@@ -68,7 +75,7 @@ class MultiOrderModel:
 
     @property
     def max_order(self):
-        """the current maximum order of the multi-order model"""
+        """The current maximum order of the multi-order model"""
         orders = list(self.layers.keys())
         if not orders:
             return None
@@ -119,7 +126,7 @@ class MultiOrderModel:
         Log.add('finished.')
 
     def add_layers(self, max_order):
-        """Add higher order layers
+        """Add higher-order layers up to the given maximum order.
 
         Parameters
         ----------
@@ -145,8 +152,8 @@ class MultiOrderModel:
 
     def summary(self):
         """
-        Returns a string containing basic summary information
-        of this multi-order model instance.
+        Returns a string containing summary information
+        on a multi-order model.
         """
         summary_fmt = (
             "Multi-order model (max. order = {order}, "
@@ -320,13 +327,15 @@ class MultiOrderModel:
     @staticmethod
     def factorial(n, log=True):  # pragma: no cover
         """
+        Calculates the factorial of n, automatically switching to 
+        Stirling's approaximation for n>20.
 
         Parameters
         ----------
         n: int
-            computes factorial of n
+            The value n for which the fatorial should be calculated.
         log: bool
-            whether or not to return the (natural) logarithm of the factorial
+            Whether or not to return the (natural) logarithm of the factorial. Default is True.
 
         Returns
         -------
@@ -429,7 +438,7 @@ class MultiOrderModel:
             return np.exp(likelihood), n
 
     def path_likelihood(self, path, freq=1, layer=1, log=True, index_maps=None):
-        """compute the path likelihood for a single path based on the observed transitions
+        """Computes the model likelihood given a single path.
 
         Parameters
         ----------

@@ -51,7 +51,7 @@ def remove_repetitions(path):
     return tuple(p[0] for p in it.groupby(path))
 
 
-def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',', repetitions=True):
+def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',', repetitions=True, unique=False):
     """ Calculates path statistics in a directed acyclic graph.
     For this, all paths between all roots (nodes with indegree zero)
     and all leafs (nodes with outdegree zero) will be constructed.
@@ -72,6 +72,18 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
         longest path of any length will be considered in the likelihood calculation!
     separator: str
         separator to use to separate nodes in the generated Paths object
+    repetitions: bool
+        whether or not to remove repeated nodes in the paths. If this is set to true,
+        a path in the DAG mapping to a,a,b,b,c,c,d will be turned into a,b,c,d
+    unique: bool
+        whether or not multiple identical mapped paths should be counted separately. For
+        DAG representations of temporal networks with delta>1, where nodes are temporal copies,
+        we do not want to count multiple paths from the same root that pass through different
+        temporal copies of the same physical node. For instance with delta=2, time-stamped edges
+        (a,b;1), (b,c;3) are transformed into a DAG a1->b2, a1->b3, b3->c4. With the mapping to
+        physical nodes we would find two different paths a->b->c of length two, which only differ
+        in terms of WHEN they arrive in node c
+
 
     Returns
     -------
@@ -105,7 +117,9 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
         if not ONE_TO_MANY:
             for s in dag.roots:
                 extracted_paths = dag.routes_from_node(s, node_mapping)
-                for path in extracted_paths:   # add detected paths to paths object
+                if unique:
+                    extracted_paths = set(tuple(x) for x in extracted_paths)
+                for path in extracted_paths:   # add detected paths to paths object                    
                     if repetitions:
                         p.add_path_tuple(path, expand_subpaths=False, frequency=(0, 1))
                     else:

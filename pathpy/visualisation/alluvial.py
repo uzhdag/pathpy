@@ -15,7 +15,7 @@
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #    Contact the developer:
 
@@ -30,10 +30,11 @@ import collections as _co
 
 import numpy as _np
 
-__all__ = ["show_flow", "write_html_flow", "diffusion_to_flow_net", "diffusion_to_flow_net", "diffusion_to_html", "write_html_diffusion"]
-
-def _flow_net(paths, focal_node, self_loops=True):
-
+def generate_flow_net(paths, focal_node, self_loops=True):
+    """
+    Generates a directed weighted network with flow values
+    based on path statistics.
+    """
     n = Network(directed=True)
 
     # consider all (sub-)paths of length two 
@@ -67,7 +68,11 @@ def _flow_net(paths, focal_node, self_loops=True):
     return n
 
 
-def _flow_net_markov(network, focal_node, self_loops=True):
+def generate_flow_net_markov(network, focal_node, self_loops=True):
+    """
+    Generates a directed and weighted network with flow values based 
+    on a network and an assumption of Markov flows.
+    """
     n = Network(directed=True)
 
     out_weight = _np.sum(network.nodes[focal_node]['outweight'])
@@ -87,8 +92,7 @@ def _flow_net_markov(network, focal_node, self_loops=True):
                 n.add_edge(mem, tgt, weight=w_2)
     return n
 
-
-def _to_html(paths, focal_node, self_loops=True, markov=False, width=600, height=600, template_file=None):
+def generate_html(paths, focal_node, self_loops=True, markov=False, width=600, height=600, template_file=None):
     import json
     import os
     from string import Template
@@ -98,9 +102,9 @@ def _to_html(paths, focal_node, self_loops=True, markov=False, width=600, height
 
     if markov:
         g1 = HigherOrderNetwork(paths, k=1)
-        n = _flow_net_markov(g1, focal_node=focal_node, self_loops=self_loops)
+        n = generate_flow_net_markov(g1, focal_node=focal_node, self_loops=self_loops)
     else:
-        n = _flow_net(paths, focal_node, self_loops=self_loops)
+        n = generate_flow_net(paths, focal_node, self_loops=self_loops)
 
     
     node_idx = {}
@@ -118,7 +122,7 @@ def _to_html(paths, focal_node, self_loops=True, markov=False, width=600, height
 
     if template_file is None:
         module_dir = os.path.dirname(os.path.realpath(__file__))
-        html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')            
+        html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')            
         template_file = os.path.join(html_dir, 'alluvial_node.html') 
 
     with open(template_file) as f:
@@ -137,13 +141,13 @@ def _to_html(paths, focal_node, self_loops=True, markov=False, width=600, height
 
 
 def write_html_flow(paths, focal_node, filename, markov=False, self_loops=True, width=600, height=600, template_file=None):
-    html = _to_html(paths, focal_node, self_loops, markov, width, height, template_file)
+    html = generate_html(paths, focal_node, self_loops, markov, width, height, template_file)
     with open(filename, 'w+') as f:
         f.write(html)
 
 
 def show_flow(paths, focal_node, markov=False, self_loops=True, width=600, height=600):
-    html = _to_html(paths, focal_node, self_loops, markov, width, height)
+    html = generate_html(paths, focal_node, self_loops, markov, width, height)
     from IPython.core.display import display, HTML
     display(HTML(html))
 
@@ -222,7 +226,7 @@ def diffusion_to_html(paths, markov=True, initial_node=None, steps=5, width=600,
 
     if template_file is None:
         module_dir = os.path.dirname(os.path.realpath(__file__))
-        html_dir = os.path.join(module_dir, os.path.pardir, 'html_templates')            
+        html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
         template_file = os.path.join(html_dir, 'alluvial_diffusion.html') 
 
     with open(template_file) as f:

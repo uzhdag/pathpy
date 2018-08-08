@@ -28,10 +28,9 @@ import numpy as _np
 from pathpy.classes.network import Network
 from pathpy.classes.temporal_network import TemporalNetwork
 
-__all__ = ["write_tikz"]
 
 @singledispatch
-def write_tikz(tempnet, filename, dag=True, angle=20, layer_dist='0.3cm',
+def export_tikz(tempnet, filename, dag=True, angle=20, layer_dist='0.3cm',
                    split_directions=True):
         """Generates a tex file that can be compiled to a time-unfolded representation of
          the temporal network.

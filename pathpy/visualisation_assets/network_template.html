@@ -1,8 +1,6 @@
 <style>
     .links line {
-    stroke: #aaa;
     stroke-opacity: 0.7;
-    stroke-width: .5px;
     }
     .arrows svg:path {
         stroke: #666;
@@ -18,25 +16,40 @@
         id='${div_id}_svg_txt'>[save svg]</text>
 </svg>
 
-<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+<script charset="utf-8" src="$d3js_path"></script>
 <script charset="utf-8">
-// the following code ensures that the visualisation works
-// both standalone as well as in jupyter notebook 
-// (which uses requireJS)
-/* try {
+
+// Load via requireJS if available (jupyter notebook environment)
+try {
+    // Problem: require.config will raise an exception when called for the second time 
     require.config({
         paths: {
             d3: "https://d3js.org/d3.v4.min"
         }
     });
+    console.log("Detected requireJS");
 }
-catch(err) {
-    console.log('no requireJS found');
-    // define fake require function    
-    function require(x, func){ func(d3); }
-} */
+catch(err){
+    // a reference error indicates that requireJS does not exist. 
+    // other errors may occur due to multiple calls to config
+    if (err instanceof ReferenceError){
+        console.log("Detected no requireJS");
 
-// require(["d3"], function(d3) {
+        // Helper function that waits for d3js to be loaded
+        require = function require(symbols, callback) {
+            var ms = 5;
+            window.setTimeout(function(t) {
+                if (window[symbols[0]])
+                    callback(window[symbols[0]]);
+                else 
+                    window.setTimeout(arguments.callee, ms);
+            }, ms);
+        }
+    }
+}
+
+// wait until d3js has been loaded
+require(["d3"], function(d3) {
     var svg = d3.select("#"+"$div_id"),
         radius = 6,
         width = +svg.attr("width"),
@@ -45,7 +58,7 @@ catch(err) {
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var graph = $network_data;
-    var directed = $directed;
+    var directed = $edge_arrows;
 
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
@@ -76,9 +89,9 @@ catch(err) {
         .attr("class", "links")
         .selectAll("line")
         .data(graph.links)
-        .enter().append("line");
-        //.attr("stroke-width", 1)
-        //.attr("stroke", '#999');
+        .enter().append("line")
+        .attr("stroke-width", function(d) { return d.width; })
+        .attr("stroke", function(d) { return d.color; } );
 
     if (directed)
         link.attr("marker-end", "url(#end)");
@@ -89,7 +102,7 @@ catch(err) {
         .data(graph.nodes)
         .enter().append("circle")
         .attr("r", function(d) { return d.size; })
-        .attr("fill", function(d) { return color(d.group); })
+        .attr("fill", function(d) { return d.color; })
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -166,5 +179,5 @@ catch(err) {
             document.body.removeChild(elem);
         }
     }
-// });
+});
 </script>

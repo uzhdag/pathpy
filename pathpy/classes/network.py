@@ -35,8 +35,15 @@ from pathpy.utils.exceptions import PathpyError, PathpyNotImplemented
 
 class Network:
     """
-    Instances of this class capture a graph or network
-    that can be directed, undirected, unweighted or weighted
+    A graph or network that can be directed, undirected, unweighted or weighted.
+
+    Attributes:
+    -----------
+
+    nodes: list
+        A list of (string) nodes.
+    edges: dictionary
+        A dictionary containing edges (as tuple-valued keys) and their attributes (as value)
     """
 
     def __init__(self, directed=False):
@@ -91,7 +98,7 @@ class Network:
 
         Returns
         -------
-        Network
+        Network:
             a ``Network`` object obtained from the edgelist
         """
         net = cls(directed)
@@ -121,16 +128,14 @@ class Network:
 
     @classmethod
     def from_sqlite(cls, cursor, directed=True):
-        """Reads links from an SQLite cursor and returns a new instance of
-        the class Network. The cursor is assumed to refer to a table that
-        minimally has two columns
+        """Returns a new Network instance generated from links obtained 
+        from an SQLite cursor. The cursor must refer to a table with at least
+        two columns
 
                 source target
 
-        and where each row refers to a link. Any additional columns will be used as
-        edge properties
-
-        Important: Since columns are accessed by name this function requires that a
+        in which each row contains one link. Additional columns will be used as
+        named edge properties. Since columns are accessed by name this function requires that a
         row factory object is set for the SQLite connection prior to cursor creation,
         i.e. you should set
 
@@ -139,11 +144,14 @@ class Network:
         Parameters
         ----------
         cursor:
-            The SQLite cursor to fetch rows
+            The SQLite cursor to fetch rows from. 
         directed: bool
+            Whether or not links should be interpreted as directed. Default is True.
 
         Returns
         -------
+        Network:
+            A Network instance created from the SQLite database.
 
         """
         n = cls(directed=directed)
@@ -581,13 +589,13 @@ class Network:
         """Returns the default string representation of this graphical model instance"""
         return self.summary()
 
-    def _repr_html_(self, clusters=None, sizes=None, template_file=None, **kwargs):
+    def _repr_html_(self):
         """
         display an interactive D3 visualisation of the higher-order network in jupyter
         """
-        from IPython.core.display import display, HTML
-        from pathpy.visualisation.html_export import generate_html
-        display(HTML(generate_html(self, clusters=clusters, sizes=sizes, template_file=template_file, **kwargs)))
+        from pathpy.visualisation.html import plot
+        plot(self)
+
 
 def network_from_networkx(graph):
     """method to load a networkx graph into a pathpy.Network instance

@@ -32,10 +32,22 @@ from pathpy.classes.network import Network
 
 class HigherOrderNetwork(Network):
     """
-    Instances of this class capture a k-th-order representation
-    of path statistics. Path statistics can originate from pathway
-    data, temporal networks, or from processes observed on top
-    of a network topology.
+    A higher-order graphical model of path statistics with order k.
+
+    Attributes:
+    -----------
+
+    edges: dict
+        In a higher-order network, edge weights as well as in- and out
+        weights of nodes are numpy arrays consisting of two weight components [w0, w1].
+        w0 counts the weight of an edge based on its occurrence in a subpaths
+        while w1 counts the weight of an edge based on its occurrence in
+        a longest path. As an illustrating example, consider the single
+        path a -> b -> c. In the first-order network, the weights of edges
+        # (a,b) and (b,c) are both (1,0). In the second-order network, the
+        weight of edge (a-b, b-c) is (0,1).
+        Here, we will store these weights (as well as in- and out-degrees in
+        node and edge attributes)
     """
 
     def __init__(self, paths, k=1, null_model=False, separator=None):
@@ -83,18 +95,7 @@ class HigherOrderNetwork(Network):
         if separator is None:
             self.separator = paths.separator
         else:
-            self.separator = separator
-
-        # NOTE: In a higher-order network, edge weights as well as in- and out
-        # weights of nodes are numpy arrays consisting of two weight components [w0, w1].
-        # w0 counts the weight of an edge based on its occurrence in a subpaths
-        # while w1 counts the weight of an edge based on its occurrence in
-        # a longest path. As an illustrating example, consider the single
-        # path a -> b -> c. In the first-order network, the weights of edges
-        # (a,b) and (b,c) are both (1,0). In the second-order network, the
-        # weight of edge (a-b, b-c) is (0,1).
-        # Here, we will store these weights (as well as in- and out-degrees in
-        # node and edge attributes)
+            self.separator = separator       
 
         if k > 1:
             # For k>1 we need the first-order network to generate the null model

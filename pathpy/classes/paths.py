@@ -384,19 +384,9 @@ class Paths:
     def read_file(cls, filename, separator=',', frequency=False, maxlines=sys.maxsize,
                   max_ngram_length=sys.maxsize, expand_sub_paths=True,
                   max_subpath_length=sys.maxsize):
-        """Read path data in ngram format.
-
-        Reads path data from a file containing multiple lines of n-grams of the form
-        ``a,b,c,d,frequency`` (where frequency is optional).
-        The default separating character ',' can be changed. Each n-gram will be
-        interpreted as a path of
-        length n-1, i.e. bigrams a,b are considered as path of length one, trigrams a,
-        b,c as path of length two, etc. In order to calculate the statistics of paths
-        of any length, by default all subpaths of length k < n-1 contained in an n-gram
-        will be considered. I.e. for n=4 the four-gram a,b,c,d will be considered as a
-        single (longest) path of length n-1 = 3 and three subpaths a->b, b->c, c->d of
-        length k=1 and two subpaths a->b->c amd b->c->d of length k=2 will be
-        additionally counted.
+        """Reads path data from a file containing multiple lines of n-grams of the form
+        ``a,b,c,d,frequency`` (where frequency is optional). Each n-gram is interpreted
+        as path of length n-1.
 
         Parameters
         ----------
@@ -419,9 +409,9 @@ class Paths:
             all n-grams of length 16 and longer, which means that only paths up to length
             n-1 are considered.
         expand_sub_paths : bool
-            by default all subpaths of the given n-grams are generated, i.e.
-            for an input file with a single trigram a;b;c a path a->b->c of length two
-            will be generated as well as two subpaths a->b and b->c of length one
+            Whether or not subpaths of the n-grams are generated, i.e. for an input file with 
+            a single trigram a;b;c a path a->b->c of length two will be generated as well as
+            two subpaths a->b and b->c of length one. Defalt is True.
         max_subpath_length : int
 
         Returns
@@ -579,22 +569,20 @@ class Paths:
                         path_slice = path[s:s + k + 1]
                         self.paths[k][path_slice][0] += frequency
 
-    def add_path_tuple(self, path, expand_subpaths=True, frequency=(0, 1)):
-        """Adds a tuple of elements as a path. If the elements are not strings,
-        a conversion to strings will be made. This function can be used to
-        to set custom subpath statistics, via the frequency tuple (see below).
+    def add_path_tuple(self, path, frequency=1, expand_subpaths=True):
+        """Adds a path based on a tuple of nodes. Tuple elements are automatically
+        converted to strings.
 
         Parameters
         ----------
         path: tuple
             The path tuple to be added, e.g. ('a', 'b', 'c')
-        expand_subpaths: bool
-            Whether or not to calculate subpath statistics for this path
-        frequency: tuple, int
+        frequency: int, tuple
             A tuple (x,y) indicating the frequency of this path as subpath
-            (first component) and longest path (second component). The default is (0,1).
-            If an integer x is passed, it will be automatically converted to (0, x).
-
+            (first component) and as longest path (second component). Integer
+            values x are automatically converted to (0, x). Default value is 1.
+        expand_subpaths: bool
+            Whether or not to calculate subpath statistics. Default value is True.
         Returns
         -------
 
@@ -627,26 +615,23 @@ class Paths:
                     # add subpath weight to first component of occurrences
                     self.paths[k][subpath][0] += frequency[1]
 
-    def add_path_ngram(self, ngram, frequency=(0, 1), separator=',', expand_subpaths=True):
-        """Adds the path(s) of a single n-gram to the path statistics object.
+    def add_path_ngram(self, ngram, frequency=1, expand_subpaths=True, separator=','):
+        """Adds a path based on a string n-gram with customizable node separator.
 
         Parameters
         ----------
         ngram: str
             An ngram representing a path between nodes, separated by the separator
-            character, e.g. the 4-gram a;b;c;d represents a path of length three
-            (with separator ';')
-        frequency: tuple, int
-            the number of occurrences (i.e. frequency) of the ngram (n_subpaths, n_observed)
-            the default is (0, 1) (i.e. 0 subpaths and one observed longest path). If an integer x
-            is passed, it will be automatically converted to (0, x).
-        separator: str
-            The character used as separator for the ngrams (';' by default)
+            character, e.g. a 4-gram "a,b,c,d" corresponds to a path of length three
+            (for default separator ',').
+        frequency: int, tuple
+            A tuple (x,y) indicating the frequency of this path as subpath
+            (first component) and as longest path (second component). Integer
+            values x are automatically converted to (0, x). Default value is 1.            
         expand_subpaths: bool
-            by default all subpaths of the given ngram are generated, i.e.
-            for the trigram a;b;c a path a->b->c of length two will be generated
-            as well as two subpaths a->b and b->c of length one   
-
+            Whether or not to calculate subpath statistics. Default value is True.
+        separator: str
+            The character that separates nodes in the ngram. Default value is ','.
         """
         path = tuple(ngram.split(separator))
         for x in path:
@@ -676,19 +661,21 @@ class Paths:
 
     @staticmethod
     def contained_paths(p, node_filter):
-        """Returns the set of maximum-length sub-paths of the path p, which only contain
+        """Returns the list of maximum-length sub-paths of the path p, which only contain
         nodes that appear in the node_filter. As an example, for the path (a,b,c,d,e,f,g)
         and a node_filter [a,b,d,f,g], the method will return [(a,b), (d,), (f,g)].
 
         Parameters
         ----------
         p: tuple
-            a path tuple to check for contained paths
+            A path tuple to check for contained paths.
         node_filter: set
-            a set of nodes to which the contained paths should be limited
+            A set of nodes to which contained paths should be limited.
 
         Returns
         -------
+        list
+        
         """
 
         contained_paths = []
@@ -706,26 +693,28 @@ class Paths:
         return contained_paths
 
     def filter_nodes(self, node_filter, min_length=0, max_length=sys.maxsize, split_paths=True):
-        """Returns a new paths object which contains only paths between nodes in a given
-        filter set. For each of the paths in the current Paths object, the set of
+        """Returns a new Path instance that only cntains paths between nodes in a given
+        filter set. For each of path in the current Paths object, the set of
         maximally contained subpaths between nodes in node_filter is extracted by default.
         This method is useful when studying (sub-)paths passing through a subset of nodes.
 
         Parameters
         ----------
         node_filter: set
-            the nodes for which paths with be extracted from the current set of paths
+            The set of nodes for which paths should be extracted from the current set of paths.
         min_length: int
-            the minimum length of paths to extract (default 0)
+            The minimum length of paths that shall pass the filter. Default 0.
         max_length: int
-            the maximum length of paths to extract (default sys.maxsize)
+            The maximum length of paths that shall pass the filter. Default sys.maxsize.
         split_paths: bool
-            If true, this function will consider subpaths of the paths. If False, either a 
-            full path is taken or the path is discarded.
+            Whether or not allow splitting paths in subpaths. If set to False, either
+            the full path must pass the filter or the whole path is discarded. If set to True
+            maximally contained subpaths that pass the filter will be considered as well. Default is True.
 
         Returns
         -------
         Paths
+
         """
         p = Paths()
         for p_length in self.paths:
@@ -742,19 +731,20 @@ class Paths:
         return p
 
     def project_paths(self, mapping):
-        """Returns a new path object in which nodes have been mapped to different labels
-        given by an arbitrary mapping function. For instance, for the mapping
-        {'a': 'x', 'b': 'x', 'c': 'y', 'd': 'y'} the path (a,b,c,d) is mapped to
-        (x,x,y,y). This is useful, e.g., to map page page click streams to topic
+        """Returns a new path object in which nodes are mapped to labels
+        given by an arbitrary mapping function. For a mapping
+        {'a': 'x', 'b': 'x', 'c': 'y', 'd': 'y'} path (a,b,c,d) is mapped to
+        (x,x,y,y). This is useful e.g. to map page click streams to topic
         click streams, using a mapping from pages to topics.
 
         Parameters
         ----------
         mapping: dict
-            a dictionary that maps nodes to the new labels
+            A dictionary that maps nodes to the new labels.
 
         Returns
         -------
+        Paths
 
         """
         p = Paths()

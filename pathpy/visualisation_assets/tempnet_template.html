@@ -9,14 +9,14 @@
         opacity: 0;
     }
     line.tlinks {
-        stroke: rgb(209, 208, 208);
+        stroke: $inactive_edge_color;
         stroke-opacity: 0.4;
-        stroke-width: 1px;
+        stroke-width: $inactive_edge_width;
     }
     line.active {
-        stroke: #922;
+        stroke: $active_edge_color;
         stroke-opacity: 1;
-        stroke-width: 4px;
+        stroke-width: $active_edge_width;
     }
     line.hidden {
         stroke: rgb(255, 255, 255);
@@ -25,15 +25,15 @@
     }
     circle.active {
         stroke: #222;
-        fill: #922;
+        fill: $active_node_color;
         fill-opacity: 1;
         stroke-width: 2px;
     }
     circle {
-    fill: rgb(138, 137, 137);
-    stroke: #222;
-    fill-opacity: 1;
-    stroke-width: 1.5px;
+        fill: $inactive_node_color;
+        stroke: #222;
+        fill-opacity: 1;
+        stroke-width: 1.5px;
     }
 </style>
 
@@ -46,29 +46,39 @@
         id='${div_id}_restart_txt'>restart</text>
 </svg>
 
-<!-- <script charset="utf-8" src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script> -->
-<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+<script charset="utf-8" src="$d3js_path"></script>
 <script charset="utf-8">
-// the following code ensures that the visualisation works
-// both standalone as well as in jupyter notebook 
-// (which uses requireJS)
 
-/* try {
+// Load via requireJS if available (jupyter notebook environment)
+try {
+    // Problem: require.config will raise an exception when called for the second time 
     require.config({
         paths: {
             d3: "https://d3js.org/d3.v4.min"
         }
     });
+    console.log("Detected requireJS");
 }
-catch(err) {
-    console.log('no requireJS found');
-    // define fake require function 
-    function require(x, f){
-        f(d3);
+catch(err){
+    // a reference error indicates that requireJS does not exist. 
+    // other errors may occur due to multiple calls to config
+    if (err instanceof ReferenceError){
+        console.log("Detected no requireJS");
+
+        // Helper function that waits for d3js to be loaded
+        require = function require(symbols, callback) {
+            var ms = 5;
+            window.setTimeout(function(t) {
+                if (window[symbols[0]])
+                    callback(window[symbols[0]]);
+                else 
+                    window.setTimeout(arguments.callee, ms);
+            }, ms);
+        }
     }
 }
 
-require(["d3"], function(d3) { */
+require(["d3"], function(d3) {
     d3.selection.prototype.moveToFront = function() {
         return this.each(function(){
             this.parentNode.appendChild(this);
@@ -87,12 +97,12 @@ require(["d3"], function(d3) { */
     var svg = d3.select("#${div_id}"),
         width = +svg.attr("width"),
         height = +svg.attr("height"),
-        radius = $radius,
+        radius = $node_size,
         color = d3.scaleOrdinal(d3.schemeCategory20b);
 
     var temporal_net = $network_data;
-    var tsperframe = $tsperframe;
-    var msperframe = $msperframe;
+    var tsperframe = $ts_per_frame;
+    var msperframe = $ms_per_frame;
     var look_ahead = $look_ahead;
     var look_behind = $look_behind;
 
@@ -357,5 +367,5 @@ require(["d3"], function(d3) { */
         }
         return false;
     }
-// });
+});
 </script>
