@@ -578,5 +578,8 @@ class TemporalNetwork:
         return t
 
     def _repr_html_(self):
-        from pathpy.visualisation.html import plot
-        plot(self)
+        """
+        display an interactive d3js visualisation of the temporal network in jupyter
+        """
+        from pathpy.visualisation.html import generate_html
+        return generate_html(self)

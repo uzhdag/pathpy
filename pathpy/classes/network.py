@@ -588,15 +588,20 @@ class Network:
         return summary
 
     def __str__(self):
-        """Returns the default string representation of this graphical model instance"""
+        """Returns the default string representation of this network instance"""
+        return self.summary()
+
+    def _repr_(self):
+        """Returns the default string representation for jupyter"""
         return self.summary()
 
     def _repr_html_(self):
         """
-        display an interactive D3 visualisation of the higher-order network in jupyter
+        display an interactive d3js visualisation of the network in jupyter
         """
-        from pathpy.visualisation.html import plot
-        plot(self)
+        from pathpy.visualisation.html import generate_html
+        return generate_html(self)
+        
 
 
 def network_from_networkx(graph):
