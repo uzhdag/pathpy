@@ -1,14 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Mar 09 09:32:22 2018
-@author: Ingo Scholtes
-
-(c) Copyright ETH Zurich, Chair of Systems Design, 2015-2018
-"""
 import random
-
 import pytest
-
 
 @pytest.mark.parametrize('directed', (True, False))
 @pytest.mark.parametrize('weighted', (True, False))

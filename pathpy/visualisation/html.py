@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+
 #    pathpy is an OpenSource python package for the analysis of time series data
 #    on networks using higher- and multi order graphical models.
 #
-#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich, University of Zurich
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published
@@ -15,12 +16,13 @@
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #    Contact the developer:
-
+#
 #    E-mail: scholtes@ifi.uzh.ch
 #    Web:    http://www.ingoscholtes.net
+
 from functools import singledispatch
 import json
 import os

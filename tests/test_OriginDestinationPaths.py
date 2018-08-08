@@ -1,7 +1,6 @@
 import os
 import pathpy as pp
 
-
 def test_extract_distribute(test_data_directory, ):
     network_path = os.path.join(test_data_directory, 'example_network.edges')
     od_path = os.path.join(test_data_directory, 'example_origin_destination.csv')

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""The setup script."""
+"""pathpy setup script."""
 
 from setuptools import setup, find_packages
 from pathpy import __version__

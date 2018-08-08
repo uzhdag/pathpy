@@ -4,7 +4,6 @@ import numpy as np
 import sqlite3
 from pytest import mark
 
-
 def test_read_temporal_file_int(test_data_directory, ):
     file_path = os.path.join(test_data_directory, 'example_int.tedges')
     t = pp.TemporalNetwork.read_file(file_path)

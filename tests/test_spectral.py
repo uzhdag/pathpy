@@ -1,7 +1,6 @@
 import pathpy as pp
 import pytest
 
-
 # absolute eigenvalue difference tolerance
 EIGEN_ABS_TOL = 1e-2
 

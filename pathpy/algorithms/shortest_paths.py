@@ -6,7 +6,7 @@ Algorithms to calculate shortest paths and distances in higher-order networks an
 #    pathpy is an OpenSource python package for the analysis of time series data
 #    on networks using higher- and multi order graphical models.
 #
-#    Copyright (C) 2016-2017 Ingo Scholtes, ETH Zürich
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published
@@ -19,11 +19,11 @@ Algorithms to calculate shortest paths and distances in higher-order networks an
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #    Contact the developer:
-
-#    E-mail: ischoltes@ethz.ch
+#
+#    E-mail: scholtes@ifi.uzh.ch
 #    Web:    http://www.ingoscholtes.net
 from functools import singledispatch
 from collections import defaultdict
@@ -40,8 +40,10 @@ __all__ = ['distance_matrix', 'shortest_paths', 'diameter']
 
 @singledispatch
 def distance_matrix(network):
-    """Calculates shortest path distances between all pairs of nodes
-    in a network using the Floyd-Warshall algorithm."""
+    """
+    Calculates shortest path distances between all pairs of nodes
+    in a network based on the Floyd-Warshall algorithm.
+    """
 
     assert isinstance(network, Network), \
         "network must be an instance of Network"
@@ -98,10 +100,9 @@ def _dm(paths):
 def _dm_ho(network):
     """
     Returns a matrix capturing distances between (first-order)
-    nodes, based on a given higher-order topology. 
-    As an example, the second-order network [a-b] -> [b-c]
-    will lead to the distance matrix:
-    dist[a][c] = 2
+    nodes, based on a given higher-order topology. As an example, 
+    the second-order network [a-b] -> [b-c] results in the distance 
+    matrix: dist[a][c] = 2
     """
 
     assert isinstance(network, HigherOrderNetwork), \
@@ -188,9 +189,8 @@ def shortest_paths(network):
 @shortest_paths.register(Paths)
 def _sp(paths):
     """
-    Calculates the set of shortest 
-    paths between each pair of nodes based on 
-    a given set of empirically observed paths
+    Calculates all shortest paths between all pairs of nodes 
+    based on a set of empirically observed paths.
     """
 
     assert isinstance(paths, Paths), \
