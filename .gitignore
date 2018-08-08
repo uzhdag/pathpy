@@ -111,4 +111,7 @@ prof/*
 
 .vscode/
 docs/_build/
+.pytest_cache
+.pytest_cache/v/cache
 .pytest_cache/v/cache/lastfailed
+.pytest_cache/v/cache/nodeids
