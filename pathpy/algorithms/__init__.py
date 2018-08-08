@@ -15,3 +15,4 @@ from .components import reduce_to_gcc
 
 from .infomap import find_communities_sa
 from .infomap import modular_description_length
+from .spectral import *
