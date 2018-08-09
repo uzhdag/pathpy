@@ -33,7 +33,13 @@ import random
 import numpy as _np
 
 from pathpy.classes.network import Network
+from pathpy.classes.higher_order_network import HigherOrderNetwork
 from pathpy.classes.temporal_network import TemporalNetwork
+from pathpy.classes.paths import Paths
+
+from pathpy.visualisation.alluvial import generate_memory_net
+from pathpy.visualisation.alluvial import generate_diffusion_net
+from pathpy.visualisation.alluvial import generate_memory_net_markov
 
 @singledispatch
 def plot(network, **params):
@@ -59,7 +65,7 @@ def plot(network, **params):
                 Either an int value that specifies the radius of all nodes, or
                 a dictionary that assigns custom node sizes to invidual nodes.
                 Default value is 5.0.
-            edge_width: int, dict
+            edge_width: int, float, dict
                 Either an int value that specifies the radius of all edges, or
                 a dictionary that assigns custom edge width to invidual edges.
                 Default value is 0.5.
@@ -114,7 +120,7 @@ def generate_html(network, **params):
                 Either an int value that specifies the radius of all nodes, or
                 a dictionary that assigns custom node sizes to invidual nodes.
                 Default value is 5.0.
-            edge_width: int, dict
+            edge_width: int, float, dict
                 Either an int value that specifies the radius of all edges, or
                 a dictionary that assigns custom edge width to invidual edges.
                 Default value is 0.5.
@@ -386,7 +392,7 @@ def _generate_html_tempnet(tempnet, **params):
                 default pathpy network template will be used.
             d3js_path: string
                 URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
-                For offline operation, the URL to a local copy of d3js can be specified instead.        
+                For offline operation, the URL to a local copy of d3js can be specified instead.
     Returns
     -------
 
@@ -493,12 +499,295 @@ def _generate_html_tempnet(tempnet, **params):
 @export_html.register(TemporalNetwork)
 def _export_html_tempnet(tempnet, filename, **params):
     """
-    ...
+    Exports a stand-alone HTML file that contains an interactive d3js visualization
+    of the given temporal network instance.
+
+    Parameters
+    ----------
+    tempnet: TemporalNetwork
+        The temporal network to visualize
+    filename: string
+        Path where the HTML file will be saved
+    params: dict
+        A dictionary with visualization parameters to be passed to the HTML
+        generation function. These parameters can be processed by custom
+        visualisation templates extendable by the user. The default pathpy template
+        supports the following parameters:
+            width: int
+                Width of the div element containing the jupyter visualization.
+                Default value is 400.
+            height: int
+                Height of the div element containing the jupyter visualization.
+                Default value is 400.
+            ms_per_frame: int
+                how many milliseconds each frame of the visualisation shall be displayed.
+                The inverse of this value gives the framerate of the resulting visualisation.
+                The default value of 20 yields a framerate of 50 fps.
+            ts_per_frame: int
+                how many timestamps in the temporal network shall be displayed in every frame
+                of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
+                For higher values, multiple timestamps will be aggregated in a single frame. For a
+                value of zero, simulation speed is adjusted to the inter event time distribution such
+                that on average five interactions are shown per second. Default value is 10.
+            look_behind: int
+                Default value is 1500.
+            look_ahead: int
+                Default value is 150.
+            node_size: float
+                An float value that specifies the radius of all nodes.
+                Default value is 5.0.
+            active_edge_width: float
+                A float value that specifies the width of active edges.
+                Default value is 4.0.
+            inactive_edge_width: float
+                A float value that specifies the width of active edges.
+                Default value is 0.5.
+            node_color: string, dict
+                Either a string value that specifies the HTML color of all nodes,
+                or a dictionary that assigns custom node colors to invidual nodes.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#99ccff"
+            active_edge_color: string
+                A string value that specifies the HTML color of active edges.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#ff0000".
+            inactive_edge_color: string
+                A string value that specifies the HTML color of inactive edges.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#999999".
+            active_node_color: string
+                A string value that specifies the HTML color of active nodes.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#ff0000".
+            inactive_node_color: string
+                A string value that specifies the HTML color of inactive nodes.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#999999".
+            template: string
+                Path to custom visualization template file. If this parameter is omitted, the
+                default pathpy network template will be used.
+            d3js_path: string
+                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
+                For offline operation, the URL to a local copy of d3js can be specified instead.
     """
     html = generate_html(tempnet, **params)
 
     # for the inner HTML generated from the default templates, we add the surrounding DOCTYPE
     # and body needed for a stand-alone HTML file.
+    if 'template' not in params:
+        html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
+    with open(filename, 'w+') as f:
+        f.write(html)
+
+
+@plot.register(Paths)
+def _plot_paths(paths, **params):
+    """
+    Parameters
+    ----------    
+    params: dict
+        node : str
+        markov : bool
+        self_loops : bool
+        width: int
+            Width of the div element containing the jupyter visualization.
+            Default value is 400.
+        height: int
+            Height of the div element containing the jupyter visualization.
+            Default value is 400.
+        template: str
+                Path to custom visualization template file. If this parameter is omitted, the
+                default pathpy network template will be used.
+        d3js_path: str
+            URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v3.min.js.
+            For offline operation, the URL to a local copy of d3js can be specified instead.
+    """
+    html = generate_html(paths, **params)
+    from IPython.core.display import display, HTML
+    include = """<script id="d3js" src="https://d3js.org/d3.v3.min.js"></script>
+        <script id="sankey1" src="http://cdn.rawgit.com/newrelic-forks/d3-plugins-sankey/master/sankey.js"></script>
+        <script id="sankey2" src="http://cdn.rawgit.com/misoproject/d3.chart/master/d3.chart.min.js"></script>
+        <script id="sankey3" src="http://cdn.rawgit.com/q-m/d3.chart.sankey/master/d3.chart.sankey.min.js"></script>"""
+    display(HTML(html))
+
+
+@generate_html.register(Paths)
+def _generate_html_paths(paths, **params):
+    """
+    Parameters
+    ----------    
+    params: dict
+        node : str
+        markov : bool
+        self_loops : bool
+        width: int
+            Width of the div element containing the jupyter visualization.
+            Default value is 400.
+        height: int
+            Height of the div element containing the jupyter visualization.
+            Default value is 400.
+        template: str
+            Path to custom visualization template file. If this parameter is omitted, the
+            default pathpy network template will be used.
+        d3js_path: str
+            URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v3.min.js.
+            For offline operation, the URL to a local copy of d3js can be specified instead.
+    """
+    if 'self_loops' in params:
+        self_loops = params['self_loops']
+    else:
+        self_loops = True
+
+    if 'node' in params:
+        node = params['node']
+    else: 
+        params['node'] = list(paths.nodes)[0]
+        node = params['node']
+    
+    if 'markov' in params and params['markov']:
+        n = generate_memory_net_markov(HigherOrderNetwork(paths, k=1), node, self_loops=self_loops)
+    else:
+        n = generate_memory_net(paths, node, self_loops=self_loops)
+
+    node_idx = {}
+    i = 0
+    for v in n.nodes:
+        node_idx[v] = i
+        i += 1
+
+    data = {
+        'nodes': [{'name': v, 'id': v} for v in n.nodes],
+        'links': [{'source': int(node_idx[e[0]]),
+                   'target': int(node_idx[e[1]]),
+                   'value': n.edges[e]['weight']
+                  } for e in n.edges]
+    }
+
+    div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
+
+    if 'width' not in params:
+        params['width'] = 400
+
+    if 'height' not in params:
+        params['height'] = 400
+
+    if 'd3js_path' not in params:
+        params['d3js_path'] = 'http://d3js.org/d3.v3.min.js'
+
+    if 'template' not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
+        template_file = os.path.join(html_dir, 'paths_template.html')
+    else:
+        template_file = params['template']
+
+    with open(template_file) as f:
+        html_str = f.read()
+
+    d3js_params = {
+        'flow_data': json.dumps(data),
+        'div_id': div_id,
+    }
+    html = Template(html_str).substitute({**d3js_params, **params})
+    return html
+
+
+@export_html.register(Paths)
+def _export_html_paths(paths, filename, **params):
+    """
+    Parameters
+    ----------    
+    params: dict
+        node : str
+        markov : bool
+        self_loops : bool
+        width: int
+            Width of the div element containing the jupyter visualization.
+            Default value is 400.
+        height: int
+            Height of the div element containing the jupyter visualization.
+            Default value is 400.
+        template: str
+            Path to custom visualization template file. If this parameter is omitted, the
+            default pathpy network template will be used.
+        d3js_path: str
+            URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v3.min.js.
+            For offline operation, the URL to a local copy of d3js can be specified instead.
+    """
+    html = generate_html(paths, **params)
+    if 'template' not in params:
+        html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
+    with open(filename, 'w+') as f:
+        f.write(html)
+
+
+def generate_html_diffusion(paths, **params):
+    """
+    Parameters
+    ----------
+    params : dict
+        paths: Paths
+        node : str
+        markov : bool
+        steps : int
+        width : int
+        height : int
+        template : str
+    """
+    if 'node' in params:
+        node = params['node']
+    else:
+        params['node'] = list(paths.nodes)[0]
+        node = params['node']
+    
+    if 'markov' in params:
+        markov = params['markov']
+    else:
+        markov = False
+    if 'steps' in params:
+        steps = params['steps']
+    else:
+        steps = 5
+    n = generate_diffusion_net(paths, node=node, markov=markov, steps=steps)
+
+    node_map = {v: idx for idx, v in enumerate(n.nodes)}
+
+    data = {
+        'nodes': [{'name': v, 'id': v} for v in n.nodes],
+        'links': [{'source': node_map[e[0]], 'target': node_map[e[1]], 'value': n.edges[e]['weight']} for e in n.edges]
+    }
+
+    div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
+
+    if 'd3js_path' not in params:
+        params['d3js_path'] = 'http://d3js.org/d3.v3.min.js'
+
+    if 'template' not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
+        template_file = os.path.join(html_dir, 'diffusion_template.html')
+
+    with open(template_file) as f:
+        html_str = f.read()
+
+    d3js_params = {
+        'flow_data': json.dumps(data),
+        'div_id': div_id
+    }
+
+    # replace all placeholders in template
+    html = Template(html_str).substitute({**d3js_params, **params})
+    return html
+
+
+def plot_diffusion(paths, **params):
+    html = generate_html_diffusion(paths, **params)
+    from IPython.core.display import display, HTML
+    display(HTML(html))
+
+
+def export_html_diffusion(paths, filename, **params):
+    html = generate_html_diffusion(paths, **params)
     if 'template' not in params:
         html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
     with open(filename, 'w+') as f:

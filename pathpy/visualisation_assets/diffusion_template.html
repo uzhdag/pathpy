@@ -1,7 +1,3 @@
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://cdn.rawgit.com/newrelic-forks/d3-plugins-sankey/master/sankey.js"></script>
-<script src="http://cdn.rawgit.com/misoproject/d3.chart/master/d3.chart.min.js"></script>
-<script src="http://cdn.rawgit.com/q-m/d3.chart.sankey/master/d3.chart.sankey.min.js"></script>
 <style>
     body {
     padding: 10px;
@@ -37,7 +33,43 @@ id='${div_id}_svg_txt'>[save svg]</text>
 <svg width="$width" height="$height" id="$div_id">
 </svg>
 
-<script>
+<script charset="utf-8" src="$d3js_path"></script>
+<script charset="utf-8" src="http://cdn.rawgit.com/newrelic-forks/d3-plugins-sankey/master/sankey.js"></script>
+<script charset="utf-8" src="http://cdn.rawgit.com/misoproject/d3.chart/master/d3.chart.min.js"></script>
+<script charset="utf-8" src="http://cdn.rawgit.com/q-m/d3.chart.sankey/master/d3.chart.sankey.min.js"></script>
+<script charset="utf-8">
+
+// Load via requireJS if available (jupyter notebook environment)
+try {
+    // Problem: require.config will raise an exception when called for the second time 
+    require.config({
+        paths: {
+            d3: "https://d3js.org/d3.v3.min"
+        }
+    });
+    console.log("Detected requireJS");
+}
+catch(err){
+    // a reference error indicates that requireJS does not exist. 
+    // other errors may occur due to multiple calls to config
+    if (err instanceof ReferenceError){
+        console.log("Detected no requireJS");
+
+        // Helper function that waits for d3js to be loaded
+        require = function require(symbols, callback) {
+            var ms = 50;
+            window.setTimeout(function(t) {
+                if (window[symbols[0]])
+                    callback(window[symbols[0]]);
+                else 
+                    window.setTimeout(arguments.callee, ms);
+            }, ms);
+        }
+    }
+}
+
+// wait until d3js has been loaded
+require(["d3"], function(d3) {
     var flow = $flow_data;
     var colors = d3.scale.category20c();
 
@@ -89,4 +121,5 @@ id='${div_id}_svg_txt'>[save svg]</text>
             document.body.removeChild(elem);
         }
     }
+});
 </script>

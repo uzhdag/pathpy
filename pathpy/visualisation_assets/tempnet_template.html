@@ -251,7 +251,7 @@ require(["d3"], function(d3) {
                 edgesbytime[ti].forEach(function(id){
                     links_by_id[id].strength = active_link_strength;
                     // links that are currently active
-                    if (ti >= time-tsperframe && ti <= time) {
+                    if (ti >= time-tsperframe+1 && ti <= time) {
                         node_ids = id.split('-');
                         try {
                             edges_to_dom[id].attr('class', 'active').moveToFront();
