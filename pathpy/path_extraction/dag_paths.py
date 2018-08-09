@@ -33,7 +33,8 @@ from pathpy import DAG
 
 
 def remove_repetitions(path):
-    """Remove repeated nodes in the path
+    """
+    Remove repeated nodes in the path
 
     Parameters
     ----------
@@ -53,14 +54,15 @@ def remove_repetitions(path):
 
 
 def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',', repetitions=True, unique=False):
-    """ Calculates path statistics in a directed acyclic graph.
-    For this, all paths between all roots (nodes with indegree zero)
-    and all leafs (nodes with outdegree zero) will be constructed.
+    """
+    Calculates path statistics in a directed acyclic graph.
+    All paths between all roots (nodes with zero indegree)
+    and all leafs (nodes with zero outdegree) are generated.
 
     Parameters
     ----------
     dag: DAG
-        the directed acyclic graph instance to calulate paths in
+        the directed acyclic graph instance for which paths are calculated
     node_mapping: dict
         can be a simple mapping (1-to-1) or a 1-to-many (a dict with sets as values)
     max_subpath_length: int
@@ -72,13 +74,14 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
         will be calculated. Note that, independent of the sub path calculation
         longest path of any length will be considered in the likelihood calculation!
     separator: str
-        separator to use to separate nodes in the generated Paths object
+        separator to use to separate nodes in the generated Paths object. Default is ','.
     repetitions: bool
-        whether or not to remove repeated nodes in the paths. If this is set to true,
-        a path in the DAG mapping to a,a,b,b,c,c,d will be turned into a,b,c,d
+        whether or not to remove repeated nodes in the paths. Such repeated paths can occur
+        if a non-injective node_mapping is applied. If set to True, a path a,a,b,b,c,c,d is
+        returned as a,b,c,d.
     unique: bool
         whether or not multiple identical mapped paths should be counted separately. For
-        DAG representations of temporal networks with delta>1, where nodes are temporal copies,
+        DAG representations of temporal networks with delta > 1, where nodes are temporal copies,
         we do not want to count multiple paths from the same root that pass through different
         temporal copies of the same physical node. For instance with delta=2, time-stamped edges
         (a,b;1), (b,c;3) are transformed into a DAG a1->b2, a1->b3, b3->c4. With the mapping to

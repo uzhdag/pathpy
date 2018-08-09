@@ -157,6 +157,48 @@ def test_dag_from_temporal_network_basic():
     dag, mapping = pp.DAG.from_temporal_network(tn, delta=1)
     assert sorted(dag.routes_to_node('c_3')) == sorted([['a_2', 'c_3'], ['a_1', 'b_2', 'c_3']])
 
+def test_paths_from_temporal_network_dag():
+    tn = pp.TemporalNetwork()
+    tn.add_edge('a', 'b', 1)
+    tn.add_edge('b', 'a', 3)
+    tn.add_edge('b', 'c', 3)
+    tn.add_edge('d', 'c', 4)
+    tn.add_edge('c', 'd', 5)
+    tn.add_edge('c', 'b', 6)
+
+    paths = pp.path_extraction.paths_from_temporal_network_dag(tn, delta=2)
+
+    assert paths.observation_count == 4.0
+    assert len(paths.nodes) == 4
+    assert paths.unique_paths(0) == 4.0
+    assert paths.unique_paths(1) == 4.0
+    assert paths.unique_paths(2) == 4.0
+    assert paths.unique_paths(3) == 1.0
+
+    # 4 longest paths
+    assert (paths.paths[2][('a', 'b', 'a')] == [0.0, 1.0]).all()
+    assert (paths.paths[2][('d', 'c', 'd')] == [0.0, 1.0]).all()
+    assert (paths.paths[2][('d', 'c', 'b')] == [0.0, 1.0]).all()
+    assert (paths.paths[3][('a', 'b', 'c', 'd')] == [0.0, 1.0]).all()
+
+    # 4 subpaths of length 0
+    assert (paths.paths[0][('a',)] == [3.0, 0.0]).all()
+    assert (paths.paths[0][('b',)] == [3.0, 0.0]).all()
+    assert (paths.paths[0][('c',)] == [3.0, 0.0]).all()
+    assert (paths.paths[0][('d',)] == [4.0, 0.0]).all()
+
+    # 6 subpaths of length 1
+    assert (paths.paths[1][('a', 'b')] == [2.0, 0.0]).all()
+    assert (paths.paths[1][('b', 'a')] == [1.0, 0.0]).all()
+    assert (paths.paths[1][('b', 'c')] == [1.0, 0.0]).all()
+    assert (paths.paths[1][('c', 'd')] == [2.0, 0.0]).all()
+    assert (paths.paths[1][('d', 'c')] == [2.0, 0.0]).all()
+    assert (paths.paths[1][('c', 'b')] == [1.0, 0.0]).all()
+
+    # 2 subpaths of length 2
+    assert (paths.paths[2][('a', 'b', 'c')] == [1.0, 0.0]).all()
+    assert (paths.paths[2][('b', 'c', 'd')] == [1.0, 0.0]).all()
+
 
 def test_dag_from_temporal_network():
     """
@@ -250,7 +292,4 @@ def test_strong_connected_tmp(random_temp_network):
         giant_size_pp = max(len(c) for c in components)
 
         assert giant_size_nx == giant_size_pp
-
-
-
 

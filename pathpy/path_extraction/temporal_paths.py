@@ -24,12 +24,14 @@
 #    Web:    http://www.ingoscholtes.net
 
 from collections import defaultdict
+from collections import deque
 import sys
 
 from pathpy import Paths
 from pathpy import DAG
 from pathpy.path_extraction import paths_from_dag
 from pathpy.utils import Log
+from pathpy.utils import Severity
 
 
 def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
@@ -88,11 +90,11 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
     >>> t.add_edge('b', 'c', 5)
     >>> t.add_edge('b', 'd', 7)
 
-    >>> p = pp.path_extraction.paths_from_temporal_network(t, delta=6)
-    >>> print(p)
+    >>> p = pp.path_extraction.paths_from_temporal_network(t, delta=6)    
     >>> [Severity.INFO]	Extracting time-respecting paths for delta = 7 ...
     >>> [Severity.INFO]	Calculating sub path statistics ...
     >>> [Severity.INFO]	finished.
+    >>> print(p)
     >>> Total path count: 		2.0 
     >>> [Unique / Sub paths / Total]: 	[2.0 / 7.0 / 9.0]
     >>> Nodes:				4 
@@ -212,18 +214,58 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
     return p
 
 
+
+def generate_causal_tree(dag, root, node_map):
+    """
+    For a directed acyclic graph and a non-injective mapping of nodes,
+    this method creates a *causal tree* for a given root node.
+    This is useful for the extraction of causal paths in time-unfolded DAG
+    representations of temporal networks. The nodes "{v}_{d}" in the resulting
+    causal tree capture that - starting from the root node at step 0 - there is
+    a causal path to node v at distance d from the root. Note that the same node
+    can be represented by multiple nodes in the causal tree (at different distances d).
+    """    
+    causal_tree = DAG()
+    causal_mapping = {}
+    queue = deque()
+
+    # launch breadth-first-search at root of tree
+    queue.append((root, 0))
+    while queue:
+        v, depth = queue.popleft()
+
+        # node x is the node in the causal tree
+        x = '{0}_{1}'.format(node_map[v], depth)
+        causal_mapping[x] = node_map[v]
+
+        # only consider neighbors that have not been considered at this level
+        # since we project nodes to the same depth anyway, we do not need to
+        # these duplicate edges to the causal tree
+        visited = set()
+
+        # process nodes at next level
+        for w in dag.successors[v]:
+            # Log.add('Processing node {0} at depth {1}'.format(w, depth+1), Severity.INFO)
+            queue.append((w, depth+1))
+            if node_map[w] not in visited:
+                # add edge to causal tree
+                y = '{0}_{1}'.format(node_map[w], depth+1)
+                visited.add(node_map[w])
+                causal_tree.add_edge(x, y)
+                causal_mapping[y] = node_map[w]
+
+    return causal_tree, causal_mapping
+
+
 def paths_from_temporal_network_dag(tempnet, delta=1, max_subpath_length=None):
     """
-    Calculates the frequency of time-respecting paths up to maximum length
-    of maxLength, assuming a maximum temporal distance of delta between consecutive
+    Calculates the frequency of causal paths in a temporal network assuming a 
+    maximum temporal distance of delta between consecutive
     time-stamped links on a path. This method first creates a directed and acyclic
     time-unfolded graph based on the given parameter delta. This directed acyclic
-    graph is then used to calculate all time-respecting paths for a given delta.
-    I.e., for time-stamped links (a,b,1), (b,c,5), (b,d,7) and a delta=6 only the
-    time-respecting path (a,b,c) will be found, while (a,b,d) is ignored.
-    
-    This (static) method returns an instance of the class Paths, which can
-    be used to generate higher- and multi-order models of time-respecting paths.
+    graph is used to calculate all time-respecting paths for a given delta.
+    I.e., for time-stamped links (a,b,1), (b,c,5), (b,d,7) and delta = 5 the
+    time-respecting path (a,b,c) will be found.
 
     Parameters
     ----------
@@ -231,40 +273,141 @@ def paths_from_temporal_network_dag(tempnet, delta=1, max_subpath_length=None):
         TemporalNetwork to extract the time-respecting paths from
     delta : int
         Indicates the maximum temporal distance up to which time-stamped
-        links will be considered to contribute to time-respecting paths.
-        For (u,v;3) and (v,w;7) a time-respecting path (u,v)->(v,w) will be inferred
-        for all 0 < delta <= 4, while no time-respecting path will be inferred for
-        delta > 4. If the max time diff is not set specifically, a default value of
-        delta=1 will be used, meaning that a time-respecting path u -> v -> w will
-        only be inferred if there are *directly consecutive* time-stamped links
-        (u,v;t) (v,w;t+1). Every time-stamped edge is considered a time-respecting path of
-        length one.
-    max_length : int
-        Indicates the maximum length up to which time-respecting paths should be
-        calculated, which can be limited due to computational efficiency.
-        A value of k will generate all time-respecting paths consisting of up to k
-        time-stamped links. Note that generating a multi-order model with a maximum
-        order of k requires to extract time-respecting paths with *at least* length k.
-        If a limitation of the maxLength is not required for computational reasons,
-        this parameter should not be set (as it will change the statistics of paths). 
-        For maxLength=1 this function will simply return the statistics of time-stamped edges.
+        links will be considered to contribute to a causal path.
+        For (u,v;3) and (v,w;7) a causal path (u,v,w) is generated
+        for 0 < delta <= 4, while no causal path is generated for
+        delta > 4. Every time-stamped edge is a causal path of
+        length one. Default value is 1.
     max_subpath_length : int
-        This can be used to limit the calculation of sub path statistics to a given
-        maximum length. This is useful, as the statistics of sub paths of length k
-        are only needed to fit a higher-order model with order k. Hence, if we know
-        that the model selection is limited to a given maximum order K, we can safely
-        set the maximum sub path length to K. By default, sub paths of any length
-        will be calculated. Note that, independent of the sub path calculation
-        longest path of any length will be considered in the likelihood calculation!
+        Can be used to limit the calculation of sub path statistics to a given
+        maximum length. This is useful as statistics of sub paths of length k
+        are only needed to fit higher-order model with order k and larger. If model
+        selection is limited to a maximum order K, we can set the maximum sub path length
+        to K. Default is None, which means all subpaths are calculated.
 
     Returns
     -------
     Paths
+        An instance of the class Paths, which can be used to generate higher- and multi-order
+        models of causal paths in temporal networks.
 
     Examples
-    ...
     ---------
+    >>> t = pp.TemporalNetwork()
+    >>> t.add_edge('a', 'b', 1)
+    >>> t.add_edge('b', 'a', 3)
+    >>> t.add_edge('b', 'c', 3)
+    >>> t.add_edge('d', 'c', 4)
+    >>> t.add_edge('c', 'd', 5)
+    >>> t.add_edge('c', 'b', 6)
 
+    >>> >>>causal_paths = pp.path_extraction.paths_from_temporal_network_dag(t, delta=2)
+    >>> [Severity.INFO]	Constructing time-unfolded DAG ...
+    >>> [Severity.INFO]	finished.
+    >>> [Severity.INFO]	Generating causal trees for 2 root nodes ...
+    >>> [Severity.INFO]	finished.
+    >>> print(causal_paths)
+    >>> Total path count: 		4.0 
+    >>> [Unique / Sub paths / Total]: 	[4.0 / 24.0 / 28.0]
+    >>> Nodes:				    4 
+    >>> Edges:				    6
+    >>> Max. path length:		3
+    >>> Avg path length:		2.25 
+    >>> Paths of length k = 0		0.0 [ 0.0 / 13.0 / 13.0 ]
+    >>> Paths of length k = 1		0.0 [ 0.0 / 9.0 / 9.0 ]
+    >>> Paths of length k = 2		3.0 [ 3.0 / 2.0 / 5.0 ]
+    >>> Paths of length k = 3		1.0 [ 1.0 / 0.0 / 1.0 ]
+
+    >>> The calculated (longest) causal paths in this example are:
+    >>> (a, b, c, d), (d, c, b), (d, c, d), (a, b, a)
     """
+    # generate a single time-unfolded DAG
+    Log.add('Constructing time-unfolded DAG ...')
     dag, node_map = DAG.from_temporal_network(tempnet, delta)
-    return paths_from_dag(dag, node_map, max_subpath_length=max_subpath_length)
+    Log.add('finished.')
+
+    causal_paths = Paths()
+    
+    # For each root in the time-unfolded DAG, we generate a
+    # causal tree and use it to count all causal paths
+    # that originate at this root
+    num_roots = len(dag.roots)
+    current_root = 1
+    Log.add('Generating causal trees for {0} root nodes ...'.format(num_roots))
+    for root in dag.roots:
+        causal_tree, causal_mapping = generate_causal_tree(dag, root, node_map)
+        if num_roots > 200 and current_root % 100 == 0:
+            Log.add('Analyzing causal paths in tree {0}/{1} ...'.format(current_root, num_roots))
+        # elevate Logging level
+        x = Log.min_severity
+        Log.set_min_severity(Severity.WARNING)
+
+        # calculate all unique longest path in causal tree
+        causal_paths += paths_from_dag(causal_tree, causal_mapping, repetitions=False, max_subpath_length=max_subpath_length)
+        current_root += 1
+
+        # restore log level
+        Log.set_min_severity(x)
+    Log.add('finished.')
+    
+    return causal_paths
+
+def sample_paths_from_temporal_network_dag(tempnet, delta=1, num_roots=1, max_subpath_length=None):
+    """
+    Estimates the frequency of causal paths in a temporal network assuming a
+    maximum temporal distance of delta between consecutive
+    time-stamped links on a path. This method first creates a directed and acyclic
+    time-unfolded graph based on the given parameter delta. This directed acyclic
+    graph is used to calculate causal paths for a given delta, randomly sampling num_roots
+    roots in the time-unfolded DAG.    
+
+    Parameters
+    ----------
+    tempnet : pathpy.TemporalNetwork
+        TemporalNetwork to extract the time-respecting paths from
+    delta : int
+        Indicates the maximum temporal distance up to which time-stamped
+        links will be considered to contribute to a causal path.
+        For (u,v;3) and (v,w;7) a causal path (u,v,w) is generated
+        for 0 < delta <= 4, while no causal path is generated for
+        delta > 4. Every time-stamped edge is a causal path of
+        length one. Default value is 1.
+    num_roots : int
+        The number of randomly chosen roots that will be used to estimate path statistics.
+
+    Returns
+    -------
+    Paths
+        An instance of the class Paths, which can be used to generate higher- and multi-order
+        models of causal paths in temporal networks.
+    """
+    # generate a single time-unfolded DAG
+    Log.add('Constructing time-unfolded DAG ...')
+    dag, node_map = DAG.from_temporal_network(tempnet, delta)
+    Log.add('finished.')
+
+    causal_paths = Paths()
+    
+    # For each root in the time-unfolded DAG, we generate a
+    # causal tree and use it to count all causal paths
+    # that originate at this root
+    current_root = 1
+    Log.add('Generating causal trees for {0} root nodes ...'.format(num_roots))
+    import random
+    for root in random.sample(dag.roots, num_roots):
+        causal_tree, causal_mapping = generate_causal_tree(dag, root, node_map)
+        if num_roots > 200 and current_root % 100 == 0:
+            Log.add('Analyzing causal paths in tree {0}/{1} ...'.format(current_root, num_roots))
+        # elevate Logging level
+        x = Log.min_severity
+        Log.set_min_severity(Severity.WARNING)
+
+        # calculate all unique longest path in causal tree
+        causal_paths += paths_from_dag(causal_tree, causal_mapping, repetitions=False, max_subpath_length=max_subpath_length)
+        current_root += 1
+
+        # restore log level
+        Log.set_min_severity(x)
+    Log.add('finished.')
+    
+    return causal_paths

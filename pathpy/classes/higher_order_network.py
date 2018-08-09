@@ -96,7 +96,7 @@ class HigherOrderNetwork(Network):
         if separator is None:
             self.separator = paths.separator
         else:
-            self.separator = separator       
+            self.separator = separator
 
         if k > 1:
             # For k>1 we need the first-order network to generate the null model
@@ -107,7 +107,7 @@ class HigherOrderNetwork(Network):
             g1 = HigherOrderNetwork(paths, k=1)
             g1_node_mapping = g1.node_to_name_map()
             A = g1.adjacency_matrix(include_subpaths=True, weighted=False,
-                                    transposed=True)            
+                                    transposed=True)
 
         if not null_model:
             # Calculate the frequency of all paths of
@@ -263,7 +263,6 @@ class HigherOrderNetwork(Network):
                         p = e1 + (e2[1],)
                         E_new.append(p)
             possible_paths = E_new
-        
         return possible_paths
 
 
@@ -300,8 +299,6 @@ class HigherOrderNetwork(Network):
         ----------
         node: str
             The higher-order node to be transformed to a path.
-            TODO: this function assumes that the separator is '-', but it is not sure
-            TODO: that the user will use it.
 
         Returns
         -------
@@ -310,8 +307,8 @@ class HigherOrderNetwork(Network):
         return tuple(node.split(self.separator))
 
     def path_to_higher_order_nodes(self, path, k=None):
-        """Helper function that transforms a path of first-order nodes into a 
-        sequence of k-order nodes using the separator character of the 
+        """Helper function that transforms a path of first-order nodes into a
+        sequence of k-order nodes using the separator character of the
         HigherOrderNetwork instance
 
         Parameters

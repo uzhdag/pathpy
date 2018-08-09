@@ -65,17 +65,18 @@ class DAG(Network):
 
     @classmethod
     def from_temporal_network(cls, tempnet, delta=1):
-        """ Simple algorithm to create a directed acyclic graph from a 
-            temporal network for a given maximum time difference delta
+        """
+        Creates a time-unfolded directed acyclic graph from a
+        temporal network for a given maximum time difference delta.
 
         Parameters
         ----------
         tempnet: pp.TemporalNetwork
-            the temporal network instance to use in the DAG generation
+            The temporal network instance to use for the DAG generation.
 
         delta: int
-            the maximum time difference t'- t between two time-stamped edges 
-            (a,b,t) and (b,c,t') below which a causal path a -> b -> c will be 
+            The maximum time difference t'- t between two time-stamped edges
+            (a,b,t) and (b,c,t') up to which a causal path (a, b, c) is a
             created in the DAG
 
         """
@@ -93,9 +94,9 @@ class DAG(Network):
             # this implies that for delta = 2 and an edge (a,b,1) two 
             # time-unfolded links (a_1, b_2) and (a_1, b_3) will be created
             for x in range(1, int(delta)+1):
-                w_t = "{0}_{1}".format(w, t+x)                
+                w_t = "{0}_{1}".format(w, t+x)
                 node_map[w_t] = w
-                dag.add_edge(v_t, w_t)            
+                dag.add_edge(v_t, w_t)
 
         return dag, node_map
 

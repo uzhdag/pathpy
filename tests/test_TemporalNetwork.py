@@ -138,6 +138,3 @@ def test_write_tikz(temporal_network_object, tmpdir, is_dag, split_dir):
     exit_code = os.system(cmd)
     print(dir_path)
     assert exit_code == 0
-
-
-

@@ -270,19 +270,24 @@ class Paths:
         return sequence
 
     def unique_paths(self, l=0, consider_longer_paths=True):
-        """Returns the number of unique paths of a given length l (and possibly longer)
+        """
+        Returns the number of different paths that have (at least)
+        a length l and that have been observed as a longest path at
+        least once.
 
         Parameters
         ----------
         l : int
-            the (inclusive) maximum length up to which path shall be counted.
+            count only unique longest path observations with at least length l. 
+            Default is 0.
         consider_longer_paths : bool
-            TODO: add parameter description
+            if True, the method will return the number of unique
+            longest paths with *at least* length l. Default is True.
 
         Returns
         -------
         int
-            number of unique paths satisfying parameter ``l``
+            The number of different paths that have been observed as a longest path at least once.
         """
         num_l = 0.0
         if not self.paths:
@@ -509,10 +514,10 @@ class Paths:
     def observation_count(self):
         """
         Returns the total number of observed pathways of any length
-        (includes multiple observations for paths with a frequency weight)
+        (includes multiple observations for paths observed more than one)
         """
 
-        obs_count = 0
+        obs_count = 0.0
         for k in self.paths:
             for p in self.paths[k]:
                 obs_count += self.paths[k][p][1]
