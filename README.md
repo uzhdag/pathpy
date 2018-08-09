@@ -67,7 +67,10 @@ The development of this package was generously supported by the [MTEC Foundation
 # Contributors
 
 [Ingo Scholtes](http://www.ingoscholtes.net) (project lead, development)  
-Luca Verginer (development, test suite integration)  
+[Luca Verginer](https://www.verginer.eu/) (development, test suite integration)  
+
+# Past Contributors
+
 Roman Cattaneo (development)  
 Nicolas Wider (testing)  
 
