@@ -704,7 +704,6 @@ observed and therefore the likelihood cannot be computed.
         int
 
         """
-        import warnings
         
         if stop_at_order is None:
             stop_at_order = self.max_order
@@ -721,7 +720,7 @@ observed and therefore the likelihood cannot be computed.
                 except PathsTooShort:
                     msg = ("optimal order is at least %d, but could be higher. Paths are too short"
                            "to create higher orders layers." % max_accepted_order)
-                    warnings.warn(msg)
+                    Log.add(msg, Severity.WARNING)
                     break
 
             accept, p_value = self.likelihood_ratio_test(
@@ -734,7 +733,7 @@ observed and therefore the likelihood cannot be computed.
         if stop_at_order == max_accepted_order:
             msg = ("order is at least %d, but may be higher, "
                    "try to increase `stop_at_order`" % stop_at_order)
-            warnings.warn(msg)
+            Log.add(msg, Severity.WARNING)
         return max_accepted_order
 
 
