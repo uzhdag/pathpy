@@ -246,23 +246,17 @@ def generate_causal_tree(dag, root, node_map):
         x = '{0}_{1}'.format(node_map[v], depth)
         causal_mapping[x] = node_map[v]
 
-        # only consider nodes that have not already
-        # been added to this level
-        # visited = set()
-
         # process nodes at next level
         for w in dag.successors[v]:
             if (w, depth+1) not in queue:
                 queue.append((w, depth+1))
-                #print((w, depth+1))
-                #print(len(queue))
+                # only consider nodes that have not already
+                # been added to this level
                 if not visited[node_map[w], depth+1]:
-                # if node_map[w] not in visited:
                     # add edge to causal tree
                     y = '{0}_{1}'.format(node_map[w], depth+1)
-                    #print(y)
-                    # visited.add(node_map[w])
                     edges.append((x, y))
+
                     visited[node_map[w], depth+1] = True
                     causal_mapping[y] = node_map[w]
     
@@ -426,7 +420,6 @@ def sample_paths_from_temporal_network_dag(tempnet, delta=1, num_roots=1, max_su
         Log.set_min_severity(Severity.WARNING)
 
         # calculate all unique longest path in causal tree
-        print(causal_tree.ncount())
         causal_paths += paths_from_dag(causal_tree, causal_mapping, repetitions=False, max_subpath_length=max_subpath_length)
         current_root += 1
 
