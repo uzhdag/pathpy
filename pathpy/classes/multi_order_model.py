@@ -676,7 +676,7 @@ observed and therefore the likelihood cannot be computed.
         Log.add('Likelihood ratio test, p = ' + str(p))
         return (p < significance_threshold), p
 
-    def estimate_order(self, paths=None, stop_at_order=100, significance_threshold=0.01):
+    def estimate_order(self, paths=None, stop_at_order=None, significance_threshold=0.01):
         """Selects the optimal maximum order of a multi-order network model for the
         observed paths, based on a likelihood ratio test with p-value threshold of p
 
@@ -689,9 +689,12 @@ observed and therefore the likelihood cannot be computed.
              The path statistics for which to perform the order selection.
              It defaults to the path statistics the MultiOrderModel was created from.
         stop_at_order: int
-            The maximum order up to which the multi-order model shall be tested.
-            If the test fails earlier the remaining orders will not be computed.
-            The default is 100
+            The maximum order up to which the multi-order model shall be tested. By 
+            default (None), the test will be performed up to the max_order of the 
+            MultiOrderModel instance. If the order up to which the test shall be done 
+            is larger than the max_order of this model, additional model layers will 
+            automatically be created. 
+            Default is None.            
         significance_threshold: float
             the threshold for the p-value below which to accept the alternative hypothesis
 
@@ -701,7 +704,11 @@ observed and therefore the likelihood cannot be computed.
 
         """
         import warnings
-        assert stop_at_order > 1, 'Error: stop_at_order must be larger than one'
+        
+        if stop_at_order is None:
+            stop_at_order = self.max_order
+        else:
+            assert stop_at_order > 1, 'order to be tested must be larger than one'
 
         # Test for highest order that passes, likelihood ratio test against null model
         max_accepted_order = 1
@@ -722,14 +729,13 @@ observed and therefore the likelihood cannot be computed.
             )
             if accept:
                 max_accepted_order = k
-            else:
-                break
 
         if stop_at_order == max_accepted_order:
-            msg = ("order is at least %d, but could be higher, "
+            msg = ("order is at least %d, but may be higher, "
                    "try to increase `stop_at_order`" % stop_at_order)
             warnings.warn(msg)
         return max_accepted_order
+
 
     def test_network_hypothesis(self, paths, method='AIC'):
         """
