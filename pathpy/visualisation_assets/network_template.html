@@ -1,6 +1,13 @@
 <style>
+    text.label {
+        text-anchor: middle;
+        font-size: $label_size;
+        font-family: Arial, Helvetica, sans-serif;
+        fill: $label_color;
+        opacity: $label_opacity;
+    }
     .links line {
-    stroke-opacity: 0.7;
+    stroke-opacity: $edge_opacity;
     }
     .arrows svg:path {
         stroke: #666;
@@ -62,9 +69,10 @@ require(["d3"], function(d3) {
 
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
-        .force("charge", d3.forceManyBody())
+        .force("charge", d3.forceManyBody().strength($force_charge).distanceMax(200))
+        .force("repelForce", d3.forceManyBody().strength($force_repel).distanceMax(200))
         .force("center", d3.forceCenter(width / 2, height / 2))
-        .alphaTarget(0);
+        .alphaTarget($force_alpha);
 
     svg.append("defs").selectAll("marker")
         .data(["end"])
@@ -96,17 +104,28 @@ require(["d3"], function(d3) {
     if (directed)
         link.attr("marker-end", "url(#end)");
 
-    var node = g.append("g")
+    var node_g = g.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
         .data(graph.nodes)
-        .enter().append("circle")
+        .enter()
+        .append("g"); 
+
+    var node = node_g.append("circle")
+        .attr('id', function(d) { return d.id; })
         .attr("r", function(d) { return d.size; })
         .attr("fill", function(d) { return d.color; })
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
             .on("end", dragended));
+
+    var text = node_g.append("text")
+    .attr("x", $label_offset[0])
+    .attr("y", $label_offset[1]+3)
+    .attr("id", function(d) {return d.id; })
+    .attr("class", "label")
+    .text(function(d) { return d.id; });
 
     node.append("title")
         .text(function(d) { return d.id; });
@@ -131,8 +150,18 @@ require(["d3"], function(d3) {
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
 
+         text.attr("transform", transform);
+
+
+        text.attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+
         node.attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; });
+    }
+
+    function transform(d) {
+        return "translate(" + d.x + "," + d.y + ")";
     }
 
     function dragstarted(d) {

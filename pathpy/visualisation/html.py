@@ -79,8 +79,29 @@ def plot(network, **params):
                 or a dictionary that assigns custom edge color to invidual edges.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#ffffff".
+            edge_opacity: float
+                The opacity of all edges in a range from 0.0 to 1.0. Default value is 1.0.                
             edge_arrows: bool
                 Whether to draw edge arrows for directed networks. Default value is True.
+            label_color: string
+                The HTML color of node labels. Default value is #ffffff.
+            label_opacity: float
+                The opacity of the label. Default is 1.0.
+            label_size: int
+                Size of the font to be used for labels.
+            label_offset: list
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
+                displayed in the center of a node. Positive values for the first and second component
+                move the label to the right and top respectively. Default is [0, -10], which 
+                displays labels above the nodes.
+            force_charge: float, int
+                The charge strength of nodes to be used in the force-directed layout. Default value is -20
+            force_repel: float, int
+                The strength of the repulsive force between nodes. Larger negative values will increase the distance
+                between nodes. Default value is -200.
+            force_alpha: float
+                The alpha target (convergence threshold) to be passed to the underlying force-directed 
+                layout algorithm. Default value is 0.0.                          
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
                 default pathpy network template will be used.
@@ -134,8 +155,29 @@ def generate_html(network, **params):
                 or a dictionary that assigns custom edge color to invidual edges.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#999999".
+            edge_opacity: float
+                The opacity of all edges in a range from 0.0 to 1.0. Default value is 1.0.
             edge_arrows: bool
                 Whether to draw edge arrows for directed networks. Default value is True.
+            label_color: string
+                The HTML color of node labels. Default value is #ffffff.
+            label_opacity: float
+                The opacity of the label. Default is 1.0.
+            label_size: int
+                Size of the font to be used for labels.
+            label_offset: list
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
+                displayed in the center of a node. Positive values for the first and second component
+                move the label to the right and top respectively. Default is [0, -10], which 
+                displays labels above the nodes.
+            force_charge: float, int
+                The charge strength of nodes to be used in the force-directed layout. Default value is -20
+            force_repel: float, int
+                The strength of the repulsive force between nodes. Larger negative values will increase the distance
+                between nodes. Default value is -200.
+            force_alpha: float
+                The alpha target (convergence threshold) to be passed to the underlying force-directed 
+                layout algorithm. Default value is 0.0.                          
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
                 default pathpy network template will be used.
@@ -184,12 +226,40 @@ def generate_html(network, **params):
                               'color': get_attr(v, 'node_color', '#99ccff'),
                               'size': get_attr(v, 'node_size', 5.0)} for v in network.nodes]
 
+    # DIV params
     if 'height' not in params:
         params['height'] = 400
 
     if 'width' not in params:
         params['width'] = 400
 
+    # label params
+    if 'label_size' not in params:
+        params['label_size'] = 8
+    
+    if 'label_offset' not in params:
+        params['label_offset'] = [0,-10]
+    
+    if 'label_color' not in params:
+        params['label_color'] = '#ffffff'
+
+    if 'label_opacity' not in params:
+        params['label_opacity'] = 1.0
+
+    if 'edge_opacity' not in params:
+        params['edge_opacity'] = 1.0
+
+    # layout params 
+    if 'force_repel' not in params: 
+        params['force_repel'] = -200
+
+    if 'force_charge' not in params: 
+        params['force_charge'] = -20
+
+    if 'force_alpha' not in params: 
+        params['force_alpha'] = 0.0
+
+    # arrows
     if 'edge_arrows' not in params:
         params['edge_arrows'] = 'true'
     else:
@@ -282,8 +352,31 @@ def export_html(network, filename, **params):
                 or a dictionary that assigns custom edge color to invidual edges.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#999999".
+            edge_opacity: float
+                The opacity of all edges in a range from 0.0 to 1.0. Default value is 1.0.                
             edge_arrows: bool
                 Whether to draw edge arrows for directed networks. Default value is True.
+            label_color: string
+                The HTML color of node labels. Default value is #ffffff.
+            label_opacity: float
+                The opacity of the label. Default is 1.0.
+            label_size: int
+                Size of the font to be used for labels.
+            label_offset: list
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
+                displayed in the center of a node. Positive values for the first and second component
+                move the label to the right and top respectively. Default is [0, -10], which 
+                displays labels above the nodes.
+            label_opacity: float
+                Opacity of node labels. Default is 0.7.                
+            force_charge: float, int
+                The charge strength of nodes to be used in the force-directed layout. Default value is -20
+            force_repel: float, int
+                The strength of the repulsive force between nodes. Larger negative values will increase the distance
+                between nodes. Default value is -200.
+            force_alpha: float
+                The alpha target (convergence threshold) to be passed to the underlying force-directed 
+                layout algorithm. Default value is 0.0.                          
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
                 default pathpy network template will be used.
@@ -362,6 +455,8 @@ def _plot_tempnet(tempnet, **params):
                 A string value that specifies the HTML color of inactive edges.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#999999".
+            edge_opacity: float
+                The opacity of active edges in a range from 0.0 to 1.0. Default value is 1.0.                
             active_node_color: string
                 A string value that specifies the HTML color of active nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
@@ -371,7 +466,9 @@ def _plot_tempnet(tempnet, **params):
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#999999".
             label_color: string
-                The HTML color of node labels. Default value is #ffffff. 
+                The HTML color of node labels. Default value is #ffffff.
+            label_opacity: float
+                The opacity of the label. Default is 1.0.
             label_size: int
                 Size of the font to be used for labels.
             label_offset: list
@@ -379,6 +476,14 @@ def _plot_tempnet(tempnet, **params):
                 displayed in the center of a node. Positive values for the first and second component
                 move the label to the right and top respectively. Default is [0, -10], which 
                 displays labels above the nodes.
+            force_charge: float, int
+                The charge strength of nodes to be used in the force-directed layout. Default value is -20
+            force_repel: float, int
+                The strength of the repulsive force between nodes. Larger negative values will increase the distance
+                between nodes. Default value is -200.
+            force_alpha: float
+                The alpha target (convergence threshold) to be passed to the underlying force-directed 
+                layout algorithm. Default value is 0.0.
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
                 default pathpy network template will be used.
@@ -456,6 +561,8 @@ def _generate_html_tempnet(tempnet, **params):
                 A string value that specifies the HTML color of inactive edges.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#999999".
+            edge_opacity: float
+                The opacity of active edges in a range from 0.0 to 1.0. Default value is 1.0.                
             active_node_color: string
                 A string value that specifies the HTML color of active nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
@@ -473,6 +580,16 @@ def _generate_html_tempnet(tempnet, **params):
                 displayed in the center of a node. Positive values for the first and second component
                 move the label to the right and top respectively. Default is [0, -10], which 
                 displays labels above the nodes.
+            label_opacity: float
+                Opacity of node labels. Default is 0.7.                
+            force_charge: float, int
+                The charge strength of nodes to be used in the force-directed layout. Default value is -20
+            force_repel: float, int
+                The strength of the repulsive force between nodes. Larger negative values will increase the distance
+                between nodes. Default value is -200.
+            force_alpha: float
+                The alpha target (convergence threshold) to be passed to the underlying force-directed 
+                layout algorithm. Default value is 0.0.                
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
                 default pathpy network template will be used.
@@ -532,6 +649,7 @@ def _generate_html_tempnet(tempnet, **params):
     if 'height' not in params:
         params['height'] = 400
 
+    # label params
     if 'label_size' not in params:
         params['label_size'] = 12
     
@@ -541,12 +659,28 @@ def _generate_html_tempnet(tempnet, **params):
     if 'label_color' not in params:
         params['label_color'] = '#ffffff'
 
+    if 'label_opacity' not in params:
+        params['label_opacity'] = 1.0
+
+    # layout params 
+    if 'force_repel' not in params: 
+        params['force_repel'] = -200
+
+    if 'force_charge' not in params: 
+        params['force_charge'] = -20
+
+    if 'force_alpha' not in params: 
+        params['force_alpha'] = 0.0
+
     # Colors and sizes
     if 'node_size' not in params:
         params['node_size'] = 5.0
 
     if 'active_edge_color' not in params:
         params['active_edge_color'] = '#ff0000'
+
+    if 'edge_opacity' not in params:
+        params['edge_opacity'] = 1.0
 
     if 'inactive_edge_width' not in params:
         params['inactive_edge_width'] = 0.5
@@ -656,6 +790,8 @@ def _export_html_tempnet(tempnet, filename, **params):
                 A string value that specifies the HTML color of inactive edges.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#999999".
+            edge_opacity: float
+                The opacity of active edges in a range from 0.0 to 1.0. Default value is 1.0.                
             active_node_color: string
                 A string value that specifies the HTML color of active nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
@@ -673,6 +809,16 @@ def _export_html_tempnet(tempnet, filename, **params):
                 displayed in the center of a node. Positive values for the first and second component
                 move the label to the right and top respectively. Default is [0, -10], which 
                 displays labels above the nodes.
+            label_opacity: float
+                Opacity of node labels. Default is 0.7.
+            force_charge: float, int
+                The charge strength of nodes to be used in the force-directed layout. Default value is -20
+            force_repel: float, int
+                The strength of the repulsive force between nodes. Larger negative values will increase the distance
+                between nodes. Default value is -200.
+            force_alpha: float
+                The alpha target (convergence threshold) to be passed to the underlying force-directed 
+                layout algorithm. Default value is 0.0.                
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
                 default pathpy network template will be used.
