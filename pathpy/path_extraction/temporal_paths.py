@@ -227,32 +227,47 @@ def generate_causal_tree(dag, root, node_map):
     """    
     causal_tree = DAG()
     causal_mapping = {}
+    visited = defaultdict(lambda: False)
     queue = deque()
 
     # launch breadth-first-search at root of tree
+    # root nodes are necessarily at depth 0
     queue.append((root, 0))
+    edges = []
     while queue:
+        # take out left-most element from FIFO queue
         v, depth = queue.popleft()
 
-        # node x is the node in the causal tree
+        # x is the node ID of the node in the causal tree
+        # the second component captures the distance from
+        # the root of the causal tree. These IDs ensure
+        # that the same physical nodes can occur at different
+        # distances from the root
         x = '{0}_{1}'.format(node_map[v], depth)
         causal_mapping[x] = node_map[v]
 
-        # only consider neighbors that have not been considered at this level
-        # since we project nodes to the same depth anyway, we do not need to
-        # these duplicate edges to the causal tree
-        visited = set()
+        # only consider nodes that have not already
+        # been added to this level
+        # visited = set()
 
         # process nodes at next level
         for w in dag.successors[v]:
-            # Log.add('Processing node {0} at depth {1}'.format(w, depth+1), Severity.INFO)
-            queue.append((w, depth+1))
-            if node_map[w] not in visited:
-                # add edge to causal tree
-                y = '{0}_{1}'.format(node_map[w], depth+1)
-                visited.add(node_map[w])
-                causal_tree.add_edge(x, y)
-                causal_mapping[y] = node_map[w]
+            if (w, depth+1) not in queue:
+                queue.append((w, depth+1))
+                #print((w, depth+1))
+                #print(len(queue))
+                if not visited[node_map[w], depth+1]:
+                # if node_map[w] not in visited:
+                    # add edge to causal tree
+                    y = '{0}_{1}'.format(node_map[w], depth+1)
+                    #print(y)
+                    # visited.add(node_map[w])
+                    edges.append((x, y))
+                    visited[node_map[w], depth+1] = True
+                    causal_mapping[y] = node_map[w]
+    
+    # Adding all edges at once is more efficient!
+    causal_tree.add_edges(edges)
 
     return causal_tree, causal_mapping
 
@@ -325,6 +340,7 @@ def paths_from_temporal_network_dag(tempnet, delta=1, max_subpath_length=None):
     Log.add('Constructing time-unfolded DAG ...')
     dag, node_map = DAG.from_temporal_network(tempnet, delta)
     Log.add('finished.')
+    print(dag)
 
     causal_paths = Paths()
     
@@ -336,8 +352,10 @@ def paths_from_temporal_network_dag(tempnet, delta=1, max_subpath_length=None):
     Log.add('Generating causal trees for {0} root nodes ...'.format(num_roots))
     for root in dag.roots:
         causal_tree, causal_mapping = generate_causal_tree(dag, root, node_map)
-        if num_roots > 200 and current_root % 100 == 0:
-            Log.add('Analyzing causal paths in tree {0}/{1} ...'.format(current_root, num_roots))
+        if num_roots > 10:
+            step = num_roots/10
+            if current_root % step == 0:
+                Log.add('Analyzing tree {0}/{1} ...'.format(current_root, num_roots))
         # elevate Logging level
         x = Log.min_severity
         Log.set_min_severity(Severity.WARNING)
@@ -359,7 +377,7 @@ def sample_paths_from_temporal_network_dag(tempnet, delta=1, num_roots=1, max_su
     time-stamped links on a path. This method first creates a directed and acyclic
     time-unfolded graph based on the given parameter delta. This directed acyclic
     graph is used to calculate causal paths for a given delta, randomly sampling num_roots
-    roots in the time-unfolded DAG.    
+    roots in the time-unfolded DAG.
 
     Parameters
     ----------
@@ -384,7 +402,10 @@ def sample_paths_from_temporal_network_dag(tempnet, delta=1, num_roots=1, max_su
     # generate a single time-unfolded DAG
     Log.add('Constructing time-unfolded DAG ...')
     dag, node_map = DAG.from_temporal_network(tempnet, delta)
+    # dag.topsort()
+    # assert dag.is_acyclic
     Log.add('finished.')
+    print(dag)
 
     causal_paths = Paths()
     
@@ -396,13 +417,16 @@ def sample_paths_from_temporal_network_dag(tempnet, delta=1, num_roots=1, max_su
     import random
     for root in random.sample(dag.roots, num_roots):
         causal_tree, causal_mapping = generate_causal_tree(dag, root, node_map)
-        if num_roots > 200 and current_root % 100 == 0:
-            Log.add('Analyzing causal paths in tree {0}/{1} ...'.format(current_root, num_roots))
+        if num_roots > 10:
+            step = num_roots/10
+            if current_root % step == 0:
+                Log.add('Analyzing tree {0}/{1} ...'.format(current_root, num_roots))
         # elevate Logging level
         x = Log.min_severity
         Log.set_min_severity(Severity.WARNING)
 
         # calculate all unique longest path in causal tree
+        print(causal_tree.ncount())
         causal_paths += paths_from_dag(causal_tree, causal_mapping, repetitions=False, max_subpath_length=max_subpath_length)
         current_root += 1
 

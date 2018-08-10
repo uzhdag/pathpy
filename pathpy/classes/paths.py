@@ -82,17 +82,30 @@ class Paths:
         l_path_sum = []
         max_path_length = 0
         average_length = 0
+
+        if not self.paths:
+            return 'Path instance is empty'
+
+        # this ensures that all entries are created in the defaultdic
+        for k in range(0, max(self.paths)+1):
+            l_path_sum.append(0.0)
+            sub_path_sum.append(0.0)
+            total_paths.append(0.0)
+        
         for k in sorted(self.paths):
             paths_ = self.paths[k]
-            values_ = np.array(list(paths_.values()))
-            v_0 = np.sum(values_[:, 0])
-            v_1 = np.sum(values_[:, 1])
-            total_paths += [v_0 + v_1]
-            sub_path_sum += [v_0]
-            l_path_sum += [v_1]
-            average_length += v_1 * k
+            # we may have cases that there are no paths
+            # with length k!
             if paths_:
+                values_ = np.array(list(paths_.values()))
+                v_0 = np.sum(values_[:, 0])
+                v_1 = np.sum(values_[:, 1])
+                total_paths[k] += v_0 + v_1
+                sub_path_sum[k] += v_0
+                l_path_sum[k] += v_1
+                average_length += v_1 * k
                 max_path_length = max(max_path_length, k)
+                
         if np.sum(l_path_sum) > 0:
             average_length = average_length / np.sum(l_path_sum)
 
@@ -559,7 +572,7 @@ class Paths:
                 # path, which is stored in the second entry of the numpy array
                 frequency = value[1]
 
-                # compute maximum length of sub paths to consider
+                # compute the maximum length of sub paths to consider
                 # (maximum up to pathLength)
                 max_length = min(self.max_subpath_length + 1, path_length)
 
@@ -568,8 +581,7 @@ class Paths:
                     # Generate subpaths of length k for all start indices s
                     # for s = 0 to s = pathLength-k (inclusive)
                     for s in range(path_length - k + 1):
-                        # Add frequency as a subpath to *first* entry of occurrence
-                        # counter
+                        # Add frequency as a subpath to *first* entry of array
                         path_slice = path[s:s + k + 1]
                         self.paths[k][path_slice][0] += frequency
 
