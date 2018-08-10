@@ -143,7 +143,8 @@ class MultiOrderModel:
             raise PathpyError("max_order must be a positive integer not %d" % max_order)
 
         if max_order <= current_max_order:
-            Log.add("Layers up to order %d already added. Nothing changed." % self.max_order)
+            return
+#             Log.add("Layers up to order %d already added. Nothing changed." % self.max_order)
 
         orders_to_add = list(range(current_max_order+1, max_order+1))
         if len(orders_to_add) > 1 and ENABLE_MULTICORE_SUPPORT:
