@@ -23,7 +23,7 @@
 #    E-mail: scholtes@ifi.uzh.ch
 #    Web:    http://www.ingoscholtes.net
 import enum
-import time
+from datetime import datetime
 import sys
 
 
@@ -88,6 +88,6 @@ class Log:
             will be added to the message by default.
         """
         if severity >= Log.min_severity:
-            ts = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+            ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             Log.output_stream.write(ts + ' [' + str(severity) + ']\t' + msg + '\n')
             Log.output_stream.flush()
