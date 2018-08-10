@@ -161,9 +161,9 @@ class TemporalNetwork:
                 # a UNIX timestamp
                 x = datetime.datetime.strptime(timestamp, timestamp_format)
                 t = int(mktime(x.timetuple()))
-            tedges.append((str(row['source']), str(row['target']), t/time_rescale))
+            tedges.append((str(row['source']), str(row['target']), int(t/time_rescale)))
             if not directed:
-                tedges.append((str(row['target']), str(row['source']), t/time_rescale))
+                tedges.append((str(row['target']), str(row['source']), int(t/time_rescale)))
 
         return cls(tedges=tedges)
 
@@ -260,10 +260,10 @@ class TemporalNetwork:
                     else:
                         t = n
                     if t >= 0 and fields[source_ix] != '' and fields[target_ix] != '':
-                        tedge = (fields[source_ix], fields[target_ix], t/time_rescale)
+                        tedge = (fields[source_ix], fields[target_ix], int(t/time_rescale))
                         tedges.append(tedge)
                         if not directed:
-                            tedges.append((fields[target_ix], fields[source_ix], t/time_rescale))
+                            tedges.append((fields[target_ix], fields[source_ix], int(t/time_rescale)))
                     else:  # pragma: no cover
                         s_line = line.strip()
                         if fields[source_ix] == '' or fields[target_ix] == '':
