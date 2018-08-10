@@ -313,7 +313,78 @@ def _plot_tempnet(tempnet, **params):
         A dictionary with visualization parameters to be passed to the HTML
         generation function. These parameters can be processed by custom
         visualisation templates extendable by the user. The default pathpy template
-        supports the following parameters:            
+        supports the following parameters:
+            width: int
+                Width of the div element containing the jupyter visualization.
+                Default value is 400.
+            height: int
+                Height of the div element containing the jupyter visualization.
+                Default value is 400.
+            ms_per_frame: int
+                how many milliseconds each frame of the visualisation shall be displayed.
+                The inverse of this value gives the framerate of the resulting visualisation.
+                The default value of 20 yields a framerate of 50 fps.
+            ts_per_frame: int
+                How many timestamps in the temporal network shall be displayed in every frame
+                of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
+                For higher values, multiple timestamps will be aggregated in a single frame. For a
+                value of zero, simulation speed is adjusted to the inter event time distribution such
+                that on average five interactions are shown per second. Default value is 10.
+            look_behind: int
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout. 
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
+            look_ahead: int
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout. 
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
+            node_size: float
+                An float value that specifies the radius of all nodes.
+                Default value is 5.0.            
+            active_edge_width: float
+                A float value that specifies the width of active edges.
+                Default value is 4.0.
+            inactive_edge_width: float
+                A float value that specifies the width of active edges.
+                Default value is 0.5.
+            node_color: string, dict
+                Either a string value that specifies the HTML color of all nodes,
+                or a dictionary that assigns custom node colors to invidual nodes.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#99ccff"
+            active_edge_color: string
+                A string value that specifies the HTML color of active edges.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#ff0000".
+            inactive_edge_color: string
+                A string value that specifies the HTML color of inactive edges.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#999999".
+            active_node_color: string
+                A string value that specifies the HTML color of active nodes.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#ff0000".
+            inactive_node_color: string
+                A string value that specifies the HTML color of inactive nodes.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#999999".
+            label_color: string
+                The HTML color of node labels. Default value is #ffffff. 
+            label_size: int
+                Size of the font to be used for labels.
+            label_offset: list
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
+                displayed in the center of a node. Positive values for the first and second component
+                move the label to the right and top respectively. Default is [0, -10], which 
+                displays labels above the nodes.
+            template: string
+                Path to custom visualization template file. If this parameter is omitted, the
+                default pathpy network template will be used.
+            d3js_path: string
+                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
+                For offline operation, the URL to a local copy of d3js can be specified instead.     
     """
     assert isinstance(tempnet, TemporalNetwork), \
         "tempnet must be an instance of TemporalNetwork"
@@ -348,15 +419,21 @@ def _generate_html_tempnet(tempnet, **params):
                 The inverse of this value gives the framerate of the resulting visualisation.
                 The default value of 20 yields a framerate of 50 fps.
             ts_per_frame: int
-                how many timestamps in the temporal network shall be displayed in every frame
+                How many timestamps in the temporal network shall be displayed in every frame
                 of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
                 For higher values, multiple timestamps will be aggregated in a single frame. For a
                 value of zero, simulation speed is adjusted to the inter event time distribution such
                 that on average five interactions are shown per second. Default value is 10.
             look_behind: int
-                Default value is 1500.
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout. 
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
             look_ahead: int
-                Default value is 150.
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout. 
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
             node_size: float
                 An float value that specifies the radius of all nodes.
                 Default value is 5.0.            
@@ -387,6 +464,15 @@ def _generate_html_tempnet(tempnet, **params):
                 A string value that specifies the HTML color of inactive nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#999999".
+            label_color: string
+                The HTML color of node labels. Default value is #ffffff. 
+            label_size: int
+                Size of the font to be used for labels.
+            label_offset: list
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
+                displayed in the center of a node. Positive values for the first and second component
+                move the label to the right and top respectively. Default is [0, -10], which 
+                displays labels above the nodes.
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
                 default pathpy network template will be used.
@@ -414,10 +500,10 @@ def _generate_html_tempnet(tempnet, **params):
         params['ts_per_frame'] = _np.max([1, int(20 * x)])
 
     if 'look_ahead' not in params:
-        params['look_ahead'] = 150
+        params['look_ahead'] = 10
 
     if 'look_behind' not in params:
-        params['look_behind'] = 1500    
+        params['look_behind'] = 10
 
     # prefix nodes starting with number
     def fix_node_name(v):
@@ -446,6 +532,15 @@ def _generate_html_tempnet(tempnet, **params):
     if 'height' not in params:
         params['height'] = 400
 
+    if 'label_size' not in params:
+        params['label_size'] = 12
+    
+    if 'label_offset' not in params:
+        params['label_offset'] = [0,-10]
+    
+    if 'label_color' not in params:
+        params['label_color'] = '#ffffff'
+
     # Colors and sizes
     if 'node_size' not in params:
         params['node_size'] = 5.0
@@ -466,7 +561,7 @@ def _generate_html_tempnet(tempnet, **params):
         params['active_node_color'] = '#ff0000'
 
     if 'inactive_node_color' not in params:
-        params['inactive_node_color'] = '#999999'    
+        params['inactive_node_color'] = '#999999'  
 
     # Create a random DIV ID to avoid conflicts within the same notebook
     div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
@@ -513,7 +608,7 @@ def _export_html_tempnet(tempnet, filename, **params):
         generation function. These parameters can be processed by custom
         visualisation templates extendable by the user. The default pathpy template
         supports the following parameters:
-            width: int
+                        width: int
                 Width of the div element containing the jupyter visualization.
                 Default value is 400.
             height: int
@@ -524,18 +619,24 @@ def _export_html_tempnet(tempnet, filename, **params):
                 The inverse of this value gives the framerate of the resulting visualisation.
                 The default value of 20 yields a framerate of 50 fps.
             ts_per_frame: int
-                how many timestamps in the temporal network shall be displayed in every frame
+                How many timestamps in the temporal network shall be displayed in every frame
                 of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
                 For higher values, multiple timestamps will be aggregated in a single frame. For a
                 value of zero, simulation speed is adjusted to the inter event time distribution such
                 that on average five interactions are shown per second. Default value is 10.
             look_behind: int
-                Default value is 1500.
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout. 
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
             look_ahead: int
-                Default value is 150.
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout. 
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
             node_size: float
                 An float value that specifies the radius of all nodes.
-                Default value is 5.0.
+                Default value is 5.0.            
             active_edge_width: float
                 A float value that specifies the width of active edges.
                 Default value is 4.0.
@@ -563,6 +664,15 @@ def _export_html_tempnet(tempnet, filename, **params):
                 A string value that specifies the HTML color of inactive nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#999999".
+            label_color: string
+                The HTML color of node labels. Default value is #ffffff. 
+            label_size: int
+                Size of the font to be used for labels.
+            label_offset: list
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
+                displayed in the center of a node. Positive values for the first and second component
+                move the label to the right and top respectively. Default is [0, -10], which 
+                displays labels above the nodes.
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
                 default pathpy network template will be used.
