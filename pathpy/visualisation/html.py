@@ -163,12 +163,12 @@ def generate_html(network, **params):
                 The HTML color of node labels. Default value is #ffffff.
             label_opacity: float
                 The opacity of the label. Default is 1.0.
-            label_size: int
-                Size of the font to be used for labels.
+            label_size: string
+                CSS-style font size of the font to be used for labels. Default is '8px'.
             label_offset: list
-                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be
                 displayed in the center of a node. Positive values for the first and second component
-                move the label to the right and top respectively. Default is [0, -10], which 
+                move the label to the right and top respectively. Default is [0, -10], which
                 displays labels above the nodes.
             force_charge: float, int
                 The charge strength of nodes to be used in the force-directed layout. Default value is -20
@@ -176,7 +176,7 @@ def generate_html(network, **params):
                 The strength of the repulsive force between nodes. Larger negative values will increase the distance
                 between nodes. Default value is -200.
             force_alpha: float
-                The alpha target (convergence threshold) to be passed to the underlying force-directed 
+                The alpha target (convergence threshold) to be passed to the underlying force-directed
                 layout algorithm. Default value is 0.0.                          
             template: string
                 Path to custom visualization template file. If this parameter is omitted, the
@@ -235,7 +235,7 @@ def generate_html(network, **params):
 
     # label params
     if 'label_size' not in params:
-        params['label_size'] = 8
+        params['label_size'] = '8px'
     
     if 'label_offset' not in params:
         params['label_offset'] = [0,-10]
@@ -573,8 +573,8 @@ def _generate_html_tempnet(tempnet, **params):
                 be used. Default value is "#999999".
             label_color: string
                 The HTML color of node labels. Default value is #ffffff. 
-            label_size: int
-                Size of the font to be used for labels.
+            label_size: str
+                CSS-style size of the font to be used for labels. Default value is '8px'
             label_offset: list
                 The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
                 displayed in the center of a node. Positive values for the first and second component
@@ -651,7 +651,7 @@ def _generate_html_tempnet(tempnet, **params):
 
     # label params
     if 'label_size' not in params:
-        params['label_size'] = 12
+        params['label_size'] = '8px'
     
     if 'label_offset' not in params:
         params['label_offset'] = [0,-10]
