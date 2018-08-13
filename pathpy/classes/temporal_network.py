@@ -353,7 +353,7 @@ class TemporalNetwork:
 
         return TemporalNetwork(tedges=new_t_edges)
 
-    def add_edge(self, source, target, ts, directed=True):
+    def add_edge(self, source, target, ts, directed=True, timestamp_format='%Y-%m-%d %H:%M:%S'):
         """Adds a time-stamped edge (source,target;time) to the temporal network.
         Unless specified otherwise, time-stamped edges are assumed to be directed.
 
@@ -366,12 +366,28 @@ class TemporalNetwork:
         ts: int
             time-stamp of the time-stamped link
         directed: bool
+        timestamp_format: string
+            if timestamps are passed as strings, the following timestamp format is used 
+            to parse the timestamps in order to obtain UNIX timestamps (seconds since 1970).
 
         Returns
         -------
 
         """
-        e = (source, target, ts)
+        assert isinstance(ts, int) or isinstance(ts, str), 'Timestamp must either be string or int' 
+
+        if isinstance(ts, str):
+            if ts.isdigit():
+                t = int(ts)
+            else:
+                # if it is a string, we use the timestamp format to convert
+                # it to a UNIX timestamp
+                x = datetime.datetime.strptime(ts, timestamp_format)
+                t = int(mktime(x.timetuple()))
+        else:
+            t = ts
+
+        e = (source, target, t)
         self.tedges.append(e)
         if source not in self.nodes:
             self.nodes.append(source)
@@ -379,23 +395,23 @@ class TemporalNetwork:
             self.nodes.append(target)
 
         # Add edge to index structures
-        self.time[ts].append(e)
-        self.targets[ts].setdefault(target, []).append(e)
-        self.sources[ts].setdefault(source, []).append(e)
+        self.time[t].append(e)
+        self.targets[t].setdefault(target, []).append(e)
+        self.sources[t].setdefault(source, []).append(e)
 
-        if ts not in self.activities[source]:
-            self.activities[source].append(ts)
+        if t not in self.activities[source]:
+            self.activities[source].append(t)
             self.activities[source].sort()
 
         # Maintain order of time stamps
-        index = bisect.bisect_left(self.ordered_times, ts)
+        index = bisect.bisect_left(self.ordered_times, t)
         # add if ts is not already in list
-        if index == len(self.ordered_times) or self.ordered_times[index] != ts:
-            self.ordered_times.insert(index, ts)
+        if index == len(self.ordered_times) or self.ordered_times[index] != t:
+            self.ordered_times.insert(index, t)
 
         # make edge undirected by adding another directed edge
         if not directed:
-            self.add_edge(target, source, ts)
+            self.add_edge(target, source, t)
 
     def vcount(self):
         """Returns the number of vertices in the temporal network.
