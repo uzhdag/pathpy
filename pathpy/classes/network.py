@@ -374,7 +374,22 @@ class Network:
         """
         Returns all edges that satisfy a given condition. Edges can be selected based
         on attributes of the adjacent nodes as well as attributes of the edge. In the select_edges
-        lambda function, edge attributes can be accessed by calling e['attr']
+        lambda function,.
+
+        Parameters
+        ----------
+        select_nodes: 
+            a lambda function that takes two parameters v, w corresponding to the source and 
+            target node of an edge. All edges for which the lambda function returns True will be 
+            selected. Default is lambda v,w: True.
+        select_edges:
+            a lambda function that takes a single parameter e corresponding to an edge tuple. 
+            Edge attributes can be accessed by e['attr']. All edges for which the lambda function 
+            returns True will be selected.  Default is lambda e: True.
+
+        Example:
+        >>> network.find_edges(select_nodes = lambda v,w: if v['desired_node_property'] return True, 
+                               select_edges = lambda e: if e['desired_edge_propert'] return True)
         """
         return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
 
