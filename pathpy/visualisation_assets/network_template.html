@@ -4,6 +4,8 @@
         font-size: $label_size;
         font-family: Arial, Helvetica, sans-serif;
         fill: $label_color;
+        stroke: #ffffff;
+        stroke-width: 0.1px;
         opacity: $label_opacity;
     }
     .links line {
@@ -132,7 +134,7 @@ require(["d3"], function(d3) {
 
     var zoom_handler = d3.zoom()
         .on("zoom", zoom_actions);
-    zoom_handler(svg);        
+    zoom_handler(svg);
 
     // attach event handler for svg export
     d3.select('#${div_id}_svg_txt').on("click", save_svg);
