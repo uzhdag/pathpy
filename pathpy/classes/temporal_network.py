@@ -168,7 +168,7 @@ class TemporalNetwork:
         return cls(tedges=tedges)
 
     @classmethod
-    def read_file(cls, filename, sep=',', directed=True,
+    def read_file(cls, filename, separator=',', directed=True,
                   timestamp_format='%Y-%m-%d %H:%M:%S', maxlines=sys.maxsize, time_rescale=1):
         """
         Reads time-stamped links from a file and returns a new instance of the class
@@ -215,7 +215,7 @@ class TemporalNetwork:
             tedges = []
 
             header = f.readline()
-            header = header.split(sep)
+            header = header.split(separator)
 
             # If header columns are included, arbitrary column orders are supported
             time_ix = -1
@@ -245,7 +245,7 @@ class TemporalNetwork:
             line = f.readline()
             n = 1
             while line and n <= maxlines:
-                fields = line.rstrip().split(sep)
+                fields = line.rstrip().split(separator)
                 try:
                     if time_ix >= 0:
                         timestamp = fields[time_ix]
