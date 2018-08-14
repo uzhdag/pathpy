@@ -73,16 +73,16 @@ def test_estimate_order_1():
     """Example without second-order correlations"""
     paths = pp.Paths()
 
-    paths.add_path_ngram('a,c')
-    paths.add_path_ngram('b,c')
-    paths.add_path_ngram('c,d')
-    paths.add_path_ngram('c,e')
+    paths.add_path('a,c')
+    paths.add_path('b,c')
+    paths.add_path('c,d')
+    paths.add_path('c,e')
 
     for k in range(4):
-        paths.add_path_ngram('a,c,d')
-        paths.add_path_ngram('b,c,e')
-        paths.add_path_ngram('b,c,d')
-        paths.add_path_ngram('a,c,e')
+        paths.add_path('a,c,d')
+        paths.add_path('b,c,e')
+        paths.add_path('b,c,d')
+        paths.add_path('a,c,e')
 
     m = pp.MultiOrderModel(paths, max_order=2)
     assert m.estimate_order() == 1, \
@@ -93,16 +93,16 @@ def test_estimate_order_2():
     # Example with second-order correlations
     paths = pp.Paths()
 
-    paths.add_path_ngram('a,c')
-    paths.add_path_ngram('b,c')
-    paths.add_path_ngram('c,d')
-    paths.add_path_ngram('c,e')
+    paths.add_path('a,c')
+    paths.add_path('b,c')
+    paths.add_path('c,d')
+    paths.add_path('c,e')
 
     for k in range(4):
-        paths.add_path_ngram('a,c,d')
-        paths.add_path_ngram('b,c,e')
+        paths.add_path('a,c,d')
+        paths.add_path('b,c,e')
 
-    m = pp.MultiOrderModel(paths)
+    m = pp.MultiOrderModel(paths, max_order=2)
     assert m.estimate_order() == 2
 
 

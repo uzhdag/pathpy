@@ -125,9 +125,9 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
                     extracted_paths = set(tuple(x) for x in extracted_paths)
                 for path in extracted_paths:   # add detected paths to paths object                    
                     if repetitions:
-                        p.add_path_tuple(path, expand_subpaths=False, frequency=(0, 1))
+                        p.add_path(path, expand_subpaths=False, frequency=(0, 1))
                     else:
-                        p.add_path_tuple(remove_repetitions(path), expand_subpaths=False, frequency=(0, 1))
+                        p.add_path(remove_repetitions(path), expand_subpaths=False, frequency=(0, 1))
         else:
             path_counter = defaultdict(lambda: 0)
             for root in dag.roots:
@@ -137,9 +137,9 @@ def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=',
 
             for path, count in path_counter.items():
                 if repetitions:
-                    p.add_path_tuple(path, expand_subpaths=False, frequency=(0, count))
+                    p.add_path(path, expand_subpaths=False, frequency=(0, count))
                 else:
-                    p.add_path_tuple(remove_repetitions(path), expand_subpaths=False, frequency=(0, count))
+                    p.add_path(remove_repetitions(path), expand_subpaths=False, frequency=(0, count))
 
         Log.add('Expanding Subpaths', Severity.INFO)
         p.expand_subpaths()

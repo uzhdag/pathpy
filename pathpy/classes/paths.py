@@ -22,6 +22,7 @@
 #
 #    E-mail: scholtes@ifi.uzh.ch
 #    Web:    http://www.ingoscholtes.net
+
 from collections import defaultdict
 import sys
 import copy
@@ -31,7 +32,6 @@ from pathpy.utils import Log, Severity
 from pathpy.utils.exceptions import PathpyError
 from pathpy.utils.default_containers import nested_zero_default as _nested_zero_default
 from pathpy.utils.default_containers import zero_array_default as _zero_array_default
-
 
 class Paths:
     """
@@ -585,40 +585,55 @@ class Paths:
                         path_slice = path[s:s + k + 1]
                         self.paths[k][path_slice][0] += frequency
 
-    def add_path_tuple(self, path, frequency=1, expand_subpaths=True):
-        """Adds a path based on a tuple of nodes. Tuple elements are automatically
-        converted to strings.
+
+    def add_path(self, path, frequency=1, expand_subpaths=True, separator=','):
+        """Adds a path to this Paths instance. The path argument can either be a list, tuple or
+        a string ngram with a customisable node separator.
 
         Parameters
         ----------
-        path: tuple
-            The path tuple to be added, e.g. ('a', 'b', 'c')
+        path: tuple, list, str
+            The path to be added to this Paths instance. This can either be a list or tuple of
+            objects that can be turned into strings, e.g. ('a', 'b', 'c') or (1, 3, 5), or
+            a single string ngram "a,b,c", where nodes are separated by a user-defined
+            separator character (default separator is ',').
         frequency: int, tuple
-            A tuple (x,y) indicating the frequency of this path as subpath
-            (first component) and as longest path (second component). Integer
+            Either an integer frequency, or a tuple (x,y) indicating the frequency of this
+            path as subpath (first component) and as longest path (second component). Integer
             values x are automatically converted to (0, x). Default value is 1.
         expand_subpaths: bool
-            Whether or not to calculate subpath statistics. Default value is True.
+            Whether or not to calculate subpath statistics. Default value is True.            
+        separator: str
+            A string sepcifying the character that separates nodes in the ngram. Default is 
+            ','.
         Returns
-        -------
+        -------    
+        """        
+        assert isinstance(path, tuple) or isinstance(path, list) or isinstance(path, str), 'Path must be tuple or ngram string.'
 
-        """
-        assert path, 'Error: paths needs to contain at least one element'
+        # Turn string ngram into tuple
+        if isinstance(path, str):
+            path = tuple(path.split(separator))
+
+        assert path, 'Path must contain at least one element'
 
         for x in path:
             if isinstance(x, str) and self.separator in x:
-                raise PathpyError('Error: Node name contains separator character. '
+                raise PathpyError('Node name contains separator character. '
                                   'Choose different separator.')
 
+        # Convert tuple elements to strings
         path_str = path if isinstance(path, str) else tuple(map(str, path))
+
+        path_length = len(path) - 1
 
         if isinstance(frequency, int):
             frequency = (0, frequency)
-        self.paths[len(path) - 1][path_str] += frequency
+        self.paths[path_length][path_str] += frequency
 
         if expand_subpaths:
 
-            max_length = min(self.max_subpath_length + 1, len(path_str) - 1)
+            max_length = min(self.max_subpath_length + 1, path_length)
 
             for k in range(0, max_length):
                 for s in range(len(path_str) - k):
@@ -628,50 +643,6 @@ class Paths:
                     # construct subpath
                     for i in range(s, s + k + 1):
                         subpath += (path_str[i],)
-                    # add subpath weight to first component of occurrences
-                    self.paths[k][subpath][0] += frequency[1]
-
-    def add_path_ngram(self, ngram, frequency=1, expand_subpaths=True, separator=','):
-        """Adds a path based on a string n-gram with customizable node separator.
-
-        Parameters
-        ----------
-        ngram: str
-            An ngram representing a path between nodes, separated by the separator
-            character, e.g. a 4-gram "a,b,c,d" corresponds to a path of length three
-            (for default separator ',').
-        frequency: int, tuple
-            A tuple (x,y) indicating the frequency of this path as subpath
-            (first component) and as longest path (second component). Integer
-            values x are automatically converted to (0, x). Default value is 1.            
-        expand_subpaths: bool
-            Whether or not to calculate subpath statistics. Default value is True.
-        separator: str
-            The character that separates nodes in the ngram. Default value is ','.
-        """
-        path = tuple(ngram.split(separator))
-        for x in path:
-            if isinstance(x, str) and self.separator in x:
-                raise PathpyError('Error: Node name contains separator character.'
-                                  'Choose different separator.')
-
-        path_length = len(path) - 1
-
-        # add the occurrences as *longest* path to the second component of the numpy array
-        if isinstance(frequency, int):
-            frequency = (0, frequency)
-        self.paths[path_length][path][1] += frequency[1]
-
-        if expand_subpaths:
-            max_length = min(self.max_subpath_length + 1, path_length)
-            for k in range(0, max_length):
-                for s in range(len(path) - k):
-                    # for all start indices from 0 to n-k
-
-                    subpath = ()
-                    # construct subpath
-                    for i in range(s, s + k + 1):
-                        subpath += (path[i],)
                     # add subpath weight to first component of occurrences
                     self.paths[k][subpath][0] += frequency[1]
 
@@ -743,7 +714,7 @@ class Paths:
                         for s in contained:
                             if min_length <= len(s) - 1 <= max_length:
                                 freq = (0, self.paths[p_length][x][1])
-                                p.add_path_tuple(s, expand_subpaths=True, frequency=freq)
+                                p.add_path(s, expand_subpaths=True, frequency=freq)
         return p
 
     def project_paths(self, mapping):
@@ -775,5 +746,5 @@ class Paths:
                         new_p += (mapping[v],)
                     # add to new path object and expand sub paths
                     freq = (0, self.paths[p_length][x][1])
-                    p.add_path_tuple(new_p, expand_subpaths=True, frequency=freq)
+                    p.add_path(new_p, expand_subpaths=True, frequency=freq)
         return p

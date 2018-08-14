@@ -64,5 +64,5 @@ def random_walk(network, l, n=1):
             else:
                 print('no neighbor')
                 break
-        p.add_path_tuple(path)
+        p.add_path(path)
     return p

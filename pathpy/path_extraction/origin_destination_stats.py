@@ -115,11 +115,11 @@ def paths_from_origin_destination(origin_destination_list, network,
             # distributed among all possible shortest paths between a pair of nodes,
             # while constraining the weight of shortest paths to integers.
             for i in range(int(w)):
-                paths.add_path_tuple(sp[i % num_paths], frequency=(0, 1))
+                paths.add_path(sp[i % num_paths], frequency=(0, 1))
         else:
             # in this case, the full weight of an origin destination path will be
             # assigned to a random single shortest path in the network
-            paths.add_path_tuple(sp[np.random.randint(num_paths)], frequency=(0, w))
+            paths.add_path(sp[np.random.randint(num_paths)], frequency=(0, w))
     Log.add('finished.')
     return paths
 

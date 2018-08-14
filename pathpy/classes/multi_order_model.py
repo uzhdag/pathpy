@@ -471,9 +471,9 @@ class MultiOrderModel:
         -------
         >>> layer = 2
         >>> p = Paths()
-        >>> p.add_path_tuple(('1', '3', '2'))
-        >>> p.add_path_tuple(('3', '2', '1'))
-        >>> p.add_path_tuple(('1', '2', '1'))
+        >>> p.add_path(('1', '3', '2'))
+        >>> p.add_path(('3', '2', '1'))
+        >>> p.add_path(('1', '2', '1'))
         >>> mom = MultiOrderModel(p, max_order=layer)
         >>> # a precomputed index map can be obtained as follows
         >>> index_maps = {k: mom.layers[k].node_to_name_map() for k in range(0, layer+1)}
@@ -702,7 +702,6 @@ observed and therefore the likelihood cannot be computed.
         Returns
         -------
         int
-
         """
         
         if stop_at_order is None:
@@ -729,8 +728,11 @@ observed and therefore the likelihood cannot be computed.
             )
             if accept:
                 max_accepted_order = k
-
-        if stop_at_order == max_accepted_order and max(paths.paths)>stop_at_order:
+        if paths is None:
+            max_len = max(self.paths.paths)
+        else:
+            max_len = max(paths.paths)
+        if stop_at_order == max_accepted_order and max_len>stop_at_order:
             msg = ("Optimal order is at least %d, but may be higher."
                    "Try to increase `stop_at_order`" % stop_at_order)
             Log.add(msg, Severity.WARNING)

@@ -37,7 +37,7 @@ def test_estimate_order_strongly_connected():
                   'f,b,e', 'b,e,b']
 
     for ngram in ngram_list:
-        paths.add_path_ngram(ngram)
+        paths.add_path(ngram)
 
     g1 = pp.HigherOrderNetwork(paths, k=1)
     pp.algorithms.components.reduce_to_gcc(g1)
