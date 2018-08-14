@@ -16,6 +16,7 @@ import pathpy.algorithms.shortest_paths
 import pathpy.algorithms.centralities
 import pathpy.algorithms.spectral
 import pathpy.algorithms.path_measures
+import pathpy.algorithms.infomap
 
 import pathpy.utils
 

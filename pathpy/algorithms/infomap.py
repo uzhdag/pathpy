@@ -34,7 +34,7 @@ from pathpy import Network, Paths, HigherOrderNetwork, MultiOrderModel
 from pathpy.utils import Log, Severity
 from pathpy.utils import PathpyError, PathpyNotImplemented
 
-__all__ = ['modular_description_length']
+__all__ = ['modular_description_length', 'find_communities_sa']
 
 
 @singledispatch
