@@ -45,11 +45,11 @@ from pathpy.visualisation.alluvial import generate_memory_net_markov
 @singledispatch
 def plot(network, **params):
     """
-    Plots an interactive visualisation of pathpy objects 
-    in a jupyter notebook. This generic function supports instances of 
-    pathpy.Network, pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, 
-    pathpy.MultiOrderModel, and pathpy.Paths. See description of differentr 
-    visualisations below. 
+    Plots an interactive visualisation of pathpy objects
+    in a jupyter notebook. This generic function supports instances of
+    pathpy.Network, pathpy.TemporalNetwork, pathpy.HigherOrderNetwork,
+    pathpy.MultiOrderModel, and pathpy.Paths. See description of different
+    visualisations in the parameter description.
 
     Parameters
     ----------
@@ -70,7 +70,7 @@ def plot(network, **params):
     params: dict
         A dictionary with visualisation parameters. These parameters are passed through to
         visualisation templates that are extendable by the user. The default pathpy templates
-        support the following parameters, depending on the type of object being visualized 
+        support the following parameters, depending on the type of object being visualised
         (see brackets).
             width: int (all)
                 Width of the div element containing the jupyter visualization.
@@ -83,7 +83,7 @@ def plot(network, **params):
                 default pathpy visualistion template fitting the corresponding object will be used.
             d3js_path: string (all)
                 URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
-                For offline operation, the URL to a local copy of d3js can be specified instead. For custom 
+                For offline operation, the URL to a local copy of d3js can be specified instead. For custom
                 templates, a specific d3js version can be used.
             node_size: int, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
                 Either an int value that specifies the radius of all nodes, or
@@ -128,9 +128,9 @@ def plot(network, **params):
                 The alpha target (convergence threshold) to be passed to the underlying force-directed
                 layout algorithm. Default value is 0.0.
             plot_higher_order_nodes: HigherOrderNetwork
-                If set to True, a raw higher-order network with higher-order nodes will be plotted. If 
-                False, a first-order projection with a higher-order force-directed layout will be plotted. 
-                The default value is False.
+                If set to True, a raw higher-order network with higher-order nodes will be plotted. If
+                False, a first-order projection with a higher-order force-directed layout will be plotted.
+                The default value is True.
             ms_per_frame: int (TemporalNetwork)
                 how many milliseconds each frame shall be displayed in the visualisation of a TemporalNetwork.
                 The 1000/ms_per_frame specifies the framerate of the visualisation. The default value of 20 yields a
@@ -173,6 +173,18 @@ def plot(network, **params):
                 A string value that specifies the HTML color of inactive nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#cccccc" (lightgray).
+
+    Examples:
+    ---------
+    >>> paths = pp.Paths()
+    >>> paths.add_path('a,b,c')
+    >>> n = pp.Network.from_paths(paths)
+    >>> params = {'label_color': '#ff0000',
+                  'node_color': { 'a': '#ff0000', 'b': '#00ff00', 'c': '#0000ff'}
+    >>>          }
+    >>> pp.visualisation.plot(n, **params)
+    >>> [inline visualisation]
+    >>> pp.visualisation.export_html(n, filename='myvisualisation.html', **params)
     """
     assert isinstance(network, Network) or isinstance(network, MultiOrderModel), \
         "network must be an instance of Network"
@@ -202,7 +214,7 @@ def generate_html(network, **params):
         "Argument must be an instance of Network, HigherOrderNetwork, or MultiOrderModel"
 
     if 'plot_higher_order_nodes' not in params:
-        params['plot_higher_order_nodes'] = False
+        params['plot_higher_order_nodes'] = True
 
     if isinstance(network, HigherOrderNetwork):
         mog = None
