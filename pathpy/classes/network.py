@@ -181,6 +181,24 @@ class Network:
 
         return network
 
+    @classmethod
+    def from_temporal_network(cls, tempnet):
+        """
+        Returns a time-aggregated directed network representation
+        of a temporal network. The number of occurrences of
+        the same edge at different time stamps is captured
+        by edge weights.
+        """
+        network = cls(directed=True)
+
+        for (v, w, t) in tempnet.tedges:
+            if (v,w) in network.edges:
+                network.add_edge(v, w, weight=network.edges[(v, w)]['weight']+1.0)
+            else:
+                network.add_edge(v, w)
+
+        return network
+
 
     def to_unweighted(self):
         """
@@ -208,12 +226,38 @@ class Network:
         return n
 
 
-    def add_node(self, v, **kwargs):
+    def add_node(self, v, **node_attributes):
         """
-        Adds a node to a network
+        Adds a node to a network and assigns arbitrary
+        node attributes.
+
+        Parameters:
+        -----------
+        node_attributes: dict
+            Key-value pairs that will be stored as
+            named node attributes in a dictionary. An
+            attribute set via network.add_node(v, x=42) can be
+            assessed via network.nodes[v]['x']. Any node in an undirected
+            network will have the default attributes 'degree', 'inweight',
+            and 'outweight'. Any node in a directed network will have the 
+            default attributes 'indegree', 'outdegree', 'inweight', and 'outweight'.
+            See examples below.
+
+        Example:
+        --------
+            >>> network = pathpy.Network(directed=False)
+            >>> network.add_node(v)
+            >>> print(network.nodes[v])
+            >>> {'inweight': 0.0, 'outweight': 0.0, 'degree': 0}
+            
+            >>> network = pathpy.Network(directed=True)
+            >>> network.add_node(v)
+            >>> print(network.nodes[v])
+            >>> {'inweight': 0.0, 'outweight': 0.0, 'indegree': 0, 'outdegree': 0}
+            
         """
         if v not in self.nodes:
-            self.nodes[v] = {**self.nodes[v], **kwargs}
+            self.nodes[v] = {**self.nodes[v], **node_attributes}
 
             # set default values if not set already
             if 'inweight' not in self.nodes[v]:
@@ -226,9 +270,10 @@ class Network:
             else:
                 self.nodes[v]['degree'] = 0
 
+
     def remove_node(self, v):
         """
-        Removes a node from the network
+        Removes a node and all of its attributes from the network.
         """
         if v in self.nodes:
             # remove all incident edges and update neighbors
@@ -259,12 +304,14 @@ class Network:
 
     def remove_edge(self, source, target):
         """
-        remove an edge from the network
+        Remove an edge and all of its attributes from the network.
 
         Parameters
         ----------
-        source
-        target
+        source: str
+            Source node of the edge to remove
+        target: str
+            Target node of the edge to remove
         """
         if not (source in self.nodes and target in self.nodes):
             return None
@@ -299,9 +346,34 @@ class Network:
             del self.edges[(source, target)]
 
 
-    def add_edge(self, v, w, **kwargs):
+    def add_edge(self, v, w, **edge_attributes):
         """
-        Adds an edge to a network
+        Adds an edge to a network and assigns arbitrary
+        key-value pairs as edge attribute.
+
+        Parameters:
+        -----------
+        v: str
+            String label of the source node
+        w: str
+            String label of the target node
+        edge_attributes: dict
+            Key-value pairs that will be stored as
+            named edge attributes in a dictionary. An
+            attribute set via network.add_edge(v, w, x=42) can be
+            assessed via network.edges[(v,w)]['x'].
+            Any edge will have the default attribute 'weight', which
+            is set to 1.0 by default. Edge weights are overwritten
+            if an additional weighted edge is added later
+            (see example below).
+
+        Example:
+        --------
+            >>> network.add_edge(v,w)
+            >>> print(network.edges['weight'])
+            >>> 1.0 
+            >>> network.add_edge(v,w, weight=2.0)
+            >>> 2.0
         """
 
         # Add nodes if they don't exist
@@ -310,8 +382,13 @@ class Network:
 
         e = (v, w)
 
-        self.edges[e] = {**self.edges[e], **kwargs}
+        if 'weight' in edge_attributes and isinstance(edge_attributes['weight'], int):
+            edge_attributes['weight'] = float(edge_attributes['weight'])
 
+        # add any new atributes to the edge
+        self.edges[e] = {**self.edges[e], **edge_attributes}
+    
+        # add default weight of one, if no weight is specified
         if 'weight' not in self.edges[e]:
             self.edges[e]['weight'] = 1.0
 
