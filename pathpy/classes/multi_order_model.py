@@ -708,7 +708,7 @@ observed and therefore the likelihood cannot be computed.
         if stop_at_order is None:
             stop_at_order = self.max_order
         else:
-            assert stop_at_order > 1, 'order to be tested must be larger than one'
+            assert stop_at_order > 1, 'Order to be tested must be larger than one'
 
         # Test for highest order that passes, likelihood ratio test against null model
         max_accepted_order = 1
@@ -718,7 +718,7 @@ observed and therefore the likelihood cannot be computed.
                 try:
                     self.add_layers(k)
                 except PathsTooShort:
-                    msg = ("optimal order is at least %d, but could be higher. Paths are too short"
+                    msg = ("Optimal order is at least %d, but could be higher. Paths too short"
                            "to create higher orders layers." % max_accepted_order)
                     Log.add(msg, Severity.WARNING)
                     break
@@ -730,9 +730,9 @@ observed and therefore the likelihood cannot be computed.
             if accept:
                 max_accepted_order = k
 
-        if stop_at_order == max_accepted_order:
-            msg = ("order is at least %d, but may be higher, "
-                   "try to increase `stop_at_order`" % stop_at_order)
+        if stop_at_order == max_accepted_order and max(paths.paths)>stop_at_order:
+            msg = ("Optimal order is at least %d, but may be higher."
+                   "Try to increase `stop_at_order`" % stop_at_order)
             Log.add(msg, Severity.WARNING)
         return max_accepted_order
 
