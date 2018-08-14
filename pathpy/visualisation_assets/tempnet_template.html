@@ -1,30 +1,30 @@
 <style>
-    text.active {
+    text.active_${div_id} {
         text-anchor: middle;
         font-size: $label_size;
         font-family: Arial, Helvetica, sans-serif;
         fill: $label_color;
         opacity: $label_opacity;
     }
-    text.hidden {
+    text.hidden_${div_id} {
         opacity: 0;
     }
-    line.tlinks {
+    line.tlinks_${div_id} {
         stroke: $inactive_edge_color;
         stroke-opacity: 0.4;
         stroke-width: $inactive_edge_width;
     }
-    line.active {
+    line.active_${div_id} {
         stroke: $active_edge_color;
         stroke-opacity: $edge_opacity;
         stroke-width: $active_edge_width;
     }
-    line.hidden {
+    line.hidden_${div_id} {
         stroke: rgb(255, 255, 255);
         stroke-opacity: 0;
         stroke-width: 0px;
     }
-    circle.active {
+    circle.active_${div_id} {
         stroke: #222;
         fill: $active_node_color;
         fill-opacity: 1;
@@ -124,8 +124,8 @@ require(["d3"], function(d3) {
         id = String(link.source + '-' + link.target);
         edgesbytime[link.time].push(id);
         l = {
-            'source': link.source, 
-            'target': link.target, 
+            'source': link.source,
+            'target': link.target,
             'id': id,
             'strength': 0
         };
@@ -151,13 +151,13 @@ require(["d3"], function(d3) {
         .attr("class", "everything");
 
     var link = g.append("g")
-        .attr("class", "tlinks")
+        .attr("class", "tlinks_${div_id}")
         .selectAll("line")
         .data(links, function(d){return d.id;})
         .enter().append("line")
         .attr("id", function(d) { return d.id; });
 
-    var node_g = g.append("g").attr("class", "tnodes")
+    var node_g = g.append("g").attr("class", "tnodes_${div_id}")
         .selectAll("circle")
         .data(temporal_net.nodes, function(d){return d.id;})
         .enter()
@@ -167,7 +167,7 @@ require(["d3"], function(d3) {
             .attr('id', function(d) { return d.id; })
             .attr("r", radius)
             // .attr("fill", function(d) { return color(d.group); })
-            .attr("class", "tnodes")
+            .attr("class", "tnodes_${div_id}")
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -177,7 +177,7 @@ require(["d3"], function(d3) {
     .attr("x", $label_offset[0])
     .attr("y", $label_offset[1])
     .attr("id", function(d) {return d.id; })
-    .attr("class", "active")
+    .attr("class", "active_${div_id}")
     .text(function(d) { return d.id; });
     
     node.append("title").text(function(d) { return d.id; });
@@ -193,11 +193,11 @@ require(["d3"], function(d3) {
     var nodes_to_dom = {};    
 
     links.forEach(function(link){    
-        edges_to_dom[link.id] = d3.select('#'+link.id);
+        edges_to_dom[link.id] = d3.select('#${div_id} #'+link.id);
     });
 
     temporal_net.nodes.forEach(function(n){    
-        nodes_to_dom[n.id] = d3.select('#'+n.id);
+        nodes_to_dom[n.id] = d3.select('#${div_id} #'+n.id);
     });
 
     // attach event handlers
@@ -229,7 +229,7 @@ require(["d3"], function(d3) {
             try {
                 // edges_to_dom[l.id].attr('class', 'links');
                 links_by_id[id].strength = hidden_link_strength;
-                edges_to_dom[id].attr('class', 'hidden');              
+                edges_to_dom[id].attr('class', 'hidden_${div_id}');              
             }
             catch(err){
                 console.log('Error: Could not find DOM object with id ' + id);
@@ -238,7 +238,7 @@ require(["d3"], function(d3) {
         // reset all nodes to inactive
         for (id in nodes_to_dom) {
             try{
-                nodes_to_dom[id].attr("class", "tnodes");
+                nodes_to_dom[id].attr("class", "tnodes_${div_id}");
             }
             catch(err){
                 console.log('Error: Could not find DOM object with id ' + id);
@@ -255,19 +255,19 @@ require(["d3"], function(d3) {
                     if (ti >= time-tsperframe+1 && ti <= time) {
                         node_ids = id.split('-');
                         try {
-                            edges_to_dom[id].attr('class', 'active').moveToFront();
+                            edges_to_dom[id].attr('class', 'active_${div_id}').moveToFront();
                         }
                         catch(err){
                             console.log('Error: Could not find DOM link with id ' + id);
                         }
                         try {
-                            nodes_to_dom[node_ids[0]].attr('class', 'active').moveToFront();
+                            nodes_to_dom[node_ids[0]].attr('class', 'active_${div_id}').moveToFront();
                         }
                         catch(err){
                             console.log('Error: Could not find DOM node with id ' + node_ids[0]);
                         }
                         try {
-                            nodes_to_dom[node_ids[1]].attr('class', 'active').moveToFront();                            
+                            nodes_to_dom[node_ids[1]].attr('class', 'active_${div_id}').moveToFront();                            
                         }
                         catch(err){
                             console.log('Error: Could not find DOM node with id ' + node_ids[1]);
@@ -275,7 +275,7 @@ require(["d3"], function(d3) {
                     }
                     // links in current time slice that are not active
                     else{
-                        edges_to_dom[id].attr('class', 'tlinks');
+                        edges_to_dom[id].attr('class', 'tlinks_${div_id}');
                     }
                 });
             }
