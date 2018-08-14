@@ -393,6 +393,165 @@ def export_html(network, filename, **params):
         f.write(html)
 
 
+@plot.register(HigherOrderNetwork)
+def _plot_hon(hon, **params):
+    """
+    Testing implementation of higher-order layout algorithm
+    """ 
+    from IPython.core.display import display, HTML
+    display(HTML(generate_html(hon, **params)))
+
+
+@export_html.register(HigherOrderNetwork)
+def export_html_hon(hon, filename, **params):
+    html = generate_html(hon, **params)
+
+    # for the inner HTML generated from the default templates, we add the surrounding DOCTYPE
+    # and body needed for a stand-alone HTML file.
+    if 'template' not in params:
+        html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
+    with open(filename, 'w+') as f:
+        f.write(html)
+
+
+@generate_html.register(HigherOrderNetwork)
+def _generate_html_hon(hon, **params):
+    """
+    """
+
+    network = Network.from_paths(hon.paths)
+
+    # prefix nodes starting with number as such IDs are not supported in HTML5
+    def fix_node_name(v):
+        if v[0].isdigit():
+            return "n_" + v
+        return v
+
+    # function to assign node/edge attributes based on params
+    def get_attr(key, attr_name, attr_default):
+        # If parameter does not exist assign default
+        if attr_name not in params:
+            return attr_default
+        # if parameter is a scalar, assign the specified value 
+        elif isinstance(params[attr_name], type(attr_default)):
+            return params[attr_name]
+        # if parameter is a dictionary, assign node/edge specific value
+        elif isinstance(params[attr_name], dict):
+            if key in params[attr_name]:
+                return params[attr_name][key]
+            # ... or default value if node/edge is not in dictionary
+            else:
+                return attr_default
+        # raise exception if parameter is of unexpected type
+        else:
+            raise Exception(
+                'Edge and node attribute must either be dict or {0}'.format(type(attr_default))
+                )
+
+    # Create network data that will be passed as JSON object
+    network_data = {
+        'links': [{'source': fix_node_name(e[0]),
+                   'target': fix_node_name(e[1]),
+                   'color': get_attr((e[0], e[1]), 'edge_color', '#999999'),
+                   'width': get_attr((e[0], e[1]), 'edge_width', 0.5)} for e in network.edges.keys()]
+    }
+    network_data['nodes'] = [{'id': fix_node_name(v),
+                              'color': get_attr(v, 'node_color', '#99ccff'),
+                              'size': get_attr(v, 'node_size', 5.0)} for v in network.nodes]
+
+    
+    # add invisible higher-order links
+    for e in hon.edges:
+        network_data['links'].append(
+                                     {'source': fix_node_name(hon.higher_order_node_to_path(e[0])[0]),
+                                     'target': fix_node_name(hon.higher_order_node_to_path(e[1])[-1]), 
+                                     'width': 0.0, 
+                                     'color': ' #ffffff' })
+
+    # DIV params
+    if 'height' not in params:
+        params['height'] = 400
+
+    if 'width' not in params:
+        params['width'] = 400
+
+    # label params
+    if 'label_size' not in params:
+        params['label_size'] = '8px'
+    
+    if 'label_offset' not in params:
+        params['label_offset'] = [0,-10]
+    
+    if 'label_color' not in params:
+        params['label_color'] = '#ffffff'
+
+    if 'label_opacity' not in params:
+        params['label_opacity'] = 1.0
+
+    if 'edge_opacity' not in params:
+        params['edge_opacity'] = 1.0
+
+    # layout params 
+    if 'force_repel' not in params: 
+        params['force_repel'] = -200
+
+    if 'force_charge' not in params: 
+        params['force_charge'] = -20
+
+    if 'force_alpha' not in params: 
+        params['force_alpha'] = 0.0
+
+    # arrows
+    if 'edge_arrows' not in params:
+        params['edge_arrows'] = 'true'
+    else:
+        params['edge_arrows'] = str(params['edge_arrows']).lower()
+
+    # Create a random DIV ID to avoid conflicts within the same notebook
+    div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
+
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
+    
+    # We have three options to lod the d3js library: 
+
+    # 1.) Via a URL of a local copy in pathpy's visualisation assets
+    # from urllib.parse import urljoin
+    # from urllib.request import pathname2url    
+    # d3js_path = urljoin('file://', pathname2url(os.path.abspath(os.path.join(html_dir, 'd3.v4.min.js'))))
+
+    # 2.) Assuming a local copy in the startup folder of jupyter
+    # d3js_path = 'd3.v4.min.js'
+
+    # 3.) Direct import from the d3js server (default)
+
+    # All three options work with the export to a stand-alone HTML viewed via the browser
+    # in jupyter, options 1 + 2 do not work at all, while option 3 unfortunately requires us to be online
+    if 'd3js_path' not in params:
+        params['d3js_path'] = 'https://d3js.org/d3.v4.min.js'
+
+    d3js_params = {
+        'network_data': json.dumps(network_data),
+        'div_id': div_id,
+    }
+
+    # Resolve the template ...
+    if 'template' not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
+        template_file = os.path.abspath(os.path.join(html_dir, 'network_template.html'))
+    else:
+        template_file = params['template']
+
+    # Read template file ... 
+    with open(template_file) as f:
+        html_str = f.read()
+
+    # substitute variables in template file
+    html = Template(html_str).substitute({**d3js_params, **params})
+
+    return html
+
 @plot.register(TemporalNetwork)
 def _plot_tempnet(tempnet, **params):
     """
