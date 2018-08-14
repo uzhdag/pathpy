@@ -34,6 +34,7 @@ import numpy as _np
 
 from pathpy.classes.network import Network
 from pathpy.classes.higher_order_network import HigherOrderNetwork
+from pathpy.classes.multi_order_model import MultiOrderModel
 from pathpy.classes.temporal_network import TemporalNetwork
 from pathpy.classes.paths import Paths
 
@@ -44,72 +45,127 @@ from pathpy.visualisation.alluvial import generate_memory_net_markov
 @singledispatch
 def plot(network, **params):
     """
-    Plots an interactive visualisation of a network in a jupyter notebook.
+    Plots interactive visualisations of pathpy objects in a jupyter notebook. This plot
+    function supports instances of pathpy.Network, pathpy.TemporalNetwork,
+    pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths.
 
     Parameters
     ----------
-    network: Network
-        The network to visualize
+    network: Network, TemporalNetwork, HigherOrderNetwork, Paths, MultiOrderModel,
+        The object to visualize. Depending on the type of the object, the following
+        visualisations are generated: 
+            Network: An interactive visualisation with a force-directed layout
+            HigherOrderNetwork: An interactive visualisation of the first-order network
+                with forces calculated based on the higher-order network
+            MultiOrderModel: An interactive visualisation of the first-order network
+                with forces calculated based on the multi-order model.
+            TemporalNetwork: An interactive and dynamic visualisation of a temporal
+                network.
+            Paths: Alluvial diagram showing markov or non-Markov trajectories through 
+                a given focal node.
     params: dict
         A dictionary with visualization parameters to be passed to the HTML
         generation function. These parameters can be processed by custom
-        visualisation templates extendable by the user. The default pathpy template
-        supports the following parameters:
-            width: int
+        visualisation templates extendable by the user. The default pathpy templates
+        support the following parameters. These parameters apply, depending on the 
+        type of object being visualized (see brackets)
+            width: int (all)
                 Width of the div element containing the jupyter visualization.
                 Default value is 400.
-            height: int
+            height: int (all)
                 Height of the div element containing the jupyter visualization.
                 Default value is 400.
-            node_size: int, dict
+            template: string (all)
+                Path to custom visualization template file. If this parameter is omitted, the
+                default pathpy network template will be used.
+            d3js_path: string (all)
+                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
+                For offline operation, the URL to a local copy of d3js can be specified instead.
+            node_size: int, dict (all)
                 Either an int value that specifies the radius of all nodes, or
                 a dictionary that assigns custom node sizes to invidual nodes.
                 Default value is 5.0.
-            edge_width: int, float, dict
+            edge_width: int, float, dict (all)
                 Either an int value that specifies the radius of all edges, or
                 a dictionary that assigns custom edge width to invidual edges.
                 Default value is 0.5.
-            node_color: string, dict
+            node_color: string, dict (all)
                 Either a string value that specifies the HTML color of all nodes,
                 or a dictionary that assigns custom node colors to invidual nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#99ccff"
-            edge_color: string, dict
+            edge_color: string, dict (Network, HigherOrderNetwork, MultiOrderNetwork)
                 Either a string value that specifies the HTML color of all edges, 
                 or a dictionary that assigns custom edge color to invidual edges.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#ffffff".
-            edge_opacity: float
+            edge_opacity: float (Network, HigherOrderNetwork, MultiOrderNetwork, TemporalNetwork)
                 The opacity of all edges in a range from 0.0 to 1.0. Default value is 1.0.                
-            edge_arrows: bool
+            edge_arrows: bool (Network, HigherOrderNetwork, MultiOrderNetwork)
                 Whether to draw edge arrows for directed networks. Default value is True.
-            label_color: string
+            label_color: string (Network, HigherOrderNetwork, MultiOrderNetwork)
                 The HTML color of node labels. Default value is #ffffff.
-            label_opacity: float
+            label_opacity: float (Network, HigherOrderNetwork, MultiOrderNetwork)
                 The opacity of the label. Default is 1.0.
-            label_size: int
+            label_size: int (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderNetwork)
                 Size of the font to be used for labels.
-            label_offset: list
-                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
+            label_offset: list (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderNetwork)
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be
                 displayed in the center of a node. Positive values for the first and second component
                 move the label to the right and top respectively. Default is [0, -10], which 
                 displays labels above the nodes.
-            force_charge: float, int
+            force_charge: float, int ()
                 The charge strength of nodes to be used in the force-directed layout. Default value is -20
-            force_repel: float, int
+            force_repel: float, int (all)
                 The strength of the repulsive force between nodes. Larger negative values will increase the distance
                 between nodes. Default value is -200.
-            force_alpha: float
-                The alpha target (convergence threshold) to be passed to the underlying force-directed 
-                layout algorithm. Default value is 0.0.                          
-            template: string
-                Path to custom visualization template file. If this parameter is omitted, the
-                default pathpy network template will be used.
-            d3js_path: string
-                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
-                For offline operation, the URL to a local copy of d3js can be specified instead.
+            force_alpha: float (all)
+                The alpha target (convergence threshold) to be passed to the underlying force-directed
+                layout algorithm. Default value is 0.0.                                            
+            ms_per_frame: int (TemporalNetwork)
+                how many milliseconds each frame of the visualisation shall be displayed.
+                The inverse of this value gives the framerate of the resulting visualisation.
+                The default value of 20 yields a framerate of 50 fps.
+            ts_per_frame: int (TemporalNetwork)
+                How many timestamps in the temporal network shall be displayed in every frame
+                of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
+                For higher values, multiple timestamps will be aggregated in a single frame. For a
+                value of zero, simulation speed is adjusted to the inter event time distribution such
+                that on average five interactions are shown per second. Default value is 10.
+            look_behind: int (TemporalNetwork)
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout.
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
+            look_ahead: int (TemporalNetwork)
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout.
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
+            active_edge_width: float (TemporalNetwork)
+                A float value that specifies the width of active edges.
+                Default value is 4.0.
+            inactive_edge_width: float (TemporalNetwork)
+                A float value that specifies the width of active edges.
+                Default value is 0.5.
+            active_edge_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of active edges.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#ff0000".
+            inactive_edge_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of inactive edges.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#999999".    
+            active_node_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of active nodes.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#ff0000".
+            inactive_node_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of inactive nodes.
+                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+                be used. Default value is "#999999".
     """
-    assert isinstance(network, Network), \
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel), \
         "network must be an instance of Network"
 
     from IPython.core.display import display, HTML
@@ -120,11 +176,12 @@ def plot(network, **params):
 def generate_html(network, **params):
     """
     Generates an HTML snippet that contains an interactive d3js visualization
-    of the given network instance.
+    of the given instance. This function supports instances of pathpy.Network, 
+    pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths. 
 
     Parameters
     ----------
-    network: Network
+    network: Network, HigherOrderNetwork
         The network to visualize
     params: dict
         A dictionary with visualization parameters to be passed to the HTML
@@ -185,8 +242,21 @@ def generate_html(network, **params):
                 URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
                 For offline operation, the URL to a local copy of d3js can be specified instead.
     """
-    assert isinstance(network, Network), \
-        "network must be an instance of Network"    
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel),\
+        "Argument must be an instance of Network, HigherOrderNetwork, or MultiOrderModel"
+
+    if isinstance(network, HigherOrderNetwork):
+        hon = network
+        mog = None
+        network = Network.from_paths(hon.paths)        
+    elif isinstance(network, Network):
+        hon = None
+        mog = None
+    elif isinstance(network, MultiOrderModel):
+        hon = None
+        mog = network
+        network = mog.layers[1]
+        
 
     # prefix nodes starting with number as such IDs are not supported in HTML5
     def fix_node_name(v):
@@ -226,6 +296,22 @@ def generate_html(network, **params):
                               'color': get_attr(v, 'node_color', '#99ccff'),
                               'size': get_attr(v, 'node_size', 5.0)} for v in network.nodes]
 
+    # add invisible higher-order links
+    if hon is not None:
+        for e in hon.edges:
+            network_data['links'].append(
+                                        {'source': fix_node_name(hon.higher_order_node_to_path(e[0])[0]),
+                                        'target': fix_node_name(hon.higher_order_node_to_path(e[1])[-1]),
+                                        'width': 0.0,
+                                        'color': ' #ffffff'})
+    if mog is not None:
+        for l in range(2, mog.max_order+1):
+            for e in mog.layers[l].edges:
+                network_data['links'].append(
+                                            {'source': fix_node_name(mog.layers[l].higher_order_node_to_path(e[0])[0]),
+                                            'target': fix_node_name(mog.layers[l].higher_order_node_to_path(e[1])[-1]),
+                                            'width': 0.0,
+                                            'color': ' #ffffff'})
     # DIV params
     if 'height' not in params:
         params['height'] = 400
@@ -315,7 +401,8 @@ def generate_html(network, **params):
 def export_html(network, filename, **params):
     """
     Exports a stand-alone HTML file that contains an interactive d3js visualization
-    of the given network instance.
+    of the given pathpy instance. function supports instances of pathpy.Network, 
+    pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths.
 
     Parameters
     ----------
@@ -384,7 +471,7 @@ def export_html(network, filename, **params):
                 URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
                 For offline operation, the URL to a local copy of d3js can be specified instead.
     """
-    assert isinstance(network, Network), \
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel), \
         "network must be an instance of Network"
     html = generate_html(network, **params)
     if 'template' not in params:
@@ -393,263 +480,8 @@ def export_html(network, filename, **params):
         f.write(html)
 
 
-@plot.register(HigherOrderNetwork)
-def _plot_hon(hon, **params):
-    """
-    Testing implementation of higher-order layout algorithm
-    """ 
-    from IPython.core.display import display, HTML
-    display(HTML(generate_html(hon, **params)))
-
-
-@export_html.register(HigherOrderNetwork)
-def export_html_hon(hon, filename, **params):
-    html = generate_html(hon, **params)
-
-    # for the inner HTML generated from the default templates, we add the surrounding DOCTYPE
-    # and body needed for a stand-alone HTML file.
-    if 'template' not in params:
-        html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
-    with open(filename, 'w+') as f:
-        f.write(html)
-
-
-@generate_html.register(HigherOrderNetwork)
-def _generate_html_hon(hon, **params):
-    """
-    """
-
-    network = Network.from_paths(hon.paths)
-
-    # prefix nodes starting with number as such IDs are not supported in HTML5
-    def fix_node_name(v):
-        if v[0].isdigit():
-            return "n_" + v
-        return v
-
-    # function to assign node/edge attributes based on params
-    def get_attr(key, attr_name, attr_default):
-        # If parameter does not exist assign default
-        if attr_name not in params:
-            return attr_default
-        # if parameter is a scalar, assign the specified value 
-        elif isinstance(params[attr_name], type(attr_default)):
-            return params[attr_name]
-        # if parameter is a dictionary, assign node/edge specific value
-        elif isinstance(params[attr_name], dict):
-            if key in params[attr_name]:
-                return params[attr_name][key]
-            # ... or default value if node/edge is not in dictionary
-            else:
-                return attr_default
-        # raise exception if parameter is of unexpected type
-        else:
-            raise Exception(
-                'Edge and node attribute must either be dict or {0}'.format(type(attr_default))
-                )
-
-    # Create network data that will be passed as JSON object
-    network_data = {
-        'links': [{'source': fix_node_name(e[0]),
-                   'target': fix_node_name(e[1]),
-                   'color': get_attr((e[0], e[1]), 'edge_color', '#999999'),
-                   'width': get_attr((e[0], e[1]), 'edge_width', 0.5)} for e in network.edges.keys()]
-    }
-    network_data['nodes'] = [{'id': fix_node_name(v),
-                              'color': get_attr(v, 'node_color', '#99ccff'),
-                              'size': get_attr(v, 'node_size', 5.0)} for v in network.nodes]
-
-    
-    # add invisible higher-order links
-    for e in hon.edges:
-        network_data['links'].append(
-                                     {'source': fix_node_name(hon.higher_order_node_to_path(e[0])[0]),
-                                     'target': fix_node_name(hon.higher_order_node_to_path(e[1])[-1]), 
-                                     'width': 0.0, 
-                                     'color': ' #ffffff' })
-
-    # DIV params
-    if 'height' not in params:
-        params['height'] = 400
-
-    if 'width' not in params:
-        params['width'] = 400
-
-    # label params
-    if 'label_size' not in params:
-        params['label_size'] = '8px'
-    
-    if 'label_offset' not in params:
-        params['label_offset'] = [0,-10]
-    
-    if 'label_color' not in params:
-        params['label_color'] = '#ffffff'
-
-    if 'label_opacity' not in params:
-        params['label_opacity'] = 1.0
-
-    if 'edge_opacity' not in params:
-        params['edge_opacity'] = 1.0
-
-    # layout params 
-    if 'force_repel' not in params: 
-        params['force_repel'] = -200
-
-    if 'force_charge' not in params: 
-        params['force_charge'] = -20
-
-    if 'force_alpha' not in params: 
-        params['force_alpha'] = 0.0
-
-    # arrows
-    if 'edge_arrows' not in params:
-        params['edge_arrows'] = 'true'
-    else:
-        params['edge_arrows'] = str(params['edge_arrows']).lower()
-
-    # Create a random DIV ID to avoid conflicts within the same notebook
-    div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
-
-    module_dir = os.path.dirname(os.path.realpath(__file__))
-    html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
-    
-    # We have three options to lod the d3js library: 
-
-    # 1.) Via a URL of a local copy in pathpy's visualisation assets
-    # from urllib.parse import urljoin
-    # from urllib.request import pathname2url    
-    # d3js_path = urljoin('file://', pathname2url(os.path.abspath(os.path.join(html_dir, 'd3.v4.min.js'))))
-
-    # 2.) Assuming a local copy in the startup folder of jupyter
-    # d3js_path = 'd3.v4.min.js'
-
-    # 3.) Direct import from the d3js server (default)
-
-    # All three options work with the export to a stand-alone HTML viewed via the browser
-    # in jupyter, options 1 + 2 do not work at all, while option 3 unfortunately requires us to be online
-    if 'd3js_path' not in params:
-        params['d3js_path'] = 'https://d3js.org/d3.v4.min.js'
-
-    d3js_params = {
-        'network_data': json.dumps(network_data),
-        'div_id': div_id,
-    }
-
-    # Resolve the template ...
-    if 'template' not in params:
-        module_dir = os.path.dirname(os.path.realpath(__file__))
-        html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
-        template_file = os.path.abspath(os.path.join(html_dir, 'network_template.html'))
-    else:
-        template_file = params['template']
-
-    # Read template file ... 
-    with open(template_file) as f:
-        html_str = f.read()
-
-    # substitute variables in template file
-    html = Template(html_str).substitute({**d3js_params, **params})
-
-    return html
-
 @plot.register(TemporalNetwork)
 def _plot_tempnet(tempnet, **params):
-    """
-    Plots an interactive dynamic visualization of a temporal network in a jupyter notebook.
-
-    Parameters
-    ----------
-    tempnet: TemporalNetwork
-        The temporal network to visualize.
-    params: dict
-        A dictionary with visualization parameters to be passed to the HTML
-        generation function. These parameters can be processed by custom
-        visualisation templates extendable by the user. The default pathpy template
-        supports the following parameters:
-            width: int
-                Width of the div element containing the jupyter visualization.
-                Default value is 400.
-            height: int
-                Height of the div element containing the jupyter visualization.
-                Default value is 400.
-            ms_per_frame: int
-                how many milliseconds each frame of the visualisation shall be displayed.
-                The inverse of this value gives the framerate of the resulting visualisation.
-                The default value of 20 yields a framerate of 50 fps.
-            ts_per_frame: int
-                How many timestamps in the temporal network shall be displayed in every frame
-                of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
-                For higher values, multiple timestamps will be aggregated in a single frame. For a
-                value of zero, simulation speed is adjusted to the inter event time distribution such
-                that on average five interactions are shown per second. Default value is 10.
-            look_behind: int
-                The look_ahead and look_behind parameters define a temporal range around the current time
-                stamp within which time-stamped edges will be considered for the force-directed layout. 
-                Values larger than one result in smoothly changing layouts.
-                Default value is 10.
-            look_ahead: int
-                The look_ahead and look_behind parameters define a temporal range around the current time
-                stamp within which time-stamped edges will be considered for the force-directed layout. 
-                Values larger than one result in smoothly changing layouts.
-                Default value is 10.
-            node_size: float
-                An float value that specifies the radius of all nodes.
-                Default value is 5.0.            
-            active_edge_width: float
-                A float value that specifies the width of active edges.
-                Default value is 4.0.
-            inactive_edge_width: float
-                A float value that specifies the width of active edges.
-                Default value is 0.5.
-            node_color: string, dict
-                Either a string value that specifies the HTML color of all nodes,
-                or a dictionary that assigns custom node colors to invidual nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#99ccff"
-            active_edge_color: string
-                A string value that specifies the HTML color of active edges.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#ff0000".
-            inactive_edge_color: string
-                A string value that specifies the HTML color of inactive edges.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#999999".
-            edge_opacity: float
-                The opacity of active edges in a range from 0.0 to 1.0. Default value is 1.0.                
-            active_node_color: string
-                A string value that specifies the HTML color of active nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#ff0000".
-            inactive_node_color: string
-                A string value that specifies the HTML color of inactive nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#999999".
-            label_color: string
-                The HTML color of node labels. Default value is #ffffff.
-            label_opacity: float
-                The opacity of the label. Default is 1.0.
-            label_size: int
-                Size of the font to be used for labels.
-            label_offset: list
-                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
-                displayed in the center of a node. Positive values for the first and second component
-                move the label to the right and top respectively. Default is [0, -10], which 
-                displays labels above the nodes.
-            force_charge: float, int
-                The charge strength of nodes to be used in the force-directed layout. Default value is -20
-            force_repel: float, int
-                The strength of the repulsive force between nodes. Larger negative values will increase the distance
-                between nodes. Default value is -200.
-            force_alpha: float
-                The alpha target (convergence threshold) to be passed to the underlying force-directed 
-                layout algorithm. Default value is 0.0.
-            template: string
-                Path to custom visualization template file. If this parameter is omitted, the
-                default pathpy network template will be used.
-            d3js_path: string
-                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
-                For offline operation, the URL to a local copy of d3js can be specified instead.     
-    """
     assert isinstance(tempnet, TemporalNetwork), \
         "tempnet must be an instance of TemporalNetwork"
     from IPython.core.display import display, HTML
@@ -658,108 +490,7 @@ def _plot_tempnet(tempnet, **params):
 
 @generate_html.register(TemporalNetwork)
 def _generate_html_tempnet(tempnet, **params):
-    """
-    Generates an HTML snippet that contains an interactive dynamic d3js visualization
-    of the given temporal network instance.
-
-    Parameters
-    ----------
-    tempnet: TemporalNetwork
-        The temporal network to visualize
-    params: dict
-        A dictionary with visualization parameters to be passed to the HTML
-        generation function. These parameters can be processed by custom
-        visualisation templates extendable by the user. Arbitrary parameters x
-        can be passed to such templates, from where their value can be accessed
-        via a variable $x. The default pathpy template supports the following parameters:
-            width: int
-                Width of the div element containing the jupyter visualization.
-                Default value is 400.
-            height: int
-                Height of the div element containing the jupyter visualization.
-                Default value is 400.
-            ms_per_frame: int
-                how many milliseconds each frame of the visualisation shall be displayed.
-                The inverse of this value gives the framerate of the resulting visualisation.
-                The default value of 20 yields a framerate of 50 fps.
-            ts_per_frame: int
-                How many timestamps in the temporal network shall be displayed in every frame
-                of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
-                For higher values, multiple timestamps will be aggregated in a single frame. For a
-                value of zero, simulation speed is adjusted to the inter event time distribution such
-                that on average five interactions are shown per second. Default value is 10.
-            look_behind: int
-                The look_ahead and look_behind parameters define a temporal range around the current time
-                stamp within which time-stamped edges will be considered for the force-directed layout. 
-                Values larger than one result in smoothly changing layouts.
-                Default value is 10.
-            look_ahead: int
-                The look_ahead and look_behind parameters define a temporal range around the current time
-                stamp within which time-stamped edges will be considered for the force-directed layout. 
-                Values larger than one result in smoothly changing layouts.
-                Default value is 10.
-            node_size: float
-                An float value that specifies the radius of all nodes.
-                Default value is 5.0.            
-            active_edge_width: float
-                A float value that specifies the width of active edges.
-                Default value is 4.0.
-            inactive_edge_width: float
-                A float value that specifies the width of active edges.
-                Default value is 0.5.
-            node_color: string, dict
-                Either a string value that specifies the HTML color of all nodes,
-                or a dictionary that assigns custom node colors to invidual nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#99ccff"
-            active_edge_color: string
-                A string value that specifies the HTML color of active edges.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#ff0000".
-            inactive_edge_color: string
-                A string value that specifies the HTML color of inactive edges.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#999999".
-            edge_opacity: float
-                The opacity of active edges in a range from 0.0 to 1.0. Default value is 1.0.                
-            active_node_color: string
-                A string value that specifies the HTML color of active nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#ff0000".
-            inactive_node_color: string
-                A string value that specifies the HTML color of inactive nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#999999".
-            label_color: string
-                The HTML color of node labels. Default value is #ffffff. 
-            label_size: str
-                CSS-style size of the font to be used for labels. Default value is '8px'
-            label_offset: list
-                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
-                displayed in the center of a node. Positive values for the first and second component
-                move the label to the right and top respectively. Default is [0, -10], which 
-                displays labels above the nodes.
-            label_opacity: float
-                Opacity of node labels. Default is 0.7.                
-            force_charge: float, int
-                The charge strength of nodes to be used in the force-directed layout. Default value is -20
-            force_repel: float, int
-                The strength of the repulsive force between nodes. Larger negative values will increase the distance
-                between nodes. Default value is -200.
-            force_alpha: float
-                The alpha target (convergence threshold) to be passed to the underlying force-directed 
-                layout algorithm. Default value is 0.0.                
-            template: string
-                Path to custom visualization template file. If this parameter is omitted, the
-                default pathpy network template will be used.
-            d3js_path: string
-                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
-                For offline operation, the URL to a local copy of d3js can be specified instead.
-    Returns
-    -------
-
-    """
-    # Temporal parameters
+    
     if 'ms_per_frame' not in params:
         params['ms_per_frame'] = 50
 
@@ -886,105 +617,7 @@ def _generate_html_tempnet(tempnet, **params):
 
 @export_html.register(TemporalNetwork)
 def _export_html_tempnet(tempnet, filename, **params):
-    """
-    Exports a stand-alone HTML file that contains an interactive d3js visualization
-    of the given temporal network instance.
 
-    Parameters
-    ----------
-    tempnet: TemporalNetwork
-        The temporal network to visualize
-    filename: string
-        Path where the HTML file will be saved
-    params: dict
-        A dictionary with visualization parameters to be passed to the HTML
-        generation function. These parameters can be processed by custom
-        visualisation templates extendable by the user. The default pathpy template
-        supports the following parameters:
-                        width: int
-                Width of the div element containing the jupyter visualization.
-                Default value is 400.
-            height: int
-                Height of the div element containing the jupyter visualization.
-                Default value is 400.
-            ms_per_frame: int
-                how many milliseconds each frame of the visualisation shall be displayed.
-                The inverse of this value gives the framerate of the resulting visualisation.
-                The default value of 20 yields a framerate of 50 fps.
-            ts_per_frame: int
-                How many timestamps in the temporal network shall be displayed in every frame
-                of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
-                For higher values, multiple timestamps will be aggregated in a single frame. For a
-                value of zero, simulation speed is adjusted to the inter event time distribution such
-                that on average five interactions are shown per second. Default value is 10.
-            look_behind: int
-                The look_ahead and look_behind parameters define a temporal range around the current time
-                stamp within which time-stamped edges will be considered for the force-directed layout. 
-                Values larger than one result in smoothly changing layouts.
-                Default value is 10.
-            look_ahead: int
-                The look_ahead and look_behind parameters define a temporal range around the current time
-                stamp within which time-stamped edges will be considered for the force-directed layout. 
-                Values larger than one result in smoothly changing layouts.
-                Default value is 10.
-            node_size: float
-                An float value that specifies the radius of all nodes.
-                Default value is 5.0.            
-            active_edge_width: float
-                A float value that specifies the width of active edges.
-                Default value is 4.0.
-            inactive_edge_width: float
-                A float value that specifies the width of active edges.
-                Default value is 0.5.
-            node_color: string, dict
-                Either a string value that specifies the HTML color of all nodes,
-                or a dictionary that assigns custom node colors to invidual nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#99ccff"
-            active_edge_color: string
-                A string value that specifies the HTML color of active edges.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#ff0000".
-            inactive_edge_color: string
-                A string value that specifies the HTML color of inactive edges.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#999999".
-            edge_opacity: float
-                The opacity of active edges in a range from 0.0 to 1.0. Default value is 1.0.                
-            active_node_color: string
-                A string value that specifies the HTML color of active nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#ff0000".
-            inactive_node_color: string
-                A string value that specifies the HTML color of inactive nodes.
-                Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
-                be used. Default value is "#999999".
-            label_color: string
-                The HTML color of node labels. Default value is #ffffff. 
-            label_size: int
-                Size of the font to be used for labels.
-            label_offset: list
-                The offset [x,y] of the label from the center of a node. For [0,0] labels will be 
-                displayed in the center of a node. Positive values for the first and second component
-                move the label to the right and top respectively. Default is [0, -10], which 
-                displays labels above the nodes.
-            label_opacity: float
-                Opacity of node labels. Default is 0.7.
-            force_charge: float, int
-                The charge strength of nodes to be used in the force-directed layout. Default value is -20
-            force_repel: float, int
-                The strength of the repulsive force between nodes. Larger negative values will increase the distance
-                between nodes. Default value is -200.
-            force_alpha: float
-                The alpha target (convergence threshold) to be passed to the underlying force-directed 
-                layout algorithm. Default value is 0.0.                
-            template: string
-                Path to custom visualization template file. If this parameter is omitted, the
-                default pathpy network template will be used.
-            d3js_path: string
-                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
-                For offline operation, the URL to a local copy of d3js can be specified instead.
-    """
     html = generate_html(tempnet, **params)
 
     # for the inner HTML generated from the default templates, we add the surrounding DOCTYPE
