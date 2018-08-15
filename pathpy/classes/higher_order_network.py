@@ -91,6 +91,8 @@ class HigherOrderNetwork(Network):
         # The paths object used to generate this instance
         self.paths = paths
 
+        self.is_null_model = null_model
+
         # The separator character used to label higher-order nodes.
         # For separator '-', the name of a second-order node will be 'a-b'.
         if separator is None:
@@ -420,6 +422,39 @@ class HigherOrderNetwork(Network):
             sub_w=self.total_edge_weight()[0], uni_w=self.total_edge_weight()[1]
         )
         return summary
+
+    def likelihood(self, paths, log=True):
+        """
+        Calculates the likelihood of this higher-order model under the observed path 
+        statistics given in paths.
+        """
+        if log:
+            L = 0.0
+        else: 
+            L = 1.0
+        T = self.transition_matrix()
+        node_map = self.node_to_name_map()
+        for l in paths.paths:
+            if l>=self.order:
+                for p in paths.paths[l]:
+                    if paths.paths[l][p][1]>0:
+                        if log:
+                            path_L = 0.0
+                        else:
+                            path_L = 1.0
+                        node_sequence = self.path_to_higher_order_nodes(p)
+                        prev = node_sequence[0]
+                        for n in node_sequence[1:]:
+                            if log:
+                                path_L += _np.log(T[node_map[n], node_map[prev]])
+                            else:
+                                path_L *= T[node_map[n], node_map[prev]]
+                            prev = n
+                        if log:
+                            L += path_L * paths.paths[l][p][1]
+                        else: 
+                            L *= path_L ** paths.paths[l][p][1]
+        return L
 
 
     def adjacency_matrix(self, include_subpaths=True, weighted=True, transposed=False):
