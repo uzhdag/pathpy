@@ -70,7 +70,7 @@ require(["d3"], function(d3) {
     var directed = $edge_arrows;
 
     var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.id; }))
+        .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
         .force("charge", d3.forceManyBody().strength($force_charge).distanceMax(200))
         .force("repelForce", d3.forceManyBody().strength($force_repel).distanceMax(200))
         .force("center", d3.forceCenter(width / 2, height / 2))

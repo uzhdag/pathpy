@@ -257,31 +257,74 @@ def generate_html(network, **params):
                 'Edge and node attribute must either be dict or {0}'.format(type(attr_default))
                 )
 
+    def compute_weight(network, e):
+        """
+        Calculates a normalized force weight for an edge in a network
+        """
+        if 'force_weighted' in params and not params['force_weighted']:
+            weight = network.edges[e]['degree']
+            source_weight = network.nodes[e[0]]['indegree'] + network.nodes[e[0]]['outdegree']
+            target_weight = network.nodes[e[1]]['indegree'] + network.nodes[e[1]]['outdegree']
+        else:
+            weight = network.edges[e]['weight']
+            source_weight = network.nodes[e[0]]['inweight'] + network.nodes[e[0]]['outweight']
+            target_weight = network.nodes[e[1]]['inweight'] + network.nodes[e[1]]['outweight']
+
+        if isinstance(weight, _np.ndarray):
+            weight = weight.sum()
+            source_weight = source_weight.sum()
+            target_weight = target_weight.sum()
+        s = min(source_weight, target_weight)
+        if s>0.0:
+            return weight/s
+        else:
+            return 0.0
+
     # Create network data that will be passed as JSON object
     network_data = {'links': [{'source': fix_node_name(e[0]),
                                'target': fix_node_name(e[1]),
                                'color': get_attr((e[0], e[1]), 'edge_color', '#999999'),
-                               'width': get_attr((e[0], e[1]), 'edge_width', 0.5)
+                               'width': get_attr((e[0], e[1]), 'edge_width', 0.5),
+                               'weight': compute_weight(network, e) if hon is None and mog is None else 0.0
                               } for e in network.edges.keys()]
                    }
     network_data['nodes'] = [{'id': fix_node_name(v),
                               'color': get_attr(v, 'node_color', '#99ccff'),
                               'size': get_attr(v, 'node_size', 5.0)} for v in network.nodes]
+    
+    # calculate network of higher-order forces between nodes
+    from collections import defaultdict
+    higher_order_forces = Network()
 
-    # add invisible links for higher-order forces
     if hon is not None:
         for e in hon.edges:
-            network_data['links'].append({'source': fix_node_name(hon.higher_order_node_to_path(e[0])[0]),
-                                          'target': fix_node_name(hon.higher_order_node_to_path(e[1])[-1]),
-                                          'width': 0.0,
-                                          'color': ' #999999'})
+            v = fix_node_name(hon.higher_order_node_to_path(e[0])[0])
+            w = fix_node_name(hon.higher_order_node_to_path(e[1])[-1])
+            if (v,w) in higher_order_forces.edges:
+                weight = higher_order_forces.edges[(v,w)]['weight'] + hon.edges[e]['weight']
+            else: 
+                weight = hon.edges[e]['weight']
+            higher_order_forces.add_edge(v, w, weight=weight)
+
     if mog is not None:
-        for l in range(2, mog.max_order+1):
+        for l in range(1, mog.max_order+1):
             for e in mog.layers[l].edges:
-                network_data['links'].append({'source': fix_node_name(mog.layers[l].higher_order_node_to_path(e[0])[0]),
-                                              'target': fix_node_name(mog.layers[l].higher_order_node_to_path(e[1])[-1]),
-                                              'width': 0.0,
-                                              'color': ' #999999'})
+                v = fix_node_name(mog.layers[l].higher_order_node_to_path(e[0])[0])
+                w = fix_node_name(mog.layers[l].higher_order_node_to_path(e[1])[-1])
+                if (v, w) in higher_order_forces.edges:
+                    weight = higher_order_forces.edges[(v, w)]['weight'] + mog.layers[l].edges[e]['weight']
+                else:
+                    weight = mog.layers[l].edges[e]['weight']
+                higher_order_forces.add_edge(v, w, weight=weight)
+
+    for (v, w) in higher_order_forces.edges:
+        # add invisible links for higher-order forces
+        network_data['links'].append({'source': v,
+                                      'target': w,
+                                      'width': 0.0,
+                                      'weight': compute_weight(higher_order_forces, (v, w)),
+                                      'color': ' #999999'})
+
     # DIV params
     if 'height' not in params:
         params['height'] = 400
@@ -317,9 +360,12 @@ def generate_html(network, **params):
 
     # arrows
     if 'edge_arrows' not in params:
-        params['edge_arrows'] = 'true'
+            params['edge_arrows'] = 'true'
     else:
         params['edge_arrows'] = str(params['edge_arrows']).lower()
+
+    if not network.directed:
+        params['edge_arrows'] = 'false'
 
     # Create a random DIV ID to avoid conflicts within the same notebook
     div_id = "".join(random.choice(string.ascii_letters) for x in range(8))
