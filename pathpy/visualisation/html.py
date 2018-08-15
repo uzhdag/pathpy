@@ -736,3 +736,66 @@ def export_html_diffusion(paths, filename, **params):
         html = '<!DOCTYPE html>\n<html><body>\n' + html + '</body>\n</html>'
     with open(filename, 'w+') as f:
         f.write(html)
+
+
+def plot_walk(network, walk, **params):
+    """
+    Plots an interactive visualisation of a random walk trajectory in 
+    a network.
+    """
+
+    def fix_node_name(v):
+        new_v = v
+        if v[0].isdigit():
+            new_v = "n_" + v
+        if new_v[0] == '_':
+            new_v = "n_" + v
+        if '-' in new_v:
+            new_v = new_v.replace('-', '_')
+        return new_v
+
+    from IPython.core.display import display, HTML
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
+    params['template'] = os.path.join(html_dir, 'walk_template.html')
+    params['itinerary'] = [ fix_node_name(v) for v in walk ]
+    if 'active_node_color' not in params:
+        params['active_node_color'] = 'red'
+    if 'inactive_node_color' not in params:
+        params['inactive_node_color'] = 'lightblue'
+    params['plot_higher_order_nodes'] = False
+    if 'ms_per_frame' not in params:
+        params['ms_per_frame'] = 500
+    display(HTML(generate_html(network, **params)))
+
+
+def export_html_walk(network, walk, filename, **params):
+    """
+    Exports an interactive visualisation of a random walk trajectory in 
+    a network to a file.
+    """
+    
+    def fix_node_name(v):
+        new_v = v
+        if v[0].isdigit():
+            new_v = "n_" + v
+        if new_v[0] == '_':
+            new_v = "n_" + v
+        if '-' in new_v:
+            new_v = new_v.replace('-', '_')
+        return new_v
+
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
+    params['template'] = os.path.join(html_dir, 'walk_template.html')
+    params['itinerary'] = [ fix_node_name(v) for v in walk ]
+    if 'active_node_color' not in params:
+        params['active_node_color'] = 'red'
+    if 'inactive_node_color' not in params:
+        params['inactive_node_color'] = 'lightblue'
+    params['plot_higher_order_nodes'] = False
+    if 'ms_per_frame' not in params:
+        params['ms_per_frame'] = 500
+    html = generate_html(network, **params)
+    with open(filename, 'w+') as f:
+        f.write(html)
