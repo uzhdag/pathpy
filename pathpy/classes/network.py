@@ -73,7 +73,7 @@ class Network:
 
 
     @classmethod
-    def read_edges(cls, filename, separator=',', weighted=False, directed=False, header=False):
+    def read_file(cls, filename, separator=',', weighted=False, directed=False, header=False):
         """
         Reads a network from an edge list file
 
@@ -127,6 +127,22 @@ class Network:
 
         return net
 
+
+    def write_file(self, filename, separator=',', weighted=False, header=False):
+        """
+        Writes a network to an edge file
+        """
+        with open(filename, 'w+') as f:
+            if header:
+                if weighted:
+                    f.write('source' + separator + 'target' + separator + 'weight' + '\n')
+                else:
+                    f.write('source' + separator + 'target' + '\n')
+            for edge in self.edges:
+                if weighted:       
+                    f.write(str(edge[0]) + separator + str(edge[1]) + separator + str(self.edges[edge]['weight'])+'\n')
+                else:
+                    f.write(str(edge[0]) + separator + str(edge[1]) + '\n')
 
     @classmethod
     def from_sqlite(cls, cursor, directed=True):
