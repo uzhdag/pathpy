@@ -398,7 +398,7 @@ class Paths:
         return p
 
     @classmethod
-    def read_file(cls, filename, separator=',', frequency=False, maxlines=sys.maxsize,
+    def read_file(cls, filename, separator=',', frequency=True, maxlines=sys.maxsize,
                   max_ngram_length=sys.maxsize, expand_sub_paths=True,
                   max_subpath_length=sys.maxsize):
         """Reads path data from a file containing multiple lines of n-grams of the form
@@ -413,11 +413,10 @@ class Paths:
             the character used to separate nodes on the path, i.e. using a
             separator character of ';' n-grams are represented as ``a;b;c;...``
         frequency : bool
-            if set to ``True``, the last entry in each n-gram will be interpreted as
+            if set to ``True`` (default), the last entry in each n-gram will be interpreted as
             weight (i.e. frequency of the path), e.g. ``a,b,c,d,4`` means that four-gram
-            ``a,b,c,d`` has weight four. ``False`` by default, which means each path
-            occurrence is assigned a default weight of 1 (adding weights for multiple
-            occurrences).
+            ``a,b,c,d`` has weight four. If this is ``False`` each path occurrence is assigned
+            a default weight of 1 (adding weights for multiple occurrences).
         maxlines : int
             number of lines/n-grams to read, if left at None the whole file is read in.
         max_ngram_length : int
