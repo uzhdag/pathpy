@@ -14,7 +14,7 @@ def test_closeness_centrality_hon(random_paths, k, e_sum, e_var):
     import numpy as np
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
-    closeness = pp.algorithms.centralities.closeness_centrality(hon)
+    closeness = pp.algorithms.centralities.closeness(hon)
     np_closeness = np.array(list(closeness.values()))
     assert np_closeness.sum() == pytest.approx(e_sum)
     assert np_closeness.var() == pytest.approx(e_var)
@@ -29,7 +29,7 @@ def test_betweenness_centrality_hon(random_paths, norm, k, e_sum, e_var, e_max):
     import numpy as np
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
-    betweenness = pp.algorithms.centralities.betweenness_centrality(hon, normalized=norm)
+    betweenness = pp.algorithms.centralities.betweenness(hon, normalized=norm)
     values = np.array(list(betweenness.values()))
     assert values.sum() == pytest.approx(e_sum)
     assert max(values) == pytest.approx(e_max)
@@ -51,7 +51,7 @@ def test_eigen_centrality_hon(random_paths, sub, projection, k, e_sum, e_var):
     import numpy as np
     p = random_paths(50, 0, 8)
     hon = pp.HigherOrderNetwork(p, k=k)
-    eigen = pp.algorithms.centralities.eigenvector_centrality(hon, projection, sub)
+    eigen = pp.algorithms.centralities.eigenvector(hon, projection, sub)
     values = np.array(list(eigen.values()))
     assert values.sum() == pytest.approx(e_sum, abs=EIGEN_ABS_TOL)
     assert values.var() == pytest.approx(e_var, abs=EIGEN_ABS_TOL)
@@ -81,7 +81,7 @@ def test_pagerank_centrality_hon(random_paths, sub, proj, k, e_sum, e_var):
 
 def test_betweenness_centrality_paths(path_from_ngram_file):
     p = path_from_ngram_file
-    betweenness_centrality = pp.algorithms.centralities.betweenness_centrality(p, normalized=False)
+    betweenness_centrality = pp.algorithms.centralities.betweenness(p, normalized=False)
     betweenness = {n: c for n, c in betweenness_centrality.items()}
     expected = {'b': 2.0, 'a': 3.0, 'e': 0, 'c': 3.0, 'd': 5.0}
     assert betweenness == expected
@@ -89,7 +89,7 @@ def test_betweenness_centrality_paths(path_from_ngram_file):
 
 def test_betweenness_centrality_paths_norm(path_from_ngram_file):
     p = path_from_ngram_file
-    betweenness_centrality = pp.algorithms.centralities.betweenness_centrality(p, normalized=True)
+    betweenness_centrality = pp.algorithms.centralities.betweenness(p, normalized=True)
     betweenness = max(c for c in betweenness_centrality.values())
     expected_norm_max = 1
     assert pytest.approx(betweenness) == expected_norm_max
@@ -97,7 +97,7 @@ def test_betweenness_centrality_paths_norm(path_from_ngram_file):
 
 def test_closeness_centrality_paths(path_from_ngram_file):
     p = path_from_ngram_file
-    closeness_centrality = pp.algorithms.centralities.closeness_centrality(p, normalized=False)
+    closeness_centrality = pp.algorithms.centralities.closeness(p, normalized=False)
     closeness_sum = sum(c for c in closeness_centrality.values())
     expected_sum = 9.833333333333332
     assert closeness_sum == pytest.approx(expected_sum)
@@ -109,7 +109,7 @@ def test_closeness_centrality_paths(path_from_ngram_file):
 
 def test_closeness_centrality_paths_norm(path_from_ngram_file):
     p = path_from_ngram_file
-    closeness_centrality = pp.algorithms.centralities.closeness_centrality(p, normalized=True)
+    closeness_centrality = pp.algorithms.centralities.closeness(p, normalized=True)
     closeness_max = max(c for c in closeness_centrality.values())
     expected_max = 1
     assert closeness_max == pytest.approx(expected_max)

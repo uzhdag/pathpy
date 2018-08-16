@@ -45,8 +45,8 @@ from pathpy.algorithms.shortest_paths import *
 from pathpy.utils import PathpyNotImplemented
 
 
-__all__ = ["rank_centralities", "closeness_centrality", "betweenness_centrality",
-           "eigenvector_centrality", "pagerank", 'node_traversals',
+__all__ = ["rank_centralities", "closeness", "betweenness",
+           "eigenvector", "pagerank", 'node_traversals',
            'visitation_probabilities']
 
 
@@ -78,11 +78,11 @@ def rank_centralities(centralities):
 
 
 @singledispatch
-def betweenness_centrality(network, normalized=False):
+def betweenness(network, normalized=False):
     assert isinstance(network, Network), \
         "network must be an instance of Network"
 
-    Log.add('Calculating betweenness centralities in network ...', Severity.INFO)
+    Log.add('Calculating betweenness centralities ...', Severity.INFO)
 
     all_paths = shortest_paths(network)
     node_centralities = defaultdict(lambda: 0)
@@ -106,9 +106,9 @@ def betweenness_centrality(network, normalized=False):
     
 
 
-@betweenness_centrality.register(HigherOrderNetwork)
+@betweenness.register(HigherOrderNetwork)
 def _bw(higher_order_net, normalized=False):
-    """Calculates the betweenness centralities of all nodes.
+    """Calculates the betweenness of all nodes.
 
     If the order of the higher-order network is larger than one
     centralities calculated based on the higher-order
@@ -132,7 +132,7 @@ def _bw(higher_order_net, normalized=False):
     assert isinstance(higher_order_net, HigherOrderNetwork), \
         "arguments must be an instance of HigherOrderNetwork"
 
-    Log.add('Calculating betweenness centralities (k = %s) ...' % \
+    Log.add('Calculating betweenness (order k = %s) ...' % \
         higher_order_net.order, Severity.INFO)
 
     all_paths = shortest_paths(higher_order_net)
@@ -170,7 +170,7 @@ def _bw(higher_order_net, normalized=False):
     for source_k1 in shortest_paths_first_order:
         for dest_k1 in shortest_paths_first_order[source_k1]:
             for path_k1 in shortest_paths_first_order[source_k1][dest_k1]:
-                # increase betweenness centrality of all intermediary nodes
+                # increase betweenness of all intermediary nodes
                 # on path from s1 to d1
                 for v in path_k1[1:-1]:
                     if source_k1 != v != dest_k1:
@@ -192,9 +192,9 @@ def _bw(higher_order_net, normalized=False):
 
 
 
-@betweenness_centrality.register(Paths)
+@betweenness.register(Paths)
 def _bw(paths, normalized=False):
-    """Calculates the betweenness centrality of nodes based on observed shortest paths
+    """Calculates the betweenness of nodes based on observed shortest paths
     between all pairs of nodes
 
     Parameters
@@ -211,7 +211,7 @@ def _bw(paths, normalized=False):
     assert isinstance(paths, Paths), "argument must be an instance of pathpy.Paths"
     node_centralities = defaultdict(lambda: 0)
 
-    Log.add('Calculating betweenness centralities in paths ...', Severity.INFO)
+    Log.add('Calculating betweenness in paths ...', Severity.INFO)
 
     all_paths = shortest_paths(paths)
 
@@ -236,8 +236,8 @@ def _bw(paths, normalized=False):
 
 
 @singledispatch
-def closeness_centrality(network, normalized=False):
-    """Calculates the closeness centralities of all nodes.
+def closeness(network, normalized=False):
+    """Calculates the closeness of all nodes.
 
     If the order of the higher-order network is larger than one
     centralities calculated based on the higher-order
@@ -258,7 +258,7 @@ def closeness_centrality(network, normalized=False):
     distances = distance_matrix(network)
     node_centralities = defaultdict(lambda: 0)
 
-    Log.add('Calculating closeness centralities in network ...', Severity.INFO)
+    Log.add('Calculating closeness in network ...', Severity.INFO)
 
     # calculate closeness values
     for x in network.nodes:
@@ -281,9 +281,9 @@ def closeness_centrality(network, normalized=False):
 
 
 
-@closeness_centrality.register(Paths)
+@closeness.register(Paths)
 def _cl(paths, normalized=False):
-    """Calculates the closeness centrality of nodes based on observed shortest paths
+    """Calculates the closeness of nodes based on observed shortest paths
     between all nodes
 
     Parameters
@@ -320,7 +320,7 @@ def _cl(paths, normalized=False):
 
 
 
-@closeness_centrality.register(HigherOrderNetwork)
+@closeness.register(HigherOrderNetwork)
 def _cl(higher_order_net, normalized=False):
 
     if not isinstance(higher_order_net, HigherOrderNetwork):
@@ -330,7 +330,7 @@ def _cl(higher_order_net, normalized=False):
     node_centralities = defaultdict(lambda: 0)
     nodes = higher_order_net.paths.nodes
 
-    Log.add('Calculating closeness centralities (k = %s) ...' % higher_order_net.order,
+    Log.add('Calculating closeness (k = %s) ...' % higher_order_net.order,
             Severity.INFO)
     
     for x in nodes:
@@ -421,8 +421,8 @@ def visitation_probabilities(paths):
 
 
 
-def eigenvector_centrality(network, projection='scaled', include_sub_paths=True):
-    """Calculates the eigenvector centralities of higher-order nodes.
+def eigenvector(network, projection='scaled', include_sub_paths=True):
+    """Calculates eigenvector centralities of higher-order nodes.
 
     If the order of the HigherOrderNetwork is larger than one, the centralities
     will be projected to the first-order nodes.
