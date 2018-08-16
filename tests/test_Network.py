@@ -180,7 +180,7 @@ def test_read_edges(test_data_directory):
 
     edge_file = os.path.join(test_data_directory, "example_int.tedges")
 
-    net = pathpy.Network.read_edges(edge_file, weighted=True, header=True, directed=True)
+    net = pathpy.Network.read_file(edge_file, weighted=True, header=True, directed=True)
     assert net.ncount() == 5
     assert net.ecount() == 6
 
