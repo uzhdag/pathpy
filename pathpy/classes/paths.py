@@ -335,16 +335,14 @@ class Paths:
 
     @staticmethod
     def read_edges(filename, separator=',', weight=False, undirected=False,
-                   maxlines=None, expand_sub_paths=True, max_subpath_length=None):
+                   maxlines=None):
         """
         Read path in edgelist format
 
         Reads data from a file containing multiple lines of *edges* of the
         form "v,w,frequency,X" (where frequency is optional and X are
         arbitrary additional columns). The default separating character ','
-        can be changed. In order to calculate the statistics of paths of any length,
-        by default all subpaths of length 0 (i.e. single nodes) contained in an edge
-        will be considered.
+        can be changed.
 
         Parameters
         ----------
@@ -358,13 +356,8 @@ class Paths:
         undirected : bool
             are the edges directed or undirected
         maxlines : int
-            number of lines to read (useful to test large files)
-        expand_sub_paths : bool
-        max_subpath_length : int (default None)
-            maximum length for subpaths to consider, ``None`` means the entire file is
+            number of lines to read (useful to test large files). None means the entire file is
             read
-            TODO: this parameter is unused.
-
         Returns
         -------
         Paths
@@ -373,7 +366,6 @@ class Paths:
         p = Paths()
 
         p.separator = separator
-        p.max_subpath_length = sys.maxsize
 
         with open(filename, 'r') as f:
             Log.add('Reading edge data ... ')
@@ -391,8 +383,7 @@ class Paths:
 
                 if maxlines is not None and n >= maxlines:
                     break
-        if expand_sub_paths:
-            p.expand_subpaths()
+        p.expand_subpaths()
         Log.add('finished.')
 
         return p
