@@ -151,6 +151,9 @@ def plot(network, **params):
                 stamp within which time-stamped edges will be considered for the force-directed layout.
                 Values larger than one result in smoothly changing layouts.
                 Default value is 10.
+            max_time: int (TemporalNetwork)
+                maximum time stamp to visualise. Useful to limit visualisation of very long Temporal Networks. 
+                If None, the whole sequence will be shown. Default is None.
             active_edge_width: float (TemporalNetwork)
                 A float value that specifies the width of currently active edges.
                 Default value is 4.0.
@@ -457,6 +460,12 @@ def _generate_html_tempnet(tempnet, **params):
 
     if 'ts_per_frame' not in params:
         params['ts_per_frame'] = 1
+
+    if 'max_time' not in params:
+        params['max_time'] = None
+
+    if params['max_time'] is not None:
+        tempnet = tempnet.filter_edges(lambda u, v, t: t <= params['max_time'])
 
     # auto-adjust simulation speed to temporal characteristics
     if params['ts_per_frame'] == 0:
