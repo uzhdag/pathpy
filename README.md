@@ -6,7 +6,7 @@
 
 `pathpy` is specifically tailored to analyse temporal networks as well as time series and sequence data that capture multiple short, independent paths observed in an underlying graph or network. Examples for data that can be analysed with pathpy include time-stamped social networks, user click streams in information networks, biological  pathways, citation networks, or information cascades in social networks.
 
-Unifying the modelling and analysis of path statistics and temporal networks, `pathpy` provides efficient methods to extract causal or time-respecting paths from time-stamped network data. The current PyPI package `pathpy2` supersedes the packages [`pyTempnets`](https://github.com/IngoScholtes/pyTempNets) as well as version 1.0 of pathpy.
+Unifying the modelling and analysis of path statistics and temporal networks, `pathpy` provides efficient methods to extract causal or time-respecting paths from time-stamped network data. The current package distributed via the PyPI name `pathpy2` supersedes the packages [`pyTempnets`](https://github.com/IngoScholtes/pyTempNets) as well as version 1.0 of `pathpy`.`
 
 `pathpy` facilitates the analysis of temporal correlations in time series data on networks.
 It uses a principled model selection technique to infer higher-order graphical representations that capture both topological and temporal characteristics. 
@@ -34,6 +34,8 @@ A broader view on higher-order models in the analyis of complex systems can be f
 `pathpy` is pure python code. It has no platform-specific dependencies and should thus work on all platforms. pathpy requires python 3.x. It builds on numpy and scipy. The latest release version 2.0 of pathpy can be installed by typing:
 
 `> pip install pathpy2`
+
+Please make sure that you use the pyPI name `pathpy2` as the package name `pathpy` is currently blocked.
 
 # Tutorial
 

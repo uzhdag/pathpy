@@ -13,8 +13,8 @@ pathways, citation networks, or information cascades in social networks.
 
 Unifying the modelling and analysis of path statistics and temporal networks, 
 pathpy provides efficient methods to extract causal or time-respecting paths from 
-time-stamped network data. The current PyPI module pathpy2 supersedes the 
-packages pyTempnets as well as version 1.0 of pathpy.
+time-stamped network data. The current package distributed via the PyPI name 
+pathpy2 supersedes the packages pyTempnets as well as version 1.0 of pathpy.
 
 pathpy facilitates the analysis of temporal correlations in time
 series data on networks. It uses model selection and statistical
@@ -68,6 +68,7 @@ can be installed by typing:
 
 pip install pathpy2
 
+Please make sure that you use the pyPI name pathpy2 as the package name pathpy is currently blocked.
 
 Tutorial
 ========
