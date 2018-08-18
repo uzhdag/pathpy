@@ -29,7 +29,7 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     description="An OpenSource python package for the analysis and visualisation of time series data on"
-                "complex networks with higher- and multi-order graphical models.",
+                " complex networks with higher- and multi-order graphical models.",
     install_requires=install_requirements,
     setup_requires=setup_requirements,
     long_description=readme + '\n\n' + history,
