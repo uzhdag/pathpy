@@ -228,10 +228,9 @@ class MultiOrderModel:
         else:
             file.write('*Vertices {0}\n'.format(self.layers[1].ncount()))
             for i in self.layers[1].nodes:
-                first = first_layer_map[i]
-                second = self.layers[1].nodes[i]
+                idx = first_layer_map[i]
 
-                file.write('{0} "{1}"\n'.format(first, second))
+                file.write('{0} "{1}"\n'.format(idx, i))
 
         # Write higher-order nodes to states section
         file.write('*States {0}\n'.format(self.layers[layer].ncount()))
