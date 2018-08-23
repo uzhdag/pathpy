@@ -47,7 +47,7 @@ An explanatory video that introduces the science behind `pathpy` is available he
 
 A promotional video showcasing some of `pathpy`'s features is available here:
 
-[![Watch promotional video](https://img.youtube.com/vi/QIPqFaR2Z5c/0.jpg)](https://www.youtube.com/watch?v=QIPqFaR2Z5c )
+[![Watch promotional video](https://img.youtube.com/vi/QIPqFaR2Z5c/0.jpg)](https://www.youtube.com/watch?v=QIPqFaR2Z5c)
 
 # Documentation
 
