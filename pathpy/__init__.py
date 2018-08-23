@@ -1,11 +1,11 @@
 ﻿"""
-An OpenSource python package to analyze and 
+An OpenSource python package to analyze and
 visualize time series data on complex networks.
 """
 
 __author__ = """Ingo Scholtes"""
 __email__ = 'scholtes@ifi.uzh.ch'
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 
 from .classes import *
 import pathpy.path_extraction

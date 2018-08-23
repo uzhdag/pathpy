@@ -33,13 +33,14 @@ setup(
     install_requires=install_requirements,
     setup_requires=setup_requirements,
     long_description=readme + '\n\n' + history,
-    include_package_data=True,
     python_requires='>=3.5',
     keywords='network analysis temporal networks pathways sequence modeling graph mining',
-    name='pathpy',
+    name='pathpy2',
     packages=find_packages(),
     test_suite='tests',
     url='https://www.pathpy.net',
     version=__version__,
+    include_package_data=True,
+    package_data={'pathpy': ['visualisation_assets/*.html'] + ['visualisation_assets/*.js']},
     zip_safe=False
 )
