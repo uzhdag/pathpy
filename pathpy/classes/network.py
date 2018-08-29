@@ -385,10 +385,11 @@ class Network:
 
         Example:
         --------
-            >>> network.add_edge(v,w)
-            >>> print(network.edges['weight'])
+            >>> network.add_edge('a','b')
+            >>> print(network.edges[('a', 'b')]['weight'])
             >>> 1.0 
-            >>> network.add_edge(v,w, weight=2.0)
+            >>> network.add_edge('a','b', weight = 2.0)
+            >>> print(network.edges[('a', 'b')]['weight'])
             >>> 2.0
         """
 
