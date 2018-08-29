@@ -74,7 +74,7 @@ def random_k_regular(n, k, self_loops=True, node_names=None):
     return molloy_reed([k]*n, self_loops, node_names)
 
 
-def erdoes_renyi_gnm(n, m, node_names=None, self_loops=True, directed=False):
+def erdoes_renyi_gnm(n, m, node_names=None, self_loops=True, directed=False, temporal=False):
     """
     """
     if node_names is None: 
@@ -82,40 +82,63 @@ def erdoes_renyi_gnm(n, m, node_names=None, self_loops=True, directed=False):
 
     assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
 
-    network = Network(directed=directed)
+    if not temporal:
+        network = Network(directed=directed)
+    else:
+        network = TemporalNetwork()
 
     # generate nodes
-    for i in range(n):
-        network.add_node(str(node_names[i]))
-    node_list = [v for v in network.nodes]
+    if not temporal:
+        for i in range(n):
+            network.add_node(str(node_names[i]))
+
+    time = -1
+    edges = defaultdict(lambda: False)
 
     # add edges
     while network.ecount() < m:
-        edge = _np.random.choice(node_list, size=2, replace=self_loops)
-        if (edge[0], edge[1]) not in network.edges:
-            network.add_edge(edge[0], edge[1])
+        edge = _np.random.choice(node_names[:n], size=2, replace=self_loops)
+        if not edges[(edge[0], edge[1])]:
+            edges[(edge[0], edge[1])] = True
+            if not directed:
+                edges[(edge[1], edge[0])] = True
+            if not temporal:
+                network.add_edge(edge[0], edge[1])                
+            else:
+                time += 1
+                network.add_edge(edge[0], edge[1], time)
     return network
 
 
-def erdoes_renyi_gnp(n, p, node_names=None, self_loops=True, directed=False):
+def erdoes_renyi_gnp(n, p, node_names=None, self_loops=True, directed=False, temporal=False):
     """
     """
     if node_names is None: 
         node_names = [str(x) for x in range(n)]
     assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
 
-    network = Network(directed=directed)
+    if not temporal:
+        network = Network(directed=directed)
+    else:
+        network = TemporalNetwork()
 
-    # generate nodes
-    for i in range(n):
-        network.add_node(str(node_names[i]))        
+    # make sure that isolated nodes exist
+    if not temporal:
+        for i in range(n):
+            network.add_node(str(node_names[i]))
+
+    time = -1
 
     # add edges
     for i in range(n):
-        for j in range(n):
-            if i != j or self_loops:
+        for j in range(i+1):
+            if i != j or self_loops:                
                 if _np.random.rand() <= p:
-                    network.add_edge(node_names[i], node_names[j])        
+                    if not temporal:
+                        network.add_edge(node_names[i], node_names[j])
+                    else:
+                        time += 1
+                        network.add_edge(node_names[i], node_names[j], time)
     return network
 
 
@@ -129,58 +152,42 @@ def watts_strogatz(n, p, node_names=None, directed=False):
     raise PathpyNotImplemented('Watts-Strogatz model is not implemented yet')
 
 
-def barabasi_albert(n, n_init, k=1, node_names=None, directed=False):
+def barabasi_albert(n, n_init, k=1, node_names=None, directed=False, temporal=False):
     """
     """
 
     if node_names is None:
         node_names = [str(x) for x in range(n)]
     assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
+    if not temporal:
+        network = Network(directed=directed)
+    else:
+        network = TemporalNetwork()
 
-    network = Network(directed=directed)
-
-    # initial network
-    for i in range(n_init):
-        for j in range(n_init):
-            if i < j:
-                network.add_edge(str(node_names[i]), str(node_names[j]))
-
-    node_list = [v for v in network.nodes]
-
-    for i in range(n_init, n):
-        targets = _np.random.choice(node_list, size=k, replace=False)
-        for t in targets:
-            network.add_edge(str(node_names[i]), t)
-        node_list.append(str(node_names[i]))
-    return network
-
-
-
-def barabasi_albert_temporal(n, n_init, k=1, node_names=None, directed=False):
-    """
-    """
-
-    if node_names is None:
-        node_names = [str(x) for x in range(n)]
-    assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
-
-    tempnet = TemporalNetwork()
-    time = 0
-
-    edges = []
+    endpoints = []
+    time =  0
 
     # initial network
     for i in range(n_init):
         for j in range(n_init):
             if i < j:
-                tempnet.add_edge(str(node_names[i]), str(node_names[j]), time)
-
-    node_list = [v for v in tempnet.nodes]
+                if not temporal:
+                    network.add_edge(str(node_names[i]), str(node_names[j]))
+                else:
+                    network.add_edge(str(node_names[i]), str(node_names[j]), time)
+                endpoints.append(str(node_names[i]))
+                endpoints.append(str(node_names[j]))
 
     for i in range(n_init, n):
-        targets = _np.random.choice(node_list, size=k, replace=False)
-        for t in targets:
-            tempnet.add_edge(str(node_names[i]), t, time)
-        node_list.append(str(node_names[i]))
         time += 1
-    return tempnet
+        # TODO: for k>1 we can choose different stubs of the same node in one step!
+        targets = _np.random.choice(endpoints, size=k, replace=False)
+        for t in targets:
+            if not temporal:
+                network.add_edge(str(node_names[i]), t)
+            else:
+                network.add_edge(str(node_names[i]), t, time)
+            endpoints.append(str(node_names[i]))
+            endpoints.append(t)        
+        
+    return network
