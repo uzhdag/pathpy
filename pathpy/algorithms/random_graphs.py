@@ -29,30 +29,32 @@ from collections import defaultdict
 
 import numpy as _np
 
-from pathpy.utils import Log, Severity
 from pathpy.utils import PathpyNotImplemented
 from pathpy.classes import Network
+from pathpy.classes import TemporalNetwork
 
 
 def molloy_reed(degree_sequence, self_loops=True, node_names=None):
 
-    assert len(degree_sequence)>1, 'Error: degree sequence must contain at least two entries'
+    n = len(degree_sequence)
 
-    assert sum(degree_sequence)%2 == 0 and sum(degree_sequence) <= len(degree_sequence)**2, 'Error: degree sequence is not graphical'
+    assert n > 1, 'Error: degree sequence must contain at least two entries'
 
-    if node_names is None: 
-        node_names = [str(x) for x in range(len(degree_sequence))]
-    assert len(node_names)>=len(degree_sequence), 'Error: Number of node names not matching length of degree sequence'
+    assert sum(degree_sequence)%2 == 0 and \
+            sum(degree_sequence) <= n**2, 'Error: degree sequence is not graphical'
+
+    if node_names is None:
+        node_names = [str(x) for x in range(n)]
+    assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
 
     if not self_loops:
-        raise PathpyNotImplemented('Network generation without self-loops is not implemented yet')
-    
+        raise PathpyNotImplemented('Molly-Reed model without self-loops is not implemented yet')
 
     network = Network(directed=False)
 
     # generate node stubs
     stubs = []
-    for i in range(len(degree_sequence)):
+    for i in range(n):
         for j in range(degree_sequence[i]):
             stubs.append(str(node_names[i]))
 
@@ -67,16 +69,18 @@ def molloy_reed(degree_sequence, self_loops=True, node_names=None):
 
 
 def random_k_regular(n, k, self_loops=True, node_names=None):
-    
+    """
+    """
     return molloy_reed([k]*n, self_loops, node_names)
 
 
 def erdoes_renyi_gnm(n, m, node_names=None, self_loops=True, directed=False):
-    
+    """
+    """
     if node_names is None: 
         node_names = [str(x) for x in range(n)]
 
-    assert len(node_names)>=n, 'Error: Number of node names not matching length of degree sequence'
+    assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
 
     network = Network(directed=directed)
 
@@ -93,19 +97,19 @@ def erdoes_renyi_gnm(n, m, node_names=None, self_loops=True, directed=False):
     return network
 
 
-def erdoes_renyi_gnp(n, p, node_names=None, self_loops=True, directed=False):    
+def erdoes_renyi_gnp(n, p, node_names=None, self_loops=True, directed=False):
     """
     """
     if node_names is None: 
         node_names = [str(x) for x in range(n)]
-    assert len(node_names)>=n, 'Error: Number of node names not matching length of degree sequence'
+    assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
 
     network = Network(directed=directed)
 
     # generate nodes
     for i in range(n):
         network.add_node(str(node_names[i]))        
-    
+
     # add edges
     for i in range(n):
         for j in range(n):
@@ -120,7 +124,7 @@ def watts_strogatz(n, p, node_names=None, directed=False):
     """
     if node_names is None: 
         node_names = [str(x) for x in range(n)]
-    assert len(node_names)>=n, 'Error: Number of node names not matching length of degree sequence'
+    assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
 
     raise PathpyNotImplemented('Watts-Strogatz model is not implemented yet')
 
@@ -131,7 +135,7 @@ def barabasi_albert(n, n_init, k=1, node_names=None, directed=False):
 
     if node_names is None:
         node_names = [str(x) for x in range(n)]
-    assert len(node_names)>=n, 'Error: Number of node names not matching length of degree sequence'
+    assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
 
     network = Network(directed=directed)
 
@@ -149,3 +153,34 @@ def barabasi_albert(n, n_init, k=1, node_names=None, directed=False):
             network.add_edge(str(node_names[i]), t)
         node_list.append(str(node_names[i]))
     return network
+
+
+
+def barabasi_albert_temporal(n, n_init, k=1, node_names=None, directed=False):
+    """
+    """
+
+    if node_names is None:
+        node_names = [str(x) for x in range(n)]
+    assert len(node_names) >= n, 'Error: Number of node names not matching degree sequence length'
+
+    tempnet = TemporalNetwork()
+    time = 0
+
+    edges = []
+
+    # initial network
+    for i in range(n_init):
+        for j in range(n_init):
+            if i < j:
+                tempnet.add_edge(str(node_names[i]), str(node_names[j]), time)
+
+    node_list = [v for v in tempnet.nodes]
+
+    for i in range(n_init, n):
+        targets = _np.random.choice(node_list, size=k, replace=False)
+        for t in targets:
+            tempnet.add_edge(str(node_names[i]), t, time)
+        node_list.append(str(node_names[i]))
+        time += 1
+    return tempnet
