@@ -602,7 +602,7 @@ class Network:
                 data.append(prob)
 
                 # add transition from t to s for undirected network
-                if not self.directed:
+                if not self.directed and s!=t:
                     row.append(node_to_coord[s])
                     col.append(node_to_coord[t])
                     assert D[t] > 0, \
