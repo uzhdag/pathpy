@@ -506,6 +506,36 @@ class Network:
         return 0
 
 
+    def node_properties(self, prop):
+        """
+        Returns a sequence of arbitrary node properties in the network, 
+        where entries have the same order as in network.nodes. If a property
+        is not present for a given node, None will be added to the sequence.
+        """
+        properties = []
+        for v in self.nodes:
+            if prop in self.nodes[v]:
+                properties.append(self.nodes[v][prop])
+            else:
+                properties.append(None)
+        return properties
+
+
+    def degrees(self, mode='degree'):
+        """
+        Returns the sequence of node degrees in the network, where
+        entries have the same order as in network.nodes.
+
+        Parameters:
+        -----------
+        mode: str
+            either 'degree', 'indegree', or 'outdegree'
+        """
+        assert mode is 'degree' or mode is 'indegree' or mode is 'outdegree', \
+            'Only "degree", "indegree", or "outdegree" are supported.'
+        return self.node_properties(mode)
+
+
     def node_to_name_map(self):
         """Returns a dictionary that can be used to map nodes to matrix/vector indices"""
         return {v: idx for idx, v in enumerate(self.nodes)}
