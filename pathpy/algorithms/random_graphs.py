@@ -34,11 +34,15 @@ from pathpy.classes import Network
 from pathpy.classes import TemporalNetwork
 
 
+__all__ = ['is_graphic_sequence', 'molloy_reed', 'random_k_regular', 'erdoes_renyi_gnm',
+           'erdoes_renyi_gnp', 'watts_strogatz', 'barabasi_albert']
+
+
 def is_graphic_sequence(degree_sequence, directed=False):
     """
-    Checks whether a degree sequence is graphic, i.e. whether 
+    Checks whether a degree sequence is graphic, i.e. whether
     there exists an undirected or directed graph that has the
-    given degree sequence. A graphic degree sequence is the 
+    given degree sequence. A graphic degree sequence is the
     precondition to apply the Molloy-Reed random graph generation.
 
     Parameters
@@ -47,7 +51,7 @@ def is_graphic_sequence(degree_sequence, directed=False):
         the degree sequence for which to test the graphic property
 
     directed: bool
-        whether or not to check for the sequence of a directed 
+        whether or not to check for the sequence of a directed
         graph
 
     Returns

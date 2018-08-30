@@ -35,9 +35,27 @@ from pathpy.classes import Network
 from pathpy.classes import HigherOrderNetwork
 import numpy as _np
 
+__all__ = ['generate_walk']
+
 @singledispatch
 def generate_walk(network, l=100, start_node=None):
     """
+    Generate a random walk trajectory of a given length, based on
+    a weighted/directed/undirected network, temporal network, or
+    higher-order network.
+
+    Parameters:
+    -----------
+    network: Network, TemporalNetwork, HigherOrderNetwork
+        The temporal, first-order, or higher-order network, which
+        will be used to randomly generate a walk through a network.
+    l: int
+        The (maximum) length of the walk to be generated. If a node
+        with out-degree zero is encountered, the walk is terminated
+        even if l has not been reached.
+    start_node: str
+        The (higher-order) node in which the random walk will be started.
+        Default is None, in which case a random start node will be chosen.
     """
     T = network.transition_matrix().todense().transpose()
     idx_map = network.node_to_name_map()
@@ -66,8 +84,7 @@ def generate_walk(network, l=100, start_node=None):
 
 @generate_walk.register(HigherOrderNetwork)
 def _temporal_walk(higher_order_net, l=100, start_node=None):
-    """
-    """
+
     T = higher_order_net.transition_matrix().todense().transpose()
     idx_map = higher_order_net.node_to_name_map()
     nodes = _np.array([v for v in higher_order_net.nodes])
@@ -98,6 +115,7 @@ def _temporal_walk(higher_order_net, l=100, start_node=None):
 
 @generate_walk.register(TemporalNetwork)
 def _temporal_walk(tempnet, l=100, start_node=None):
+
     itinerary = []
     if start_node is None:
         current_node = _np.random.choice(tempnet.nodes)

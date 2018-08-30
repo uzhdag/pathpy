@@ -34,5 +34,6 @@ def generate_walk(tempnet, l=100, start_node=None):
     """
     DEPRECATED
     """
-    Log.add('The temporal_walk.generate_walk function is deprecated. Please use random_walk.generate_walk instead.', Severity.WARNING)
+    Log.add('The temporal_walk.generate_walk function is deprecated. \
+             Please use random_walk.generate_walk instead.', Severity.WARNING)
     return random_walk.generate_walk(tempnet, l, start_node)
