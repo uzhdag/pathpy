@@ -25,40 +25,14 @@ Algorithms to calculate shortest paths and distances in higher-order networks an
 #
 #    E-mail: scholtes@ifi.uzh.ch
 #    Web:    http://www.ingoscholtes.net
-from functools import singledispatch
-from collections import defaultdict
-
-import numpy as _np
 
 from pathpy.utils import Log, Severity
-from pathpy.utils import PathpyNotImplemented
 from pathpy.classes import TemporalNetwork
-from pathpy.classes import Network
-from pathpy.classes import Paths
+from pathpy.algorithms import random_walk
 
 def generate_walk(tempnet, l=100, start_node=None):
     """
+    DEPRECATED
     """
-    Log.add('temporal_walk.generate_walk function is deprecated. Please use random_walk.generate_walk instead.', Severity.WARNING)
-    itinerary = []
-    if start_node is None:
-        current_node = _np.random.choice(tempnet.nodes)
-    else:
-        current_node = start_node
-    itinerary.append(current_node)
-    steps = 0
-    for t in tempnet.ordered_times:
-        # find possible targets in time t
-        targets = set()
-        for (v, w, time) in tempnet.time[t]:
-            if v == current_node:
-               targets.add(w)
-        # move to random target
-        if targets:
-            current_node = _np.random.choice(list(targets))
-            steps += 1
-        # add currently visited node
-        itinerary.append(current_node)
-        if steps == l:
-            break
-    return itinerary
+    Log.add('The temporal_walk.generate_walk function is deprecated. Please use random_walk.generate_walk instead.', Severity.WARNING)
+    return random_walk.generate_walk(tempnet, l, start_node)

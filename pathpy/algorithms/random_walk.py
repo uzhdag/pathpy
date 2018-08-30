@@ -47,15 +47,15 @@ def generate_walk(network, l=100, start_node=None):
 
     if start_node is None:
         start_node = _np.random.choice(nodes)
-    
+
     # choose random start node
     itinerary.append(start_node)
     for j in range(l):
         # get transition probability vector T[idx ->  . ]
-        prob = _np.array(T[idx_map[itinerary[-1]],:])[0,:]
+        prob = _np.array(T[idx_map[itinerary[-1]], :])[0, :]
         nz = prob.nonzero()[0]
         # make one random transition
-        if nz.shape[0]>0:
+        if nz.shape[0] > 0:
             next_node = _np.random.choice(a=nodes[nz], p=prob[nz])
             # add node to path
             itinerary.append(next_node)
@@ -66,7 +66,35 @@ def generate_walk(network, l=100, start_node=None):
 
 @generate_walk.register(HigherOrderNetwork)
 def _temporal_walk(higher_order_net, l=100, start_node=None):
-    raise PathpyNotImplemented('Walk in higher order network is not implemented')
+    """
+    """
+    T = higher_order_net.transition_matrix().todense().transpose()
+    idx_map = higher_order_net.node_to_name_map()
+    nodes = _np.array([v for v in higher_order_net.nodes])
+
+    itinerary = []
+
+    if start_node is None:
+        start_node = _np.random.choice(nodes)
+    last = start_node
+
+    # choose random start node
+    for x in higher_order_net.higher_order_node_to_path(start_node):
+        itinerary.append(x)
+    for j in range(l):
+        # get transition probability vector T[idx ->  . ]
+        prob = _np.array(T[idx_map[last], :])[0, :]
+        nz = prob.nonzero()[0]
+        # make one random transition
+        if nz.shape[0] > 0:
+            next_node = _np.random.choice(a=nodes[nz], p=prob[nz])
+            # add node to path
+            itinerary.append(higher_order_net.higher_order_node_to_path(next_node)[-1])
+            last = next_node
+        else: # no neighbor
+            break
+    return itinerary
+
 
 @generate_walk.register(TemporalNetwork)
 def _temporal_walk(tempnet, l=100, start_node=None):
