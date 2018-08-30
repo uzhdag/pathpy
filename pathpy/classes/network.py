@@ -353,11 +353,12 @@ class Network:
             self.predecessors[source].remove(target)
 
             # take care of target
-            self.nodes[target]['degree'] -= 1
-            self.nodes[target]['outweight'] -= self.edges[(source, target)]['weight']
-            self.nodes[target]['inweight'] -= self.edges[(source, target)]['weight']
-            self.successors[target].remove(source)
-            self.predecessors[target].remove(source)
+            if source != target:
+                self.nodes[target]['degree'] -= 1
+                self.nodes[target]['outweight'] -= self.edges[(source, target)]['weight']
+                self.nodes[target]['inweight'] -= self.edges[(source, target)]['weight']
+                self.successors[target].remove(source)
+                self.predecessors[target].remove(source)
 
             del self.edges[(source, target)]
 
