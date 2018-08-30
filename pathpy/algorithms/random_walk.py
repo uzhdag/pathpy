@@ -28,18 +28,48 @@ Algorithms to calculate shortest paths and distances in higher-order networks an
 from functools import singledispatch
 from collections import defaultdict
 
-import numpy as _np
-
 from pathpy.utils import Log, Severity
 from pathpy.utils import PathpyNotImplemented
 from pathpy.classes import TemporalNetwork
 from pathpy.classes import Network
-from pathpy.classes import Paths
+from pathpy.classes import HigherOrderNetwork
+import numpy as _np
 
-def generate_walk(tempnet, l=100, start_node=None):
+@singledispatch
+def generate_walk(network, l=100, start_node=None):
     """
     """
-    Log.add('temporal_walk.generate_walk function is deprecated. Please use random_walk.generate_walk instead.', Severity.WARNING)
+    T = network.transition_matrix().todense().transpose()
+    idx_map = network.node_to_name_map()
+    nodes = _np.array([v for v in network.nodes])
+
+    itinerary = []
+
+    if start_node is None:
+        start_node = _np.random.choice(nodes)
+    
+    # choose random start node
+    itinerary.append(start_node)
+    for j in range(l):
+        # get transition probability vector T[idx ->  . ]
+        prob = _np.array(T[idx_map[itinerary[-1]],:])[0,:]
+        nz = prob.nonzero()[0]
+        # make one random transition
+        if nz.shape[0]>0:
+            next_node = _np.random.choice(a=nodes[nz], p=prob[nz])
+            # add node to path
+            itinerary.append(next_node)
+        else: # no neighbor
+            break
+    return itinerary
+
+
+@generate_walk.register(HigherOrderNetwork)
+def _temporal_walk(higher_order_net, l=100, start_node=None):
+    raise PathpyNotImplemented('Walk in higher order network is not implemented')
+
+@generate_walk.register(TemporalNetwork)
+def _temporal_walk(tempnet, l=100, start_node=None):
     itinerary = []
     if start_node is None:
         current_node = _np.random.choice(tempnet.nodes)

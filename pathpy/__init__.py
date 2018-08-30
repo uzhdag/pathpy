@@ -14,6 +14,7 @@ import pathpy.algorithms.centralities
 import pathpy.algorithms.components
 import pathpy.algorithms.shortest_paths
 import pathpy.algorithms.centralities
+import pathpy.algorithms.random_walk
 import pathpy.algorithms.temporal_walk
 import pathpy.algorithms.spectral
 import pathpy.algorithms.path_measures

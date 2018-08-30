@@ -194,7 +194,7 @@ def erdoes_renyi_gnm(n, m, node_names=None, self_loops=True, directed=False, tem
                 network.add_edge(edge[0], edge[1])                
             else:
                 time += 1
-                network.add_edge(edge[0], edge[1], time)
+                network.add_edge(edge[0], edge[1], time, directed=directed)
     return network
 
 
@@ -226,7 +226,7 @@ def erdoes_renyi_gnp(n, p, node_names=None, self_loops=True, directed=False, tem
                         network.add_edge(node_names[i], node_names[j])
                     else:
                         time += 1
-                        network.add_edge(node_names[i], node_names[j], time)
+                        network.add_edge(node_names[i], node_names[j], time, directed=directed)
     return network
 
 
@@ -262,7 +262,7 @@ def barabasi_albert(n, n_init, k=1, node_names=None, directed=False, temporal=Fa
                 if not temporal:
                     network.add_edge(str(node_names[i]), str(node_names[j]))
                 else:
-                    network.add_edge(str(node_names[i]), str(node_names[j]), time)
+                    network.add_edge(str(node_names[i]), str(node_names[j]), time, directed=directed)
                 endpoints.append(str(node_names[i]))
                 endpoints.append(str(node_names[j]))
 
@@ -274,7 +274,7 @@ def barabasi_albert(n, n_init, k=1, node_names=None, directed=False, temporal=Fa
             if not temporal:
                 network.add_edge(str(node_names[i]), t)
             else:
-                network.add_edge(str(node_names[i]), t, time)
+                network.add_edge(str(node_names[i]), t, time, directed=directed)
             endpoints.append(str(node_names[i]))
             endpoints.append(t)
         
