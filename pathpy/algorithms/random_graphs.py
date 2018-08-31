@@ -185,19 +185,23 @@ def erdoes_renyi_gnm(n, m, node_names=None, self_loops=True, directed=False, tem
             network.add_node(str(node_names[i]))
 
     time = -1
+    m_current = 0
     edges = defaultdict(lambda: False)
 
     # add edges
-    while network.ecount() < m:
-        edge = _np.random.choice(node_names[:n], size=2, replace=self_loops)
+    while m_current < m:
+        edge = _np.random.choice(n, size=2, replace=self_loops)
+        edge = [node_names[edge[0]], node_names[edge[1]]]
         if not edges[(edge[0], edge[1])]:
             edges[(edge[0], edge[1])] = True
             if not directed:
                 edges[(edge[1], edge[0])] = True
             if not temporal:
+                m_current += 1
                 network.add_edge(edge[0], edge[1])                
             else:
                 time += 1
+                m_current += 1
                 network.add_edge(edge[0], edge[1], time, directed=directed)
     return network
 
