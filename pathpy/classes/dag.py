@@ -64,6 +64,54 @@ class DAG(Network):
 
 
     @classmethod
+    def from_node_activity_sequence(cls, sequence, self_loops=True, connect_prior=0):
+        """
+        Generates a directed acyclic graph from a sequence of node
+        activations, where each activation is assumed to be influenced
+        by previous activations. This is useful to extract a
+        directed acyclic graph, e.g., from a sequence of user activities
+        in a communication forum. The sequence of interactions is taken into
+        account in the generation of the DAG. The number of prior activations to
+        each node will be linked can be customized using the connect_prior parameter.
+        For the default 0 (which means connect to all prior activations), a sequence
+        ['a', 'b', 'c', 'a'] will result in a dag (0,1), (0,2), (0,3), (1,2), (1,3), (2,3).
+        The returned node_map maps the nodes in the DAG to the actual nodes, i.e. in the example
+        node_map = { '0': 'a', '1': 'b', '2': c, '3': a}.
+
+        Parameter:
+        ----------
+        sequence: iterable
+            any iterable containing a sequence of string node names
+        self_loops: bool
+            whether or not to consider links linking nodes to themselves, i.e. whether
+            to consider an edge (x, y) in the dag where node_map[x] == node_map[y]
+        connect_prior: bool
+            to how many prior nodes each node shall be linked. For a value of 1, a chain 
+            will be generated, for 2 a lattice where each node is connected to two previous
+            nodes is generated. For the default 0 each node is connected to all prior nodes.
+        """
+        dag = cls()
+
+        # dictionary that maps nodes in dag to actual nodes
+        node_map = {}
+
+        i = 0
+        for v in sequence:
+            name = str(i)
+            node_map[name] = v
+            dag.add_node(name)
+            if connect_prior == 0:
+                m = i
+            else:
+                m = min(connect_prior, i)
+            for j in range(i-m, i):
+                if self_loops or node_map[str(j)] != node_map[name]:
+                    dag.add_edge(str(j), name)            
+            i += 1
+        return dag, node_map
+
+
+    @classmethod
     def from_temporal_network(cls, tempnet, delta=1):
         """
         Creates a time-unfolded directed acyclic graph from a
@@ -316,6 +364,15 @@ class DAG(Network):
         Returns the default string representation of this object
         """
         return self.summary()
+
+    def add_node(self, node):
+        """
+        Adds a node to a graph
+        """
+        if node not in self.nodes:
+            self.roots.add(node)
+            self.leafs.add(node)
+            super().add_node(node)
 
     def add_edge(self, source, target, **kwargs):
         """
