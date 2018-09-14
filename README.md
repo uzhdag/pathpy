@@ -37,7 +37,7 @@ A broader view on optimal higher-order models in the analyis of complex systems 
 
 Please make sure that you use the pyPI name `pathpy2` as the package name `pathpy` is currently blocked.
 
-If you want to install the latest development version, you can install it direvctly from git by typing: 
+If you want to install the latest development version, you can install it directly from the gitHub repository by typing:
 
 `> pip install git+git://github.com/uzhdag/pathpy.git`
 
