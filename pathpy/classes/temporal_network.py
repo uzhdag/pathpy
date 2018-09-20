@@ -602,6 +602,21 @@ class TemporalNetwork:
         t.nodes = self.nodes
         return t
 
+    def reverse_time(self):
+        """
+        Returns a copy of the temporal network in which time has been reversed
+        """
+        t = TemporalNetwork()
+        t_reversed = self.ordered_times.copy()
+        t_reversed.reverse()
+        time_r = 1
+        for i in range(len(t_reversed)):
+            if i > 0:
+                time_r += abs(t_reversed[i] - t_reversed[i-1])
+            for (v, w, x) in self.time[t_reversed[i]]:
+                t.add_edge(v, w, time_r)
+        return t
+
     def _repr_html_(self):
         """
         display an interactive d3js visualisation of the temporal network in jupyter
