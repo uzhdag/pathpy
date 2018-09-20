@@ -38,7 +38,9 @@ __all__ = ['connected_components']
 
 
 def connected_components(network, lanczos_vecs=15, maxiter=1000):
-
+    """
+    Calculates connected components based on the spectrum of the Laplacian matrix
+    """
     L = network.laplacian_matrix(weighted=True)
     n = network.ncount()-2
     vals, vecs = _sla.eigs(L, k=n, which="SM", ncv=lanczos_vecs, maxiter=maxiter, return_eigenvectors=True)
@@ -60,9 +62,8 @@ def connected_components(network, lanczos_vecs=15, maxiter=1000):
 
 def reduce_to_gcc(network):
     """
-    Returns a list of instances of the class Network that represent the 
-    (strongly) connected components of a network. Connected components
-    are calculated using Tarjan's algorithm.
+    Reduces the network to the largest connected component.
+    Connected components are calculated using Tarjan's algorithm.
     """
 
     # these are used as nonlocal variables (!)
@@ -105,7 +106,7 @@ def reduce_to_gcc(network):
                 if v == w:
                     break
 
-    # compute strongly connected components    
+    # compute strongly connected components
     for v in network.nodes:
         if indices[v] is None:
             strong_connect(v)
@@ -120,6 +121,4 @@ def reduce_to_gcc(network):
     # Reduce higher-order network to SCC
     for v in list(network.nodes):
         if v not in scc:
-            # TODO: LV with the new network implementation the procedure removes edges but the in-degree
-            # TODO: and the out-degree dictionaries are not updated and are out of sync.
             network.remove_node(v)
