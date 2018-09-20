@@ -33,10 +33,8 @@ from pathpy.utils import PathpyNotImplemented
 from pathpy.classes import Network
 from pathpy.classes import TemporalNetwork
 
-
 __all__ = ['is_graphic_sequence', 'molloy_reed', 'random_k_regular', 'erdoes_renyi_gnm',
            'erdoes_renyi_gnp', 'watts_strogatz', 'barabasi_albert']
-
 
 def is_graphic_sequence(degree_sequence, directed=False):
     """
@@ -60,7 +58,7 @@ def is_graphic_sequence(degree_sequence, directed=False):
     """
 
     # fast check using result of Behzad and Chartrand 1967,
-    # showing that a graphic degree sequence msut have at least one
+    # showing that a graphic degree sequence must have at least one
     # degree occurring twice
     if len(set(degree_sequence)) == len(degree_sequence):
         return False
@@ -261,7 +259,7 @@ def barabasi_albert(n, n_init, k=1, node_names=None, directed=False, temporal=Fa
         network = TemporalNetwork()
 
     endpoints = []
-    time =  0
+    time = 0
 
     # initial network
     for i in range(n_init):
@@ -285,5 +283,4 @@ def barabasi_albert(n, n_init, k=1, node_names=None, directed=False, temporal=Fa
                 network.add_edge(str(node_names[i]), t, time, directed=directed)
             endpoints.append(str(node_names[i]))
             endpoints.append(t)
-        
     return network
