@@ -23,6 +23,7 @@
 #    E-mail: scholtes@ifi.uzh.ch
 #    Web:    http://www.ingoscholtes.net
 import collections as _co
+import copy
 
 import numpy as _np
 
@@ -71,6 +72,29 @@ class Network:
         # A dictionary containing the sets of predecessors of all nodes
         self.predecessors = _co.defaultdict(set)
 
+
+    def __add__(self, other):
+        """
+        Add two networks and return the union of both
+
+        Parameters
+        ----------
+        other : Network
+
+        Returns
+        -------
+        Network
+            Default operator +, which returns the sum of two Network objects
+        """
+        n_sum = Network()
+        n_sum.directed = self.directed
+        n_sum.nodes = copy.deepcopy(self.nodes)
+        n_sum.edges = copy.deepcopy(self.edges)
+        n_sum.successors = copy.deepcopy(self.successors)
+        n_sum.predecessors = copy.deepcopy(self.predecessors)
+        for edge in other.edges:
+            n_sum.add_edge(edge[0], edge[1], weight=other.edges[edge]['weight'])
+        return n_sum
 
     @classmethod
     def read_file(cls, filename, separator=',', weighted=False, directed=False, header=False):
