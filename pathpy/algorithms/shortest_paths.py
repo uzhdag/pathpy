@@ -218,12 +218,31 @@ def _sp(paths):
     return s_p
 
 
-@singledispatch
 def diameter(network):
     """
-    Return the maximal path length.
+    Returns the length of the longest shortest path between any two nodes
     """
-    assert isinstance(network, Network), \
-        "network must be an instance of Network"
+    s_p = shortest_paths(network)
+    diam = 0
+    for s in s_p.keys():
+        for d in s_p[s].keys():
+            if s != d:
+                for p in s_p[s][d]:
+                    break
+                diam = max(diam, len(p)-1)
+    return diam
 
-    raise PathpyNotImplemented()
+
+def avg_path_length(network):
+    """
+    Returns the average shortest path length between all nodes
+    """
+    s_p = shortest_paths(network)
+    avg_l = 0
+    n = len(s_p.keys())
+    for s in s_p.keys():
+        for d in s_p[s].keys():
+                for p in s_p[s][d]:
+                    break
+                avg_l += len(p)-1
+    return avg_l/(n**2)
