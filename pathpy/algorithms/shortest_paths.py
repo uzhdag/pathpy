@@ -31,7 +31,6 @@ from collections import defaultdict
 import numpy as _np
 
 from pathpy.utils import Log, Severity
-from pathpy.utils import PathpyNotImplemented
 from pathpy.classes import HigherOrderNetwork
 from pathpy.classes import Network
 from pathpy.classes import Paths
@@ -158,8 +157,9 @@ def shortest_paths(network):
     s_p = defaultdict(lambda: defaultdict(set))
 
     for e in network.edges:
+        # set distances between neighbors to 1
         dist[e[0]][e[1]] = 1
-        s_p[e[0]][e[1]].add(e)
+        s_p[e[0]][e[1]].add((e[0], e[1]))
         if not network.directed:
             dist[e[1]][e[0]] = 1
             s_p[e[1]][e[0]].add((e[1], e[0]))
@@ -169,12 +169,14 @@ def shortest_paths(network):
             for w in network.nodes:
                 if v != w:
                     if dist[v][w] > dist[v][k] + dist[k][w]:
+                        # we have found a shorter path
                         dist[v][w] = dist[v][k] + dist[k][w]
                         s_p[v][w] = set()
                         for p in list(s_p[v][k]):
                             for q in list(s_p[k][w]):
                                 s_p[v][w].add(p + q[1:])
                     elif dist[v][w] == dist[v][k] + dist[k][w]:
+                        # we have found another shortest path
                         for p in list(s_p[v][k]):
                             for q in list(s_p[k][w]):
                                 s_p[v][w].add(p + q[1:])
@@ -222,14 +224,11 @@ def diameter(network):
     """
     Returns the length of the longest shortest path between any two nodes
     """
-    s_p = shortest_paths(network)
+    dist = distance_matrix(network)
     diam = 0
-    for s in s_p.keys():
-        for d in s_p[s].keys():
-            if s != d:
-                for p in s_p[s][d]:
-                    break
-                diam = max(diam, len(p)-1)
+    for s in dist.keys():
+        for d in dist[s].keys():
+            diam = max(diam, dist[s][d])
     return diam
 
 
@@ -237,12 +236,10 @@ def avg_path_length(network):
     """
     Returns the average shortest path length between all nodes
     """
-    s_p = shortest_paths(network)
+    dist = distance_matrix(network)
     avg_l = 0
-    n = len(s_p.keys())
-    for s in s_p.keys():
-        for d in s_p[s].keys():
-                for p in s_p[s][d]:
-                    break
-                avg_l += len(p)-1
+    n = len(dist.keys())
+    for s in dist.keys():
+        for d in dist[s].keys():
+                avg_l += dist[s][d]
     return avg_l/(n**2)
