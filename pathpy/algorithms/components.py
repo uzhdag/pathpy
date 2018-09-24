@@ -37,13 +37,17 @@ from pathpy.utils import PathpyError
 __all__ = ['connected_components']
 
 
-def connected_components(network, lanczos_vecs=15, maxiter=1000):
+def connected_components(network, lanczos_vecs=None, maxiter=None):
     """
     Calculates connected components based on the spectrum of the Laplacian matrix
     """
     L = network.laplacian_matrix(weighted=True)
     n = network.ncount()-2
-    vals, vecs = _sla.eigs(L, k=n, which="SM", ncv=lanczos_vecs, maxiter=maxiter, return_eigenvectors=True)
+    if lanczos_vecs is None:
+        lanczos_vecs = min(n, max(2*n + 1, 20))
+    if maxiter is None:
+        maxiter = n*10
+    vals, vecs = _sla.eigs(L, k=n, which="SM", return_eigenvectors=True)
 
     components = defaultdict(set)
     c = 0
@@ -51,9 +55,8 @@ def connected_components(network, lanczos_vecs=15, maxiter=1000):
     # use eigenvectors of zero eigenvalues to map nodes to components
     for i in range(n):
         if _np.isclose(vals[i], 0, atol=1.e-12):
-            print(vecs[:,i])
-            min = _np.min(vecs[:,i])
-            for i in _np.where(_np.isclose(vecs[:,i], min))[0]:
+            min_v = _np.min(vecs[:,i])
+            for i in _np.where(_np.isclose(vecs[:,i], min_v))[0]:
                 components[c].add(i)
             c += 1
     return components
