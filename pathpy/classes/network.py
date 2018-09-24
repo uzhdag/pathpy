@@ -86,8 +86,7 @@ class Network:
         Network
             Default operator +, which returns the sum of two Network objects
         """
-        n_sum = Network()
-        n_sum.directed = self.directed
+        n_sum = Network(directed = self.directed or other.directed)
         n_sum.nodes = copy.deepcopy(self.nodes)
         n_sum.edges = copy.deepcopy(self.edges)
         n_sum.successors = copy.deepcopy(self.successors)
@@ -532,9 +531,9 @@ class Network:
 
     def node_properties(self, prop):
         """
-        Returns a sequence of arbitrary node properties in the network, 
+        Returns a list of arbitrary node properties in the network, 
         where entries have the same order as in network.nodes. If a property
-        is not present for a given node, None will be added to the sequence.
+        is not present for a given node, None will be added to the list.
         """
         properties = []
         for v in self.nodes:
@@ -548,7 +547,9 @@ class Network:
     def degrees(self, mode='degree'):
         """
         Returns the sequence of node degrees in the network, where
-        entries have the same order as in network.nodes.
+        entries have the same order as in network.nodes. Note that 
+        if mode == 'degree' for a directed network, the degree sequence
+        of the undirected network will be returned.
 
         Parameters:
         -----------
@@ -557,6 +558,10 @@ class Network:
         """
         assert mode is 'degree' or mode is 'indegree' or mode is 'outdegree', \
             'Only "degree", "indegree", or "outdegree" are supported.'
+        
+        if self.directed and mode == 'degree':
+            return self.to_undirected().degrees()
+
         return self.node_properties(mode)
 
 

@@ -76,6 +76,51 @@ def rank_centralities(centralities):
     return ranked_nodes
 
 
+def degree(network, mode='degree'):    
+    """
+    Calculates different notions of degree centrality (directed, weighted) in a network
+
+    Parameters:
+    -----------
+
+    mode: str
+        'degree'
+        'weight'
+        'indegree'
+        'inweight'
+        'outdegree'
+        'outweight'
+    """
+
+    assert mode == 'degree' or mode == 'weight' or mode == 'indegree' or mode == 'outdegree' \
+            or mode == 'inweight' or mode == 'outweight', 'Error: Invalid mode'
+
+    degree_centralities = defaultdict(lambda: 0.0)
+
+    for n in network.nodes:
+        # undirected network: only distinguish between degree and weighted degree
+        if not network.directed and (mode == 'degree' or mode == 'outdegree' or mode == 'indegree'):
+            degree_centralities[n] = float(network.nodes[n]['degree'])
+        if not network.directed and (mode == 'weight' or mode == 'outweight' or mode == 'inweight'):
+            degree_centralities[n] = float(network.nodes[n]['inweight'])
+        
+        # directed network: distinguish between degree, weighted degree, inweight, outweight, indegree and outdegree
+        if network.directed and mode == 'degree':
+            degree_centralities[n] = float(network.nodes[n]['indegree'])
+            degree_centralities[n] += float(network.nodes[n]['outdegree'])
+        if network.directed and mode == 'weight':
+            degree_centralities[n] = float(network.nodes[n]['inweight'])
+            degree_centralities[n] += float(network.nodes[n]['outweight'])
+        elif network.directed and mode == 'indegree':
+            degree_centralities[n] = float(network.nodes[n]['indegree'])
+        elif network.directed and mode == 'outdegree':
+            degree_centralities[n] = float(network.nodes[n]['outdegree'])
+        elif network.directed and mode == 'inweight':
+            degree_centralities[n] = float(network.nodes[n]['inweight'])
+        elif network.directed and mode == 'outweight':
+            degree_centralities[n] = float(network.nodes[n]['outweight'])
+    return degree_centralities
+
 
 @singledispatch
 def betweenness(network, normalized=False):
@@ -261,14 +306,16 @@ def closeness(network, normalized=False):
     Log.add('Calculating closeness in network ...', Severity.INFO)
 
     # calculate closeness values
-    for x in network.nodes:
-        for d in network.nodes:
+    for d in network.nodes:
+        for x in network.nodes:
             if d != x and distances[d][x] < _np.inf:
-                node_centralities[x] += 1.0 / distances[d][x]
+                node_centralities[x] += distances[d][x]
 
     # assign centrality zero to nodes not occurring on higher-order shortest paths
     for v in network.nodes:
-        node_centralities[v] += 0
+        node_centralities[v] += 0.0
+        if node_centralities[v] > 0.0:
+            node_centralities[v] = (network.ncount() - 1.0) / node_centralities[v]
 
     if normalized:
         max_centr = max(node_centralities.values())
