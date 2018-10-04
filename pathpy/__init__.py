@@ -19,6 +19,7 @@ import pathpy.algorithms.temporal_walk
 import pathpy.algorithms.spectral
 import pathpy.algorithms.path_measures
 import pathpy.algorithms.infomap
+import pathpy.algorithms.modularity
 import pathpy.algorithms.random_graphs
 
 import pathpy.utils
