@@ -24,6 +24,7 @@
 #    Web:    http://www.ingoscholtes.net
 import collections as _co
 import copy
+import itertools
 
 import numpy as _np
 
@@ -373,6 +374,25 @@ class Network:
                 self.predecessors[target].remove(source)
 
             del self.edges[(source, target)]
+
+
+    def add_clique(self, node_list, **edge_attributes):
+        r"""
+        Adds a fully connected clique to the network. This will 
+        automatically create all edges between all pairs of nodes
+        (without self-loops). Depending on the network type
+        edges will be directed or undirected.
+
+        Parameters
+        ----------
+        node_list: iterable
+            the list of nodes for which all pairs will be connected
+        edge_attributes: dict
+            edge attributes that will be assigned to all generated edges
+        """        
+        for v, w in itertools.combinations(node_list, 2):
+            self.add_edge(v, w, **edge_attributes)
+
 
 
     def add_edge(self, v, w, **edge_attributes):
