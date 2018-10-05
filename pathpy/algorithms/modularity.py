@@ -72,7 +72,7 @@ def assortativity_coeff(network, C=None):
     return q_opt/q_max(network, C)
 
 
-def q_merge(network, C, merge=set()):
+def q_merge(network, C, merge=None):
     m = network.ecount()
     n = network.ncount()    
     A = network.adjacency_matrix(weighted=False)
@@ -80,7 +80,7 @@ def q_merge(network, C, merge=set()):
     q = 0.0
     for v in network.nodes:
         for w in network.nodes:
-            if C[v] == C[w] or (C[v] in merge and C[w] in merge):
+            if C[v] == C[w] or (merge is not None and C[v] in merge and C[w] in merge):
                 q += A[idx[v], idx[w]] - network.nodes[v]['degree']*network.nodes[w]['degree']/(2*m)
     q /= 2*m
     return q
