@@ -307,7 +307,7 @@ class Network:
         if v in self.nodes:
             # remove all incident edges and update neighbors
             if not self.directed:
-                for w in self.successors[v]:
+                for w in list(self.successors[v]):
                     edge = (v, w)
                     self.nodes[w]['degree'] -= 1
                     self.nodes[w]['inweight'] -= self.edges[edge]['weight']
@@ -316,18 +316,20 @@ class Network:
                     self.predecessors[w].remove(v)
                     del self.edges[edge]
             else:
-                for w in self.successors[v]:
+                for w in list(self.successors[v]):
                     self.nodes[w]['indegree'] -= 1
                     self.nodes[w]['inweight'] -= self.edges[(v, w)]['weight']
                     self.predecessors[w].remove(v)
                     del self.edges[(v, w)]
-                for w in self.predecessors[v]:
+                for w in list(self.predecessors[v]):
                     self.nodes[w]['outdegree'] -= 1
                     self.nodes[w]['outweight'] -= self.edges[(w, v)]['weight']
                     self.successors[w].remove(v)
                     del self.edges[(w, v)]
             del self.nodes[v]
+        if v in self.successors:
             del self.successors[v]
+        if v in self.predecessors:
             del self.predecessors[v]
 
 
