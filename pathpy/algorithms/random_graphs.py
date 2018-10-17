@@ -36,21 +36,17 @@ from pathpy.classes import TemporalNetwork
 __all__ = ['is_graphic_sequence', 'molloy_reed', 'random_k_regular', 'erdoes_renyi_gnm',
            'erdoes_renyi_gnp', 'watts_strogatz', 'barabasi_albert']
 
-def is_graphic_sequence(degree_sequence, directed=False):
+def is_graphic_sequence(degree_sequence):
     """
     Checks whether a degree sequence is graphic, i.e. whether
-    there exists an undirected or directed graph that has the
-    given degree sequence. A graphic degree sequence is the
+    there exists an undirected graph without self-loops
+    that has the given degree sequence. A graphic degree sequence is the
     precondition to apply the Molloy-Reed random graph generation.
 
     Parameters
     ----------
     degree_sequence: list or tuple
         the degree sequence for which to test the graphic property
-
-    directed: bool
-        whether or not to check for the sequence of a directed
-        graph
 
     Returns
     -------
@@ -62,12 +58,14 @@ def is_graphic_sequence(degree_sequence, directed=False):
     # degree occurring twice
     if len(set(degree_sequence)) == len(degree_sequence):
         return False
-    
+        
     S = sum(degree_sequence)
     n = len(degree_sequence)
 
+    ordered_sequence = sorted(degree_sequence, reverse=True)
+
     # for undirected graphs, the sum of degrees must be even
-    if not directed and S%2 != 0:
+    if S%2 != 0:
         return False
 
     # check necessary and sufficient condition given by Erdös and Gallai (1960)
@@ -76,9 +74,9 @@ def is_graphic_sequence(degree_sequence, directed=False):
         M = 0
         S = 0
         for i in range(1, r+1):
-            S += degree_sequence[i-1]
+            S += ordered_sequence[i-1]
         for i in range(r+1, n+1):
-            M += min(r, degree_sequence[i-1])
+            M += min(r, ordered_sequence[i-1])
         if S > r * (r-1) + M:
             return False
 
