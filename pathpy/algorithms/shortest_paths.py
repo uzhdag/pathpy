@@ -29,6 +29,7 @@ from functools import singledispatch
 from collections import defaultdict
 
 import numpy as _np
+import scipy.sparse.csgraph as _csg
 
 from pathpy.utils import Log, Severity
 from pathpy.classes import HigherOrderNetwork
@@ -38,7 +39,7 @@ from pathpy.classes import Paths
 __all__ = ['distance_matrix', 'shortest_paths', 'diameter']
 
 @singledispatch
-def distance_matrix(network):
+def distance_matrix(network, weighted=False):
     """
     Calculates shortest path distances between all pairs of nodes
     based on the Floyd-Warshall algorithm.
@@ -47,25 +48,12 @@ def distance_matrix(network):
     assert isinstance(network, Network), \
         "network must be an instance of Network"
 
-    dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+    # dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
-    # assign distance 1 to nodes connected by links
-    for e in network.edges:
-        dist[e[0]][e[1]] = 1
-        if not network.directed:
-            dist[e[1]][e[0]] = 1
+    A = network.adjacency_matrix(weighted=weighted)
+    dist_matrix = _csg.floyd_warshall(A, network.directed, unweighted=(not weighted), overwrite=False)
 
-    # set diagonal elements to zero
-    for v in network.nodes:
-        dist[v][v] = 0
-
-    for k in network.nodes:
-        for v in network.nodes:
-            for w in network.nodes:
-                if dist[v][w] > dist[v][k] + dist[k][w]:
-                    dist[v][w] = dist[v][k] + dist[k][w]
-
-    return dist
+    return dist_matrix
 
 
 @distance_matrix.register(Paths)
@@ -225,11 +213,7 @@ def diameter(network):
     Returns the length of the longest shortest path between any two nodes
     """
     dist = distance_matrix(network)
-    diam = 0
-    for s in dist:
-        for d in dist[s]:
-            diam = max(diam, dist[s][d])
-    return diam
+    return _np.max(dist)
 
 
 def avg_path_length(network):
@@ -237,9 +221,4 @@ def avg_path_length(network):
     Returns the average shortest path length between all nodes
     """
     dist = distance_matrix(network)
-    avg_l = 0
-    n = len(dist.keys())
-    for s in dist.keys():
-        for d in dist[s].keys():
-                avg_l += dist[s][d]
-    return avg_l/(n**2)
+    return _np.mean(dist)
