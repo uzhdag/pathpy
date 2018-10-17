@@ -41,7 +41,7 @@ __all__ = ['distance_matrix', 'shortest_paths', 'diameter']
 def distance_matrix(network):
     """
     Calculates shortest path distances between all pairs of nodes
-    in a network based on the Floyd-Warshall algorithm.
+    based on the Floyd-Warshall algorithm.
     """
 
     assert isinstance(network, Network), \
@@ -49,13 +49,13 @@ def distance_matrix(network):
 
     dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
 
-    # assign first the default weight of 1
+    # assign distance 1 to nodes connected by links
     for e in network.edges:
         dist[e[0]][e[1]] = 1
         if not network.directed:
             dist[e[1]][e[0]] = 1
 
-    # set all self-loop edges to 0
+    # set diagonal elements to zero
     for v in network.nodes:
         dist[v][v] = 0
 
@@ -226,8 +226,8 @@ def diameter(network):
     """
     dist = distance_matrix(network)
     diam = 0
-    for s in dist.keys():
-        for d in dist[s].keys():
+    for s in dist:
+        for d in dist[s]:
             diam = max(diam, dist[s][d])
     return diam
 
