@@ -392,8 +392,10 @@ class Network:
         edge_attributes: dict
             edge attributes that will be assigned to all generated edges
         """        
-        for v, w in itertools.combinations(node_list, 2):
+        for v, w in itertools.combinations(node_list, 2):            
             self.add_edge(v, w, **edge_attributes)
+            if self.directed:
+                self.add_edge(w, v, **edge_attributes)
 
 
 
