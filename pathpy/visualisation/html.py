@@ -235,9 +235,9 @@ def generate_html(network, **params):
 
     # prefix nodes starting with number as such IDs are not supported in HTML5
     def fix_node_name(v):
-        if v[0].isdigit():
-            return "n_" + v
-        return v
+        if str(v)[0].isdigit():
+            return "n_" + str(v)
+        return str(v)
 
     # function to assign node/edge attributes based on params
     def get_attr(key, attr_name, attr_default):
