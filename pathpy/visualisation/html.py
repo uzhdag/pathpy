@@ -98,6 +98,9 @@ def plot(network, **params):
                 or a dictionary that assigns custom node colors to invidual nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#99ccff". (lightblue)
+            node_text: string, dict (Network, HigherOrderNetwork, MultiOrderModel)
+                A text displayed when hovering over nodes, e.g. containing node properties, full names, etc. 
+                Defaults to node names.
             edge_color: string, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
                 Either a string value that specifies the HTML color of all edges,
                 or a dictionary that assigns custom edge color to invidual edges.
@@ -495,7 +498,8 @@ def _generate_html_tempnet(tempnet, **params):
         return new_v
 
     network_data = {
-        'nodes': [{'id': fix_node_name(v), 'group': 1} for v in tempnet.nodes],
+        'nodes': [{'id': fix_node_name(v),
+                   'group': 1} for v in tempnet.nodes],
         'links': [{'source': fix_node_name(s),
                    'target': fix_node_name(v),
                    'width': 1,
