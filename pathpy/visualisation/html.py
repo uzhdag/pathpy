@@ -292,6 +292,7 @@ def generate_html(network, **params):
                               } for e in network.edges.keys()]
                    }
     network_data['nodes'] = [{'id': fix_node_name(v),
+                              'text': get_attr(v, 'node_text', fix_node_name(v)),
                               'color': get_attr(v, 'node_color', '#99ccff'),
                               'size': get_attr(v, 'node_size', 5.0)} for v in network.nodes]
     
@@ -484,11 +485,11 @@ def _generate_html_tempnet(tempnet, **params):
 
     # prefix nodes starting with number
     def fix_node_name(v):
-        new_v = v
-        if v[0].isdigit():
-            new_v = "n_" + v
+        new_v = str(v)
+        if str(v)[0].isdigit():
+            new_v = "n_" + str(v)
         if new_v[0] == '_':
-            new_v = "n_" + v
+            new_v = "n_" + str(v)
         if '-' in new_v:
             new_v = new_v.replace('-', '_')
         return new_v
@@ -614,7 +615,7 @@ def _generate_html_paths(paths, **params):
 
     if 'node' in params:
         node = params['node']
-    else: 
+    else:
         params['node'] = list(paths.nodes)[0]
         node = params['node']
     
