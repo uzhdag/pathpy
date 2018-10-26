@@ -303,13 +303,15 @@ def closeness(network, normalized=False):
     distances = distance_matrix(network)
     node_centralities = defaultdict(lambda: 0)
 
-    Log.add('Calculating closeness in network ...', Severity.INFO)
+    mapping = {idx:v for idx, v in enumerate(network.nodes)}
 
+    Log.add('Calculating closeness in network ...', Severity.INFO)
+    n = network.ncount()
     # calculate closeness values
-    for d in network.nodes:
-        for x in network.nodes:
-            if d != x and distances[d][x] < _np.inf:
-                node_centralities[x] += distances[d][x]
+    for d in range(n):
+        for x in range(n):
+            if d != x and distances[d, x] < _np.inf:
+                node_centralities[mapping[x]] += distances[d, x]
 
     # assign centrality zero to nodes not occurring on higher-order shortest paths
     for v in network.nodes:
