@@ -33,7 +33,6 @@ def test_add_node(random_network, directed, weighted):
     assert net.ncount() == vc_before + 1
     assert net.ecount() == ec_before
 
-
 @pytest.mark.parametrize('directed', (True, False))
 @pytest.mark.parametrize('weighted', (True, False))
 def test_remove_node(random_network, directed, weighted):
@@ -117,6 +116,44 @@ def test_add_edge(random_network, directed, weighted):
         assert w in net.predecessors[v]
         assert v in net.successors[w]
 
+@pytest.mark.parametrize('directed', (True, False))
+@pytest.mark.parametrize('weighted', (True, False))
+def test_add_edge_self_loop(random_network, directed, weighted):
+    """
+    Test self loop creation
+    """
+    net = random_network(directed=directed, weighted=weighted)
+
+    net.add_edge('a', 'a', weight=3 if weighted else 1)
+
+    if directed:
+        assert net.nodes['a']['indegree'] == 1
+        assert net.nodes['a']['outdegree'] == 1
+    else:
+        assert net.nodes['a']['degree'] == 2
+
+    assert net.nodes['a']['inweight'] == 3 if weighted else 1
+    assert net.nodes['a']['outweight'] == 3 if weighted else 1
+
+@pytest.mark.parametrize('directed', (True, False))
+@pytest.mark.parametrize('weighted', (True, False))
+def test_remove_edge_self_loop(random_network, directed, weighted):
+    """
+    Test self loop removal
+    """
+    net = random_network(directed=directed, weighted=weighted)
+
+    net.add_edge('a', 'a', weight=3 if weighted else 1)
+    net.remove_edge('a', 'a')
+
+    if directed:
+        assert net.nodes['a']['indegree'] == 0
+        assert net.nodes['a']['outdegree'] == 0
+    else:
+        assert net.nodes['a']['degree'] == 0
+
+    assert net.nodes['a']['inweight'] == 0
+    assert net.nodes['a']['outweight'] == 0
 
 def test_import_from_networkx():
     # TODO: add test for weighted networks
