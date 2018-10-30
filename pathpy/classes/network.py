@@ -456,8 +456,8 @@ class Network:
         # update degrees and node weights
         if not self.directed:
             # update degree, in- and outweight
-            self.nodes[v]['degree'] = len(self.successors[v])
-            self.nodes[w]['degree'] = len(self.successors[w])
+            self.nodes[v]['degree'] += 1
+            self.nodes[w]['degree'] += 1
 
             S = [self.edges[(v,w)]['weight'] for w in self.successors[v]]
             if S:
