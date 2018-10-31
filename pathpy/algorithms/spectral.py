@@ -36,6 +36,7 @@ import scipy as sp
 
 from pathpy .utils import Log, Severity
 from pathpy import HigherOrderNetwork
+from pathpy import Network
 from pathpy.algorithms.shortest_paths import *
 
 from pathpy.utils import PathpyNotImplemented
@@ -178,7 +179,7 @@ def algebraic_connectivity(network, lanczos_vectors=15, maxiter=20):
 
     Parameters
     ----------
-    network: HigherOrderNetwork
+    network: Network
     lanczos_vectors: int
         number of Lanczos vectors to be used in the approximate calculation of
         eigenvectors and eigenvalues. This maps to the ncv parameter of scipy's underlying
@@ -193,8 +194,8 @@ def algebraic_connectivity(network, lanczos_vectors=15, maxiter=20):
     -------
 
     """
-    assert isinstance(network, HigherOrderNetwork), \
-        "network must be an instance of HigherOrderNetwork"
+    assert isinstance(network, Network), \
+        "network must be an instance of Network"
     Log.add('Calculating algebraic connectivity ... ', Severity.INFO)
 
     lapl_mat = network.laplacian_matrix()
