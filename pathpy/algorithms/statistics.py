@@ -26,6 +26,7 @@ Collection of statistical measures for  paths, (higher-order) networks, and temp
 #    E-mail: scholtes@ifi.uzh.ch
 #    Web:    http://www.ingoscholtes.net
 from collections import defaultdict
+from collections import Counter
 
 import numpy as _np
 import scipy as sp
@@ -79,3 +80,60 @@ def avg_clustering_coefficient(network):
         The network in which to calculate the local clustering coefficient.
     """
     return _np.mean([ local_clustering_coefficient(network, v) for v in network.nodes])
+
+
+def mean_degree(network, degree='degree'):
+    r"""Calculates the mean (in/out)-degree of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the mean degree
+    """
+    assert degree is 'degree' or degree is 'indegree' or degree is 'outdegree', \
+            'Unknown degree property'
+    return _np.mean([network.nodes[x][degree] for x in network.nodes])
+
+
+def degree_dist(network, degree='degree'):
+    r"""Calculates the (in/out)-degree distribution of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network for which to calculate the degree distribution
+    """
+    assert degree is 'degree' or degree is 'indegree' or degree is 'outdegree',\
+            'Unknown degree property'
+    p_k = Counter([network.nodes[x][degree] for x in network.nodes])
+    for x in p_k:
+        p_k[x] = p_k[x]/network.ncount()
+    return p_k
+
+
+def degree_moment(network, k, degree='degree'):
+    r"""Calculates the k-th moment of the (in/out)-degree distribution of a
+    directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the k-th moment of the degree distribution
+    """
+    p_k = degree_dist(network, degree)
+    mom = 0
+    for x in p_k:
+        mom += x**k * p_k[x]
+    return mom
+
+
+def molloy_reed_fraction(network, degree='degree'):
+    r"""Calculates the Molloy-Reed fraction <k**2>/<k> based on the (in/out)-degree
+    distribution of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the Molloy-Reed fraction
+    """
+    return degree_moment(network, k=2, degree=degree)/degree_moment(network, k=1, degree=degree)
