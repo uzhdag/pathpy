@@ -219,19 +219,20 @@ class Network:
         return network
 
     @classmethod
-    def from_temporal_network(cls, tempnet):
+    def from_temporal_network(cls, tempnet, min_time=None, max_time=None, directed=True):
         r"""Returns a time-aggregated directed network representation
         of a temporal network. The number of occurrences of
         the same edge at different time stamps is captured
         by edge weights.
         """
-        network = cls(directed=True)
+        network = cls(directed=directed)
 
         for (v, w, t) in tempnet.tedges:
-            if (v,w) in network.edges:
-                network.add_edge(v, w, weight=network.edges[(v, w)]['weight']+1.0)
-            else:
-                network.add_edge(v, w)
+            if (min_time is None or t >= min_time) and (max_time is None or t < max_time):
+                if (v, w) in network.edges:
+                    network.add_edge(v, w, weight=network.edges[(v, w)]['weight']+1.0)
+                else:
+                    network.add_edge(v, w)
 
         return network
 
