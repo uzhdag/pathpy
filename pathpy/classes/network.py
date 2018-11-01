@@ -519,10 +519,9 @@ class Network:
             Edge attributes can be accessed by e['attr']. All edges for which the lambda function 
             returns True will be selected.  Default is lambda e: True.
 
-        Examples
-        --------
-        >>> network.find_edges(select_nodes = lambda v,w: if v['desired_node_property'] return True, 
-                               select_edges = lambda e: if e['desired_edge_propert'] return True)
+        Example:
+        >>> network.find_edges(select_nodes = lambda v,w: True if v['desired_node_property'] else False, 
+                               select_edges = lambda e: True if e['desired_edge_property'] else False)
         """
         return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
 
