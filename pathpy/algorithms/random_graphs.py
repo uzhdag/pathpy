@@ -36,62 +36,76 @@ from pathpy.classes import TemporalNetwork
 __all__ = ['is_graphic_sequence', 'molloy_reed', 'random_k_regular', 'erdoes_renyi_gnm',
            'erdoes_renyi_gnp', 'watts_strogatz', 'barabasi_albert']
 
-def is_graphic_sequence(degree_sequence, directed=False):
-    """
-    Checks whether a degree sequence is graphic, i.e. whether
-    there exists an undirected or directed graph that has the
-    given degree sequence. A graphic degree sequence is the
+
+def is_graphic_sequence(degree_sequence, self_loops=False, multi_edges=False):
+    r"""Checks whether a degree sequence is graphic, i.e. whether
+    there exists an *undirected* graph without self-loops
+    that has the given degree sequence. A graphic degree sequence is the
     precondition to apply the Molloy-Reed random graph generation.
+
+    Note: this function does not support multi-edge networks with no self-loops.
 
     Parameters
     ----------
     degree_sequence: list or tuple
         the degree sequence for which to test the graphic property
 
-    directed: bool
-        whether or not to check for the sequence of a directed
-        graph
-
     Returns
     -------
     bool
     """
-
-    # fast check using result of Behzad and Chartrand 1967,
-    # showing that a graphic degree sequence must have at least one
-    # degree occurring twice
-    if len(set(degree_sequence)) == len(degree_sequence):
-        return False
-    
+    assert not (not self_loops and multi_edges), 'Networks with multi_edges and no self_loops are not supported'
     S = sum(degree_sequence)
     n = len(degree_sequence)
 
-    # for undirected graphs, the sum of degrees must be even
-    if not directed and S%2 != 0:
+    # the sum of degrees must always be even (assuming self-loops are counted with degree of two)
+    if S%2 != 0:
         return False
+
+    # if multi-edges are allowed we are done
+    if multi_edges:
+        return True
+
+    # use Behzad and Chartrand 1967, which shows that in a graphic degree
+    # sequence at least one degree must occur twice (holds for networks without self_loops)
+    if not self_loops and len(set(degree_sequence)) == len(degree_sequence):
+        return False
+
+    ordered_sequence = sorted(degree_sequence, reverse=True)
 
     # check necessary and sufficient condition given by Erdös and Gallai (1960)
     # see http://mathworld.wolfram.com/GraphicSequence.html
-    for r in range(1, n):
+    # for networks with self-loops, we check the condition for all r<=n
+    # for networks without self-loops, we check the condition for all r<=n-1
+
+    if self_loops:
+        max_r = n+1
+    else:
+        max_r = n
+
+    for r in range(0, max_r):
         M = 0
         S = 0
-        for i in range(1, r+1):
-            S += degree_sequence[i-1]
-        for i in range(r+1, n+1):
-            M += min(r, degree_sequence[i-1])
-        if S > r * (r-1) + M:
+        for i in range(0, r):
+            S += ordered_sequence[i]
+        for i in range(r, n):
+            M += min(r+1, ordered_sequence[i])
+        if S > r * (r+1) + M:
             return False
 
     return True
 
 
-def molloy_reed(degree_sequence, node_names=None, self_loops=True):
+def molloy_reed(degree_sequence, node_names=None, self_loops=True, multi_edges=False):
     """
     Generates a random undirected network with a given degree sequence.
     The generated network is guaranteed to have the given degree sequence.
     Multiple edges are forbidden in the network generation. Raises an exception
     if the given degree sequence is not graphic, i.e. if no possible simple
     graph exisits with the desired degree sequence.
+
+    Note: this function does not support the generation of multi-edge networks
+    with no self-loops.
 
     Parameters:
     -----------
@@ -107,7 +121,7 @@ def molloy_reed(degree_sequence, node_names=None, self_loops=True):
         Whether or not to allow the generation of self_loops. Default is True.
     """    
 
-    assert is_graphic_sequence(degree_sequence, directed = False), 'Error: degree sequence is not graphic'
+    assert is_graphic_sequence(degree_sequence, self_loops=self_loops, multi_edges=multi_edges), 'Error: degree sequence is not graphic'
 
     n = len(degree_sequence)
 
@@ -126,12 +140,15 @@ def molloy_reed(degree_sequence, node_names=None, self_loops=True):
     while len(stubs) > 1:
         random_nodes = _np.random.choice(stubs, size=2, replace=False)
         (v, w) = (random_nodes[0], random_nodes[1])
-        if (v, w) not in network.edges and (self_loops or v != w):
-            network.add_edge(v, w)
+        if (multi_edges or (v, w) not in network.edges) and (self_loops or v != w):
+            weight = 1.0
+            if (v, w) in network.edges:
+                weight += network.edges[(v, w)]['weight']
+            network.add_edge(v, w, weight=weight)
             stubs.remove(v)
             if v != w: # ensures that self-loops are counted as degree 1
                 stubs.remove(w)
-        elif network.ecount()>0: # randomly remove edge
+        elif network.ecount() > 0: # randomly remove edge
             edges = list(network.edges)
             edge = edges[_np.random.choice(len(edges))]
             network.remove_edge(edge[0], edge[1])

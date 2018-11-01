@@ -130,7 +130,7 @@ require(["d3"], function(d3) {
     .text(function(d) { return d.id; });
 
     node.append("title")
-        .text(function(d) { return d.id; });
+        .text(function(d) { return d.text; });
 
     var zoom_handler = d3.zoom()
         .on("zoom", zoom_actions);

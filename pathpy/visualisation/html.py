@@ -98,6 +98,9 @@ def plot(network, **params):
                 or a dictionary that assigns custom node colors to invidual nodes.
                 Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
                 be used. Default value is "#99ccff". (lightblue)
+            node_text: string, dict (Network, HigherOrderNetwork, MultiOrderModel)
+                A text displayed when hovering over nodes, e.g. containing node properties, full names, etc. 
+                Defaults to node names.
             edge_color: string, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
                 Either a string value that specifies the HTML color of all edges,
                 or a dictionary that assigns custom edge color to invidual edges.
@@ -235,9 +238,9 @@ def generate_html(network, **params):
 
     # prefix nodes starting with number as such IDs are not supported in HTML5
     def fix_node_name(v):
-        if v[0].isdigit():
-            return "n_" + v
-        return v
+        if str(v)[0].isdigit():
+            return "n_" + str(v)
+        return str(v)
 
     # function to assign node/edge attributes based on params
     def get_attr(key, attr_name, attr_default):
@@ -292,6 +295,7 @@ def generate_html(network, **params):
                               } for e in network.edges.keys()]
                    }
     network_data['nodes'] = [{'id': fix_node_name(v),
+                              'text': get_attr(v, 'node_text', fix_node_name(v)),
                               'color': get_attr(v, 'node_color', '#99ccff'),
                               'size': get_attr(v, 'node_size', 5.0)} for v in network.nodes]
     
@@ -484,17 +488,18 @@ def _generate_html_tempnet(tempnet, **params):
 
     # prefix nodes starting with number
     def fix_node_name(v):
-        new_v = v
-        if v[0].isdigit():
-            new_v = "n_" + v
+        new_v = str(v)
+        if str(v)[0].isdigit():
+            new_v = "n_" + str(v)
         if new_v[0] == '_':
-            new_v = "n_" + v
+            new_v = "n_" + str(v)
         if '-' in new_v:
             new_v = new_v.replace('-', '_')
         return new_v
 
     network_data = {
-        'nodes': [{'id': fix_node_name(v), 'group': 1} for v in tempnet.nodes],
+        'nodes': [{'id': fix_node_name(v),
+                   'group': 1} for v in tempnet.nodes],
         'links': [{'source': fix_node_name(s),
                    'target': fix_node_name(v),
                    'width': 1,
@@ -614,7 +619,7 @@ def _generate_html_paths(paths, **params):
 
     if 'node' in params:
         node = params['node']
-    else: 
+    else:
         params['node'] = list(paths.nodes)[0]
         node = params['node']
     
