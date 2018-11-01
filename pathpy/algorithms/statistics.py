@@ -127,6 +127,70 @@ def degree_moment(network, k, degree='degree'):
     return mom
 
 
+def generating_func(network, x, degree='degree'):
+    r"""Returns f(x) where f is the probability generating function for the
+    (in/out)-degree distribution P(k) for a network. The function is defined in the interval [0,1].
+    The value returned is from the range [0,1]. The following properties hold:
+
+    [1/k! d^k/dx f]_{x=0} = P(k)    with d^k/dx f being the k-th derivative of f by x
+    f'(1) = <k>                     with f' being the first derivative and <k> the mean degree
+    [(x d/dx)^m f]_{x=1} = <k^m>    with <k^m> being the m-th raw moment of P
+
+    Parameters
+    ----------
+    x:  float, list, numpy.ndarray
+        The argument(s) for which the value f(x) shall be computed.
+
+    Returns
+    -------
+        Either a single float value f(x) (if x is float) or a numpy.ndarray
+        containing the function values f(x) for all arguments in x
+
+    Example
+    -------
+    >>> import pathpy as pp
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as plt
+
+    >>> n = pp.Network()
+    >>> n.add_edge('a', 'b')
+    >>> n.add_edge('b', 'c')
+    >>> n.add_edge('a', 'c')
+    >>> n.add_edge('c', 'd')
+    >>> n.add_edge('d', 'e')
+    >>> n.add_edge('d', 'f')
+    >>> n.add_edge('e', 'f')
+    
+    >>> # print single value f(x)
+    >>> print(pp.statistics.generating_func(n, 0.3))
+
+    >>> # plot generating function
+    >>> x = np.linspace(0, 1, 20)
+    >>> y = pp.statistics.generating_func(n, x)
+    >>> x = plt.plot(x, y)
+    """
+
+    assert isinstance(x, (float, list, _np.ndarray)), \
+        'Argument can only be float, list or numpy.ndarray'
+
+    p_k = degree_dist(network, degree)
+
+    if isinstance(x, float):
+        x_range = [x]
+    else:
+        x_range = x
+
+    values = defaultdict(lambda: 0)
+    for k in p_k:
+        for v in x_range:
+            values[v] += p_k[k] * v**k
+
+    if len(x_range) > 1:
+        return _np.array(list(values.values()))
+    else:
+        return values[x]
+
+
 def molloy_reed_fraction(network, degree='degree'):
     r"""Calculates the Molloy-Reed fraction <k**2>/<k> based on the (in/out)-degree
     distribution of a directed or undirected network.
