@@ -14,7 +14,7 @@
     .arrows svg:path {
         stroke: #666;
     }
-    .nodes circle {
+    .nodes_${div_id} circle {
     stroke: #fff;
     stroke-width: 0.5px;
     }
@@ -107,7 +107,7 @@ require(["d3"], function(d3) {
         link.attr("marker-end", "url(#end)");
 
     var node_g = g.append("g")
-        .attr("class", "nodes")
+        .attr("class", "nodes_${div_id}")
         .selectAll("circle")
         .data(graph.nodes)
         .enter()

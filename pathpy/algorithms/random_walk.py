@@ -124,6 +124,7 @@ def _temporal_walk(tempnet, l=100, start_node=None):
     itinerary.append(current_node)
     steps = 0
     for t in tempnet.ordered_times:
+        prev_node = current_node
         # find possible targets in time t
         targets = set()
         for (v, w, time) in tempnet.time[t]:
@@ -134,7 +135,8 @@ def _temporal_walk(tempnet, l=100, start_node=None):
             current_node = _np.random.choice(list(targets))
             steps += 1
         # add currently visited node
-        itinerary.append(current_node)
+        if current_node != prev_node:
+            itinerary.append(current_node)
         if steps == l:
             break
     return itinerary
