@@ -73,3 +73,21 @@ def paths_from_random_walk(network, l, n=1, start_node=None):
         path = algorithms.random_walk.generate_walk(network, l, start_node)
         p.add_path(tuple(path))
     return p
+
+def random_paths(network, p):
+    """
+    Generates Markovian paths of a random walker in a given network
+    and returns them as a paths object.
+    Parameters
+    ----------
+    network: Network
+        The network structure on which the random walks will be simulated.
+    paths: Paths
+        ...
+    """
+    p_rnd = Paths()
+    for l in p.paths:
+        for path in p.paths[l]:
+            if p.paths[l][path][1] > 0:
+                p_rnd += paths_from_random_walk(network, l, int(p.paths[l][path][1]), path[0])
+    return p_rnd

@@ -11,6 +11,7 @@ from .temporal_paths import generate_causal_tree
 
 from .random_walk import random_walk
 from .random_walk import paths_from_random_walk
+from .random_walk import random_paths
 
 from .origin_destination_stats import paths_from_origin_destination
 from .origin_destination_stats import paths_to_origin_destination
