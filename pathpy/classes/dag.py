@@ -404,7 +404,7 @@ class DAG(Network):
             self.leafs.add(target)
 
 
-    def write_file(self, filename, sep=','):
+    def write_file(self, filename, separator=','):
         """Writes a dag as an adjaceny list to file
 
         Parameters
@@ -418,10 +418,10 @@ class DAG(Network):
         """
         with open(filename, 'w') as file:
             for edge in self.edges:
-                file.write(sep.join(edge)+'\n')
+                file.write(separator.join(edge)+'\n')
 
     @classmethod
-    def read_file(cls, filename, sep=',', maxlines=None, mapping=None, header=False):
+    def read_file(cls, filename, separator=',', maxlines=None, mapping=None, header=False):
         """
         Reads a directed acyclic graph from a file
         containing an edge list of the form
@@ -443,7 +443,7 @@ class DAG(Network):
             for i, line in enumerate(f):
                 if maxlines and i > maxlines:
                     break
-                fields = line.rstrip().split(sep)
+                fields = line.rstrip().split(separator)
                 try:
                     if mapping is None or (fields[0] in mapping and fields[1] in mapping):
                         edges.append((fields[0], fields[1]))
