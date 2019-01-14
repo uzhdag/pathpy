@@ -40,15 +40,6 @@ __all__ = ['modular_description_length', 'find_communities_sa']
 @singledispatch
 def modular_description_length(network, module_map):
     """
-    Calculates the modular description length L(M) of a random 
-    walk trajectory on the given network, using the mapping of nodes
-    to modules given in the dictionary M. The calculation 
-    is based on: 
-
-    M. Rosvall and C. T. Bergstrom: Maps of random walks on complex
-    networks reveal community structure, PNAS, Vol. 105, No. 4, Jan. 2008
-    """
-    """
     Calculates the modular description length L(M) of random walks 
     in an undirected network, using the mapping of nodes
     to modules given in the dictionary M. The calculation 
