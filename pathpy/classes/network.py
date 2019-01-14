@@ -191,7 +191,11 @@ class Network:
             A Network instance created from the SQLite database.
 
         """
-        n = cls(directed=directed)
+        from pathpy.classes import DAG
+        if cls == DAG:
+            n = cls()
+        else:
+            n = cls(directed=directed)
 
         assert cursor.connection.row_factory, \
             'Cannot access columns by name. Please set ' \
@@ -207,7 +211,7 @@ class Network:
 
     @classmethod
     def from_paths(cls, paths):
-        r"""Gemerates a weighted directed network from a Paths
+        r"""Generates a weighted directed network from a Paths
             object. The weight of directed links will correspond 
             to the statistics of (sub)-paths of length one"""
         network = cls(directed=True)
@@ -256,8 +260,8 @@ class Network:
         n = Network(directed = False)
 
         for (v,w) in self.edges:
-            if v!=w:
-                n.add_edge(v, w)
+            #if v!=w:
+            n.add_edge(v, w)
         return n
 
 
