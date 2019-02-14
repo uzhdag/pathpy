@@ -6,6 +6,7 @@ from .dag_paths import paths_from_dag
 
 from .temporal_paths import paths_from_temporal_network
 from .temporal_paths import paths_from_temporal_network_dag
+from .temporal_paths import paths_from_temporal_network_single
 from .temporal_paths import sample_paths_from_temporal_network_dag
 from .temporal_paths import generate_causal_tree
 

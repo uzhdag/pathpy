@@ -33,8 +33,18 @@ from pathpy.path_extraction import paths_from_dag
 from pathpy.utils import Log
 from pathpy.utils import Severity
 
-
 def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
+                                max_subpath_length=sys.maxsize):
+    """
+    Warning: This function is deprecated. Calls will be rerouted to to paths_from_temporal_network_dag. 
+    
+    If you intended to calculate paths with a single continuing edge, use paths_from_temporal_network_single instead (see documentation of this function for details).
+    """
+    Log.add('This function is deprecated. Rerouting call to paths_from_temporal_network_dag. If you intended to calculate paths with a single continuing edge, use paths_from_temporal_network_single instead.', Severity.WARNING)
+    return paths_from_temporal_network_dag(tempnet, delta, max_subpath_length=max_subpath_length)
+
+
+def paths_from_temporal_network_single(tempnet, delta=1, max_length=sys.maxsize,
                                 max_subpath_length=sys.maxsize):
     """
     Calculates the frequency of time-respecting paths up to maximum length
@@ -42,7 +52,9 @@ def paths_from_temporal_network(tempnet, delta=1, max_length=sys.maxsize,
     time-stamped links on a path. This method uses a fast but heuristic approach that
     only considers the FIRST continuation of a time-respecting path. I.e., for time-
     stamped links (a,b,1), (b,c,5), (b,d,7) and a delta=6 only the time-respecting
-    path (a,b,c) will be found, while (a,b,d) is ignored.
+    path (a,b,c) will be found, while (a,b,d) is ignored. If the next time-stamp includes 
+    two possible continuations, i.e. (b,c,5) and (b,d,5), only the path continued by the first 
+    edge will be used.
     
     This (static) method returns an instance of the class Paths, which can
     be used to generate higher- and multi-order models of time-respecting paths.
