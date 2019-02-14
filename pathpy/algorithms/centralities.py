@@ -51,7 +51,7 @@ __all__ = ["rank_centralities", "closeness", "betweenness",
 
 
 def rank_centralities(centralities):
-    """Returns a list of (node, centrality) tuples in which tuples are ordered 
+    """Returns a list of (node, centrality) tuples in which tuples are ordered
     by centrality in descending order
 
     Parameters
@@ -469,8 +469,38 @@ def visitation_probabilities(paths):
     return visit_probabilities
 
 
+@singledispatch
+def eigenvector(network):
+    """Calculates eigenvector centralities of nodes.
 
-def eigenvector(network, projection='scaled', include_sub_paths=True):
+    Parameters
+    ----------
+    network
+
+    Returns
+    -------
+    dict
+
+    """
+    assert isinstance(network, Network), \
+        "network must be an instance of Network"
+    adj_mat = network.adjacency_matrix(weighted=False, transposed=True).asfptype()
+    # calculate leading eigenvector of A
+    _, v = sla.eigs(adj_mat, k=1, which="LM")
+
+    v = v.reshape(v.size, )
+
+    eigen_vec_cent = dict(zip(network.nodes, map(_np.abs, v)))
+    S = sum(eigen_vec_cent.values())
+    for v in eigen_vec_cent:
+        eigen_vec_cent[v] /= S
+
+    return eigen_vec_cent
+
+
+
+@eigenvector.register(HigherOrderNetwork)
+def _ev(network, projection='scaled', include_sub_paths=True):
     """Calculates eigenvector centralities of higher-order nodes.
 
     If the order of the HigherOrderNetwork is larger than one, the centralities
@@ -500,10 +530,9 @@ def eigenvector(network, projection='scaled', include_sub_paths=True):
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
     adj_mat = network.adjacency_matrix(include_subpaths=include_sub_paths,
-                                       weighted=False, transposed=True)
-
+                                       weighted=False, transposed=True).asfptype()
     # calculate leading eigenvector of A
-    _, v = sla.eigs(adj_mat, k=1, which="LM", ncv=13)
+    _, v = sla.eigs(adj_mat, k=1, which="LM")
 
     v = v.reshape(v.size, )
 
@@ -533,17 +562,84 @@ def eigenvector(network, projection='scaled', include_sub_paths=True):
             first_order_eigen_vec_cent[p[0]] += higher_order_eigen_vec_cent[v]
 
     # for scaled, values sum to one anyway
-    if projection != 'scaled':
-        for v in first_order_eigen_vec_cent:
-            first_order_eigen_vec_cent[v] /= sum(first_order_eigen_vec_cent.values())
-
-    Log.add('finished.', Severity.INFO)
+    S = sum(first_order_eigen_vec_cent.values())
+    for v in first_order_eigen_vec_cent:
+        first_order_eigen_vec_cent[v] /= S
 
     return first_order_eigen_vec_cent
 
 
+@singledispatch
+def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, weighted=False):
+    """Calculates the PageRank of nodes based on a power iteration.
 
-def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
+    Parameters
+    ----------
+    network: Netwokr
+    alpha: float
+        damping factor
+    max_iter: int
+        maximum number or iterations in solver
+    tol: float
+        accepted tolerance for convergence check
+    weighted: bool
+        use edge weights in the calculation
+
+    Returns
+    -------
+    dict
+
+    """
+    assert isinstance(network, Network), \
+        "network must be an instance of Network"
+
+    pr = defaultdict(lambda: 0)
+
+    n_nodes = float(len(network.nodes))
+
+    assert n_nodes > 0, "Number of nodes is zero"
+
+    # entries A[s,t] give directed link s -> t
+    adj_mat = network.adjacency_matrix(weighted=weighted, transposed=False).asfptype()
+
+    # sum of outgoing node degrees
+    row_sums = sp.array(adj_mat.sum(axis=1)).flatten()
+
+    # replace non-zero entries x by 1/x
+    row_sums[row_sums != 0] = 1.0 / row_sums[row_sums != 0]
+
+    # indices of zero entries in row_sums
+    d = sp.where(row_sums == 0)[0]
+
+    # create sparse matrix with row_sums as diagonal elements
+    q_mat = sparse.spdiags(row_sums.T, 0, adj_mat.shape[0], adj_mat.shape[1],
+                           format='csr')
+
+    # with this, we have divided elements in non-zero rows in A by 1 over the row sum
+    q_mat = q_mat * adj_mat
+
+    # vector with n entries 1/n
+    inv_n_nodes = sp.array([1.0 / n_nodes] * int(n_nodes))
+
+    p_rank = inv_n_nodes
+
+    # Power iteration
+    for _ in range(max_iter):
+        last = p_rank
+
+        # sum(pr[d]) is the sum of PageRanks for nodes with zero out-degree
+        # sum(pr[d]) * p yields a vector with length n
+        p_rank = (alpha * (p_rank * q_mat + sum(p_rank[d]) * inv_n_nodes) +
+                  (1 - alpha) * inv_n_nodes)
+
+        if sp.absolute(p_rank - last).sum() < n_nodes * tol:
+            pr = dict(zip(network.nodes, map(float, p_rank)))
+            break
+    return pr
+
+
+@pagerank.register(HigherOrderNetwork)
+def _pr_ho(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
              include_sub_paths=True, weighted=False):
     """Calculates the PageRank of higher-order nodes based on a power iteration.
 
@@ -582,10 +678,7 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
     assert isinstance(network, HigherOrderNetwork), \
         "network must be an instance of HigherOrderNetwork"
     assert projection in ['all', 'last', 'first', 'scaled'], 'Invalid projection method'
-
-    Log.add('Calculating PageRank in ' + str(network.order) + '-th order network...',
-            Severity.INFO)
-
+    
     higher_order_pr = defaultdict(lambda: 0)
 
     n_nodes = float(len(network.nodes))
@@ -594,7 +687,7 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
 
     # entries A[s,t] give directed link s -> t
     adj_mat = network.adjacency_matrix(include_subpaths=include_sub_paths,
-                                       weighted=weighted, transposed=False)
+                                       weighted=weighted, transposed=False).asfptype()
 
     # sum of outgoing node degrees
     row_sums = sp.array(adj_mat.sum(axis=1)).flatten()
@@ -667,7 +760,5 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection='scaled',
     nodes = network.paths.nodes
     for v in nodes:
         first_order_pr[v] += 0
-
-    Log.add('finished.', Severity.INFO)
 
     return first_order_pr
