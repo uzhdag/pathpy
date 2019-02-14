@@ -178,7 +178,7 @@ def random_k_regular(n, k, self_loops=True, node_names=None):
         nodes will be numbered from 0 to n-1.
     """
     assert n*k%2 == 0, 'Error: parameters lead to non-graphic degree sequence.'
-    return molloy_reed([k]*n, self_loops, node_names)
+    return molloy_reed([k]*n, node_names=node_names, self_loops=self_loops)
 
 
 def erdoes_renyi_gnm(n, m, node_names=None, self_loops=True, directed=False, temporal=False):
