@@ -120,8 +120,8 @@ def fiedler_vector_sparse(network, normalized=True, lanczos_vectors=15, maxiter=
     -------
 
     """
-    assert isinstance(network, HigherOrderNetwork), \
-        "network must be an instance of HigherOrderNetwork"
+    assert isinstance(network, Network), \
+        "network must be an instance of Network"
     # NOTE: The transposed matrix is needed to get the "left" eigenvectors
     lapl_mat = network.laplacian_matrix()
 
@@ -149,20 +149,20 @@ def fiedler_vector_sparse(network, normalized=True, lanczos_vectors=15, maxiter=
     return fiedler_v
 
 
-def fiedler_vector_dense(network):
+def fiedler_vector_dense(network, lanczos_vectors=15, maxiter=20):
     """Returns the (dense)Fiedler vector of the higher-order network.
     The Fiedler vector can be used for a spectral bisection of the network.
 
     Parameters
     ----------
-    network: HigherOrderNetwork
+    network: Network
 
     Returns
     -------
 
     """
-    assert isinstance(network, HigherOrderNetwork), \
-        "network must be an instance of HigherOrderNetwork"
+    assert isinstance(network, Network), \
+        "network must be an instance of Network"
     # NOTE: The Laplacian is transposed for the sparse case to get the left
     # NOTE: eigenvalue.
     lapl_mat = network.laplacian_matrix()
