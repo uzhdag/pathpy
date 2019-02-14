@@ -281,14 +281,14 @@ class TemporalNetwork:
 
         return cls(tedges=tedges)
 
-    def write_file(self, filename, sep=','):
+    def write_file(self, filename, separator=','):
         """Writes the time-stamped edge list of this temporal network instance as CSV file
 
         Parameters
         ----------
         filename: str
             name of CSV file to save data to
-        sep: str
+        separator: str
             character used to separate columns in generated CSV file
 
         Returns
@@ -298,10 +298,10 @@ class TemporalNetwork:
         msg = 'Writing {0} time-stamped edges to file {1}'.format(self.ecount(), filename)
         Log.add(msg, Severity.INFO)
         with open(filename, 'w+') as f:
-            f.write('source' + sep + 'target' + sep + 'time' + '\n')
+            f.write('source' + separator + 'target' + separator + 'time' + '\n')
             for time in self.ordered_times:
                 for (v, w, t) in self.time[time]:
-                    f.write(str(v) + sep + str(w) + sep + str(t)+'\n')
+                    f.write(str(v) + separator + str(w) + separator + str(t)+'\n')
 
 
     def filter_nodes(self, nodes):
