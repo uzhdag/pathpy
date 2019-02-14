@@ -446,7 +446,7 @@ class Network:
 
         # add any new atributes to the edge
         self.edges[e] = {**self.edges[e], **edge_attributes}
-    
+
         # add default weight of one, if no weight is specified
         if 'weight' not in self.edges[e]:
             self.edges[e]['weight'] = 1.0
