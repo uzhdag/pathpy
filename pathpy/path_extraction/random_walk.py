@@ -74,7 +74,7 @@ def paths_from_random_walk(network, l, n=1, start_node=None):
         p.add_path(tuple(path))
     return p
 
-def random_paths(network, p):
+def random_paths(network, paths_orig, rand_frac=1.0):
     """
     Generates Markovian paths of a random walker in a given network
     and returns them as a paths object.
@@ -82,12 +82,24 @@ def random_paths(network, p):
     ----------
     network: Network
         The network structure on which the random walks will be simulated.
-    paths: Paths
-        ...
+    paths_orig: Paths
+        Paths that we want to randomise
+    rand_frac: float
+        The fraction of paths that will be randomised
     """
     p_rnd = Paths()
-    for l in p.paths:
-        for path in p.paths[l]:
-            if p.paths[l][path][1] > 0:
-                p_rnd += paths_from_random_walk(network, l, int(p.paths[l][path][1]), path[0])
+    for l in paths_orig.paths:
+        for path, pcounts in paths_orig.paths[l].items():
+            if pcounts[1] > 0:
+                n_path = int(pcounts[1])
+                n_path_rand = _np.random.binomial(n_path, rand_frac)
+                n_path_keep = n_path - n_path_rand
+                
+                ## Add the random paths
+                if n_path_rand > 0:
+                    p_rnd += paths_from_random_walk(network, l, n_path_rand, path[0])
+                
+                ## Keep the rest
+                if n_path_keep > 0:
+                    p_rnd.add_path(path, frequency=n_path_keep)
     return p_rnd
