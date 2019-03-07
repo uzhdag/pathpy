@@ -282,3 +282,63 @@ def degree_distribution(network, num_bins=30, degree='degree', log_bins=True, is
 
     return x, p
 
+
+def clustering_by_degree(network, num_bins=20, degree='degree', log_bins=False):
+    '''
+    Compute binned clustering by degree.
+
+    Parameters
+    ----------
+    network: pp.Network
+        Network object
+    num_bins: int
+        Number of bins to use
+    degree: str
+        Which degree to use for binning
+    log_bins: logical
+        If True, use logarithmic bins. Default is linear bins.
+
+    Returns
+    -------
+    x: np.array
+        Centers of bins
+    y: np.array
+        Heights of bins
+
+    '''
+    assert degree is 'degree' or degree is 'indegree' or degree is 'outdegree',\
+            'Unknown degree property'
+
+    if degree == 'degree':
+        degrees_dict = {node:attr['indegree']+attr['outdegree'] for node, attr in network.nodes.items()}
+    else:
+        degrees_dict = {node:attr[degree] for node, attr in network.nodes()}
+
+    ## Get degrees
+    degrees = _np.array(list(degrees_dict.values()))
+    degrees = degrees[degrees>0]
+
+    ## Get bins
+    bins = get_bins(degrees, num_bins, log_bins)
+    start = bins[:-1]
+    end = bins[1:]
+    center = start + (end-start)*0.5
+
+    cc_k = dict((k,0.0) for k in range(len(center)))
+    counts = dict((k,0.0) for k in range(len(center)))
+
+    for node, k in degrees_dict.items():
+        ## get the bin
+        index = _np.argmax((k>=start) & (k<end))
+        cc_k[index] += local_clustering_coefficient(network, node)
+        counts[index] += 1.0
+
+    x,y = [], []
+    for index,count in list(counts.items()):
+        if count > 0:
+            x.append(center[index])
+            y.append(cc_k[index]/counts[index])
+
+    x,y = _np.array(x), _np.array(y)
+    return x,y
+
