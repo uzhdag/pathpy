@@ -201,3 +201,67 @@ def molloy_reed_fraction(network, degree='degree'):
         The network in which to calculate the Molloy-Reed fraction
     """
     return degree_moment(network, k=2, degree=degree)/degree_moment(network, k=1, degree=degree)
+
+
+def get_bins(values, num_bins, log_bins):
+    min_val = values.min()
+    max_val = values.max()
+
+    if log_bins:
+        bins = _np.logspace(_np.log10(min_val), _np.log10(max_val), num_bins+1)
+    else:
+        bins = _np.linspace(min_val, max_val, num_bins+1)
+
+    return bins
+
+
+def degree_distribution(network, num_bins=30, degree='degree', log_bins=True, is_pmf=True):
+    '''
+    Take a pathpy.network object and return the degree distribution.
+
+    Parameters
+    ---------
+    network: Network
+        The network to compute the degree distribution
+    num_bins: int
+        Number of bins in the histogram
+    degree: str
+        Type of degree. Options are degree (total), indegree, outdegree
+    log_bins: logical
+        Bin degrees logarithmically or linearly
+    is_pmf: logical
+        Compute probability mass function or density
+
+    Returns
+    -------
+    x: np.array
+        centers of the bins
+    y: np.array
+        Heights of the bins
+
+    '''
+    assert degree is 'degree' or degree is 'indegree' or degree is 'outdegree',\
+            'Unknown degree property'
+
+    if degree == 'degree':
+        degrees = _np.array([attr['indegree']+attr['outdegree'] for _,attr in network.nodes.items()])
+    else:
+        degrees = _np.array([attr[degree] for _,attr in network.nodes.items()])
+
+
+    degrees = degrees[degrees>0]
+    bins = get_bins(degrees, num_bins, log_bins)
+
+    if is_pmf:
+        y, _ = _np.histogram(degrees, bins=bins, density=False)
+        p = y/float(y.sum())
+    else:
+        p, _ = _np.histogram(degrees, bins=bins, density=True)
+
+    x = bins[1:] - _np.diff(bins)/2.0
+
+    x = x[p>0]
+    p = p[p>0]
+
+    return x, p
+
