@@ -203,7 +203,24 @@ def molloy_reed_fraction(network, degree='degree'):
     return degree_moment(network, k=2, degree=degree)/degree_moment(network, k=1, degree=degree)
 
 
-def get_bins(values, num_bins, log_bins):
+def get_bins(values, num_bins, log_bins=False):
+    '''
+    Compute (linear or logarithmic) bins for values.
+
+    Parameters
+    ---------
+    values: np.array
+        values to be binned
+    num_bins: int
+        number of bins to use
+    log_bins: logical
+        If True, use logarithmic bins. Default is linear bins.
+
+    Returns
+    -------
+    bins: np.array
+        edges of num_bins bins
+    '''
     min_val = values.min()
     max_val = values.max()
 
