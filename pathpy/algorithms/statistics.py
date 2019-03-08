@@ -263,6 +263,8 @@ def degree_distribution(network, num_bins=30, degree='degree', log_bins=True, is
     if network.directed:
         if degree == 'degree':
             degrees = _np.array([attr['indegree']+attr['outdegree'] for _,attr in network.nodes.items()])
+        elif degree == 'weight':
+            degrees = _np.array([attr['inweight']+attr['outweight'] for _,attr in network.nodes.items()])
         else:
             degrees = _np.array([attr[degree] for _,attr in network.nodes.items()])
     else:
@@ -314,6 +316,8 @@ def clustering_by_degree(network, num_bins=20, degree='degree', log_bins=False):
     if network.directed:
         if degree == 'degree':
             degrees_dict = {node:attr['indegree']+attr['outdegree'] for node, attr in network.nodes.items()}
+        elif degree == 'weight':
+            degrees_dict = {node:attr['inweight']+attr['outweight'] for node, attr in network.nodes.items()}
         else:
             degrees_dict = {node:attr[degree] for node, attr in network.nodes.items()}
     else:
