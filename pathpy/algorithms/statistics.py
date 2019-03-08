@@ -257,14 +257,16 @@ def degree_distribution(network, num_bins=30, degree='degree', log_bins=True, is
         Heights of the bins
 
     '''
-    assert degree is 'degree' or degree is 'indegree' or degree is 'outdegree',\
+    assert degree in ['degree', 'indegree', 'outdegree', 'inweight', 'outweight', 'weight'],\
             'Unknown degree property'
 
-    if degree == 'degree':
-        degrees = _np.array([attr['indegree']+attr['outdegree'] for _,attr in network.nodes.items()])
+    if network.directed:
+        if degree == 'degree':
+            degrees = _np.array([attr['indegree']+attr['outdegree'] for _,attr in network.nodes.items()])
+        else:
+            degrees = _np.array([attr[degree] for _,attr in network.nodes.items()])
     else:
         degrees = _np.array([attr[degree] for _,attr in network.nodes.items()])
-
 
     degrees = degrees[degrees>0]
     bins = get_bins(degrees, num_bins, log_bins)
@@ -306,13 +308,16 @@ def clustering_by_degree(network, num_bins=20, degree='degree', log_bins=False):
         Heights of bins
 
     '''
-    assert degree is 'degree' or degree is 'indegree' or degree is 'outdegree',\
+    assert degree in ['degree', 'indegree', 'outdegree', 'inweight', 'outweight', 'weight'],\
             'Unknown degree property'
 
-    if degree == 'degree':
-        degrees_dict = {node:attr['indegree']+attr['outdegree'] for node, attr in network.nodes.items()}
+    if network.directed:
+        if degree == 'degree':
+            degrees_dict = {node:attr['indegree']+attr['outdegree'] for node, attr in network.nodes.items()}
+        else:
+            degrees_dict = {node:attr[degree] for node, attr in network.nodes.items()}
     else:
-        degrees_dict = {node:attr[degree] for node, attr in network.nodes()}
+        degrees_dict = {node:attr[degree] for node, attr in network.nodes.items()}
 
     ## Get degrees
     degrees = _np.array(list(degrees_dict.values()))
