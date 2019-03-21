@@ -33,7 +33,8 @@ try {
     // Problem: require.config will raise an exception when called for the second time 
     require.config({
         paths: {
-            d3: "https://d3js.org/d3.v4.min"
+            //d3: "https://d3js.org/d3.v4.min"
+            d3: "$d3js_path".replace(".js", "")
         }
     });
     console.log("Detected requireJS");
@@ -59,22 +60,19 @@ catch(err){
 
 // wait until d3js has been loaded
 require(["d3"], function(d3) {
-    var svg = d3.select("#"+"$div_id"),
-        radius = 6,
-        width = +svg.attr("width"),
-        height = +svg.attr("height");
+    var svg = d3.select("#"+"$div_id"), radius = 6, width = +svg.attr("width"), height = +svg.attr("height");
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var graph = $network_data;
     var directed = $edge_arrows;
 
-    var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
-        .force("charge", d3.forceManyBody().strength($force_charge).distanceMax(200))
-        .force("repelForce", d3.forceManyBody().strength($force_repel).distanceMax(200))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .alphaTarget($force_alpha);
+    var simulation = d3.forceSimulation()        
+       .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
+        .force("charge", d3.forceManyBody().strength($force_charge).distanceMax($width))
+       .force("repelForce", d3.forceManyBody().strength($force_repel).distanceMax(100))
+       .force("center", d3.forceCenter($width / 2, $height / 2))
+       .alphaTarget($force_alpha);
 
     svg.append("defs").selectAll("marker")
         .data(["end"])
