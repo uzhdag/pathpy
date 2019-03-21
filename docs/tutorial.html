@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
@@ -22,8 +22,8 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 <!-- Navbar -->
 <div class="w3-top">
   <div class="w3-bar w3-theme w3-top w3-left-align w3-large">    
-    <a href="index.html" class="w3-bar-item w3-button w3-theme-l1">pathpy</a>
-    <a href="tutorial.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Getting started</a>    
+    <a href="index.html" class="w3-bar-item w3-button w3-theme-l3">pathpy</a>
+    <a href="tutorial.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Get started</a>    
     <a href="examples.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Gallery</a>
     <a href="docs.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Documentation</a>
     <a href="news.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">News</a>
@@ -43,7 +43,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
       <code>> pip install git+git://github.com/uzhdag/pathpy.git</code>
     </div>
     <div class="w3-third w3-container">
-        <iframe src="https://www.youtube-nocookie.com/embed/QIPqFaR2Z5c" frameborder="1" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <img src="../pathpy_logo.png" style="width:auto" />
     </div>
   </div>
   
@@ -115,14 +115,13 @@ pp.visualisation.export_html(t, 'my_temporal_network.html', **style)
         </pre>
         <p>A file will be created in the directory where your jupyter notebook server was started. Just open this HTML5 file in your browser to see the animation.</p>
       </div>
-      <div class="w3-third w3-container">
-        <img src="../pathpy_logo.png" style="width:auto" />
+      <div class="w3-third w3-container">        
       </div>
     </div>
 
       <div class="w3-row">
           <div class="w3-twothird w3-container">
-            <h1 class="w3-text-blue">Are there any known issues?</h1>
+            <h1 class="w3-text-blue">Are there known issues?</h1>
             <p>We would like users to be aware of the following known issues in the latest version of <code>pathpy</code>:
               <ul>
                 <li>Depending on whether or not the dependency package <code>scipy</code> has been compiled with the numerics package <code>MKL</code> or <code>openblas</code>, considerable numerical differences can occur, e.g. for eigenvalue centralities, PageRank, spectral clustering, and other measures that depend on the eigenvectors and eigenvalues of matrices. Please refer to <code>scipy.show_config()</code> to show compilation flags. We are currently investigating this issue.</li>
@@ -138,7 +137,7 @@ pp.visualisation.export_html(t, 'my_temporal_network.html', **style)
         </div>
 
   <footer id="myFooter">
-    <div class="w3-container w3-theme-l1 w3-padding-32">
+    <div class="w3-container w3-theme-l5 w3-padding-32">
       &copy; Data Analytics Group, University of Zurich, 2019
     </div>
   </footer>
