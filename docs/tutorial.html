@@ -36,40 +36,102 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
   <div class="w3-row w3-padding-64">
     <div class="w3-twothird w3-container">
       <h1 class="w3-text-blue">How can I install pathpy?</h1>
-      <p>pathpy is an OpenSource python package for the analysis of time series data on networks.</p>
-      <p>pathpy is integrated with jupyter, providing rich and interactive in-line visualisations of networks, temporal networks, higher-, and multi-order models. Visualisations can be exported to HTML5 files that can be shared and published on the Web.</p>
+      <p><code>pathpy</code> is pure python code. It has no platform-specific dependencies and should thus work on all platforms. <code>pathpy</code> requires python 3.x. It builds on the data science packages <code>numpy</code> and <code>scipy</code>. The latest release version 2.0 of </code>pathpy</code> can be installed by typing:</p>
+      <code>> pip install pathpy2</code>
+      <p>Please make sure to use the pyPI name <code>pathpy2</code> as the pyPI package name <code>pathpy</code> has been <a href="https://github.com/pypa/warehouse/issues/4413">namesquatted</a>. We are currently working on the transfer of the pyPI name <code>pathpy</code>.</p>
+      <p>If you want to install the latest <a href="https://github.com/uzhdag/pathpy">development version</a>, you can directly download and install it from our github repository as follows:</p>
+      <code>> pip install git+git://github.com/uzhdag/pathpy.git</code>
     </div>
     <div class="w3-third w3-container">
         <iframe src="https://www.youtube-nocookie.com/embed/QIPqFaR2Z5c" frameborder="1" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
+  
 
   <div class="w3-row">
       <div class="w3-twothird w3-container">
-        <h1 class="w3-text-blue">How can I take first steps?</h1>
-        <p>pathpy is an OpenSource python package for the analysis of time series data on networks.</p>
-        <p>pathpy is tailored to analyse time-stamped network data as well as time series and sequence data that capture multiple short paths observed in a graph or network. Examples for data that can be analysed with pathpy include time-stamped social networks, user click streams on the Web, biological pathway data, citation graphs, or information cascades in social networks.</p>
-        <p>Unifying the modelling and analysis of paths and time-stamped networks, pathpy provides efficient methods to extract causal or time-respecting paths from time series data.</p>
-        <p>pathpy facilitates the analysis of higher-order dependencies in time series data on networks. It uses a principled model selection technique to infer higher-order graphical representations that capture both topological and temporal characteristics. It specifically allows to answer the question when a network abstraction of time series data is justified and when higher-order network representations are needed.</p>
+        <h1 class="w3-text-blue">How can I get started?</h1>
+        <p>Once you have successfully installed <code>pathpy</code>, you can test our installation with a very basic (temporal) network analysis and visualisation task. For this, you should first start a <code>jupyter</code> notebook server. Assuming that you have installed <code>jupyter</code>, in the terminal simply type:</p>
+        <pre>> jupyter notebook</pre>
+        <p>This will bring up your browser. Create an empty python 3 notebook by clicking the <code>New</code> button. In this notebook, we first need to import <code>pathpy</code>. Enter the following code and run the cell by pressing <code>Shift+Enter</code>:</p>
+        <pre>import pathpy as pp</pre>
+        <p>We can create a simple (directed) network by entering the following code and running the cell:</p>
+        <pre>
+n = pp.Network(directed=True)
+n.add_edge('a', 'c')
+n.add_edge('b', 'c')
+n.add_edge('c', 'd')
+n.add_edge('c', 'e')
+print(n)</pre>
+        <p>To visualise this network, we can just enter the name of the variable in a <code>jupyter</code> cell and run it:</p>
+        <pre>n</pre>
+        <img width="50%" src="example_network.png">
+        <p>Note that this visualisation is interactive, i.e. you can drag nodes, zoom, and pan. To calculate node centralities, we can use the functions in the module <code>pathpy.algorithms.centralities</code>. To calculate the betweenness centralities of all nodes, we can write:</p>
+        <pre>
+c = pp.algorithms.centralities.betweenness(n)
+print(c)
+        </pre>
+        <p>Executing this cell will print a dictionary that contains the betweenness centralities of all nodes. We can easily use this centralities to influence the visualisation of the network by means of <code>pathpy</code>'s styling mechanism. For instance, to scale the sizes of nodes according to their betweenness centrality we can write: </p>
+        <pre>
+style = {}
+style['node_size'] = {v:3+u for v,u in c.items()}
+pp.visualisation.plot(n, **style)
+        </pre>
+        <img width="50%" src="example_network_scaled.png">
+        <p>If you are interested in <code>pathpy</code>'s advanced visualisation features, please check the units of this <a href="https://ingoscholtes.github.io/csh2018-tutorial/">three hour hands-on tutorial</a>.</p>
+        <p>The key feature of <code>pathpy</code> is its ability to analyse and visualise temporal networks. We can easily create a small example temporal network as follows:</p>
+        <pre>
+t = pp.TemporalNetwork()
+t.add_edge('a', 'b', 1)
+t.add_edge('b', 'a', 3)
+t.add_edge('b', 'c', 3)
+t.add_edge('d', 'c', 4)
+t.add_edge('c', 'd', 5)
+t.add_edge('c', 'b', 6)
+print(t)
+        </pre>
+        <p>To generate a dynamic and interactive HTML visualisation of such a temporal network we again simply enter the name of the variable in a <code>jupyter</code> cell and run it: </p>
+        <pre>t</pre>
+        <p>Using the default parameters, this visualisation will run too fast. We thus want to control the time of this animation. We can again use <code>pathpy</code>'s styling mechanism. With the following style, we will adjust the appearance of nodes and edges as well as the temporal aspects of the visualisation:</p>
+        <pre>
+style = {    
+  'ts_per_frame': 1, 
+  'ms_per_frame': 2000,
+  'look_ahead': 2, 
+  'look_behind': 2, 
+  'node_size': 15, 
+  'inactive_edge_width': 2,
+  'active_edge_width': 4, 
+  'label_color' : '#ffffff',
+  'label_size' : '24px',
+  'label_offset': [0,5]
+  }
+pp.visualisation.plot(t, **style)
+        </pre>
+        <p>Note that this visualisation is again interactive, i.e. we can interact with the temporal network while the animation is running!</p>
+        <p>You might want to share such an animation either via E-Mail or via the Web. In pathpy, this is as easy as it can get. We can simply export the visualisation as a stand-alone HTML5 file. This file contains both the data as well as the interactive and dynamic visualisation, so you can simply send it around or upload it to a web server. We can try this:</p>
+        <pre>
+pp.visualisation.export_html(t, 'my_temporal_network.html', **style)
+        </pre>
+        <p>A file will be created in the directory where your jupyter notebook server was started. Just open this HTML5 file in your browser to see the animation.</p>
       </div>
       <div class="w3-third w3-container">
         <img src="../pathpy_logo.png" style="width:auto" />
       </div>
     </div>
 
-    <div class="w3-row">
-        <div class="w3-twothird w3-container">
-          <h1 class="w3-text-blue">Where can I find documentation?</h1>
-          <p>pathpy is an OpenSource python package for the analysis of time series data on networks.</p>         
-        </div>
-        <div class="w3-third w3-container">
-        </div>
-      </div>
-
       <div class="w3-row">
           <div class="w3-twothird w3-container">
             <h1 class="w3-text-blue">Are there any known issues?</h1>
-            <p>pathpy is an OpenSource python package for the analysis of time series data on networks.</p>         
+            <p>We would like users to be aware of the following known issues in the latest version of <code>pathpy</code>:
+              <ul>
+                <li>Depending on whether or not the dependency package <code>scipy</code> has been compiled with the numerics package <code>MKL</code> or <code>openblas</code>, considerable numerical differences can occur, e.g. for eigenvalue centralities, PageRank, spectral clustering, and other measures that depend on the eigenvectors and eigenvalues of matrices. Please refer to <code>scipy.show_config()</code> to show compilation flags. We are currently investigating this issue.</li>
+                <li>Interactive visualisations in jupyter are currently only supported for <code>juypter</code> notebooks, stand-alone HTML files, and the <code>jupyter</code> display integrated in IDEs like Visual Studio Code. Due to its new widget mechanism, interactive d3js visualizations are currently not available for <code>jupyterLab</code>.</li>
+                <li>The visualisation module currently does not support the drawing of edge arrows for temporal networks with directed edges. However, a powerful templating mechanism is available to support custom interactive and dynamic visualisations both for static and temporal networks.</li>
+                <li>The visualisation of paths in terms of alluvial diagrams within jupyter is currently unstable. This is due to the asynchronous loading of external scripts and possible network latencies e.g. in wireless networks. We will replace this functionality in a future version.</li>
+              </ul>
+            </p>
+            <p>We are working on a solution to these issues in the next release. An up-to-date list of open issues can be found at our <a href="https://github.com/uzhdag/pathpy/issues">issue tracker</a>. For the installation of development versions in which your issue might already have been fixed please refer to the installation instructions above.</p>
           </div>
           <div class="w3-third w3-container">
           </div>
