@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.path_extraction.dag_paths API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.path_extraction.dag_paths</code> module</h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+import sys
+import itertools as it
+import functools as ft
+from collections import defaultdict
+
+from pathpy.classes.paths import Paths
+from pathpy.utils import Log, Severity
+from pathpy import DAG
+
+
+def remove_repetitions(path):
+    &#34;&#34;&#34;
+    Remove repeated nodes in the path
+
+    Parameters
+    ----------
+    path
+
+    Returns
+    -------
+
+    Examples
+    -------
+    &gt;&gt;&gt; remove_repetitions((1, 2, 2, 3, 4, 1))
+    (1, 2, 3, 4, 1)
+    &gt;&gt;&gt; remove_repetitions((1, 2, 2, 2, 3)) == remove_repetitions((1, 2, 2, 3, 3))
+    True
+    &#34;&#34;&#34;
+    return tuple(p[0] for p in it.groupby(path))
+
+
+def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=&#39;,&#39;, repetitions=True, unique=False):
+    &#34;&#34;&#34;
+    Calculates path statistics in a directed acyclic graph.
+    All paths between all roots (nodes with zero indegree)
+    and all leafs (nodes with zero outdegree) are generated.
+
+    Parameters
+    ----------
+    dag: DAG
+        the directed acyclic graph instance for which paths are calculated
+    node_mapping: dict
+        can be a simple mapping (1-to-1) or a 1-to-many (a dict with sets as values)
+    max_subpath_length: int
+        This can be used to limit the calculation of sub path statistics to a given
+        maximum length. This is useful, as the statistics of sub paths of length k
+        are only needed to fit a higher-order model with order k. Hence, if we know
+        that the model selection is limited to a given maximum order K, we can safely
+        set the maximum sub path length to K. By default, sub paths of any length
+        will be calculated. Note that, independent of the sub path calculation
+        longest path of any length will be considered in the likelihood calculation!
+    separator: str
+        separator to use to separate nodes in the generated Paths object. Default is &#39;,&#39;.
+    repetitions: bool
+        whether or not to remove repeated nodes in the paths. Such repeated paths can occur
+        if a non-injective node_mapping is applied. If set to True, a path a,a,b,b,c,c,d is
+        returned as a,b,c,d.
+    unique: bool
+        whether or not multiple identical mapped paths should be counted separately. For
+        DAG representations of temporal networks with delta &gt; 1, where nodes are temporal copies,
+        we do not want to count multiple paths from the same root that pass through different
+        temporal copies of the same physical node. For instance with delta=2, time-stamped edges
+        (a,b;1), (b,c;3) are transformed into a DAG a1-&gt;b2, a1-&gt;b3, b3-&gt;c4. With the mapping to
+        physical nodes we would find two different paths a-&gt;b-&gt;c of length two, which only differ
+        in terms of WHEN they arrive in node c
+
+
+    Returns
+    -------
+    Paths
+
+    &#34;&#34;&#34;
+    # Try to topologically sort the graph if not already sorted
+    if node_mapping:
+        test_key = list(node_mapping.keys())[0]
+        ONE_TO_MANY = isinstance(node_mapping[test_key], set)
+    else:
+        ONE_TO_MANY = False
+
+    if dag.is_acyclic is None:
+        dag.topsort()
+    # issue error if graph contains cycles
+    if dag.is_acyclic is False:
+        Log.add(&#39;Cannot extract statistics from a cyclic graph&#39;, Severity.ERROR)
+        raise ValueError(&#39;Cannot extract path statistics from a cyclic graph&#39;)
+    else:
+        # path object which will hold the detected (projected) paths
+        p = Paths(separator=separator)
+        if max_subpath_length:
+            p.max_subpath_length = max_subpath_length
+        else:
+            p.max_subpath_length = sys.maxsize
+
+        Log.add(&#39;Creating paths from directed acyclic graph&#39;, Severity.INFO)
+
+        # construct all paths originating from root nodes for 1 to 1
+        if not ONE_TO_MANY:
+            for s in dag.roots:
+                extracted_paths = dag.routes_from_node(s, node_mapping)
+                if unique:
+                    extracted_paths = set(tuple(x) for x in extracted_paths)
+                for path in extracted_paths:   # add detected paths to paths object                    
+                    if repetitions:
+                        p.add_path(path, expand_subpaths=False, frequency=(0, 1))
+                    else:
+                        p.add_path(remove_repetitions(path), expand_subpaths=False, frequency=(0, 1))
+        else:
+            path_counter = defaultdict(lambda: 0)
+            for root in dag.roots:
+                for set_path in dag.routes_from_node(root, node_mapping):
+                    for blown_up_path in expand_set_paths(set_path):
+                        path_counter[blown_up_path] += 1
+
+            for path, count in path_counter.items():
+                if repetitions:
+                    p.add_path(path, expand_subpaths=False, frequency=(0, count))
+                else:
+                    p.add_path(remove_repetitions(path), expand_subpaths=False, frequency=(0, count))
+
+        Log.add(&#39;Expanding Subpaths&#39;, Severity.INFO)
+        p.expand_subpaths()
+        Log.add(&#39;finished.&#39;, Severity.INFO)
+        return p
+
+
+def expand_set_paths(set_path):
+    &#34;&#34;&#34;returns all possible paths which are consistent with the sequence of sets
+
+    Parameters
+    ----------
+    set_path: list
+        a list of sets or other iterable
+
+    Examples
+    -------
+    &gt;&gt;&gt; node_path = [{1, 2}, {2, 5}, {1, 2}]
+    &gt;&gt;&gt; list(expand_set_paths(node_path))
+    [(1, 2, 1), (2, 2, 1), (1, 5, 1), (2, 5, 1), (1, 2, 2), (2, 2, 2), (1, 5, 2), (2, 5, 2)]
+    &gt;&gt;&gt; node_path = [{1, 2}, {5}, {2, 5}]
+    &gt;&gt;&gt; list(expand_set_paths(node_path))
+    [(1, 5, 2), (2, 5, 2), (1, 5, 5), (2, 5, 5)]
+
+
+    Yields
+    ------
+    tuple
+        a possible path
+    &#34;&#34;&#34;
+    # how many possible combinations are there
+    node_sizes = [len(n) for n in set_path]
+    num_possibilities = ft.reduce(lambda x, y: x * y, node_sizes, 1)
+
+    # create a list of lists such that each iterator is repeated the number of times
+    # his predecessors have completed their cycle
+    all_periodics = []
+    current_length = 1
+    for node_set in set_path:
+        periodic_num = []
+        for num in node_set:
+            periodic_num.extend([num] * current_length)
+        current_length *= len(node_set)
+        all_periodics.append(periodic_num)
+
+    iterator = [it.cycle(periodic) for periodic in all_periodics]
+    for i, elements in enumerate(zip(*iterator)):
+        if i &gt;= num_possibilities:
+            break
+        yield elements</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.path_extraction.dag_paths.expand_set_paths"><code class="name flex">
+<span>def <span class="ident">expand_set_paths</span></span>(<span>set_path)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>returns all possible paths which are consistent with the sequence of sets</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>set_path</code></strong> :&ensp;<code>list</code></dt>
+<dd>a list of sets or other iterable</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code>&gt;&gt;&gt; node_path = [{1, 2}, {2, 5}, {1, 2}]
+&gt;&gt;&gt; list(expand_set_paths(node_path))
+[(1, 2, 1), (2, 2, 1), (1, 5, 1), (2, 5, 1), (1, 2, 2), (2, 2, 2), (1, 5, 2), (2, 5, 2)]
+&gt;&gt;&gt; node_path = [{1, 2}, {5}, {2, 5}]
+&gt;&gt;&gt; list(expand_set_paths(node_path))
+[(1, 5, 2), (2, 5, 2), (1, 5, 5), (2, 5, 5)]
+</code></pre>
+<h2 id="yields">Yields</h2>
+<dl>
+<dt><strong><code>tuple</code></strong></dt>
+<dd>a possible path</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def expand_set_paths(set_path):
+    &#34;&#34;&#34;returns all possible paths which are consistent with the sequence of sets
+
+    Parameters
+    ----------
+    set_path: list
+        a list of sets or other iterable
+
+    Examples
+    -------
+    &gt;&gt;&gt; node_path = [{1, 2}, {2, 5}, {1, 2}]
+    &gt;&gt;&gt; list(expand_set_paths(node_path))
+    [(1, 2, 1), (2, 2, 1), (1, 5, 1), (2, 5, 1), (1, 2, 2), (2, 2, 2), (1, 5, 2), (2, 5, 2)]
+    &gt;&gt;&gt; node_path = [{1, 2}, {5}, {2, 5}]
+    &gt;&gt;&gt; list(expand_set_paths(node_path))
+    [(1, 5, 2), (2, 5, 2), (1, 5, 5), (2, 5, 5)]
+
+
+    Yields
+    ------
+    tuple
+        a possible path
+    &#34;&#34;&#34;
+    # how many possible combinations are there
+    node_sizes = [len(n) for n in set_path]
+    num_possibilities = ft.reduce(lambda x, y: x * y, node_sizes, 1)
+
+    # create a list of lists such that each iterator is repeated the number of times
+    # his predecessors have completed their cycle
+    all_periodics = []
+    current_length = 1
+    for node_set in set_path:
+        periodic_num = []
+        for num in node_set:
+            periodic_num.extend([num] * current_length)
+        current_length *= len(node_set)
+        all_periodics.append(periodic_num)
+
+    iterator = [it.cycle(periodic) for periodic in all_periodics]
+    for i, elements in enumerate(zip(*iterator)):
+        if i &gt;= num_possibilities:
+            break
+        yield elements</code></pre>
+</details>
+</dd>
+<dt id="pathpy.path_extraction.dag_paths.paths_from_dag"><code class="name flex">
+<span>def <span class="ident">paths_from_dag</span></span>(<span>dag, node_mapping=None, max_subpath_length=None, separator=&#39;,&#39;, repetitions=True, unique=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates path statistics in a directed acyclic graph.
+All paths between all roots (nodes with zero indegree)
+and all leafs (nodes with zero outdegree) are generated.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dag</code></strong> :&ensp;<code>DAG</code></dt>
+<dd>the directed acyclic graph instance for which paths are calculated</dd>
+<dt><strong><code>node_mapping</code></strong> :&ensp;<code>dict</code></dt>
+<dd>can be a simple mapping (1-to-1) or a 1-to-many (a dict with sets as values)</dd>
+<dt><strong><code>max_subpath_length</code></strong> :&ensp;<code>int</code></dt>
+<dd>This can be used to limit the calculation of sub path statistics to a given
+maximum length. This is useful, as the statistics of sub paths of length k
+are only needed to fit a higher-order model with order k. Hence, if we know
+that the model selection is limited to a given maximum order K, we can safely
+set the maximum sub path length to K. By default, sub paths of any length
+will be calculated. Note that, independent of the sub path calculation
+longest path of any length will be considered in the likelihood calculation!</dd>
+<dt><strong><code>separator</code></strong> :&ensp;<code>str</code></dt>
+<dd>separator to use to separate nodes in the generated Paths object. Default is ','.</dd>
+<dt><strong><code>repetitions</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether or not to remove repeated nodes in the paths. Such repeated paths can occur
+if a non-injective node_mapping is applied. If set to True, a path a,a,b,b,c,c,d is
+returned as a,b,c,d.</dd>
+<dt><strong><code>unique</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether or not multiple identical mapped paths should be counted separately. For
+DAG representations of temporal networks with delta &gt; 1, where nodes are temporal copies,
+we do not want to count multiple paths from the same root that pass through different
+temporal copies of the same physical node. For instance with delta=2, time-stamped edges
+(a,b;1), (b,c;3) are transformed into a DAG a1-&gt;b2, a1-&gt;b3, b3-&gt;c4. With the mapping to
+physical nodes we would find two different paths a-&gt;b-&gt;c of length two, which only differ
+in terms of WHEN they arrive in node c</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Paths</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def paths_from_dag(dag, node_mapping=None, max_subpath_length=None, separator=&#39;,&#39;, repetitions=True, unique=False):
+    &#34;&#34;&#34;
+    Calculates path statistics in a directed acyclic graph.
+    All paths between all roots (nodes with zero indegree)
+    and all leafs (nodes with zero outdegree) are generated.
+
+    Parameters
+    ----------
+    dag: DAG
+        the directed acyclic graph instance for which paths are calculated
+    node_mapping: dict
+        can be a simple mapping (1-to-1) or a 1-to-many (a dict with sets as values)
+    max_subpath_length: int
+        This can be used to limit the calculation of sub path statistics to a given
+        maximum length. This is useful, as the statistics of sub paths of length k
+        are only needed to fit a higher-order model with order k. Hence, if we know
+        that the model selection is limited to a given maximum order K, we can safely
+        set the maximum sub path length to K. By default, sub paths of any length
+        will be calculated. Note that, independent of the sub path calculation
+        longest path of any length will be considered in the likelihood calculation!
+    separator: str
+        separator to use to separate nodes in the generated Paths object. Default is &#39;,&#39;.
+    repetitions: bool
+        whether or not to remove repeated nodes in the paths. Such repeated paths can occur
+        if a non-injective node_mapping is applied. If set to True, a path a,a,b,b,c,c,d is
+        returned as a,b,c,d.
+    unique: bool
+        whether or not multiple identical mapped paths should be counted separately. For
+        DAG representations of temporal networks with delta &gt; 1, where nodes are temporal copies,
+        we do not want to count multiple paths from the same root that pass through different
+        temporal copies of the same physical node. For instance with delta=2, time-stamped edges
+        (a,b;1), (b,c;3) are transformed into a DAG a1-&gt;b2, a1-&gt;b3, b3-&gt;c4. With the mapping to
+        physical nodes we would find two different paths a-&gt;b-&gt;c of length two, which only differ
+        in terms of WHEN they arrive in node c
+
+
+    Returns
+    -------
+    Paths
+
+    &#34;&#34;&#34;
+    # Try to topologically sort the graph if not already sorted
+    if node_mapping:
+        test_key = list(node_mapping.keys())[0]
+        ONE_TO_MANY = isinstance(node_mapping[test_key], set)
+    else:
+        ONE_TO_MANY = False
+
+    if dag.is_acyclic is None:
+        dag.topsort()
+    # issue error if graph contains cycles
+    if dag.is_acyclic is False:
+        Log.add(&#39;Cannot extract statistics from a cyclic graph&#39;, Severity.ERROR)
+        raise ValueError(&#39;Cannot extract path statistics from a cyclic graph&#39;)
+    else:
+        # path object which will hold the detected (projected) paths
+        p = Paths(separator=separator)
+        if max_subpath_length:
+            p.max_subpath_length = max_subpath_length
+        else:
+            p.max_subpath_length = sys.maxsize
+
+        Log.add(&#39;Creating paths from directed acyclic graph&#39;, Severity.INFO)
+
+        # construct all paths originating from root nodes for 1 to 1
+        if not ONE_TO_MANY:
+            for s in dag.roots:
+                extracted_paths = dag.routes_from_node(s, node_mapping)
+                if unique:
+                    extracted_paths = set(tuple(x) for x in extracted_paths)
+                for path in extracted_paths:   # add detected paths to paths object                    
+                    if repetitions:
+                        p.add_path(path, expand_subpaths=False, frequency=(0, 1))
+                    else:
+                        p.add_path(remove_repetitions(path), expand_subpaths=False, frequency=(0, 1))
+        else:
+            path_counter = defaultdict(lambda: 0)
+            for root in dag.roots:
+                for set_path in dag.routes_from_node(root, node_mapping):
+                    for blown_up_path in expand_set_paths(set_path):
+                        path_counter[blown_up_path] += 1
+
+            for path, count in path_counter.items():
+                if repetitions:
+                    p.add_path(path, expand_subpaths=False, frequency=(0, count))
+                else:
+                    p.add_path(remove_repetitions(path), expand_subpaths=False, frequency=(0, count))
+
+        Log.add(&#39;Expanding Subpaths&#39;, Severity.INFO)
+        p.expand_subpaths()
+        Log.add(&#39;finished.&#39;, Severity.INFO)
+        return p</code></pre>
+</details>
+</dd>
+<dt id="pathpy.path_extraction.dag_paths.remove_repetitions"><code class="name flex">
+<span>def <span class="ident">remove_repetitions</span></span>(<span>path)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Remove repeated nodes in the path</p>
+<h2 id="parameters">Parameters</h2>
+<p>path</p>
+<h2 id="returns">Returns</h2>
+<h2 id="examples">Examples</h2>
+<pre><code>&gt;&gt;&gt; remove_repetitions((1, 2, 2, 3, 4, 1))
+(1, 2, 3, 4, 1)
+&gt;&gt;&gt; remove_repetitions((1, 2, 2, 2, 3)) == remove_repetitions((1, 2, 2, 3, 3))
+</code></pre>
+<p>True</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def remove_repetitions(path):
+    &#34;&#34;&#34;
+    Remove repeated nodes in the path
+
+    Parameters
+    ----------
+    path
+
+    Returns
+    -------
+
+    Examples
+    -------
+    &gt;&gt;&gt; remove_repetitions((1, 2, 2, 3, 4, 1))
+    (1, 2, 3, 4, 1)
+    &gt;&gt;&gt; remove_repetitions((1, 2, 2, 2, 3)) == remove_repetitions((1, 2, 2, 3, 3))
+    True
+    &#34;&#34;&#34;
+    return tuple(p[0] for p in it.groupby(path))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.path_extraction" href="index.html">pathpy.path_extraction</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.path_extraction.dag_paths.expand_set_paths" href="#pathpy.path_extraction.dag_paths.expand_set_paths">expand_set_paths</a></code></li>
+<li><code><a title="pathpy.path_extraction.dag_paths.paths_from_dag" href="#pathpy.path_extraction.dag_paths.paths_from_dag">paths_from_dag</a></code></li>
+<li><code><a title="pathpy.path_extraction.dag_paths.remove_repetitions" href="#pathpy.path_extraction.dag_paths.remove_repetitions">remove_repetitions</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

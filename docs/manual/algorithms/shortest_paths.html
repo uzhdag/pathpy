@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.algorithms.shortest_paths API documentation</title>
+<meta name="description" content="Algorithms to calculate shortest paths and distances in higher-order networks and paths." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.algorithms.shortest_paths</code> module</h1>
+</header>
+<section id="section-intro">
+<p>Algorithms to calculate shortest paths and distances in higher-order networks and paths.</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Algorithms to calculate shortest paths and distances in higher-order networks and paths.
+&#34;&#34;&#34;
+# -*- coding: utf-8 -*-
+
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+from functools import singledispatch
+from collections import defaultdict
+
+import numpy as _np
+import scipy.sparse.csgraph as _csg
+
+from pathpy.utils import Log, Severity
+from pathpy.classes import HigherOrderNetwork
+from pathpy.classes import Network
+from pathpy.classes import Paths
+
+__all__ = [&#39;distance_matrix&#39;, &#39;shortest_paths&#39;, &#39;diameter&#39;]
+
+@singledispatch
+def distance_matrix(network, weighted=False):
+    &#34;&#34;&#34;
+    Calculates shortest path distances between all pairs of nodes
+    based on the Floyd-Warshall algorithm.
+    &#34;&#34;&#34;
+
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+
+    # dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    A = network.adjacency_matrix(weighted=weighted)
+    dist_matrix = _csg.floyd_warshall(A, network.directed, unweighted=(not weighted), overwrite=False)
+
+    return dist_matrix
+
+
+@distance_matrix.register(Paths)
+def _dm(paths):
+    &#34;&#34;&#34;
+    Calculates shortest path distances between all pairs of
+    nodes based on the observed shortest paths (and subpaths)
+    &#34;&#34;&#34;
+    dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    Log.add(&#39;Calculating distance matrix based on empirical paths ...&#39;, Severity.INFO)
+    # Node: no need to initialize shortest_path_lengths[v][v] = 0
+    # since paths of length zero are contained in self.paths
+
+    for v in paths.nodes:
+        dist[v][v] = 0
+
+    for p_length in paths.paths:
+        for p in paths.paths[p_length]:
+            start = p[0]
+            end = p[-1]
+            if p_length &lt; dist[start][end]:
+                dist[start][end] = p_length
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return dist
+
+
+@distance_matrix.register(HigherOrderNetwork)
+def _dm_ho(network):
+    &#34;&#34;&#34;
+    Returns a matrix capturing distances between (first-order)
+    nodes, based on a given higher-order topology. As an example, 
+    the second-order network [a-b] -&gt; [b-c] results in the distance 
+    matrix: dist[a][c] = 2
+    &#34;&#34;&#34;
+
+    assert isinstance(network, HigherOrderNetwork), \
+        &#34;network must be an instance of HigherOrderNetwork&#34;
+
+    dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    # Note: higher-order networks are always directed
+    for e in network.edges:
+        dist[e[0]][e[1]] = 1
+
+    # k, v, and w are *higher-order* nodes, i.e. paths of length k
+    for k in network.nodes:
+        for v in network.nodes:
+            for w in network.nodes:
+                if dist[v][w] &gt; dist[v][k] + dist[k][w]:
+                    dist[v][w] = dist[v][k] + dist[k][w]
+    
+    # project distances to first-order nodes
+    dist_first = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    # set distance between nodes based on higher-order nodes (paths)
+    for v in network.nodes:
+        v1 = network.higher_order_node_to_path(v)[0]
+        w1 = network.higher_order_node_to_path(v)[-1]
+        dist_first[v1][w1] = network.order - 1
+
+    # set diagonal entries to zero
+    for v in network.paths.nodes:
+        dist_first[v][v] = 0
+
+    # set distances between first-order nodes
+    for vk in dist:
+        for wk in dist[vk]:
+            v1 = network.higher_order_node_to_path(vk)[0]
+            w1 = network.higher_order_node_to_path(wk)[-1]
+            if dist[vk][wk] + network.order - 1 &lt; dist_first[v1][w1]:
+                dist_first[v1][w1] = dist[vk][wk] + network.order - 1
+
+    return dist_first
+
+
+@singledispatch
+def shortest_paths(network):
+    &#34;&#34;&#34;
+    Calculates all shortest paths between all pairs of
+    nodes using the Floyd-Warshall algorithm.
+    &#34;&#34;&#34;
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+
+    dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+    s_p = defaultdict(lambda: defaultdict(set))
+
+    for e in network.edges:
+        # set distances between neighbors to 1
+        dist[e[0]][e[1]] = 1
+        s_p[e[0]][e[1]].add((e[0], e[1]))
+        if not network.directed:
+            dist[e[1]][e[0]] = 1
+            s_p[e[1]][e[0]].add((e[1], e[0]))
+
+    for k in network.nodes:
+        for v in network.nodes:
+            for w in network.nodes:
+                if v != w:
+                    if dist[v][w] &gt; dist[v][k] + dist[k][w]:
+                        # we have found a shorter path
+                        dist[v][w] = dist[v][k] + dist[k][w]
+                        s_p[v][w] = set()
+                        for p in list(s_p[v][k]):
+                            for q in list(s_p[k][w]):
+                                s_p[v][w].add(p + q[1:])
+                    elif dist[v][w] == dist[v][k] + dist[k][w]:
+                        # we have found another shortest path
+                        for p in list(s_p[v][k]):
+                            for q in list(s_p[k][w]):
+                                s_p[v][w].add(p + q[1:])
+
+    for v in network.nodes:
+        dist[v][v] = 0
+        s_p[v][v].add((v,))
+
+    return s_p
+
+
+@shortest_paths.register(Paths)
+def _sp(paths):
+    &#34;&#34;&#34;
+    Calculates all shortest paths between all pairs of nodes 
+    based on a set of empirically observed paths.
+    &#34;&#34;&#34;
+
+    assert isinstance(paths, Paths), \
+        &#34;paths must be an instance of Paths&#34;
+
+    s_p = defaultdict(lambda: defaultdict(set))
+    s_p_lengths = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    for p_length in paths.paths:
+        for p in paths.paths[p_length]:
+            if _np.sum(paths.paths[p_length][p])&gt;0:
+                # make sure we only consider paths with non-zero 
+                # observation count (as path or sub-path)
+                s = p[0]
+                d = p[-1]
+                # we found a shorter path of length l between s and d
+                if p_length &lt; s_p_lengths[s][d]:
+                    # update shortest path length
+                    s_p_lengths[s][d] = p_length
+                    # redefine set
+                    s_p[s][d] = set()
+                    s_p[s][d].add(p)
+                elif p_length == s_p_lengths[s][d]:
+                    s_p[s][d].add(p)
+    return s_p
+
+
+def diameter(network):
+    &#34;&#34;&#34;
+    Returns the length of the longest shortest path between any two nodes
+    &#34;&#34;&#34;
+    dist = distance_matrix(network)
+    return _np.max(dist)
+
+
+def avg_path_length(network):
+    &#34;&#34;&#34;
+    Returns the average shortest path length between all nodes
+    &#34;&#34;&#34;
+    dist = distance_matrix(network)
+    return _np.mean(dist)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.algorithms.shortest_paths.diameter"><code class="name flex">
+<span>def <span class="ident">diameter</span></span>(<span>network)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the length of the longest shortest path between any two nodes</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def diameter(network):
+    &#34;&#34;&#34;
+    Returns the length of the longest shortest path between any two nodes
+    &#34;&#34;&#34;
+    dist = distance_matrix(network)
+    return _np.max(dist)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.shortest_paths.distance_matrix"><code class="name flex">
+<span>def <span class="ident">distance_matrix</span></span>(<span>network, weighted=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates shortest path distances between all pairs of nodes
+based on the Floyd-Warshall algorithm.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def distance_matrix(network, weighted=False):
+    &#34;&#34;&#34;
+    Calculates shortest path distances between all pairs of nodes
+    based on the Floyd-Warshall algorithm.
+    &#34;&#34;&#34;
+
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+
+    # dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    A = network.adjacency_matrix(weighted=weighted)
+    dist_matrix = _csg.floyd_warshall(A, network.directed, unweighted=(not weighted), overwrite=False)
+
+    return dist_matrix</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.shortest_paths.shortest_paths"><code class="name flex">
+<span>def <span class="ident">shortest_paths</span></span>(<span>network)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates all shortest paths between all pairs of
+nodes using the Floyd-Warshall algorithm.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def shortest_paths(network):
+    &#34;&#34;&#34;
+    Calculates all shortest paths between all pairs of
+    nodes using the Floyd-Warshall algorithm.
+    &#34;&#34;&#34;
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+
+    dist = defaultdict(lambda: defaultdict(lambda: _np.inf))
+    s_p = defaultdict(lambda: defaultdict(set))
+
+    for e in network.edges:
+        # set distances between neighbors to 1
+        dist[e[0]][e[1]] = 1
+        s_p[e[0]][e[1]].add((e[0], e[1]))
+        if not network.directed:
+            dist[e[1]][e[0]] = 1
+            s_p[e[1]][e[0]].add((e[1], e[0]))
+
+    for k in network.nodes:
+        for v in network.nodes:
+            for w in network.nodes:
+                if v != w:
+                    if dist[v][w] &gt; dist[v][k] + dist[k][w]:
+                        # we have found a shorter path
+                        dist[v][w] = dist[v][k] + dist[k][w]
+                        s_p[v][w] = set()
+                        for p in list(s_p[v][k]):
+                            for q in list(s_p[k][w]):
+                                s_p[v][w].add(p + q[1:])
+                    elif dist[v][w] == dist[v][k] + dist[k][w]:
+                        # we have found another shortest path
+                        for p in list(s_p[v][k]):
+                            for q in list(s_p[k][w]):
+                                s_p[v][w].add(p + q[1:])
+
+    for v in network.nodes:
+        dist[v][v] = 0
+        s_p[v][v].add((v,))
+
+    return s_p</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.algorithms" href="index.html">pathpy.algorithms</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.algorithms.shortest_paths.diameter" href="#pathpy.algorithms.shortest_paths.diameter">diameter</a></code></li>
+<li><code><a title="pathpy.algorithms.shortest_paths.distance_matrix" href="#pathpy.algorithms.shortest_paths.distance_matrix">distance_matrix</a></code></li>
+<li><code><a title="pathpy.algorithms.shortest_paths.shortest_paths" href="#pathpy.algorithms.shortest_paths.shortest_paths">shortest_paths</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

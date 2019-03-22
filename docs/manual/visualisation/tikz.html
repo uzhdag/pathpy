@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.visualisation.tikz API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.visualisation.tikz</code> module</h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+from functools import singledispatch
+
+import numpy as _np
+
+from pathpy.classes.network import Network
+from pathpy.classes.temporal_network import TemporalNetwork
+
+
+@singledispatch
+def export_tikz(tempnet, filename, dag=True, angle=20, layer_dist=&#39;0.3cm&#39;,
+                   split_directions=True):
+        &#34;&#34;&#34;Generates a tex file that can be compiled to a time-unfolded representation of
+         the temporal network. This method is intended for small illustratiions of toy examples.
+
+        Parameters
+        ----------
+        filename: str
+            the name of the tex file to be generated.
+        dag: bool
+            whether or not to draw the unfolded network as a directed acyclic graph,
+            in which a link (v,w,t) connects node-time elements (v_t, w_t+1) (default
+            True). If False, a simple sequence of links will be generated.
+        angle: float
+            the angle of curved edges
+        layer_dist: str
+            LaTex distance parameter string specifying the distance between adjacent
+            node-time elements (default &#39;0.3cm&#39;)
+        split_directions: bool
+            whether or not the curve angle of edges shall be split depending on
+            direction (default True) If this is set to True, arrows from left to right
+            bend upwards, while arrows from right to left bend downwards This helps
+            readability in temporal networks with multiple edges per time step. For
+            temporal networks with single edges per time, False is recommended.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        import os as _os
+
+        output = [
+            &#39;\\documentclass{article}&#39;,
+            &#39;\\usepackage{tikz}&#39;,
+            &#39;\\usepackage{verbatim}&#39;,
+            &#39;\\usepackage[active,tightpage]{preview}&#39;,
+            &#39;\\PreviewEnvironment{tikzpicture}&#39;,
+            &#39;\\setlength\\PreviewBorder{5pt}%&#39;,
+            &#39;\\usetikzlibrary{arrows}&#39;,
+            &#39;\\usetikzlibrary{positioning}&#39;,
+            &#39;\\renewcommand{\\familydefault}{\\sfdefault}&#39;,
+            &#39;\\begin{document}&#39;,
+            &#39;\\begin{center}&#39;,
+            &#39;\\newcounter{a}&#39;,
+            &#34;\\begin{tikzpicture}[-&gt;,&gt;=stealth&#39;,auto,&#34;
+            &#34;scale=1, every node/.style={scale=1}]&#34;,
+            &#34;\\tikzstyle{node} = [fill=lightgray,text=black,circle]&#34;,
+            &#34;\\tikzstyle{v} = [fill=lightgray,draw=black,&#34;
+            &#34;text=white,circle,minimum size=0.5cm]&#34;,
+            &#34;\\tikzstyle{dst} = [fill=lightgray,text=black,circle]&#34;,
+            &#34;\\tikzstyle{lbl} = [text=black,circle]&#34;]
+
+        last = &#39;&#39;
+
+        for n in _np.sort(tempnet.nodes):
+            if last == &#39;&#39;:
+                node = r&#34;\node[lbl]  ({n}-0) {{\bf \Huge {n} }};&#34;.format(n=n)
+            else:
+                node_fmt = r&#34;\node[lbl, right=0.4cm of {last}-0] ({n}-0) &#34; \
+                           r&#34;{{\bf \Huge {n} }};&#34;
+                node = node_fmt.format(last=last, n=n)
+
+            output.append(node)
+            last = n
+
+        output.append(&#34;\\setcounter{a}{0}\n&#34;)
+        min_t = min(tempnet.ordered_times)
+        max_t = max(tempnet.ordered_times)
+        if dag:
+            dag_num = r&#39;\foreach \number in {{ {min_t}, ..., {max_t} }} {{&#39;
+            output.append(dag_num.format(min_t=min_t, max_t=max_t+1))
+        else:
+            dag_num = r&#39;\foreach \number in {{ {min_t}, ..., {max_t} }} {{&#39;
+            output.append(dag_num.format(min_t=min_t, max_t=max_t))
+        output.append(&#34;\\setcounter{a}{\\number}&#34;)
+        output.append(&#34;\\addtocounter{a}{-1}&#34;)
+        output.append(&#34;\\pgfmathparse{\\thea}&#34;)
+
+        for n in _np.sort(tempnet.nodes):
+            layer_fm = r&#34;\node[v,below={layer} of {n}-\pgfmathresult] ({n}-\number) {{}};&#34;
+            output.append(layer_fm.format(layer=layer_dist, n=n))
+
+        first_node = _np.sort(tempnet.nodes)[0]
+        fmt = r&#39;\node[lbl,left=0.4cm of {f_node}-\number] (col-\pgfmathresult) &#39; \
+              r&#39;{{ \selectfont {{ \bf \Huge \number}} }};&#39;
+
+        output.append(fmt.format(f_node=first_node))
+        output.append(r&#34;}&#34;)
+        output.append(r&#34;\path[-&gt;,line width=2pt]&#34;)
+        # draw only directed edges
+        for ts in tempnet.ordered_times:
+            for edge in tempnet.time[ts]:
+                if dag:
+                    edge_str = r&#39;({}-{}) edge ({}-{})&#39;.format(edge[0], ts, edge[1], ts+1)
+                    output.append(edge_str)
+                else:
+                    if (edge[1], edge[0], ts) not in tempnet.time[ts]:
+                        bend_direction = &#39;right&#39;
+                        if not split_directions and edge[0] &lt; edge[1]:
+                            bend_direction = &#39;left&#39;
+                        edge_fmt = r&#39;({}-{}) edge[bend {} = {}] ({}-{})&#39;
+                        edge_str = edge_fmt.format(edge[0], ts, bend_direction, angle,
+                                                   edge[1], ts)
+                        output.append(edge_str)
+        output.append(&#34;;\n&#34;)
+
+        # separately draw undirected edges if we don&#39;t output a DAG
+        if not dag:
+            output.append(&#34;\\path[-,line width=2pt]\n&#34;)
+            for ts in tempnet.ordered_times:
+                for edge in tempnet.time[ts]:
+                    if (edge[1], edge[0], ts) in tempnet.time[ts]:
+                        # admittedly, this is an ugly trick: I avoid keeping state on
+                        # which of the directed edges has been drawn already as an
+                        # undirected edge, by simply drawing them twice in the same way
+                        #  :-)
+                        s = max(edge[0], edge[1])
+                        t = min(edge[0], edge[1])
+                        edge = &#34;({s}-{ts}) edge[bend right={angle}] ({t}={ts})\n&#34;
+                        output.append(edge.format(s=s, ts=ts, angle=angle, t=t))
+            output.append(&#34;;\n&#34;)
+        output.append(&#34;\\end{tikzpicture} \n&#34;
+                      &#34;\\end{center} \n&#34;
+                      &#34;\\end{document}&#34;)
+
+        # create directory if necessary to avoid IO errors
+        directory = _os.path.dirname(filename)
+        if directory != &#39;&#39;:
+            if not _os.path.exists(directory):
+                _os.makedirs(directory)
+
+        with open(filename, &#34;w&#34;) as tex_file:
+            tex_file.writelines(&#39;\n&#39;.join(output))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.visualisation.tikz.export_tikz"><code class="name flex">
+<span>def <span class="ident">export_tikz</span></span>(<span>tempnet, filename, dag=True, angle=20, layer_dist=&#39;0.3cm&#39;, split_directions=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates a tex file that can be compiled to a time-unfolded representation of
+the temporal network. This method is intended for small illustratiions of toy examples.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>the name of the tex file to be generated.</dd>
+<dt><strong><code>dag</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether or not to draw the unfolded network as a directed acyclic graph,
+in which a link (v,w,t) connects node-time elements (v_t, w_t+1) (default
+True). If False, a simple sequence of links will be generated.</dd>
+<dt><strong><code>angle</code></strong> :&ensp;<code>float</code></dt>
+<dd>the angle of curved edges</dd>
+<dt><strong><code>layer_dist</code></strong> :&ensp;<code>str</code></dt>
+<dd>LaTex distance parameter string specifying the distance between adjacent
+node-time elements (default '0.3cm')</dd>
+<dt><strong><code>split_directions</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether or not the curve angle of edges shall be split depending on
+direction (default True) If this is set to True, arrows from left to right
+bend upwards, while arrows from right to left bend downwards This helps
+readability in temporal networks with multiple edges per time step. For
+temporal networks with single edges per time, False is recommended.</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def export_tikz(tempnet, filename, dag=True, angle=20, layer_dist=&#39;0.3cm&#39;,
+                   split_directions=True):
+        &#34;&#34;&#34;Generates a tex file that can be compiled to a time-unfolded representation of
+         the temporal network. This method is intended for small illustratiions of toy examples.
+
+        Parameters
+        ----------
+        filename: str
+            the name of the tex file to be generated.
+        dag: bool
+            whether or not to draw the unfolded network as a directed acyclic graph,
+            in which a link (v,w,t) connects node-time elements (v_t, w_t+1) (default
+            True). If False, a simple sequence of links will be generated.
+        angle: float
+            the angle of curved edges
+        layer_dist: str
+            LaTex distance parameter string specifying the distance between adjacent
+            node-time elements (default &#39;0.3cm&#39;)
+        split_directions: bool
+            whether or not the curve angle of edges shall be split depending on
+            direction (default True) If this is set to True, arrows from left to right
+            bend upwards, while arrows from right to left bend downwards This helps
+            readability in temporal networks with multiple edges per time step. For
+            temporal networks with single edges per time, False is recommended.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        import os as _os
+
+        output = [
+            &#39;\\documentclass{article}&#39;,
+            &#39;\\usepackage{tikz}&#39;,
+            &#39;\\usepackage{verbatim}&#39;,
+            &#39;\\usepackage[active,tightpage]{preview}&#39;,
+            &#39;\\PreviewEnvironment{tikzpicture}&#39;,
+            &#39;\\setlength\\PreviewBorder{5pt}%&#39;,
+            &#39;\\usetikzlibrary{arrows}&#39;,
+            &#39;\\usetikzlibrary{positioning}&#39;,
+            &#39;\\renewcommand{\\familydefault}{\\sfdefault}&#39;,
+            &#39;\\begin{document}&#39;,
+            &#39;\\begin{center}&#39;,
+            &#39;\\newcounter{a}&#39;,
+            &#34;\\begin{tikzpicture}[-&gt;,&gt;=stealth&#39;,auto,&#34;
+            &#34;scale=1, every node/.style={scale=1}]&#34;,
+            &#34;\\tikzstyle{node} = [fill=lightgray,text=black,circle]&#34;,
+            &#34;\\tikzstyle{v} = [fill=lightgray,draw=black,&#34;
+            &#34;text=white,circle,minimum size=0.5cm]&#34;,
+            &#34;\\tikzstyle{dst} = [fill=lightgray,text=black,circle]&#34;,
+            &#34;\\tikzstyle{lbl} = [text=black,circle]&#34;]
+
+        last = &#39;&#39;
+
+        for n in _np.sort(tempnet.nodes):
+            if last == &#39;&#39;:
+                node = r&#34;\node[lbl]  ({n}-0) {{\bf \Huge {n} }};&#34;.format(n=n)
+            else:
+                node_fmt = r&#34;\node[lbl, right=0.4cm of {last}-0] ({n}-0) &#34; \
+                           r&#34;{{\bf \Huge {n} }};&#34;
+                node = node_fmt.format(last=last, n=n)
+
+            output.append(node)
+            last = n
+
+        output.append(&#34;\\setcounter{a}{0}\n&#34;)
+        min_t = min(tempnet.ordered_times)
+        max_t = max(tempnet.ordered_times)
+        if dag:
+            dag_num = r&#39;\foreach \number in {{ {min_t}, ..., {max_t} }} {{&#39;
+            output.append(dag_num.format(min_t=min_t, max_t=max_t+1))
+        else:
+            dag_num = r&#39;\foreach \number in {{ {min_t}, ..., {max_t} }} {{&#39;
+            output.append(dag_num.format(min_t=min_t, max_t=max_t))
+        output.append(&#34;\\setcounter{a}{\\number}&#34;)
+        output.append(&#34;\\addtocounter{a}{-1}&#34;)
+        output.append(&#34;\\pgfmathparse{\\thea}&#34;)
+
+        for n in _np.sort(tempnet.nodes):
+            layer_fm = r&#34;\node[v,below={layer} of {n}-\pgfmathresult] ({n}-\number) {{}};&#34;
+            output.append(layer_fm.format(layer=layer_dist, n=n))
+
+        first_node = _np.sort(tempnet.nodes)[0]
+        fmt = r&#39;\node[lbl,left=0.4cm of {f_node}-\number] (col-\pgfmathresult) &#39; \
+              r&#39;{{ \selectfont {{ \bf \Huge \number}} }};&#39;
+
+        output.append(fmt.format(f_node=first_node))
+        output.append(r&#34;}&#34;)
+        output.append(r&#34;\path[-&gt;,line width=2pt]&#34;)
+        # draw only directed edges
+        for ts in tempnet.ordered_times:
+            for edge in tempnet.time[ts]:
+                if dag:
+                    edge_str = r&#39;({}-{}) edge ({}-{})&#39;.format(edge[0], ts, edge[1], ts+1)
+                    output.append(edge_str)
+                else:
+                    if (edge[1], edge[0], ts) not in tempnet.time[ts]:
+                        bend_direction = &#39;right&#39;
+                        if not split_directions and edge[0] &lt; edge[1]:
+                            bend_direction = &#39;left&#39;
+                        edge_fmt = r&#39;({}-{}) edge[bend {} = {}] ({}-{})&#39;
+                        edge_str = edge_fmt.format(edge[0], ts, bend_direction, angle,
+                                                   edge[1], ts)
+                        output.append(edge_str)
+        output.append(&#34;;\n&#34;)
+
+        # separately draw undirected edges if we don&#39;t output a DAG
+        if not dag:
+            output.append(&#34;\\path[-,line width=2pt]\n&#34;)
+            for ts in tempnet.ordered_times:
+                for edge in tempnet.time[ts]:
+                    if (edge[1], edge[0], ts) in tempnet.time[ts]:
+                        # admittedly, this is an ugly trick: I avoid keeping state on
+                        # which of the directed edges has been drawn already as an
+                        # undirected edge, by simply drawing them twice in the same way
+                        #  :-)
+                        s = max(edge[0], edge[1])
+                        t = min(edge[0], edge[1])
+                        edge = &#34;({s}-{ts}) edge[bend right={angle}] ({t}={ts})\n&#34;
+                        output.append(edge.format(s=s, ts=ts, angle=angle, t=t))
+            output.append(&#34;;\n&#34;)
+        output.append(&#34;\\end{tikzpicture} \n&#34;
+                      &#34;\\end{center} \n&#34;
+                      &#34;\\end{document}&#34;)
+
+        # create directory if necessary to avoid IO errors
+        directory = _os.path.dirname(filename)
+        if directory != &#39;&#39;:
+            if not _os.path.exists(directory):
+                _os.makedirs(directory)
+
+        with open(filename, &#34;w&#34;) as tex_file:
+            tex_file.writelines(&#39;\n&#39;.join(output))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.visualisation" href="index.html">pathpy.visualisation</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.visualisation.tikz.export_tikz" href="#pathpy.visualisation.tikz.export_tikz">export_tikz</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.path_extraction.origin_destination_stats API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.path_extraction.origin_destination_stats</code> module</h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+from collections import defaultdict
+
+from pathpy import Paths
+from pathpy.utils import Log
+from pathpy.algorithms.shortest_paths import shortest_paths
+
+import numpy as np
+
+def read_origin_destination(filename, separator=&#39;,&#39;):
+    &#34;&#34;&#34;Reads origin/destination statistics from a csv file
+    with the following structure:
+
+    origin1,destination1,weight
+    origin2,destination2,weight
+    origin3,destination3,weight
+
+    Parameters
+    ----------
+    filename: str
+        path to the file containing the origin/destination statistics
+    separator: str
+        arbitrary separation character (default: &#39;,&#39;)
+
+    Returns
+    -------
+    list
+    &#34;&#34;&#34;
+    origin_destination_list = []
+    Log.add(&#39;Reading origin/destination statistics from file ...&#39;)
+
+    with open(filename, &#39;r&#39;) as f:
+        line = f.readline()
+        while line:
+            fields = line.rstrip().split(separator)
+            origin_destination_list.append((fields[0].strip(), fields[1].strip(), float(fields[2].strip())))
+            line = f.readline()
+    Log.add(&#39;Finished.&#39;)
+
+    return origin_destination_list
+
+def paths_from_origin_destination(origin_destination_list, network,
+                                  distribute_weight=True):
+    &#34;&#34;&#34;Extracts shortest path statistics based on origin/destination data.
+    Such data capture the statistics of the origin (i.e. the start node) and destination
+    (i.e. the target) node of itineraries in a given network.
+
+    Common examples include passenger origin and destination statistics in transportation
+    networks. The methods in this class can be used to read  origin/destination data from
+    a file and generate path statistics based on the assumption that all paths from an
+    origin and a destination follow the shortest path in the network.
+
+    Extracts pathway statistics by calculating shortest paths between all origin and
+    destination pairs in a given network.
+
+    Parameters
+    ----------
+    origin_destination_list: list
+        A list of tuples (o, d, w) containing the origin (o), destination (d),
+        and (possibly float) weight w of paths.
+    network:
+        The network topology for which shortest paths will be calculated. Names of nodes
+        in the network must match the node names used in the origin destination list.
+    distribute_weight: bool
+        If set to True, the weight of an origin-destination pair will be equally distributed 
+        (in terms of whole integer observations) across multiple shortest paths between the 
+        origin and destination. If False, the weight will be assigned to a randomly chosen
+        shortest path. Default is True.
+
+    Returns
+    -------
+    paths
+    &#34;&#34;&#34;
+    assert network is not None, \
+        &#39;Error: extraction of origin destination paths requires a network topology&#39;
+
+    all_paths = shortest_paths(network)
+
+    paths = Paths()
+    # OD is a list of tuples of the form (origin_node, destination_node, weight)
+    # that indicates that the shortest path from origin_node to destination_node was
+    # observed weight times
+    Log.add(&#39;Starting origin destination path calculation ...&#39;)
+    for (o, d, w) in origin_destination_list:
+        assert o in network.nodes, &#39;Error: could not find node &#39; + str(o) + &#39; in network&#39;
+        assert d in network.nodes, &#39;Error: could not find node &#39; + str(d) + &#39; in network&#39;
+        sp = list(all_paths[o][d])
+        num_paths = len(sp)
+        if distribute_weight and num_paths &gt; 1:
+            # to avoid introducing false correlations that are not justified by the
+            # available data, the (integer) weight of an origin destination pair can be
+            # distributed among all possible shortest paths between a pair of nodes,
+            # while constraining the weight of shortest paths to integers.
+            for i in range(int(w)):
+                paths.add_path(sp[i % num_paths], frequency=(0, 1))
+        else:
+            # in this case, the full weight of an origin destination path will be
+            # assigned to a random single shortest path in the network
+            paths.add_path(sp[np.random.randint(num_paths)], frequency=(0, w))
+    Log.add(&#39;finished.&#39;)
+    return paths
+
+
+def paths_to_origin_destination(paths):
+    &#34;&#34;&#34;
+    Returns a list that contains path frequencies between all 
+    origin destination pairs in a path object. The result can e.g. be used to 
+    create shortest path models that preserve the origin-destination statistics in real 
+    path data.
+
+    Parameters
+    ----------
+    paths: Paths
+        collection of weighted paths based on which origin destination
+        statistics shall be computed
+    
+    Returns
+    -------
+    list of tuples (o, d, w) where o is origin, d is destination, and w is the weight
+    &#34;&#34;&#34;
+    od_stats = defaultdict(lambda: 0.0)
+
+    Log.add(&#39;Calculating origin/destination statistics from paths ...&#39;)
+    # iterate through all paths and create path statistics
+    for x in paths.paths:
+        for p in paths.paths[x]:
+            o = p[0]
+            d = p[-1]
+            if paths.paths[x][p][1] &gt; 0:
+                od_stats[o, d] += paths.paths[x][p][1]
+    od_list = [ (od[0], od[1], f) for od, f in od_stats.items()]
+    Log.add(&#39;finished.&#39;)
+    return od_list</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.path_extraction.origin_destination_stats.paths_from_origin_destination"><code class="name flex">
+<span>def <span class="ident">paths_from_origin_destination</span></span>(<span>origin_destination_list, network, distribute_weight=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Extracts shortest path statistics based on origin/destination data.
+Such data capture the statistics of the origin (i.e. the start node) and destination
+(i.e. the target) node of itineraries in a given network.</p>
+<p>Common examples include passenger origin and destination statistics in transportation
+networks. The methods in this class can be used to read
+origin/destination data from
+a file and generate path statistics based on the assumption that all paths from an
+origin and a destination follow the shortest path in the network.</p>
+<p>Extracts pathway statistics by calculating shortest paths between all origin and
+destination pairs in a given network.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>origin_destination_list</code></strong> :&ensp;<code>list</code></dt>
+<dd>A list of tuples (o, d, w) containing the origin (o), destination (d),
+and (possibly float) weight w of paths.</dd>
+<dt>network:</dt>
+<dt>The network topology for which shortest paths will be calculated. Names of nodes</dt>
+<dt>in the network must match the node names used in the origin destination list.</dt>
+<dt><strong><code>distribute_weight</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If set to True, the weight of an origin-destination pair will be equally distributed
+(in terms of whole integer observations) across multiple shortest paths between the
+origin and destination. If False, the weight will be assigned to a randomly chosen
+shortest path. Default is True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>paths</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def paths_from_origin_destination(origin_destination_list, network,
+                                  distribute_weight=True):
+    &#34;&#34;&#34;Extracts shortest path statistics based on origin/destination data.
+    Such data capture the statistics of the origin (i.e. the start node) and destination
+    (i.e. the target) node of itineraries in a given network.
+
+    Common examples include passenger origin and destination statistics in transportation
+    networks. The methods in this class can be used to read  origin/destination data from
+    a file and generate path statistics based on the assumption that all paths from an
+    origin and a destination follow the shortest path in the network.
+
+    Extracts pathway statistics by calculating shortest paths between all origin and
+    destination pairs in a given network.
+
+    Parameters
+    ----------
+    origin_destination_list: list
+        A list of tuples (o, d, w) containing the origin (o), destination (d),
+        and (possibly float) weight w of paths.
+    network:
+        The network topology for which shortest paths will be calculated. Names of nodes
+        in the network must match the node names used in the origin destination list.
+    distribute_weight: bool
+        If set to True, the weight of an origin-destination pair will be equally distributed 
+        (in terms of whole integer observations) across multiple shortest paths between the 
+        origin and destination. If False, the weight will be assigned to a randomly chosen
+        shortest path. Default is True.
+
+    Returns
+    -------
+    paths
+    &#34;&#34;&#34;
+    assert network is not None, \
+        &#39;Error: extraction of origin destination paths requires a network topology&#39;
+
+    all_paths = shortest_paths(network)
+
+    paths = Paths()
+    # OD is a list of tuples of the form (origin_node, destination_node, weight)
+    # that indicates that the shortest path from origin_node to destination_node was
+    # observed weight times
+    Log.add(&#39;Starting origin destination path calculation ...&#39;)
+    for (o, d, w) in origin_destination_list:
+        assert o in network.nodes, &#39;Error: could not find node &#39; + str(o) + &#39; in network&#39;
+        assert d in network.nodes, &#39;Error: could not find node &#39; + str(d) + &#39; in network&#39;
+        sp = list(all_paths[o][d])
+        num_paths = len(sp)
+        if distribute_weight and num_paths &gt; 1:
+            # to avoid introducing false correlations that are not justified by the
+            # available data, the (integer) weight of an origin destination pair can be
+            # distributed among all possible shortest paths between a pair of nodes,
+            # while constraining the weight of shortest paths to integers.
+            for i in range(int(w)):
+                paths.add_path(sp[i % num_paths], frequency=(0, 1))
+        else:
+            # in this case, the full weight of an origin destination path will be
+            # assigned to a random single shortest path in the network
+            paths.add_path(sp[np.random.randint(num_paths)], frequency=(0, w))
+    Log.add(&#39;finished.&#39;)
+    return paths</code></pre>
+</details>
+</dd>
+<dt id="pathpy.path_extraction.origin_destination_stats.paths_to_origin_destination"><code class="name flex">
+<span>def <span class="ident">paths_to_origin_destination</span></span>(<span>paths)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a list that contains path frequencies between all
+origin destination pairs in a path object. The result can e.g. be used to
+create shortest path models that preserve the origin-destination statistics in real
+path data.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>paths</code></strong> :&ensp;<code>Paths</code></dt>
+<dd>collection of weighted paths based on which origin destination
+statistics shall be computed</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>list of tuples (o, d, w) where o is origin, d is destination, and w is the weight</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def paths_to_origin_destination(paths):
+    &#34;&#34;&#34;
+    Returns a list that contains path frequencies between all 
+    origin destination pairs in a path object. The result can e.g. be used to 
+    create shortest path models that preserve the origin-destination statistics in real 
+    path data.
+
+    Parameters
+    ----------
+    paths: Paths
+        collection of weighted paths based on which origin destination
+        statistics shall be computed
+    
+    Returns
+    -------
+    list of tuples (o, d, w) where o is origin, d is destination, and w is the weight
+    &#34;&#34;&#34;
+    od_stats = defaultdict(lambda: 0.0)
+
+    Log.add(&#39;Calculating origin/destination statistics from paths ...&#39;)
+    # iterate through all paths and create path statistics
+    for x in paths.paths:
+        for p in paths.paths[x]:
+            o = p[0]
+            d = p[-1]
+            if paths.paths[x][p][1] &gt; 0:
+                od_stats[o, d] += paths.paths[x][p][1]
+    od_list = [ (od[0], od[1], f) for od, f in od_stats.items()]
+    Log.add(&#39;finished.&#39;)
+    return od_list</code></pre>
+</details>
+</dd>
+<dt id="pathpy.path_extraction.origin_destination_stats.read_origin_destination"><code class="name flex">
+<span>def <span class="ident">read_origin_destination</span></span>(<span>filename, separator=&#39;,&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Reads origin/destination statistics from a csv file
+with the following structure:</p>
+<p>origin1,destination1,weight
+origin2,destination2,weight
+origin3,destination3,weight</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>path to the file containing the origin/destination statistics</dd>
+<dt><strong><code>separator</code></strong> :&ensp;<code>str</code></dt>
+<dd>arbitrary separation character (default: ',')</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>list</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def read_origin_destination(filename, separator=&#39;,&#39;):
+    &#34;&#34;&#34;Reads origin/destination statistics from a csv file
+    with the following structure:
+
+    origin1,destination1,weight
+    origin2,destination2,weight
+    origin3,destination3,weight
+
+    Parameters
+    ----------
+    filename: str
+        path to the file containing the origin/destination statistics
+    separator: str
+        arbitrary separation character (default: &#39;,&#39;)
+
+    Returns
+    -------
+    list
+    &#34;&#34;&#34;
+    origin_destination_list = []
+    Log.add(&#39;Reading origin/destination statistics from file ...&#39;)
+
+    with open(filename, &#39;r&#39;) as f:
+        line = f.readline()
+        while line:
+            fields = line.rstrip().split(separator)
+            origin_destination_list.append((fields[0].strip(), fields[1].strip(), float(fields[2].strip())))
+            line = f.readline()
+    Log.add(&#39;Finished.&#39;)
+
+    return origin_destination_list</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.path_extraction" href="index.html">pathpy.path_extraction</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.path_extraction.origin_destination_stats.paths_from_origin_destination" href="#pathpy.path_extraction.origin_destination_stats.paths_from_origin_destination">paths_from_origin_destination</a></code></li>
+<li><code><a title="pathpy.path_extraction.origin_destination_stats.paths_to_origin_destination" href="#pathpy.path_extraction.origin_destination_stats.paths_to_origin_destination">paths_to_origin_destination</a></code></li>
+<li><code><a title="pathpy.path_extraction.origin_destination_stats.read_origin_destination" href="#pathpy.path_extraction.origin_destination_stats.read_origin_destination">read_origin_destination</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

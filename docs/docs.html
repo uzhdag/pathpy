@@ -50,8 +50,26 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
       <h1 class="w3-text-theme">Documentation</h1>
       <p><code>pathpy</code> is fully documented via <a href="https://www.python.org/dev/peps/pep-0257/#what-is-a-docstring">docstrings</a>. This means that python-friendly editors like <a href="https://www.jetbrains.com/pycharm/">pycharm</a>, <a href="https://code.visualstudio.com/">Visual Studio Code</a>, or web-based <a href="https://jupyter.org/">jupyter notebooks</a> will automatically display the documentation of classes, methods, and symbols as you type or hover over a symbol or method.</p>
       <p>In a <code>python</code> interpreter, you can print the in-line documentation of a symbol by calling the help function:</p>
-      <code>> help(pp.TemporalNetwork)</code>
-      <p>To simplify the browsing of the documentation, we are currently working on a continuously updated, auto-generated HTML-based reference manual. Please stay tuned.</p>
+      <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+          <pre>help(pathpy.TemporalNetwork)</pre>
+      </div>
+      <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>Help on class TemporalNetwork in module pathpy.classes.temporal_network:
+
+class TemporalNetwork(builtins.object)
+  |  This class represents a sequence of time-stamped edges.
+  |   Instances of this class can be used to generate path statistics
+  |   based on the time-respecting paths resulting from a given maximum
+  |   time difference between consecutive time-stamped edges.
+  |  
+  |  Methods defined here:
+  |  
+  |  __init__(self, tedges=None)
+  |      Constructor that generates a temporal network instance.
+  |      
+ [...]</pre>
+      </div>
+      <p>To simplify the browsing of the documentation, we provide a continuously updated, auto-generated <a href="manual/index.html" target="blank">HTML-based reference manual</a>.</p>
       <p>If you experience any issues, please consider submitting an issue to our <a href="https://github.com/uzhdag/pathpy/issues">issue tracker</a>.</p>
     </div>
     <div class="w3-container w3-cell w3-cell-middle">
