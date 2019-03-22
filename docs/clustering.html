@@ -1,37 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>pathpy.net</title>
+<title>pathpy | temporal clustering</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
-<style>
-html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
-.w3-sidebar {
-  z-index: 3;
-  width: 250px;
-  top: 43px;
-  bottom: 0;
-  height: inherit;
-}
-</style>
-<body>
-<script type="text/javascript">
-  $(document).ready(function(){
-    $("#nav").load("menu.html");
-    $("a").find(`[href='` + document.location.pathname.match(/[^\/]+$/)[0] + `']`).attr('class', 'w3-theme');
-  });
-</script>
+<link rel="stylesheet" href="css/pathpy.css">
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/menu.js"></script>
+<body>
+
+<!-- Navigation bar -->
 <div id="nav"></div>
 
-<!-- Main content -->
-<div class="w3-main">
-  <div class="w3-row w3-padding-32">
-    <div class="w3-twothird w3-container">
+  <div class="w3-content w3-center w3-padding-32"  style="max-width:800px">
+    <div class="w3-container w3-justify">
       <h1 class="w3-text-theme">Clustering in Temporal Networks</h1>
       <p>This example demonstrates <code>pathpy</code>'s features to detect and visualise temporal-topological cluster patterns in time series data. For this, let us consider the following (synthetic) temporal network, which shows no obvious cluster structure, neither in terms of temporal activations nor in terms of the topology of interactions.</p>
       <div class="w3-panel w3-light-gray w3-leftbar w3-border"><style>
@@ -74,7 +60,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
               }
           </style>
           
-          <svg width="400" height="500" id="EMDEuuOZ">
+          <svg id="EMDEuuOZ" style="width:600px;height:400px;">
               <text x="10" y="20" font-family="sans-serif" font-size="14px" fill="red" id="EMDEuuOZ_time_txt">t = 185</text>
               <text x="120" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer" id="EMDEuuOZ_start_txt">stop</text>
               <text x="170" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer" id="EMDEuuOZ_restart_txt">restart</text>
@@ -405,7 +391,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
               stroke-width: 0.5px;
               }
           </style>
-          <svg height="400" width="500" id="rqKGkpZD"><text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="rqKGkpZD_svg_txt">[save svg]</text></svg>
+          <svg height="400" width="600" id="rqKGkpZD"><text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="rqKGkpZD_svg_txt">[save svg]</text></svg>
           <script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
           <script charset="utf-8">
           require = function require(symbols, callback) {
@@ -427,7 +413,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
                  .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
                   .force("charge", d3.forceManyBody().strength(-300).distanceMax(300))
                  .force("repelForce", d3.forceManyBody().strength(-20).distanceMax(100))
-                 .force("center", d3.forceCenter(500 / 2, 400 / 2))
+                 .force("center", d3.forceCenter(400 / 2, 500 / 2))
                  .alphaTarget(0.0);
           
               svg.append("defs").selectAll("marker")
@@ -598,7 +584,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
               }
           </style>
           
-          <svg width="400" height="500" id="KEUwMJCo">
+          <svg width="600" height="400" id="KEUwMJCo">
               <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="KEUwMJCo_svg_txt">[save svg]</text></svg>
           <script charset="utf-8">
           
@@ -833,7 +819,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
                   }
               </style>
               
-              <svg width="400" height="500" id="AkszZmns">        
+              <svg width="600" height="400" id="AkszZmns">
                   <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="AkszZmns_svg_txt">[save svg]</text></svg>
               <script charset="utf-8">
               require = function require(symbols, callback) {
@@ -998,9 +984,6 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
               </script></div>
               <p>If you want to learn more about the science behind these illustrative examples, please refer to the list of publications on the <a href="index.html">main page</a>.</p>
           </div>
-      </div>
-    </div>
-  </div>
 
   <footer id="myFooter">
       <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">

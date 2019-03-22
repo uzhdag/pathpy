@@ -1,38 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>pathpy.net</title>
+<title>pathpy | contact</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/pathpy.css">
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
-<style>
-html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
-.w3-sidebar {
-  z-index: 3;
-  width: 250px;
-  top: 43px;
-  bottom: 0;
-  height: inherit;
-}
-</style>
+<script type="text/javascript" src="js/menu.js"></script>
 <body>
 
-    <script type="text/javascript">
-      $(document).ready(function(){
-        $("#nav").load("menu.html");
-        $("a").find(`[href='` + document.location.pathname.match(/[^\/]+$/)[0] + `']`).attr('class', 'w3-theme');
-      });
-    </script>
-    
-    <div id="nav"></div>
+<!-- Navigation bar -->
+<div id="nav"></div>
 
-<!-- Main content -->
-<div class="w3-main" style="max-width:1200px">
-  <div class="w3-row w3-padding-32">
-    <div class="w3-twothird w3-container">
+  <div class="w3-content w3-center w3-padding-32" style="max-width:800px">
+    <div class="w3-justify">
       <h1 class="w3-text-theme">Contact</h1>
       <p><code>pathpy</code> is brought to you by the <a href="https://www.ifi.uzh.ch/dag">Data Analytics Group</a> at the <a href="https://www.ifi.uzh.ch">Department of Informatics (IfI)</a> of University of Zurich. For any inquiries, please contact:</p>
       <p><a href="https://www.ifi.uzh.ch/en/dag/people/scholtes.html">Prof. Dr. Ingo Scholtes</a><br/>
@@ -42,11 +27,7 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
           Binzmühlestrasse 14 <br/>
           CH-8050 Zürich<br />
           Switzerland</p>
-
-    </div>
-    <div class="w3-third w3-container">
-        <iframe src="https://www.youtube-nocookie.com/embed/QIPqFaR2Z5c" frameborder="1" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
+    <img src="pathpy_logo.png" style="width:300px;">
   </div>
  
 

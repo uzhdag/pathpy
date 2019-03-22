@@ -1,39 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>pathpy.net</title>
+<title>pathpy | first steps</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
-<style>
-html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
-.w3-sidebar {
-  z-index: 3;
-  width: 250px;
-  top: 43px;
-  bottom: 0;
-  height: inherit;
-}
-</style>
+<link rel="stylesheet" href="css/pathpy.css">
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/menu.js"></script>
 <body>
 
-<script type="text/javascript">
-$(document).ready(function(){
-    $("#nav").load("menu.html");
-    $("a").find(`[href='` + document.location.pathname.match(/[^\/]+$/)[0] + `']`).attr('class', 'w3-theme');
-});
-</script>
-
+<!-- Navigation bar -->
 <div id="nav"></div>
 
-<!-- Main content -->
-<div class="w3-main" style="max-width:1200px">
-  <div class="w3-cell-row w3-padding-32">
-    <div class="w3-cell w3-container">
+  <div class="w3-content w3-center w3-padding-32" style="max-width:800px">
+    <div class="w3-justify">
       <h1 class="w3-text-theme">How can I install pathpy?</h1>
       <p><code>pathpy</code> is pure python code. It has no platform-specific dependencies and should thus run without problems on any operating system. <code>pathpy</code> requires python 3.x. It builds on the data science packages <code>numpy</code> and <code>scipy</code>. The latest release version 2.0 of </code>pathpy</code> can be installed by typing:</p>
       <div class="w3-panel w3-black w3-leftbar w3-border">
@@ -44,14 +28,7 @@ $(document).ready(function(){
         <div class="w3-panel w3-black w3-leftbar w3-border">
         <pre>> pip install git+git://github.com/uzhdag/pathpy.git</pre>
         </div>
-    </div>
-    <div class="w3-container w3-cell w3-cell-middle">
-        <img src="pathpy_logo.png" style="max-width:300px" />
-    </div>
-  </div>
 
-  <div class="w3-row">
-      <div class="w3-twothird w3-container">
         <h1 class="w3-text-theme">How can I get started?</h1>
         <p>Once you have successfully installed <code>pathpy</code>, you can test our installation with a basic (temporal) network analysis and visualisation example. For this, you should first start a <code>jupyter</code> notebook server. Assuming that you have installed <code>jupyter</code>, in the terminal simply type:</p>
         <div class="w3-panel w3-black w3-leftbar w3-border">

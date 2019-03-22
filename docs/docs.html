@@ -1,38 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>pathpy.net</title>
+<title>pathpy | documentation</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/pathpy.css">
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
-<style>
-html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
-.w3-sidebar {
-  z-index: 3;
-  width: 250px;
-  top: 43px;
-  bottom: 0;
-  height: inherit;
-}
-</style>
+<script type="text/javascript" src="js/menu.js"></script>
 <body>
 
-<script type="text/javascript">
-  $(document).ready(function(){
-    $("#nav").load("menu.html");
-    $("a").find(`[href='` + document.location.pathname.match(/[^\/]+$/)[0] + `']`).attr('class', 'w3-theme');
-  });
-</script>
-
+<!-- Navigation bar -->
 <div id="nav"></div>
 
-<!-- Main content -->
-<div class="w3-main"  style="max-width:1200px">
-  <div class="w3-cell-row w3-padding-32">
-    <div class="w3-container w3-cell ">
+<!-- CONTENT -->
+<div class="w3-content w3-center w3-padding-32">
+
+  <div class="w3-cell-row">
+    <div class="w3-cell w3-justify w3-mobile">
       <h1 class="w3-text-theme">Documentation</h1>
       <p><code>pathpy</code> is fully documented via <a href="https://www.python.org/dev/peps/pep-0257/#what-is-a-docstring">docstrings</a>. This means that python-friendly editors like <a href="https://www.jetbrains.com/pycharm/">pycharm</a>, <a href="https://code.visualstudio.com/">Visual Studio Code</a>, or web-based <a href="https://jupyter.org/">jupyter notebooks</a> will automatically display the documentation of classes, methods, and symbols as you type or hover over a symbol or method.</p>
       <p>In a <code>python</code> interpreter, you can print the in-line documentation of a symbol by calling the help function:</p>
@@ -62,8 +50,6 @@ class TemporalNetwork(builtins.object)
        <img src="pathpy_logo.png"  style="max-width:300px" >
     </div>
   </div>
-
-  
 
   <footer id="myFooter">
       <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">
