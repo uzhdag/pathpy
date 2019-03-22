@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
 <style>
 html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 .w3-sidebar {
@@ -17,11 +18,12 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
   height: inherit;
 }
 </style>
+
 <body>
 
 <!-- Navbar -->
 <div class="w3-top">
-  <div class="w3-bar w3-theme w3-top w3-left-align w3-large">    
+  <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
     <a href="index.html" class="w3-bar-item w3-button w3-theme-l3">pathpy</a>
     <a href="tutorial.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Get started</a>    
     <a href="examples.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Gallery</a>
@@ -32,54 +34,413 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 </div>
 
 <!-- Main content -->
-<div class="w3-main">
-  <div class="w3-row w3-padding-64">
-    <div class="w3-twothird w3-container">
+<div class="w3-main" style="max-width:1200px">
+  <div class="w3-cell-row w3-padding-64">
+    <div class="w3-cell w3-container">
       <h1 class="w3-text-blue">How can I install pathpy?</h1>
-      <p><code>pathpy</code> is pure python code. It has no platform-specific dependencies and should thus work on all platforms. <code>pathpy</code> requires python 3.x. It builds on the data science packages <code>numpy</code> and <code>scipy</code>. The latest release version 2.0 of </code>pathpy</code> can be installed by typing:</p>
-      <code>> pip install pathpy2</code>
-      <p>Please make sure to use the pyPI name <code>pathpy2</code> as the pyPI package name <code>pathpy</code> has been <a href="https://github.com/pypa/warehouse/issues/4413">namesquatted</a>. We are currently working on the transfer of the pyPI name <code>pathpy</code>.</p>
+      <p><code>pathpy</code> is pure python code. It has no platform-specific dependencies and should thus run without problems on any operating system. <code>pathpy</code> requires python 3.x. It builds on the data science packages <code>numpy</code> and <code>scipy</code>. The latest release version 2.0 of </code>pathpy</code> can be installed by typing:</p>
+      <div class="w3-panel w3-black w3-leftbar w3-border">
+          <pre>> pip install pathpy2</pre>
+      </div>
+      <p>Make sure to use the pyPI name <code>pathpy2</code>, since the pyPI package name <code>pathpy</code> has been <a href="https://github.com/pypa/warehouse/issues/4413">namesquatted</a>. We are currently trying to transfer the pyPI name <code>pathpy</code>.</p>
       <p>If you want to install the latest <a href="https://github.com/uzhdag/pathpy">development version</a>, you can directly download and install it from our github repository as follows:</p>
       <code>> pip install git+git://github.com/uzhdag/pathpy.git</code>
     </div>
-    <div class="w3-third w3-container">
-        <img src="../pathpy_logo.png" style="width:auto" />
+    <div class="w3-container w3-cell w3-cell-middle">
+        <img src="../pathpy_logo.png" style="max-width:300px" />
     </div>
   </div>
-  
 
   <div class="w3-row">
       <div class="w3-twothird w3-container">
         <h1 class="w3-text-blue">How can I get started?</h1>
-        <p>Once you have successfully installed <code>pathpy</code>, you can test our installation with a very basic (temporal) network analysis and visualisation task. For this, you should first start a <code>jupyter</code> notebook server. Assuming that you have installed <code>jupyter</code>, in the terminal simply type:</p>
+        <p>Once you have successfully installed <code>pathpy</code>, you can test our installation with a basic (temporal) network analysis and visualisation example. For this, you should first start a <code>jupyter</code> notebook server. Assuming that you have installed <code>jupyter</code>, in the terminal simply type:</p>
+        <div class="w3-panel w3-black w3-leftbar w3-border">
         <pre>> jupyter notebook</pre>
-        <p>This will bring up your browser. Create an empty python 3 notebook by clicking the <code>New</code> button. In this notebook, we first need to import <code>pathpy</code>. Enter the following code and run the cell by pressing <code>Shift+Enter</code>:</p>
+        </div>
+        <p>This will bring up your browser. Click the <code>New</code> button to create an empty python 3 notebook. In this notebook, we first need to import <code>pathpy</code>. Enter the following code and then run the cell by pressing <code>Shift+Enter</code>:</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>import pathpy as pp</pre>
-        <p>We can create a simple (directed) network by entering the following code and running the cell:</p>
-        <pre>
-n = pp.Network(directed=True)
+        </div>
+        <p>We can create a simple (directed) network by adding the following code and running the cell:</p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>n = pp.Network(directed=True)
 n.add_edge('a', 'c')
 n.add_edge('b', 'c')
 n.add_edge('c', 'd')
 n.add_edge('c', 'e')
-print(n)</pre>
-        <p>To visualise this network, we can just enter the name of the variable in a <code>jupyter</code> cell and run it:</p>
+print(n)</pre></div>
+        <p>To visualise this network, we can simply type the name of the variable in a new <code>jupyter</code> cell and run it:</p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
         <pre>n</pre>
-        <img width="50%" src="example_network.png">
+        </div>
+        <div><style>
+            text.label_dGxqPJTR {
+                text-anchor: middle;
+                font-size: 8px;
+                font-family: Arial, Helvetica, sans-serif;
+                fill: #999999;
+                stroke: #ffffff;
+                stroke-width: 0.1px;
+                opacity: 1.0;
+            }
+            .links_dGxqPJTR line {
+            stroke-opacity: 1.0;
+            }
+            .arrows svg:path {
+                stroke: #666;
+            }
+            .nodes_dGxqPJTR circle {
+            stroke: #fff;
+            stroke-width: 0.5px;
+            }
+        </style>
+        
+        <svg width="300" height="300" id="dGxqPJTR">
+            <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="dGxqPJTR_svg_txt">[save svg]</text>
+        <defs><marker id="end" viewBox="0 -5 20 20" refX="34" refY="0" markerWidth="15" markerHeight="15" orient="auto"><path d="M0,-5 L20,0 L0,5 z" fill="#999" stroke="none"></path></marker></defs><g class="everything"><g class="links_dGxqPJTR"><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="244.44626525963363" y1="195.00925952469626" x2="199.45662931636704" y2="200.1330310629193"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="195.73123569621023" y1="155.07002603602115" x2="199.45662931636704" y2="200.1330310629193"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="199.45662931636704" y1="200.1330310629193" x2="205.75037324040878" y2="244.8640923606393"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="199.45662931636704" y1="200.1330310629193" x2="154.61453969091005" y2="204.9238362999675"></line></g><g class="nodes_dGxqPJTR"><g><circle id="a" r="5" fill="#99ccff" cx="244.44626525963363" cy="195.00925952469626"><title>a</title></circle><text x="0" y="-7" id="a" class="label_dGxqPJTR" transform="translate(244.44626525963363,195.00925952469626)" cx="244.44626525963363" cy="195.00925952469626">a</text></g><g><circle id="c" r="5" fill="#99ccff" cx="199.45662931636704" cy="200.1330310629193"><title>c</title></circle><text x="0" y="-7" id="c" class="label_dGxqPJTR" transform="translate(199.45662931636704,200.1330310629193)" cx="199.45662931636704" cy="200.1330310629193">c</text></g><g><circle id="b" r="5" fill="#99ccff" cx="195.73123569621023" cy="155.07002603602115"><title>b</title></circle><text x="0" y="-7" id="b" class="label_dGxqPJTR" transform="translate(195.73123569621023,155.07002603602115)" cx="195.73123569621023" cy="155.07002603602115">b</text></g><g><circle id="d" r="5" fill="#99ccff" cx="205.75037324040878" cy="244.8640923606393"><title>d</title></circle><text x="0" y="-7" id="d" class="label_dGxqPJTR" transform="translate(205.75037324040878,244.8640923606393)" cx="205.75037324040878" cy="244.8640923606393">d</text></g><g><circle id="e" r="5" fill="#99ccff" cx="154.61453969091005" cy="204.9238362999675"><title>e</title></circle><text x="0" y="-7" id="e" class="label_dGxqPJTR" transform="translate(154.61453969091005,204.9238362999675)" cx="154.61453969091005" cy="204.9238362999675">e</text></g></g></g></svg>
+        <script charset="utf-8">
+            var svg = d3.select("#"+"dGxqPJTR"), radius = 6, width = +svg.attr("width"), height = +svg.attr("height");
+        
+            var color = d3.scaleOrdinal(d3.schemeCategory20);
+        
+            var graph = {"links": [{"source": "a", "target": "c", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "b", "target": "c", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "c", "target": "d", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "c", "target": "e", "color": "#999999", "width": 0.5, "weight": 1.0}], "nodes": [{"id": "a", "text": "a", "color": "#99ccff", "size": 5.0}, {"id": "c", "text": "c", "color": "#99ccff", "size": 5.0}, {"id": "b", "text": "b", "color": "#99ccff", "size": 5.0}, {"id": "d", "text": "d", "color": "#99ccff", "size": 5.0}, {"id": "e", "text": "e", "color": "#99ccff", "size": 5.0}]};
+            var directed = true;
+        
+            var simulation = d3.forceSimulation()        
+               .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
+                .force("charge", d3.forceManyBody().strength(-20).distanceMax(400))
+               .force("repelForce", d3.forceManyBody().strength(-200).distanceMax(100))
+               .force("center", d3.forceCenter(400 / 2, 400 / 2))
+               .alphaTarget(0.0);
+        
+            svg.append("defs").selectAll("marker")
+                .data(["end"])
+            .enter().append("marker")
+                .attr("id", String)
+                .attr("viewBox", "0 -5 20 20")
+                .attr("refX", 34)
+                .attr("refY", 0)
+                .attr("markerWidth", 15)
+                .attr("markerHeight", 15)
+                .attr("orient", "auto")
+            .append("path")
+                // draws a filled path (triangle) between three points
+                .attr("d", "M0,-5 L20,0 L0,5 z")
+                .attr("fill", '#999')
+                .attr("stroke", 'none');
+        
+            var g = svg.append("g")
+                .attr("class", "everything");
+        
+            var link = g.append("g")
+                .attr("class", "links_dGxqPJTR")
+                .selectAll("line")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("stroke-width", function(d) { return d.width; })
+                .attr("stroke", function(d) { return d.color; } );
+        
+            if (directed)
+                link.attr("marker-end", "url(#end)");
+        
+            var node_g = g.append("g")
+                .attr("class", "nodes_dGxqPJTR")
+                .selectAll("circle")
+                .data(graph.nodes)
+                .enter()
+                .append("g"); 
+        
+            var node = node_g.append("circle")
+                .attr('id', function(d) { return d.id; })
+                .attr("r", function(d) { return d.size; })
+                .attr("fill", function(d) { return d.color; })
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+        
+            var text = node_g.append("text")
+            .attr("x", [0, -10][0])
+            .attr("y", [0, -10][1]+3)
+            .attr("id", function(d) {return d.id; })
+            .attr("class", "label_dGxqPJTR")
+            .text(function(d) { return d.id; });
+        
+            node.append("title")
+                .text(function(d) { return d.text; });
+        
+            var zoom_handler = d3.zoom()
+                .on("zoom", zoom_actions);
+            zoom_handler(svg);
+        
+            // attach event handler for svg export
+            d3.select('#dGxqPJTR_svg_txt').on("click", save_svg);
+        
+            simulation
+                .nodes(graph.nodes)
+                .on("tick", ticked);
+        
+            simulation.force("link")
+                .links(graph.links);
+        
+            function ticked() {
+                link.attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+        
+                 text.attr("transform", transform);
+        
+        
+                text.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+        
+                node.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+            }
+        
+            function transform(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            }
+        
+            function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+            }
+        
+            function zoom_actions(){
+                g.attr("transform", d3.event.transform)
+            }    
+        
+            function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+            }
+        
+            function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+            }
+        
+            function to_svg() {
+                // Returns a SVG representation of the current state of the visualisation
+              var svg  = document.getElementById('dGxqPJTR');
+              var xml = (new XMLSerializer).serializeToString(svg);
+                return xml;
+            }
+        
+            function save_svg() {
+                var svg  = document.getElementById('dGxqPJTR');
+                var xml = (new XMLSerializer).serializeToString(svg);        
+                var blob = new Blob([xml], {type: 'text/xml'});
+                if(window.navigator.msSaveOrOpenBlob) {
+                    window.navigator.msSaveBlob(blob, 'network.svg');
+                }
+                else{
+                    var elem = window.document.createElement('a');
+                    elem.href = window.URL.createObjectURL(blob);
+                    elem.download = 'network.svg';
+                    document.body.appendChild(elem);
+                    elem.click();
+                    document.body.removeChild(elem);
+                }
+            }
+        </script></div>
         <p>Note that this visualisation is interactive, i.e. you can drag nodes, zoom, and pan. To calculate node centralities, we can use the functions in the module <code>pathpy.algorithms.centralities</code>. To calculate the betweenness centralities of all nodes, we can write:</p>
-        <pre>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border"><pre>
 c = pp.algorithms.centralities.betweenness(n)
-print(c)
-        </pre>
+print(c)</pre></div>
+<div>
+<pre>2019-03-22 00:05:41 [Severity.INFO]	Calculating betweenness centralities ...
+{'c': 4.0, 'a': 0, 'b': 0, 'd': 0, 'e': 0}
+    </pre></div>
         <p>Executing this cell will print a dictionary that contains the betweenness centralities of all nodes. We can easily use this centralities to influence the visualisation of the network by means of <code>pathpy</code>'s styling mechanism. For instance, to scale the sizes of nodes according to their betweenness centrality we can write: </p>
-        <pre>
-style = {}
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>style = {}
 style['node_size'] = {v:3+u for v,u in c.items()}
-pp.visualisation.plot(n, **style)
-        </pre>
-        <img width="50%" src="example_network_scaled.png">
+pp.visualisation.plot(n, **style)</pre>
+        </div>
+        <div><style>
+            text.label_ilLDDdeH {
+                text-anchor: middle;
+                font-size: 8px;
+                font-family: Arial, Helvetica, sans-serif;
+                fill: #999999;
+                stroke: #ffffff;
+                stroke-width: 0.1px;
+                opacity: 1.0;
+            }
+            .links_ilLDDdeH line {
+            stroke-opacity: 1.0;
+            }
+            .arrows svg:path {
+                stroke: #666;
+            }
+            .nodes_ilLDDdeH circle {
+            stroke: #fff;
+            stroke-width: 0.5px;
+            }
+        </style>
+        
+        <svg height="300" id="ilLDDdeH">        
+            <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="ilLDDdeH_svg_txt">[save svg]</text>
+        <defs><marker id="end" viewBox="0 -5 20 20" refX="34" refY="0" markerWidth="15" markerHeight="15" orient="auto"><path d="M0,-5 L20,0 L0,5 z" fill="#999" stroke="none"></path></marker></defs><g class="everything" transform="translate(-219.97559962456347,-199.41729190200766) scale(1.7613317254586087)"><g class="links_ilLDDdeH"><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="244.44626525963363" y1="195.00925952469626" x2="199.45662931636704" y2="200.1330310629193"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="195.73123569621023" y1="155.07002603602115" x2="199.45662931636704" y2="200.1330310629193"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="199.45662931636704" y1="200.1330310629193" x2="205.75037324040878" y2="244.8640923606393"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="199.45662931636704" y1="200.1330310629193" x2="154.61453969091005" y2="204.9238362999675"></line></g><g class="nodes_ilLDDdeH"><g><circle id="a" r="3" fill="#99ccff" cx="244.44626525963363" cy="195.00925952469626"><title>a</title></circle><text x="0" y="-7" id="a" class="label_ilLDDdeH" transform="translate(244.44626525963363,195.00925952469626)" cx="244.44626525963363" cy="195.00925952469626">a</text></g><g><circle id="c" r="7" fill="#99ccff" cx="199.45662931636704" cy="200.1330310629193"><title>c</title></circle><text x="0" y="-7" id="c" class="label_ilLDDdeH" transform="translate(199.45662931636704,200.1330310629193)" cx="199.45662931636704" cy="200.1330310629193">c</text></g><g><circle id="b" r="3" fill="#99ccff" cx="195.73123569621023" cy="155.07002603602115"><title>b</title></circle><text x="0" y="-7" id="b" class="label_ilLDDdeH" transform="translate(195.73123569621023,155.07002603602115)" cx="195.73123569621023" cy="155.07002603602115">b</text></g><g><circle id="d" r="3" fill="#99ccff" cx="205.75037324040878" cy="244.8640923606393"><title>d</title></circle><text x="0" y="-7" id="d" class="label_ilLDDdeH" transform="translate(205.75037324040878,244.8640923606393)" cx="205.75037324040878" cy="244.8640923606393">d</text></g><g><circle id="e" r="3" fill="#99ccff" cx="154.61453969091005" cy="204.9238362999675"><title>e</title></circle><text x="0" y="-7" id="e" class="label_ilLDDdeH" transform="translate(154.61453969091005,204.9238362999675)" cx="154.61453969091005" cy="204.9238362999675">e</text></g></g></g></svg>        
+        <script charset="utf-8">
+            var svg = d3.select("#"+"ilLDDdeH"), radius = 6, width = +svg.attr("width"), height = +svg.attr("height");
+        
+            var color = d3.scaleOrdinal(d3.schemeCategory20);
+        
+            var graph = {"links": [{"source": "a", "target": "c", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "b", "target": "c", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "c", "target": "d", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "c", "target": "e", "color": "#999999", "width": 0.5, "weight": 1.0}], "nodes": [{"id": "a", "text": "a", "color": "#99ccff", "size": 3}, {"id": "c", "text": "c", "color": "#99ccff", "size": 7.0}, {"id": "b", "text": "b", "color": "#99ccff", "size": 3}, {"id": "d", "text": "d", "color": "#99ccff", "size": 3}, {"id": "e", "text": "e", "color": "#99ccff", "size": 3}]};
+            var directed = true;
+        
+            var simulation = d3.forceSimulation()        
+               .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
+                .force("charge", d3.forceManyBody().strength(-20).distanceMax(400))
+               .force("repelForce", d3.forceManyBody().strength(-200).distanceMax(100))
+               .force("center", d3.forceCenter(400 / 2, 400 / 2))
+               .alphaTarget(0.0);
+        
+            svg.append("defs").selectAll("marker")
+                .data(["end"])
+            .enter().append("marker")
+                .attr("id", String)
+                .attr("viewBox", "0 -5 20 20")
+                .attr("refX", 34)
+                .attr("refY", 0)
+                .attr("markerWidth", 15)
+                .attr("markerHeight", 15)
+                .attr("orient", "auto")
+            .append("path")
+                // draws a filled path (triangle) between three points
+                .attr("d", "M0,-5 L20,0 L0,5 z")
+                .attr("fill", '#999')
+                .attr("stroke", 'none');
+        
+            var g = svg.append("g")
+                .attr("class", "everything");
+        
+            var link = g.append("g")
+                .attr("class", "links_ilLDDdeH")
+                .selectAll("line")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("stroke-width", function(d) { return d.width; })
+                .attr("stroke", function(d) { return d.color; } );
+        
+            if (directed)
+                link.attr("marker-end", "url(#end)");
+        
+            var node_g = g.append("g")
+                .attr("class", "nodes_ilLDDdeH")
+                .selectAll("circle")
+                .data(graph.nodes)
+                .enter()
+                .append("g"); 
+        
+            var node = node_g.append("circle")
+                .attr('id', function(d) { return d.id; })
+                .attr("r", function(d) { return d.size; })
+                .attr("fill", function(d) { return d.color; })
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+        
+            var text = node_g.append("text")
+            .attr("x", [0, -10][0])
+            .attr("y", [0, -10][1]+3)
+            .attr("id", function(d) {return d.id; })
+            .attr("class", "label_ilLDDdeH")
+            .text(function(d) { return d.id; });
+        
+            node.append("title")
+                .text(function(d) { return d.text; });
+        
+            var zoom_handler = d3.zoom()
+                .on("zoom", zoom_actions);
+            zoom_handler(svg);
+        
+            // attach event handler for svg export
+            d3.select('#ilLDDdeH_svg_txt').on("click", save_svg);
+        
+            simulation
+                .nodes(graph.nodes)
+                .on("tick", ticked);
+        
+            simulation.force("link")
+                .links(graph.links);
+        
+            function ticked() {
+                link.attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+        
+                 text.attr("transform", transform);
+        
+        
+                text.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+        
+                node.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+            }
+        
+            function transform(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            }
+        
+            function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+            }
+        
+            function zoom_actions(){
+                g.attr("transform", d3.event.transform)
+            }    
+        
+            function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+            }
+        
+            function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+            }
+        
+            function to_svg() {
+                // Returns a SVG representation of the current state of the visualisation
+              var svg  = document.getElementById('ilLDDdeH');
+              var xml = (new XMLSerializer).serializeToString(svg);
+                return xml;
+            }
+        
+            function save_svg() {
+                var svg  = document.getElementById('ilLDDdeH');
+                var xml = (new XMLSerializer).serializeToString(svg);        
+                var blob = new Blob([xml], {type: 'text/xml'});
+                if(window.navigator.msSaveOrOpenBlob) {
+                    window.navigator.msSaveBlob(blob, 'network.svg');
+                }
+                else{
+                    var elem = window.document.createElement('a');
+                    elem.href = window.URL.createObjectURL(blob);
+                    elem.download = 'network.svg';
+                    document.body.appendChild(elem);
+                    elem.click();
+                    document.body.removeChild(elem);
+                }
+            }
+        </script></div>
         <p>If you are interested in <code>pathpy</code>'s advanced visualisation features, please check the units of this <a href="https://ingoscholtes.github.io/csh2018-tutorial/">three hour hands-on tutorial</a>.</p>
         <p>The key feature of <code>pathpy</code> is its ability to analyse and visualise temporal networks. We can easily create a small example temporal network as follows:</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>
 t = pp.TemporalNetwork()
 t.add_edge('a', 'b', 1)
@@ -88,13 +449,361 @@ t.add_edge('b', 'c', 3)
 t.add_edge('d', 'c', 4)
 t.add_edge('c', 'd', 5)
 t.add_edge('c', 'b', 6)
-print(t)
-        </pre>
+print(t)</pre>
+      </div>
+      <div><pre>Nodes:			4
+Time-stamped links:	6
+Links/Nodes:		1.5
+Observation period:	[1, 6]
+Observation length:	 5 
+Time stamps:		 5 
+Avg. inter-event dt:	 1.25
+Min/Max inter-event dt:	 1/2
+          </pre></div>
         <p>To generate a dynamic and interactive HTML visualisation of such a temporal network we again simply enter the name of the variable in a <code>jupyter</code> cell and run it: </p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>t</pre>
+        </div>
+        <div><style>
+            text.active_lopAhfQB {
+                text-anchor: middle;
+                font-size: 8px;
+                font-family: Arial, Helvetica, sans-serif;
+                fill: #cccccc;
+                opacity: 1.0;
+            }
+            text.hidden_lopAhfQB {
+                opacity: 0;
+            }
+            line.tlinks_lopAhfQB {
+                stroke: #cccccc;
+                stroke-opacity: 0.4;
+                stroke-width: 0.5;
+            }
+            line.active_lopAhfQB {
+                stroke: #ff0000;
+                stroke-opacity: 1.0;
+                stroke-width: 4.0;
+            }
+            line.hidden_lopAhfQB {
+                stroke: rgb(255, 255, 255);
+                stroke-opacity: 0;
+                stroke-width: 0px;
+            }
+            circle.active_lopAhfQB {
+                stroke: #222;
+                fill: #ff0000;
+                fill-opacity: 1;
+                stroke-width: 2px;
+            }
+            circle.tnodes_lopAhfQB {
+                fill: #cccccc;
+                stroke: #222;
+                fill-opacity: 1;
+                stroke-width: 1.5px;
+            }
+        </style>
+        
+        <svg height="300" id="lopAhfQB">
+            <text x="10" y="20" font-family="sans-serif" font-size="14px" fill="red" id="lopAhfQB_time_txt">t = 7</text>
+            <text x="120" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer" id="lopAhfQB_start_txt">stop</text>
+            <text x="170" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer" id="lopAhfQB_restart_txt">restart</text>
+        <g class="everything"><g class="tlinks_lopAhfQB"><line id="a-b" class="tlinks_lopAhfQB" x1="141.43127952591362" y1="242.08627584878877" x2="177.81068657731964" y2="209.39065971944706"></line><line id="b-a" class="tlinks_lopAhfQB" x1="177.81068657731964" y1="209.39065971944706" x2="141.43127952591362" y2="242.08627584878877"></line><line id="b-c" class="tlinks_lopAhfQB" x1="177.81068657731964" y1="209.39065971944706" x2="218.495348580604" y2="184.13247403873444"></line><line id="d-c" class="tlinks_lopAhfQB" x1="262.27161519643846" y1="164.23425317564042" x2="218.495348580604" y2="184.13247403873444"></line><line id="c-d" class="tlinks_lopAhfQB" x1="218.495348580604" y1="184.13247403873444" x2="262.27161519643846" y2="164.23425317564042"></line><line id="c-b" class="tlinks_lopAhfQB" x1="218.495348580604" y1="184.13247403873444" x2="177.81068657731964" y2="209.39065971944706"></line></g><g class="tnodes_lopAhfQB"><g><circle id="a" r="5" class="tnodes_lopAhfQB" cx="141.43127952591362" cy="242.08627584878877"><title>a</title></circle><text x="0" y="-10" id="a" class="active_lopAhfQB" transform="translate(141.43127952591362,242.08627584878877)" cx="141.43127952591362" cy="242.08627584878877">a</text></g><g><circle id="b" r="5" class="tnodes_lopAhfQB" cx="177.81068657731964" cy="209.39065971944706"><title>b</title></circle><text x="0" y="-10" id="b" class="active_lopAhfQB" transform="translate(177.81068657731964,209.39065971944706)" cx="177.81068657731964" cy="209.39065971944706">b</text></g><g><circle id="c" r="5" class="tnodes_lopAhfQB" cx="218.495348580604" cy="184.13247403873444"><title>c</title></circle><text x="0" y="-10" id="c" class="active_lopAhfQB" transform="translate(218.495348580604,184.13247403873444)" cx="218.495348580604" cy="184.13247403873444">c</text></g><g><circle id="d" r="5" class="tnodes_lopAhfQB" cx="262.27161519643846" cy="164.23425317564042"><title>d</title></circle><text x="0" y="-10" id="d" class="active_lopAhfQB" transform="translate(262.27161519643846,164.23425317564042)" cx="262.27161519643846" cy="164.23425317564042">d</text></g></g></g></svg>
+        
+        <script charset="utf-8">
+            d3.selection.prototype.moveToFront = function() {
+                return this.each(function(){
+                    this.parentNode.appendChild(this);
+                });
+            };
+        
+            d3.selection.prototype.moveToBack = function() {  
+                return this.each(function() { 
+                    var firstChild = this.parentNode.firstChild; 
+                    if (firstChild) { 
+                        this.parentNode.insertBefore(this, firstChild); 
+                    } 
+                });
+            };
+        
+            var svg = d3.select("#lopAhfQB"),
+                width = +svg.attr("width"),
+                height = +svg.attr("height"),
+                radius = 5.0,
+                color = d3.scaleOrdinal(d3.schemeCategory20b);
+        
+            var temporal_net = {"nodes": [{"id": "a", "group": 1}, {"id": "b", "group": 1}, {"id": "c", "group": 1}, {"id": "d", "group": 1}], "links": [{"source": "a", "target": "b", "width": 1, "time": 1}, {"source": "b", "target": "a", "width": 1, "time": 3}, {"source": "b", "target": "c", "width": 1, "time": 3}, {"source": "d", "target": "c", "width": 1, "time": 4}, {"source": "c", "target": "d", "width": 1, "time": 5}, {"source": "c", "target": "b", "width": 1, "time": 6}]};
+            var tsperframe = 1;
+            var msperframe = 50;
+            var look_ahead = 10;
+            var look_behind = 10;
+        
+            var hidden_link_strength = 0;
+            var active_link_strength = 0.2;
+        
+            // create a dictionary with edges indexed by timestamps
+            var edgesbytime = {};
+            var time_stamps = temporal_net.links.map(link => link['time']);
+            time_stamps.forEach(function(t){
+                        edgesbytime[t] = [];
+                    });
+        
+            // extract static links
+            var links = [];
+            var links_by_id = {};
+            temporal_net.links.forEach(function(link){
+                id = String(link.source + '-' + link.target);
+                edgesbytime[link.time].push(id);
+                l = {
+                    'source': link.source,
+                    'target': link.target,
+                    'id': id,
+                    'strength': 0
+                };
+                if (!contains(links, l)){
+                    links.push(l);
+                    links_by_id[l.id] = l;
+                }
+            });
+        
+            var mintime = d3.min(time_stamps);
+            var maxtime = d3.max(time_stamps);
+            var run_status = true;
+            
+            var simulation = d3.forceSimulation()
+                .force("link", d3.forceLink().id(function(d) { return d.id; }))
+                .force("charge", d3.forceManyBody().strength(-30).distanceMax(200))
+                .force("repelForce", d3.forceManyBody().strength(-100).distanceMax(200))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .alphaTarget(0.1)
+                .on("tick", ticked);
+        
+            var g = svg.append("g")
+                .attr("class", "everything");
+        
+            var link = g.append("g")
+                .attr("class", "tlinks_lopAhfQB")
+                .selectAll("line")
+                .data(links, function(d){return d.id;})
+                .enter().append("line")
+                .attr("id", function(d) { return d.id; });
+        
+            var node_g = g.append("g").attr("class", "tnodes_lopAhfQB")
+                .selectAll("circle")
+                .data(temporal_net.nodes, function(d){return d.id;})
+                .enter()
+                .append("g");
+        
+            var node = node_g.append("circle")
+                    .attr('id', function(d) { return d.id; })
+                    .attr("r", radius)
+                    // .attr("fill", function(d) { return color(d.group); })
+                    .attr("class", "tnodes_lopAhfQB")
+                    .call(d3.drag()
+                        .on("start", dragstarted)
+                        .on("drag", dragged)
+                        .on("end", dragended));
+        
+            var text = node_g.append("text")
+            .attr("x", [0, -10][0])
+            .attr("y", [0, -10][1])
+            .attr("id", function(d) {return d.id; })
+            .attr("class", "active_lopAhfQB")
+            .text(function(d) { return d.id; });
+            
+            node.append("title").text(function(d) { return d.id; });
+        
+            var zoom_handler = d3.zoom()
+                .on("zoom", zoom_actions);
+            zoom_handler(svg);
+        
+            // build mapping to DOM objects once 
+            // for performance reasons
+            var time_txt = d3.select('#lopAhfQB_time_txt');
+            var edges_to_dom = {};
+            var nodes_to_dom = {};    
+        
+            links.forEach(function(link){    
+                edges_to_dom[link.id] = d3.select('#lopAhfQB #'+link.id);
+            });
+        
+            temporal_net.nodes.forEach(function(n){    
+                nodes_to_dom[n.id] = d3.select('#lopAhfQB #'+n.id);
+            });
+        
+            // attach event handlers
+            d3.select('#lopAhfQB_start_txt').on("click", pauseAnimation);
+            d3.select('#lopAhfQB_restart_txt').on("click", restartAnimation);    
+        
+            simulation.nodes(temporal_net.nodes).on("tick", ticked);
+            // simulation.force("link").links(links);
+        
+            // start animation
+            var time = mintime;
+            var intervl = setInterval(time_step, msperframe);
+            console.log('Started animation.')
+        
+            // animates one time step
+            function time_step() {
+        
+                time_txt.html('t = ' + time);
+        
+                // stop animation
+                if(time > maxtime){
+                    run_status = false;
+                    clearInterval(intervl);
+                    console.log('Stopped animation.')     
+                }
+        
+               // reset all links to hidden 
+               for (id in edges_to_dom){
+                    try {
+                        // edges_to_dom[l.id].attr('class', 'links');
+                        links_by_id[id].strength = hidden_link_strength;
+                        edges_to_dom[id].attr('class', 'hidden_lopAhfQB');              
+                    }
+                    catch(err){
+                        console.log('Error: Could not find DOM object with id ' + id);
+                    }
+                }
+                // reset all nodes to inactive
+                for (id in nodes_to_dom) {
+                    try{
+                        nodes_to_dom[id].attr("class", "tnodes_lopAhfQB");
+                    }
+                    catch(err){
+                        console.log('Error: Could not find DOM object with id ' + id);
+                    }
+                }
+                
+                // change nodes and links in current time slice
+                for (ti=Math.max(mintime, time-look_behind); ti<=time+look_ahead; ti++) {
+        
+                    if (ti in edgesbytime) {
+                        edgesbytime[ti].forEach(function(id){
+                            links_by_id[id].strength = active_link_strength;
+                            // links that are currently active
+                            if (ti >= time-tsperframe+1 && ti <= time) {
+                                node_ids = id.split('-');
+                                try {
+                                    edges_to_dom[id].attr('class', 'active_lopAhfQB').moveToFront();
+                                }
+                                catch(err){
+                                    console.log('Error: Could not find DOM link with id ' + id);
+                                }
+                                try {
+                                    nodes_to_dom[node_ids[0]].attr('class', 'active_lopAhfQB').moveToFront();
+                                }
+                                catch(err){
+                                    console.log('Error: Could not find DOM node with id ' + node_ids[0]);
+                                }
+                                try {
+                                    nodes_to_dom[node_ids[1]].attr('class', 'active_lopAhfQB').moveToFront();                            
+                                }
+                                catch(err){
+                                    console.log('Error: Could not find DOM node with id ' + node_ids[1]);
+                                }
+                            }
+                            // links in current time slice that are not active
+                            else{
+                                edges_to_dom[id].attr('class', 'tlinks_lopAhfQB');
+                            }
+                        });
+                    }
+                }
+                simulation.force('link', d3.forceLink()
+                    .id(link => link.id)
+                    .strength(link => link.strength));
+                simulation.force("link").links(links);
+                text.moveToFront();
+        
+                time += tsperframe;
+            }
+        
+            function pauseAnimation() {
+                if (run_status) {
+                    run_status = false;
+                    clearInterval(intervl);
+                    d3.select('#lopAhfQB_start_txt').html('start');
+                    console.log('Paused animation.')
+                }
+                else {
+                    intervl = setInterval(time_step, msperframe);
+                    run_status = true;
+                    d3.select('#lopAhfQB_start_txt').html('stop');
+                    console.log('Resumed animation.')
+                }
+                
+            }
+        
+            function zoom_actions(){
+                g.attr("transform", d3.event.transform)
+            }
+        
+            function restartAnimation() {
+                if (run_status)
+                    clearInterval(intervl);
+                time = mintime;
+                time_txt.html('t = ' + time);
+                d3.select('#lopAhfQB_start_txt').html('stop');
+                run_status = true;
+                intervl = setInterval(time_step, msperframe);
+                console.log('Restarted animation.')
+            }
+        
+            function ticked() {
+                link.attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+        
+                 text.attr("transform", transform);
+        
+        
+                text.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+        
+                node.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+            }
+        
+            
+            function transform(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            }
+        
+            function dragstarted(d) {
+                if (!d3.event.active) 
+                    simulation.alphaTarget(0.2).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+        
+            function dragged(d) {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+            }
+        
+            function dragended(d) {
+                if (!d3.event.active) 
+                    simulation.alphaTarget(0.2);
+                d.fx = null;
+                d.fy = null;
+            }
+        
+            function contains(array, obj) {
+                var i = array.length;
+                while (i--) {
+                if (array[i] === obj) {
+                    return true;
+                }
+                }
+                return false;
+            }
+        </script></div>
         <p>Using the default parameters, this visualisation will run too fast. We thus want to control the time of this animation. We can again use <code>pathpy</code>'s styling mechanism. With the following style, we will adjust the appearance of nodes and edges as well as the temporal aspects of the visualisation:</p>
-        <pre>
-style = {    
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>style = {    
   'ts_per_frame': 1, 
   'ms_per_frame': 2000,
   'look_ahead': 2, 
@@ -106,13 +815,349 @@ style = {
   'label_size' : '24px',
   'label_offset': [0,5]
   }
-pp.visualisation.plot(t, **style)
-        </pre>
+pp.visualisation.plot(t, **style)</pre>
+      </div>
+      <div><style>
+          text.active_YRaJGqIP {
+              text-anchor: middle;
+              font-size: 24px;
+              font-family: Arial, Helvetica, sans-serif;
+              fill: #ffffff;
+              opacity: 1.0;
+          }
+          text.hidden_YRaJGqIP {
+              opacity: 0;
+          }
+          line.tlinks_YRaJGqIP {
+              stroke: #cccccc;
+              stroke-opacity: 0.4;
+              stroke-width: 2;
+          }
+          line.active_YRaJGqIP {
+              stroke: #ff0000;
+              stroke-opacity: 1.0;
+              stroke-width: 4;
+          }
+          line.hidden_YRaJGqIP {
+              stroke: rgb(255, 255, 255);
+              stroke-opacity: 0;
+              stroke-width: 0px;
+          }
+          circle.active_YRaJGqIP {
+              stroke: #222;
+              fill: #ff0000;
+              fill-opacity: 1;
+              stroke-width: 2px;
+          }
+          circle.tnodes_YRaJGqIP {
+              fill: #cccccc;
+              stroke: #222;
+              fill-opacity: 1;
+              stroke-width: 1.5px;
+          }
+      </style>
+      
+      <svg height="300" id="YRaJGqIP">
+          <text x="10" y="20" font-family="sans-serif" font-size="14px" fill="red" id="YRaJGqIP_time_txt">t = 4</text>
+          <text x="120" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer" id="YRaJGqIP_start_txt">stop</text>
+          <text x="170" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer" id="YRaJGqIP_restart_txt">restart</text>
+      <g class="everything"><g class="tlinks_YRaJGqIP"><line id="c-d" class="tlinks_YRaJGqIP" x1="226.7966054040424" y1="187.39697572853032" x2="269.52473370965697" y2="212.7669226419311"></line><line id="c-b" class="tlinks_YRaJGqIP" x1="226.7966054040424" y1="187.39697572853032" x2="178.62055364110932" y2="185.45014012187394"></line><line id="a-b" class="hidden_YRaJGqIP" x1="124.9109519331223" y1="213.9654373564305" x2="178.62055364110932" y2="185.45014012187394"></line><line id="b-a" class="tlinks_YRaJGqIP" x1="178.62055364110932" y1="185.45014012187394" x2="124.9109519331223" y2="213.9654373564305"></line><line id="b-c" class="tlinks_YRaJGqIP" x1="178.62055364110932" y1="185.45014012187394" x2="226.7966054040424" y2="187.39697572853032"></line><line id="d-c" class="active_YRaJGqIP" x1="269.52473370965697" y1="212.7669226419311" x2="226.7966054040424" y2="187.39697572853032"></line></g><g class="tnodes_YRaJGqIP"><g><circle id="a" r="15" class="tnodes_YRaJGqIP" cx="124.9109519331223" cy="213.9654373564305"><title>a</title></circle><text x="0" y="5" id="a" class="active_YRaJGqIP" transform="translate(124.9109519331223,213.9654373564305)" cx="124.9109519331223" cy="213.9654373564305">a</text></g><g><circle id="b" r="15" class="tnodes_YRaJGqIP" cx="178.62055364110932" cy="185.45014012187394"><title>b</title></circle><text x="0" y="5" id="b" class="active_YRaJGqIP" transform="translate(178.62055364110932,185.45014012187394)" cx="178.62055364110932" cy="185.45014012187394">b</text></g><g><circle id="c" r="15" class="active_YRaJGqIP" cx="226.7966054040424" cy="187.39697572853032"><title>c</title></circle><text x="0" y="5" id="c" class="active_YRaJGqIP" transform="translate(226.7966054040424,187.39697572853032)" cx="226.7966054040424" cy="187.39697572853032">c</text></g><g><circle id="d" r="15" class="active_YRaJGqIP" cx="269.52473370965697" cy="212.7669226419311"><title>d</title></circle><text x="0" y="5" id="d" class="active_YRaJGqIP" transform="translate(269.52473370965697,212.7669226419311)" cx="269.52473370965697" cy="212.7669226419311">d</text></g></g></g></svg>
+      <script charset="utf-8">
+          d3.selection.prototype.moveToFront = function() {
+              return this.each(function(){
+                  this.parentNode.appendChild(this);
+              });
+          };
+      
+          d3.selection.prototype.moveToBack = function() {  
+              return this.each(function() { 
+                  var firstChild = this.parentNode.firstChild; 
+                  if (firstChild) { 
+                      this.parentNode.insertBefore(this, firstChild); 
+                  } 
+              });
+          };
+      
+          var svg = d3.select("#YRaJGqIP"),
+              width = +svg.attr("width"),
+              height = +svg.attr("height"),
+              radius = 15,
+              color = d3.scaleOrdinal(d3.schemeCategory20b);
+      
+          var temporal_net = {"nodes": [{"id": "a", "group": 1}, {"id": "b", "group": 1}, {"id": "c", "group": 1}, {"id": "d", "group": 1}], "links": [{"source": "a", "target": "b", "width": 1, "time": 1}, {"source": "b", "target": "a", "width": 1, "time": 3}, {"source": "b", "target": "c", "width": 1, "time": 3}, {"source": "d", "target": "c", "width": 1, "time": 4}, {"source": "c", "target": "d", "width": 1, "time": 5}, {"source": "c", "target": "b", "width": 1, "time": 6}]};
+          var tsperframe = 1;
+          var msperframe = 2000;
+          var look_ahead = 2;
+          var look_behind = 2;
+      
+          var hidden_link_strength = 0;
+          var active_link_strength = 0.2;
+      
+          // create a dictionary with edges indexed by timestamps
+          var edgesbytime = {};
+          var time_stamps = temporal_net.links.map(link => link['time']);
+          time_stamps.forEach(function(t){
+                      edgesbytime[t] = [];
+                  });
+      
+          // extract static links
+          var links = [];
+          var links_by_id = {};
+          temporal_net.links.forEach(function(link){
+              id = String(link.source + '-' + link.target);
+              edgesbytime[link.time].push(id);
+              l = {
+                  'source': link.source,
+                  'target': link.target,
+                  'id': id,
+                  'strength': 0
+              };
+              if (!contains(links, l)){
+                  links.push(l);
+                  links_by_id[l.id] = l;
+              }
+          });
+      
+          var mintime = d3.min(time_stamps);
+          var maxtime = d3.max(time_stamps);
+          var run_status = true;
+          
+          var simulation = d3.forceSimulation()
+              .force("link", d3.forceLink().id(function(d) { return d.id; }))
+              .force("charge", d3.forceManyBody().strength(-30).distanceMax(200))
+              .force("repelForce", d3.forceManyBody().strength(-100).distanceMax(200))
+              .force("center", d3.forceCenter(width / 2, height / 2))
+              .alphaTarget(0.1)
+              .on("tick", ticked);
+      
+          var g = svg.append("g")
+              .attr("class", "everything");
+      
+          var link = g.append("g")
+              .attr("class", "tlinks_YRaJGqIP")
+              .selectAll("line")
+              .data(links, function(d){return d.id;})
+              .enter().append("line")
+              .attr("id", function(d) { return d.id; });
+      
+          var node_g = g.append("g").attr("class", "tnodes_YRaJGqIP")
+              .selectAll("circle")
+              .data(temporal_net.nodes, function(d){return d.id;})
+              .enter()
+              .append("g");
+      
+          var node = node_g.append("circle")
+                  .attr('id', function(d) { return d.id; })
+                  .attr("r", radius)
+                  // .attr("fill", function(d) { return color(d.group); })
+                  .attr("class", "tnodes_YRaJGqIP")
+                  .call(d3.drag()
+                      .on("start", dragstarted)
+                      .on("drag", dragged)
+                      .on("end", dragended));
+      
+          var text = node_g.append("text")
+          .attr("x", [0, 5][0])
+          .attr("y", [0, 5][1])
+          .attr("id", function(d) {return d.id; })
+          .attr("class", "active_YRaJGqIP")
+          .text(function(d) { return d.id; });
+          
+          node.append("title").text(function(d) { return d.id; });
+      
+          var zoom_handler = d3.zoom()
+              .on("zoom", zoom_actions);
+          zoom_handler(svg);
+      
+          // build mapping to DOM objects once 
+          // for performance reasons
+          var time_txt = d3.select('#YRaJGqIP_time_txt');
+          var edges_to_dom = {};
+          var nodes_to_dom = {};    
+      
+          links.forEach(function(link){    
+              edges_to_dom[link.id] = d3.select('#YRaJGqIP #'+link.id);
+          });
+      
+          temporal_net.nodes.forEach(function(n){    
+              nodes_to_dom[n.id] = d3.select('#YRaJGqIP #'+n.id);
+          });
+      
+          // attach event handlers
+          d3.select('#YRaJGqIP_start_txt').on("click", pauseAnimation);
+          d3.select('#YRaJGqIP_restart_txt').on("click", restartAnimation);    
+      
+          simulation.nodes(temporal_net.nodes).on("tick", ticked);
+          // simulation.force("link").links(links);
+      
+          // start animation
+          var time = mintime;
+          var intervl = setInterval(time_step, msperframe);
+          console.log('Started animation.')
+      
+          // animates one time step
+          function time_step() {
+      
+              time_txt.html('t = ' + time);
+      
+              // stop animation
+              if(time > maxtime){
+                  run_status = false;
+                  clearInterval(intervl);
+                  console.log('Stopped animation.')     
+              }
+      
+             // reset all links to hidden 
+             for (id in edges_to_dom){
+                  try {
+                      // edges_to_dom[l.id].attr('class', 'links');
+                      links_by_id[id].strength = hidden_link_strength;
+                      edges_to_dom[id].attr('class', 'hidden_YRaJGqIP');              
+                  }
+                  catch(err){
+                      console.log('Error: Could not find DOM object with id ' + id);
+                  }
+              }
+              // reset all nodes to inactive
+              for (id in nodes_to_dom) {
+                  try{
+                      nodes_to_dom[id].attr("class", "tnodes_YRaJGqIP");
+                  }
+                  catch(err){
+                      console.log('Error: Could not find DOM object with id ' + id);
+                  }
+              }
+              
+              // change nodes and links in current time slice
+              for (ti=Math.max(mintime, time-look_behind); ti<=time+look_ahead; ti++) {
+      
+                  if (ti in edgesbytime) {
+                      edgesbytime[ti].forEach(function(id){
+                          links_by_id[id].strength = active_link_strength;
+                          // links that are currently active
+                          if (ti >= time-tsperframe+1 && ti <= time) {
+                              node_ids = id.split('-');
+                              try {
+                                  edges_to_dom[id].attr('class', 'active_YRaJGqIP').moveToFront();
+                              }
+                              catch(err){
+                                  console.log('Error: Could not find DOM link with id ' + id);
+                              }
+                              try {
+                                  nodes_to_dom[node_ids[0]].attr('class', 'active_YRaJGqIP').moveToFront();
+                              }
+                              catch(err){
+                                  console.log('Error: Could not find DOM node with id ' + node_ids[0]);
+                              }
+                              try {
+                                  nodes_to_dom[node_ids[1]].attr('class', 'active_YRaJGqIP').moveToFront();                            
+                              }
+                              catch(err){
+                                  console.log('Error: Could not find DOM node with id ' + node_ids[1]);
+                              }
+                          }
+                          // links in current time slice that are not active
+                          else{
+                              edges_to_dom[id].attr('class', 'tlinks_YRaJGqIP');
+                          }
+                      });
+                  }
+              }
+              simulation.force('link', d3.forceLink()
+                  .id(link => link.id)
+                  .strength(link => link.strength));
+              simulation.force("link").links(links);
+              text.moveToFront();
+      
+              time += tsperframe;
+          }
+      
+          function pauseAnimation() {
+              if (run_status) {
+                  run_status = false;
+                  clearInterval(intervl);
+                  d3.select('#YRaJGqIP_start_txt').html('start');
+                  console.log('Paused animation.')
+              }
+              else {
+                  intervl = setInterval(time_step, msperframe);
+                  run_status = true;
+                  d3.select('#YRaJGqIP_start_txt').html('stop');
+                  console.log('Resumed animation.')
+              }
+              
+          }
+      
+          function zoom_actions(){
+              g.attr("transform", d3.event.transform)
+          }
+      
+          function restartAnimation() {
+              if (run_status)
+                  clearInterval(intervl);
+              time = mintime;
+              time_txt.html('t = ' + time);
+              d3.select('#YRaJGqIP_start_txt').html('stop');
+              run_status = true;
+              intervl = setInterval(time_step, msperframe);
+              console.log('Restarted animation.')
+          }
+      
+          function ticked() {
+              link.attr("x1", function(d) { return d.source.x; })
+                  .attr("y1", function(d) { return d.source.y; })
+                  .attr("x2", function(d) { return d.target.x; })
+                  .attr("y2", function(d) { return d.target.y; });
+      
+               text.attr("transform", transform);
+      
+      
+              text.attr("cx", function(d) { return d.x; })
+                  .attr("cy", function(d) { return d.y; });
+      
+              node.attr("cx", function(d) { return d.x; })
+                  .attr("cy", function(d) { return d.y; });
+          }
+      
+          
+          function transform(d) {
+              return "translate(" + d.x + "," + d.y + ")";
+          }
+      
+          function dragstarted(d) {
+              if (!d3.event.active) 
+                  simulation.alphaTarget(0.2).restart();
+              d.fx = d.x;
+              d.fy = d.y;
+          }
+      
+          function dragged(d) {
+              d.fx = d3.event.x;
+              d.fy = d3.event.y;
+          }
+      
+          function dragended(d) {
+              if (!d3.event.active) 
+                  simulation.alphaTarget(0.2);
+              d.fx = null;
+              d.fy = null;
+          }
+      
+          function contains(array, obj) {
+              var i = array.length;
+              while (i--) {
+              if (array[i] === obj) {
+                  return true;
+              }
+              }
+              return false;
+          }
+      </script></div>
         <p>Note that this visualisation is again interactive, i.e. we can interact with the temporal network while the animation is running!</p>
         <p>You might want to share such an animation either via E-Mail or via the Web. In pathpy, this is as easy as it can get. We can simply export the visualisation as a stand-alone HTML5 file. This file contains both the data as well as the interactive and dynamic visualisation, so you can simply send it around or upload it to a web server. We can try this:</p>
-        <pre>
-pp.visualisation.export_html(t, 'my_temporal_network.html', **style)
-        </pre>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+          <pre>pp.visualisation.export_html(t, 'my_temporal_network.html', **style)</pre>
+        </div>
         <p>A file will be created in the directory where your jupyter notebook server was started. Just open this HTML5 file in your browser to see the animation.</p>
       </div>
       <div class="w3-third w3-container">        
@@ -137,7 +1182,8 @@ pp.visualisation.export_html(t, 'my_temporal_network.html', **style)
         </div>
 
   <footer id="myFooter">
-    <div class="w3-container w3-theme-l5 w3-padding-32">
+    <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">
+      <hr>
       &copy; Data Analytics Group, University of Zurich, 2019
     </div>
   </footer>
