@@ -20,43 +20,55 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 <body>
 
 <!-- Navbar -->
-<div class="w3-top">
-  <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
-    <a href="index.html" class="w3-bar-item w3-button w3-theme-l3">pathpy</a>
-    <a href="tutorial.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Get started</a>    
-    <a href="examples.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Gallery</a>
-    <a href="docs.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Documentation</a>
-    <a href="news.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">News</a>
-    <a href="contact.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Contact</a>
+<div class="w3-bar w3-black">
+    <a href="index.html" class="w3-bar-item w3-button w3-hover-theme w3-mobile">pathpy</a>
+    <div class="w3-dropdown-hover">
+        <button class="w3-button w3-hover-theme w3-mobile">getting started</button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-black w3-mobile">
+            <a href="tutorial.html" class="w3-bar-item w3-button w3-hover-theme w3-mobile">first steps</a>
+            <a href="issues.html" class="w3-bar-item w3-button w3-hover-theme w3-mobile">known issues</a>
+        </div>
+    </div>
+    <a href="edu.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">education</a>
+    <div class="w3-dropdown-hover w3-mobile">
+        <button class="w3-button w3-hover-theme w3-mobile">gallery</button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-black w3-mobile">
+            <a href="lotr.html" class="w3-bar-item w3-button w3-hover-theme w3-mobile">Lord of the Rings</a>
+            <a href="clustering.html" class="w3-bar-item w3-button w3-hover-theme w3-mobile">temporal clustering</a>
+        </div>
+    </div>
+    <a href="docs.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">documentation</a>
+    <a href="news.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme w3-theme">news</a>
+    <a href="contribute.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">contribute</a>
+    <a href="contact.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">contact</a>
   </div>
-</div>
 
 <!-- Main content -->
 <div class="w3-main" style="max-width:1200px">
-  <div class="w3-row w3-padding-64">
+  <div class="w3-row w3-padding-32">
     <div class="w3-twothird w3-container">
-      <h1 class="w3-text-blue">News</h1>
-      <h4 class="w3-text-blue">pathpy featured in Nature Physics</h4>
+      <h1 class="w3-text-theme">News</h1>
+      <h4 class="w3-text-theme">pathpy featured in Nature Physics</h4>
       <p>We are excited that our perspectives article From networks to optimal higher-order models of complex systems was accepted for publication in the journal Nature Physics. This article introduces the basic principles behind pathpy.</p>
       <em>2019/03/28</em>
 
-      <h4 class="w3-text-blue">Tutorial at Complexity Science Hub</h4>
+      <h4 class="w3-text-theme">Tutorial at Complexity Science Hub</h4>
       <p>On Wednesday, we will give a talk and tutorial on higher-order data analytics at the Complexity Science Hub in Vienna. A general introduction to higher-order network analytics will be followed by a 4 hour live tutorial, in which we demonstrate these techniques with pathpy.</p>
       <em>2018/09/03</em>
 
-      <h4 class="w3-text-blue">Hands-on tutorial at KDD'18</h4>
+      <h4 class="w3-text-theme">Hands-on tutorial at KDD'18</h4>
       <p>On August 22 we will give a hands-on tutorial on Higher-order Data Analytics for Temporal Network Data at KDD'18 in London, UK. In this tutorial we introduce higher-order graph analytics with the software package pathpy.</p>
       <em>2018/08/22</em>
 
-      <h4 class="w3-text-blue">Release of pathpy 2.0</h4>
+      <h4 class="w3-text-theme">Release of pathpy 2.0</h4>
       <p>Today we released a greatly improved version 2 of pathpy, an OpenSource software package bringing higher-order network analytics to python. pathpy is now available via the python package index. A comprehensive educational tutorial on pathpy is available online.</p>
       <em>2018/08/20</em>
 
-      <h4 class="w3-text-blue">Demo at NetSci'18</h4>
+      <h4 class="w3-text-theme">Demo at NetSci'18</h4>
       <p>Today we will gibve a brief demo of the latest version of pathpy in the NetSci satellite on Higher-Order Network Models (HONS).</p>
       <em>2018/06/11</em>
 
-      <h4 class="w3-text-blue">First beta release of pathpy</h4>
+      <h4 class="w3-text-theme">First beta release of pathpy</h4>
       <p>We have just released the first beta version of pathpy 1.0.</p>
       <em>2017/02/28</em>
 

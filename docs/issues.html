@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>pathpy.net</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+</style>
+
+<body>
+
+<!-- Navbar -->
+  <div class="w3-bar w3-black">
+    <a href="index.html" class="w3-bar-item w3-button w3-hover-theme">pathpy</a>
+    <div class="w3-dropdown-hover">
+        <button class="w3-button w3-hover-theme w3-theme">getting started</button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-black">
+            <a href="tutorial.html" class="w3-bar-item w3-button w3-hover-theme">first steps</a>
+            <a href="issues.html" class="w3-bar-item w3-button w3-hover-theme">known issues</a>
+        </div>
+    </div>
+    <a href="edu.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">education</a>
+    <div class="w3-dropdown-hover">
+            <button class="w3-button w3-hover-theme">gallery</button>
+            <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-black">
+                <a href="lotr.html" class="w3-bar-item w3-button w3-hover-theme">Lord of the Rings</a>
+                <a href="clustering.html" class="w3-bar-item w3-button w3-hover-theme">temporal clustering</a>
+            </div>
+        </div>
+    <a href="docs.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">documentation</a>
+    <a href="news.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">news</a>
+    <a href="contribute.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">contribute</a>
+    <a href="contact.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">contact</a>
+  </div>
+
+  <div class="w3-main" style="max-width:1200px">
+        <div class="w3-cell-row w3-padding-32">
+          <div class="w3-cell w3-container w3-justify">
+            <h1 class="w3-text-theme">Are there known issues?</h1>
+            <p>We would like users to be aware of the following known issues in the latest version of <code>pathpy</code>:
+              <ul>
+                <li>Depending on whether or not the dependency package <code>scipy</code> has been compiled with the numerics package <code>MKL</code> or <code>openblas</code>, considerable numerical differences can occur, e.g. for eigenvalue centralities, PageRank, spectral clustering, and other measures that depend on the eigenvectors and eigenvalues of matrices. Please refer to <code>scipy.show_config()</code> to show compilation flags. We are currently investigating this issue.</li>
+                <li>Interactive visualisations in jupyter are currently only supported for <code>juypter</code> notebooks, stand-alone HTML files, and the <code>jupyter</code> display integrated in IDEs like Visual Studio Code. Due to its new widget mechanism, interactive d3js visualizations are currently not available for <code>jupyterLab</code>.</li>
+                <li>The visualisation module currently does not support the drawing of edge arrows for temporal networks with directed edges. However, a powerful templating mechanism is available to support custom interactive and dynamic visualisations both for static and temporal networks.</li>
+                <li>The visualisation of paths in terms of alluvial diagrams within jupyter is currently unstable. This is due to the asynchronous loading of external scripts and possible network latencies e.g. in wireless networks. We will replace this functionality in a future version.</li>
+              </ul>
+            </p>
+            <p>We are working on a solution to these issues in the next release. An up-to-date list of open issues can be found at our <a href="https://github.com/uzhdag/pathpy/issues">issue tracker</a>. For the installation of development versions in which your issue might already have been fixed please refer to the installation instructions above.</p>
+          </div>
+          <div class="w3-container w3-cell w3-cell-middle">
+                <img src="pathpy_logo.png" style="max-width:300px" />
+            </div>
+        </div>
+    </div>
+
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">
+      <hr>
+      &copy; Data Analytics Group, University of Zurich, 2019
+    </div>
+  </footer>
+<!-- END MAIN -->
+</div>
+
+</body>
+</html>
