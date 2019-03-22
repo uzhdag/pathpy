@@ -20,29 +20,14 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
 </style>
 <body>
 
-<!-- Navbar -->
-<div class="w3-bar w3-black">
-    <a href="index.html" class="w3-bar-item w3-button w3-hover-theme w3-mobile">pathpy</a>
-    <div class="w3-dropdown-hover w3-mobile">
-        <button class="w3-button w3-hover-theme">getting started</button>
-        <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-black">
-            <a href="tutorial.html" class="w3-bar-item w3-button w3-hover-theme  w3-mobile">first steps</a>
-            <a href="issues.html" class="w3-bar-item w3-button w3-hover-theme  w3-mobile">known issues</a>
-        </div>
-    </div>
-    <a href="edu.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">education</a>
-    <div class="w3-dropdown-hover  w3-mobile">
-        <button class="w3-button w3-hover-theme">gallery</button>
-        <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-black">
-            <a href="lotr.html" class="w3-bar-item w3-button w3-hover-theme  w3-mobile">Lord of the Rings</a>
-            <a href="clustering.html" class="w3-bar-item w3-button w3-hover-theme  w3-mobile">temporal clustering</a>
-        </div>
-    </div>
-    <a href="docs.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">documentation</a>
-    <a href="news.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">news</a>
-    <a href="contribute.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme">contribute</a>
-    <a href="contact.html" class="w3-bar-item w3-button w3-mobile w3-hover-theme w3-theme">contact</a>
-</div>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $("#nav").load("menu.html");
+        $("a").find(`[href='` + document.location.pathname.match(/[^\/]+$/)[0] + `']`).attr('class', 'w3-theme');
+      });
+    </script>
+    
+    <div id="nav"></div>
 
 <!-- Main content -->
 <div class="w3-main" style="max-width:1200px">
