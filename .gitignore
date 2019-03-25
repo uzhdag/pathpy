@@ -98,7 +98,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 pyTempNets.v12.suo
-*.png
 *.TMP
 *.suo
 .idea/
