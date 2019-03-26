@@ -95,7 +95,7 @@ def mean_degree(network, degree='degree'):
     return _np.mean([network.nodes[x][degree] for x in network.nodes])
 
 
-def degree_hist(network, degree='degree'):
+def degree_dist(network, degree='degree'):
     r"""Calculates the (in/out)-degree histogram of a directed or undirected network.
 
     Parameters
@@ -120,7 +120,7 @@ def degree_moment(network, k, degree='degree'):
     network:    Network
         The network in which to calculate the k-th moment of the degree distribution
     """
-    p_k = degree_hist(network, degree)
+    p_k = degree_dist(network, degree)
     mom = 0
     for x in p_k:
         mom += x**k * p_k[x]
@@ -173,7 +173,7 @@ def generating_func(network, x, degree='degree'):
     assert isinstance(x, (float, list, _np.ndarray)), \
         'Argument can only be float, list or numpy.ndarray'
 
-    p_k = degree_hist(network, degree)
+    p_k = degree_dist(network, degree)
 
     if isinstance(x, float):
         x_range = [x]
@@ -232,7 +232,7 @@ def get_bins(values, num_bins, log_bins=False):
     return bins
 
 
-def degree_distribution(network, num_bins=30, degree='degree', log_bins=True, is_pmf=True):
+def degree_dist_binned(network, num_bins=30, degree='degree', log_bins=True, is_pmf=True):
     '''
     Take a pathpy.network object and return the degree distribution.
 
