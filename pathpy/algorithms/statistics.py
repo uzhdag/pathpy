@@ -287,7 +287,7 @@ def degree_dist_binned(network, num_bins=30, degree='degree', log_bins=True, is_
     return x, p
 
 
-def clustering_by_degree(network, num_bins=20, degree='degree', log_bins=False):
+def clustering_by_degree(network, num_bins=20, degree='degree', binned=True, log_bins=False):
     '''
     Compute binned clustering by degree.
 
@@ -325,13 +325,19 @@ def clustering_by_degree(network, num_bins=20, degree='degree', log_bins=False):
 
     ## Get degrees
     degrees = _np.array(list(degrees_dict.values()))
-    degrees = degrees[degrees>0]
 
-    ## Get bins
-    bins = get_bins(degrees, num_bins, log_bins)
-    start = bins[:-1]
-    end = bins[1:]
-    center = start + (end-start)*0.5
+    if binned:
+        degrees = degrees[degrees>0]
+        ## Get bins
+        bins = get_bins(degrees, num_bins, log_bins)
+        start = bins[:-1]
+        end = bins[1:]
+        center = start + (end-start)*0.5
+    else:
+        bins = _np.unique(degrees)
+        start = bins[:-1]
+        end = bins[1:]
+        center = start + (end-start)*0.5
 
     cc_k = dict((k,0.0) for k in range(len(center)))
     counts = dict((k,0.0) for k in range(len(center)))
