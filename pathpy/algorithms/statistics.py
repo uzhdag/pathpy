@@ -204,8 +204,7 @@ def molloy_reed_fraction(network, degree='degree'):
 
 
 def get_bins(values, num_bins, log_bins=False):
-    '''
-    Compute (linear or logarithmic) bins for values.
+    r"""Compute (linear or logarithmic) bins for values.
 
     NOTE: If log_bins is True, 0s should be removed from values _before_
             calling this function.
@@ -223,7 +222,7 @@ def get_bins(values, num_bins, log_bins=False):
     -------
     bins: np.array
         edges of num_bins bins
-    '''
+    """
     min_val = values.min()
     max_val = values.max()
 
@@ -236,8 +235,7 @@ def get_bins(values, num_bins, log_bins=False):
 
 
 def degree_dist_binned(network, num_bins=30, degree='degree', log_bins=True, is_pmf=True):
-    '''
-    Take a pathpy.network object and return the degree distribution.
+    r"""Take a pathpy.network object and return the degree distribution.
 
     NOTE: Ignores singleton (degree 0) nodes.
 
@@ -261,7 +259,7 @@ def degree_dist_binned(network, num_bins=30, degree='degree', log_bins=True, is_
     y: np.array
         Heights of the bins
 
-    '''
+    """
     assert degree in ['degree', 'indegree', 'outdegree', 'inweight', 'outweight', 'weight'],\
             'Unknown degree property'
 
@@ -293,8 +291,7 @@ def degree_dist_binned(network, num_bins=30, degree='degree', log_bins=True, is_
 
 
 def clustering_by_degree(network, num_bins=20, degree='degree', binned=True, log_bins=False):
-    '''
-    Compute binned clustering by degree.
+    r"""Compute average local clustering coefficient by degree.
 
     NOTE: Ignores singleton (degree 0) nodes.
 
@@ -318,7 +315,7 @@ def clustering_by_degree(network, num_bins=20, degree='degree', binned=True, log
     y: np.array
         Heights of bins
 
-    '''
+    """
     assert degree in ['degree', 'indegree', 'outdegree', 'inweight', 'outweight', 'weight'],\
             'Unknown degree property'
 
