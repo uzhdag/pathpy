@@ -24,23 +24,14 @@
   <div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
     <div class="w3-justify">
         <h1 class="w3-text-theme">How can I work with paths?</h1>
-        <p>At this point you might ask yourself why the package is called <code>pathpy</code>. The reason for this is that <code>pathpy</code>'s key feature is its support to store, manipulate, analyze, and model path statistics extracted from different kinds of time series data on complex networks. For this <code>pathpy</code> provides the class <code>Paths</code>, which can store collections of paths with varying lengths. Let us start by creating an empty instance of this class":
-        </p>
+        <p>At this point you might ask yourself: why is the package is called <code>pathpy</code>. The reason is <code>pathpy</code>'s key feature, namely its support to store, manipulate, analyze, and model <strong>path statistics</strong> that can be extracted from various kinds of data on complex networks. In particular <code>pathpy</code> provides the central class <code>Paths</code>, which can store collections of paths with varying lengths. Let us start by creating an empty instance of this class:
         <div class="w3-panel w3-light-gray w3-leftbar w3-border">
         <pre>p = pp.Paths()</pre>
         </div>
-        <p>We now have an empty <code>Paths</code> instance that we can use to add path statistics using the method <code>add_path</code>. As the first parameter, the method accepts any iterable (list, string, etc.) of string variables (or objects that can be cast to string), where each entry in the iterable is one step (i.e. node) on a path. The optional frequency parameter captures the number of times a specific path has been observed. let us try this by adding 10 observations of paths <code>a -> c -> e</code> between three nodes a, c, and e:</p>
+        We now have an empty <code>Paths</code> instance to which we can add path statistics using the method <code>add_path</code>. As the first parameter, the method accepts any iterable (<code>list</code>, <code>tuple</code>, etc.) of string variables (or objects that can be cast to <code>string</code>). Each entry in the iterable is interpreted as one step (i.e. node) on a path through a network. The optional  parameter <code>frequency</code> counts the number of times a path has been observed. We can try this by adding 10 observations of paths <code>a -> c -> e</code> observed in a network with three nodes a, c, and e:
         <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>p.add_path(('a', 'c', 'd'), frequency=10)</pre>
         </div>
-        <p>We can create a toy example (directed) network by adding the following code and then running the cell:</p>
-        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
-        <pre>n = pp.Network(directed=True)
-n.add_edge('a', 'c')
-n.add_edge('b', 'c')
-n.add_edge('c', 'd')
-n.add_edge('c', 'e')
-print(n)</pre></div>
         <p>Just like for the classes <code>Network</code> and <code>TemporalNetwork</code>, the <code>print</code> statement will output a default string representation of the paths instance, which provides some basic  statistics:</p>
         <div class="w3-panel w3-light-gray w3-leftbar w3-border">
         <pre>print(p)</pre>
@@ -56,7 +47,7 @@ Paths of length k = 0		0.0 [ 0.0 / 30.0 / 30.0 ]
 Paths of length k = 1		0.0 [ 0.0 / 20.0 / 20.0 ]
 Paths of length k = 2		10.0 [ 1.0 / 0.0 / 10.0 ]</pre>
 </div>
-        <p>This returns some summary statistics of the <code>Paths</code> instance. Our small example contains 10 observed paths between three nodes. These paths imply a graph topology with two edges (a,b) and (b,c). Both the maximum and the average path length is two (the path length counts the number of edge traversals of a path).</p>
+        <p>This returns some summary statistics of the <code>Paths</code> instance. Our small example contains 10 observed paths between three nodes. These paths imply a network topology comrprised of three nodes a,c, d and two (directed) edges (a,c) and (c,d). Both the maximum and the average path length is two (where the path length counts the number of edges traversed by a path).</p>
         <p>To understand the last three lines and the second line in the output, we must look into the inner workings of pathpy. For the fitting of higher-order graphical models as well as for the representation learning algorithm, pathpy uses all path statistics available. Specifically to fit, say, a second-order model to a set of paths that all have length 10 or longer, we calculate which paths of length two are contained as sub-paths within these observations of longer paths. For this reason, pathpy automatically calculates the statistics of actual path observations as well as the statistics of sub-paths contained in these observed paths.</p>
         <p>In our case, we have  10  observations of a single path  a→b→c  of length two, thus the last line in the output above. Each of these paths additionally contains two sub-paths  a→b  and  b→c  of length two, thus the number  20.0  in the sub-path count in the line  k=1 . Finally, each of the paths contains three "paths" of length zero, which are just observations of a single node (i.e. there is no transition across an edge), thus the sub-path count of  30.0  in the line  k=0 . This amounts to a total of  50.0  sub-paths +  10  observations of an actual (longest) path, thus explaining the second line in the output.</p>         
         <p>Apart from adding paths as a tuple, we can also add them as string-encoded n-grams, using the parameter <code>separator</code> to specify a character that separates nodes.</p>
@@ -74,9 +65,9 @@ Paths of length k = 0		0.0 [ 0.0 / 30.0 / 30.0 ]
 Paths of length k = 1		0.0 [ 0.0 / 20.0 / 20.0 ]
 Paths of length k = 2		10.0 [ 1.0 / 0.0 / 10.0 ]</pre>
 </div>
-        <p>We obtain a Paths object with 10 observations of path  b→c→ . We can add this to our previous toy_paths instance by using arithmetic operators on instances of the Paths class.</p>
+        <p>We obtain a Paths object with 10 observations of path  b -> c -> e. We can add this to our previous  instance <code>p</code> by using arithmetic operators:</p>
         <div class="w3-panel w3-light-grey w3-leftbar w3-border">
-        <pre>p += p2
+        <pre>p = p + p2
 print(p)</pre>
         </div>
         <div class="w3-panel w3-light-grey w3-leftbar w3-border">
@@ -90,12 +81,8 @@ Paths of length k = 0		0.0 [ 0.0 / 60.0 / 60.0 ]
 Paths of length k = 1		0.0 [ 0.0 / 40.0 / 40.0 ]
 Paths of length k = 2		20.0 [ 2.0 / 0.0 / 20.0 ]</pre>
 </div>
-<p>We obtain a new Paths instance where 20 observed paths traverse five nodes a, b, c, d, and e across four edges (a,c), (c,d), (b,c) and (c,e).</p>
-<p>
-We often analyse or visualise graph or network topologies in which the observed paths have occurred. For this, pathpy provides the class Network, which you can use to read, manipulate, analyse, and visualise directed, undirected, weighted, and unweighted networks.
-
-We can easily turn any Paths instance into a network by using the class method Network.from_paths. This will cut each path  v0->v1->v2->... into multiple directed dyadic relations  (vi,vi+1)  that are represented by directed edges. Let us try this in our example:
-</p>
+<p>We obtain a new instance, where 20 observed paths traverse five nodes a, b, c, d, and e across four edges (a,c), (c,d), (b,c) and (c,e).</p>
+<p>We are often interested in the network through with paths traverse. We can use an instance of <code>Paths</code> to generate a directed network which is comprised of all nodes and edges that are traversed by the paths. For this, we can simply use the class method <code>from_paths</code> of the class <code>Network</code>. This will cut each path  v0 -> v1 -> v2 -> ... into multiple directed dyadic edges (vi,vi+1). Let us try this in our example:</p>
 <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>n = pp.Network.from_paths(p)
 print(n)</pre>
@@ -105,11 +92,464 @@ print(n)</pre>
 Nodes:	5
 Links:	4</pre>
 </div>
-<p>
-We obtain a network with five nodes a, b, c, d, and e and four directed edges. The number of times each edge is traversed by a path is captured by the weights of these edges. We can access these weights using the dictionary <code>toy_graph.edges[edge]</code>.
-</p>
+We obtain a network with five nodes a, b, c, d, and e and four directed edges. The number of times each edge is traversed by a path is captured in the weights of edges. We can access these weights using the edge property dictionary <code>toy_graph.edges[edge]</code>:
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>print('Edge (a,c) has weight {0}'.format(n.edges[('a', 'c')]['weight']))</pre>
         </div>
-        <div class="w3-third w3-container"></div>        
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+<pre>Edge (a,c) has weight 10.0</pre>
+</div>
+</p>
+<h1 class="w3-text-theme">How can I extract paths in temporal networks?</h1>
+<p>The ability to efficiently work with path statistics is a unique feature of <code>pathpy</code>. But why is this important and how does it relate to time series data on networks? The important point is that any time-ordered data - and in fact also other data on complex networks - allows us to extract path statistics, which can then be used to reason about interesting patterns. An important data are time-stamped data on networks, e.g. time-stamped social interactions, where each interaction has its own time stamp. In a <a href="/tutorials/temporal_nets.html">previous unit</a> we have seen that we can represent and visualise such data with the class <code>TemporalNetwork</code>. Let us reuse the example temporal network from that unit:
+    <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+            <pre>t = pp.TemporalNetwork()
+t.add_edge('a', 'b', '2018-08-22 09:30:22')
+t.add_edge('b', 'c', '2018-08-22 09:30:25')
+t.add_edge('c', 'a', '2018-08-22 10:30:25')
+
+style = {    
+    'ts_per_frame': 1, 
+    'ms_per_frame': 2000,
+    'look_ahead': 2, 
+    'look_behind': 2, 
+    'node_size': 15, 
+    'inactive_edge_width': 2,
+    'active_edge_width': 4, 
+    'label_color' : '#ffffff',
+    'label_size' : '24px',
+    'label_offset': [0,5]
+    }
+pp.visualisation.plot(t, **style)</pre>
+            </div>
+            <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <style>
+            text.active_YRaJGqIP {
+                text-anchor: middle;
+                font-size: 24px;
+                font-family: Arial, Helvetica, sans-serif;
+                fill: #ffffff;
+                opacity: 1.0;
+            }
+            text.hidden_YRaJGqIP {
+                opacity: 0;
+            }
+            line.tlinks_YRaJGqIP {
+                stroke: #cccccc;
+                stroke-opacity: 0.4;
+                stroke-width: 2;
+            }
+            line.active_YRaJGqIP {
+                stroke: #ff0000;
+                stroke-opacity: 1.0;
+                stroke-width: 4;
+            }
+            line.hidden_YRaJGqIP {
+                stroke: rgb(255, 255, 255);
+                stroke-opacity: 0;
+                stroke-width: 0px;
+            }
+            circle.active_YRaJGqIP {
+                stroke: #222;
+                fill: #ff0000;
+                fill-opacity: 1;
+                stroke-width: 2px;
+            }
+            circle.tnodes_YRaJGqIP {
+                fill: #cccccc;
+                stroke: #222;
+                fill-opacity: 1;
+                stroke-width: 1.5px;
+            }
+        </style>
+        
+        <svg height="300" id="YRaJGqIP">
+            <text x="10" y="20" font-family="sans-serif" font-size="14px" fill="red" id="YRaJGqIP_time_txt">t = 1</text>
+            <text x="120" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer" id="YRaJGqIP_start_txt">stop</text>
+            <text x="170" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer" id="YRaJGqIP_restart_txt">restart</text>
+        </svg>
+        <script charset="utf-8">
+                require = function require(symbols, callback) {
+                var ms = 5;
+                window.setTimeout(function(t) {
+                    if (window[symbols[0]])
+                        callback(window[symbols[0]]);
+                    else 
+                        window.setTimeout(arguments.callee, ms);
+                }, ms);
+            }
+            
+            require(["d3"], function(d3) {
+            d3.selection.prototype.moveToFront = function() {
+                return this.each(function(){
+                    this.parentNode.appendChild(this);
+                });
+            };
+        
+            d3.selection.prototype.moveToBack = function() {  
+                return this.each(function() { 
+                    var firstChild = this.parentNode.firstChild; 
+                    if (firstChild) { 
+                        this.parentNode.insertBefore(this, firstChild); 
+                    } 
+                });
+            };
+        
+            var svg = d3.select("#YRaJGqIP"),
+                width = +svg.attr("width"),
+                height = +svg.attr("height"),
+                radius = 15,
+                color = d3.scaleOrdinal(d3.schemeCategory20b);
+        
+            var temporal_net = {"nodes": [{"id": "a", "group": 1}, {"id": "b", "group": 1}, {"id": "c", "group": 1}, {"id": "d", "group": 1}], "links": [{"source": "a", "target": "b", "width": 1, "time": 1}, {"source": "b", "target": "a", "width": 1, "time": 3}, {"source": "b", "target": "c", "width": 1, "time": 3}, {"source": "d", "target": "c", "width": 1, "time": 4}, {"source": "c", "target": "d", "width": 1, "time": 5}, {"source": "c", "target": "b", "width": 1, "time": 6}]};
+            var tsperframe = 1;
+            var msperframe = 2000;
+            var look_ahead = 2;
+            var look_behind = 2;
+        
+            var hidden_link_strength = 0;
+            var active_link_strength = 0.2;
+        
+            // create a dictionary with edges indexed by timestamps
+            var edgesbytime = {};
+            var time_stamps = temporal_net.links.map(link => link['time']);
+            time_stamps.forEach(function(t){
+                        edgesbytime[t] = [];
+                    });
+        
+            // extract static links
+            var links = [];
+            var links_by_id = {};
+            temporal_net.links.forEach(function(link){
+                id = String(link.source + '-' + link.target);
+                edgesbytime[link.time].push(id);
+                l = {
+                    'source': link.source,
+                    'target': link.target,
+                    'id': id,
+                    'strength': 0
+                };
+                if (!contains(links, l)){
+                    links.push(l);
+                    links_by_id[l.id] = l;
+                }
+            });
+        
+            var mintime = d3.min(time_stamps);
+            var maxtime = d3.max(time_stamps);
+            var run_status = true;
+            
+            var simulation = d3.forceSimulation()
+                .force("link", d3.forceLink().id(function(d) { return d.id; }))
+                .force("charge", d3.forceManyBody().strength(-30).distanceMax(150))
+                .force("repelForce", d3.forceManyBody().strength(-100).distanceMax(150))
+                .force("center", d3.forceCenter(300 / 2, 300 / 2))
+                .alphaTarget(0.1)
+                .on("tick", ticked);
+        
+            var g = svg.append("g")
+                .attr("class", "everything");
+        
+            var link = g.append("g")
+                .attr("class", "tlinks_YRaJGqIP")
+                .selectAll("line")
+                .data(links, function(d){return d.id;})
+                .enter().append("line")
+                .attr("id", function(d) { return d.id; });
+        
+            var node_g = g.append("g").attr("class", "tnodes_YRaJGqIP")
+                .selectAll("circle")
+                .data(temporal_net.nodes, function(d){return d.id;})
+                .enter()
+                .append("g");
+        
+            var node = node_g.append("circle")
+                    .attr('id', function(d) { return d.id; })
+                    .attr("r", radius)
+                    // .attr("fill", function(d) { return color(d.group); })
+                    .attr("class", "tnodes_YRaJGqIP")
+                    .call(d3.drag()
+                        .on("start", dragstarted)
+                        .on("drag", dragged)
+                        .on("end", dragended));
+        
+            var text = node_g.append("text")
+            .attr("x", [0, 5][0])
+            .attr("y", [0, 5][1])
+            .attr("id", function(d) {return d.id; })
+            .attr("class", "active_YRaJGqIP")
+            .text(function(d) { return d.id; });
+            
+            node.append("title").text(function(d) { return d.id; });
+        
+            var zoom_handler = d3.zoom()
+                .on("zoom", zoom_actions);
+            zoom_handler(svg);
+        
+            // build mapping to DOM objects once 
+            // for performance reasons
+            var time_txt = d3.select('#YRaJGqIP_time_txt');
+            var edges_to_dom = {};
+            var nodes_to_dom = {};    
+        
+            links.forEach(function(link){    
+                edges_to_dom[link.id] = d3.select('#YRaJGqIP #'+link.id);
+            });
+        
+            temporal_net.nodes.forEach(function(n){    
+                nodes_to_dom[n.id] = d3.select('#YRaJGqIP #'+n.id);
+            });
+        
+            // attach event handlers
+            d3.select('#YRaJGqIP_start_txt').on("click", pauseAnimation);
+            d3.select('#YRaJGqIP_restart_txt').on("click", restartAnimation);    
+        
+            simulation.nodes(temporal_net.nodes).on("tick", ticked);
+            // simulation.force("link").links(links);
+        
+            // start animation
+            var time = mintime;
+            var intervl = setInterval(time_step, msperframe);
+            console.log('Started animation.')
+        
+            // animates one time step
+            function time_step() {
+        
+                time_txt.html('t = ' + time);
+        
+                // stop animation
+                if(time > maxtime){
+                    run_status = false;
+                    clearInterval(intervl);
+                    console.log('Stopped animation.')     
+                }
+        
+                // reset all links to hidden 
+                for (id in edges_to_dom){
+                    try {
+                        // edges_to_dom[l.id].attr('class', 'links');
+                        links_by_id[id].strength = hidden_link_strength;
+                        edges_to_dom[id].attr('class', 'hidden_YRaJGqIP');              
+                    }
+                    catch(err){
+                        console.log('Error: Could not find DOM object with id ' + id);
+                    }
+                }
+                // reset all nodes to inactive
+                for (id in nodes_to_dom) {
+                    try{
+                        nodes_to_dom[id].attr("class", "tnodes_YRaJGqIP");
+                    }
+                    catch(err){
+                        console.log('Error: Could not find DOM object with id ' + id);
+                    }
+                }
+                
+                // change nodes and links in current time slice
+                for (ti=Math.max(mintime, time-look_behind); ti<=time+look_ahead; ti++) {
+        
+                    if (ti in edgesbytime) {
+                        edgesbytime[ti].forEach(function(id){
+                            links_by_id[id].strength = active_link_strength;
+                            // links that are currently active
+                            if (ti >= time-tsperframe+1 && ti <= time) {
+                                node_ids = id.split('-');
+                                try {
+                                    edges_to_dom[id].attr('class', 'active_YRaJGqIP').moveToFront();
+                                }
+                                catch(err){
+                                    console.log('Error: Could not find DOM link with id ' + id);
+                                }
+                                try {
+                                    nodes_to_dom[node_ids[0]].attr('class', 'active_YRaJGqIP').moveToFront();
+                                }
+                                catch(err){
+                                    console.log('Error: Could not find DOM node with id ' + node_ids[0]);
+                                }
+                                try {
+                                    nodes_to_dom[node_ids[1]].attr('class', 'active_YRaJGqIP').moveToFront();                            
+                                }
+                                catch(err){
+                                    console.log('Error: Could not find DOM node with id ' + node_ids[1]);
+                                }
+                            }
+                            // links in current time slice that are not active
+                            else{
+                                edges_to_dom[id].attr('class', 'tlinks_YRaJGqIP');
+                            }
+                        });
+                    }
+                }
+                simulation.force('link', d3.forceLink()
+                    .id(link => link.id)
+                    .strength(link => link.strength));
+                simulation.force("link").links(links);
+                text.moveToFront();
+        
+                time += tsperframe;
+            }
+        
+            function pauseAnimation() {
+                if (run_status) {
+                    run_status = false;
+                    clearInterval(intervl);
+                    d3.select('#YRaJGqIP_start_txt').html('start');
+                    console.log('Paused animation.')
+                }
+                else {
+                    intervl = setInterval(time_step, msperframe);
+                    run_status = true;
+                    d3.select('#YRaJGqIP_start_txt').html('stop');
+                    console.log('Resumed animation.')
+                }
+                
+            }
+        
+            function zoom_actions(){
+                g.attr("transform", d3.event.transform)
+            }
+        
+            function restartAnimation() {
+                if (run_status)
+                    clearInterval(intervl);
+                time = mintime;
+                time_txt.html('t = ' + time);
+                d3.select('#YRaJGqIP_start_txt').html('stop');
+                run_status = true;
+                intervl = setInterval(time_step, msperframe);
+                console.log('Restarted animation.')
+            }
+        
+            function ticked() {
+                link.attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+        
+                text.attr("transform", transform);
+        
+        
+                text.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+        
+                node.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+            }
+        
+            
+            function transform(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            }
+        
+            function dragstarted(d) {
+                if (!d3.event.active) 
+                    simulation.alphaTarget(0.2).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+        
+            function dragged(d) {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+            }
+        
+            function dragended(d) {
+                if (!d3.event.active) 
+                    simulation.alphaTarget(0.2);
+                d.fx = null;
+                d.fy = null;
+            }
+        
+            function contains(array, obj) {
+                var i = array.length;
+                while (i--) {
+                if (array[i] === obj) {
+                    return true;
+                }
+                }
+                return false;
+            }
+            });
+        </script></div>
+The ordering and timing in which time-stamped edges occur in a TemporalNetwork gives rise to so-called causal or time-respecting paths. In a nutshell, for two time-stamped edges (a,b,t)  and  (b,c,t′)  to contribute to a causal path  a->b->c  it must hold that  t&lt;t'. If we swap timestamps such that the edge (b,c) occurs <strong>before</strong> (a,b), no causal path a->b->c exists.</p>
+
+<p>So we observe that the chronological order of time-stamped edges crucially influences causal paths, i.e. which nodes can possibly influence each other in time-stamped edge sequences. Moreover, we often want to limit the maximum time difference between consecutive edges that contribute to a causal path. For data on dynamic social interactions that spans several years, it does not make sense to consider all chronologically ordered edges as possible causal paths for the propagation of information. After all, humans have limited memory and we should thus consider interactions that occur far apart in time as independent.
+        
+        We can formally add this condition by setting a maximum time difference delta for the path calculation. That is, we only consider two edges  (a,b,t)  and  (b,c,t′) to contribute to a causal path  a->b->c  if  0&lt;t'−t&le;delta. With this definition at hand, and by setting the maximum time difference delta, you can alculate causal path statistics in time-stamped network data. <code>pathpy</code> provides algorithms to calculate (or estimate) causal path statistics based on a <code>TemporalNetwork</code> instance. You can try this in the example temporal network:</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>p = pp.path_extraction.temporal_paths.paths_from_temporal_network_dag(t, delta=1)
+print(p)
+
+for l in p.paths:
+    for x in p.paths[l]:
+        if p.paths[l][x][1]>0:
+            print('{0} -> {1}'.format(x, p.paths[l][x][1]))</pre>
+                </div>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>Constructing time-unfolded DAG ... finished.
+Directed Acyclic Graph
+Nodes:		10
+Roots:		4
+Leaves:		5
+Links:		6
+Acyclic:	None
+
+Total path count: 		5.0 
+[Unique / Sub paths / Total]: 	[5.0 / 13.0 / 18.0]
+Nodes:				4 
+Edges:				6
+Max. path length:		2
+Avg path length:		1.2 
+Paths of length k = 0		0.0 [ 0.0 / 11.0 / 11.0 ]
+Paths of length k = 1		4.0 [ 4.0 / 2.0 / 6.0 ]
+Paths of length k = 2		1.0 [ 1.0 / 0.0 / 1.0 ]
+
+('b', 'c') -> 1.0
+('b', 'a') -> 1.0
+('c', 'b') -> 1.0
+('a', 'b') -> 1.0
+('d', 'c', 'd') -> 1.0</pre>
+                </div>
+<p>For  delta=1, it is easy to verify that this is correct. After all, there is only one pair of (directed) edges (d,c,4),(c,d,5) that contributes to a causal path of length two. In addition, we have four time-stamped edges, each of which is a trivial causal path of length one.</p>
+<p>While it is easy to understand the path statistics for a maximum time difference of  δ=1 , already for  δ=2  the situation gets more complicated.</p>
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>p = pp.path_extraction.paths_from_temporal_network_dag(t, delta=2)
+                print(p)
+                
+                for l in p.paths:
+                    for x in p.paths[l]:
+                        if p.paths[l][x][1]>0:
+                            print('{0} -> {1}'.format(x, p.paths[l][x][1]))</pre>
+        </div>
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>Constructing time-unfolded DAG ... finished.
+Directed Acyclic Graph
+Nodes:		13
+Roots:		2
+Leaves:		8
+Links:		12
+Acyclic:	None
+
+Total path count: 		4.0 
+[Unique / Sub paths / Total]: 	[4.0 / 24.0 / 28.0]
+Nodes:				4 
+Edges:				6
+Max. path length:		3
+Avg path length:		2.25 
+Paths of length k = 0		0.0 [ 0.0 / 13.0 / 13.0 ]
+Paths of length k = 1		0.0 [ 0.0 / 9.0 / 9.0 ]
+Paths of length k = 2		3.0 [ 3.0 / 2.0 / 5.0 ]
+Paths of length k = 3		1.0 [ 1.0 / 0.0 / 1.0 ]
+
+('d', 'c', 'b') -> 1.0
+('a', 'b', 'a') -> 1.0
+('d', 'c', 'd') -> 1.0
+('a', 'b', 'c', 'd') -> 1.0</pre>
+        </div>
+<p>We now observe one causal path a->b->c->d of length three, and three additional causal paths of length two. All shorter causal paths are contained in those longer causal paths, as shown by the path statistics above.</p>
+<p>Now, to analyse time-stamped network data, iti s crucial to understand which causal paths exist, since it is only along such causal paths that nodes can directly or indirectly influence each other. <code>pathpy</code> allows you to extract such causal paths in time series data. Moreover, in a future unit we will see how we can use higher- and multi-order network models to analyze causal paths and detect significant patterns in time series data.</p>
+        </div>
+        <div class="w3-third w3-container"></div>
 
   <footer id="myFooter">
     <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">

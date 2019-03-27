@@ -23,13 +23,15 @@
 <div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
     <div class="w3-justify">
       <h1 class="w3-text-theme">Which development tools do you recommend?</h1>
-    <p>While you are obviously free to use the python editor of your choice, we recommend new users to have a look at the development environment <a href="https://code.visualstudio.com/Download">Visual Studio Code</a>, a platform-independent Open Source code editor available for Windows, MacOS, and Linux. Just download the installation file and run the setup. Once the installation has completed, run Visual Studio Code either by clicking the icon or by typing code in the terminal.</p>
-    <p>A major benefit of Visual Studio Code is its built-in support for <code>jupyter</code> notebooks, which will allow you to edit python code in a convenient editor, while seeing the interactive output of your code in a split window. <code>pathpy</code> provides dedicated support for embedded visualisations, so you can display interactive visualisations of networks, temporal networks, and higher-order networks directly in Visual Studio Code. The following video demonstrates this:</p>
+    <p>While you are obviously free to use the python editor of your choice, we recommend new users to have a look at the development environment <a href="https://code.visualstudio.com">Visual Studio Code</a>, a platform-independent Open Source code editor available for Windows, MacOS, and Linux. Just <a href="https://code.visualstudio.com/Download">download the installation archive</a> and execute it. Once the installation has completed, you can run Visual Studio Code either by clicking the icon or typing
+      <div class="w3-panel w3-dark w3-leftbar w3-border"><pre>> code</pre></div>
+      in the terminal.</p>
+    <p>A major benefit of Visual Studio Code is its built-in support for <code>jupyter</code> notebooks, which will allow you to edit python code in a convenient editor, while seeing the interactive output of your code in a split window. <code>pathpy</code> comes with <code>jupyter</code> integration, so you can display interactive visualisations of networks, temporal networks, and higher-order networks directly in Visual Studio Code. The following video shows how this integration looks like:</p>
       <iframe src="https://www.youtube-nocookie.com/embed/QIPqFaR2Z5c" frameborder="1" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" style="margin: 0 auto; display:block;width:500px;height:300px;" allowfullscreen></iframe>
     </p>
-    <p>To conveniently work with python and jupyter in Visual Studio Code, you will need to install the python extension, which adds python code editing, debugging, and linting functionality as well as jupyter support. You can install it free of charge directly from Visual Studio Code's integrated extension manager. Open Visual Studio Code and click the <code>module</code> icon in the bottom of the left menu bar or press <code>Ctrl+Shift+X</code>. This will bring up the <code>Extensions</code> window. Type <code>python</code> and click the first result. In the window on the right, click <code>install</code>. When the download is complete, click <code>Reload</code> to complete the installation.</p>
+    <p>To conveniently work with python and <code>jupyter</code> in Visual Studio Code, you need to install the python extension, which adds python code editing, debugging, and linting functionality as well as <code>jupyter</code> support. You can install it free of charge using Visual Studio Code's extension manager. Open Visual Studio Code and click the <code>Extensions</code> icon in the bottom of the left menu bar or press <code>Ctrl+Shift+X</code>. This will bring up the <code>Extensions</code> window. Type <code>python</code> in the search box and click the first result. In the window on the right, click <code>Install</code>. Once this is complete, click <code>Reload</code> to complete the installation.</p>
     <p>
-    Now that we have installed all necessary tools and packages, let us verify that our environment is set up properly. Create a new file in Visual Studio Code and add the following code:
+    Now that Visual Studio Code is set up, you can verify your development environment. Create a new file in Visual Studio Code and add the following code:
     <div class="w3-panel w3-light-gray w3-leftbar w3-border">
       <pre>#%%
 import pathpy as pp
@@ -42,8 +44,13 @@ print(n)
 n
 </pre>
 </div>
-Once you have typed the code, you will see that two so-called <a href="https://code.visualstudio.com/blogs/2017/02/12/code-lens-roundup">code lenses</a> <code>Run cell</code> will appear above the <code>#%%</code> tags. These tags mark the start of a cell in a jupyter notebook that we can execute directly from within Visual Studio Code. If you click the code lens, a new jupyter kernel will be started automatically, and the code in the current cell will be executed. An output window will open that displays the output of your code.</p>
-<p>This gives you a very convenient way to complete data science tasks for (time series) data on complex networks. To learn more about how you can use <code>pathpy</code> to read, analyze, and visualize such data, just move on to the <a href="/tutorials/first_steps.html">next unit</a>.</p> 
+When you type this code, so-called <a href="https://code.visualstudio.com/blogs/2017/02/12/code-lens-roundup">code lenses</a> <code>Run Cell|Run Below</code> will appear above the two <code>#%%</code> tags. These tags, which will simply be ignored if you run the file with the standard python interpreter, mark the start of a cell in a jupyter notebook that we can be executed directly from within Visual Studio Code. If you click <code>Run Cell</code>, a new <code>jupyter</code> kernel will be started automatically, and the code in the current cell, i.e. between the current <code>#%%</code> tag and the next tag, will be executed. An output window will automatically open, which displays any output of your code.</p>
+<p><strong>Hint:</strong> Some users occasionally experience an <a href="https://github.com/Microsoft/vscode-python/issues/3533">issue</a> where the <code>jupyter</code> kernel fails to launch. One reason could be a missing installation of the python package <code>jupytext</code>. If you experience this problem, try to install the package by running:
+<div class="w3-panel w3-black w3-leftbar w3-border">
+  <pre>> pip install jupytext</pre>
+</div>
+</p>
+<p>The combination of Visual Studio Code, <code>jupyter</code> and <code>pathpy</code> provides you with a convenient environment to complete data science tasks for (time series) data on complex networks. To learn more about how you can use <code>pathpy</code> to read, analyse, and visualise such data, just move to the <a href="/tutorials/first_steps.html">next unit</a>.</p>
     </div>
     <div class="w3-third w3-container"></div>
 
