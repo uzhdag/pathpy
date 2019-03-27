@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>pathpy | first steps</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/pathpy.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/js/menu.js"></script>
+<script type="text/javascript" src="/js/sidebar.js"></script>
+<body>
+
+<!-- Navigation bar -->
+<div id="nav"></div>
+
+<!-- Side bar -->
+<div id="side"></div>
+
+<div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
+    <div class="w3-justify">
+      <h1 class="w3-text-theme">What are the system requirements?</h1>
+      <code>pathpy</code> is pure python code. It has no platform-specific dependencies and should thus run without problems on any operating system. <code>pathpy</code> requires python 3.x. Due to the end of life announcement of python 2.x for January 2020, we do not plan to offer a backport of <code>pathpy</code> for python 2.</p> 
+      <p><code>pathpy</code> builds on the data science packages <code>numpy</code> and <code>scipy</code>, which will automatically be installed if you install <code>pathpy</code> using the package manager <code>pip</code>. Even though any python 3.x installation is fine, we recommend using the latest <a href="https://www.anaconda.com/download/">Anaconda distribution</a>, an OpenSource python distribution that is pre-configured for data science and machine learning tasks.</p>
+      <h1 class="w3-text-theme">How can I install pathpy?</h1>
+      <p>The latest release version of </code>pathpy</code> can be installed via the <a href="https://pypi.org/project/pathpy2/">python package index pypi</a>. Just open a terminal and type:</p>
+      <div class="w3-panel w3-black w3-leftbar w3-border">
+          <pre>> pip install pathpy2</pre>
+      </div>
+      <p>If you have both a python 2 and a python 3 setup, you may have to use the command <code>pip3</code> to specifically refer to your python 3 installation. Also, make sure to use the pyPI name <code>pathpy2</code>, since the pyPI package name <code>pathpy</code> has been <a href="https://github.com/pypa/warehouse/issues/4413">namesquatted</a>. We are currently working on a solution to this issue.</p>
+      <p>If you want to install the latest <a href="https://github.com/uzhdag/pathpy">development version</a>, you can directly download and install it from our github repository. In this version, some issues of the last release version may already be fixed, but please be aware that this code may be in flow. You can use pip to install the development version as follows:</p>
+        <div class="w3-panel w3-black w3-leftbar w3-border">
+        <pre>> pip install git+git://github.com/uzhdag/pathpy.git</pre>
+        </div>
+    <p>You can check your installation to make sure that everything is working fine. In the terminal, run the python interpreter and import the package as follows:
+        <div class="w3-panel w3-black w3-leftbar w3-border">
+        <pre>
+> python
+Python 3.6.6 |Anaconda, Inc.| (default) [...]
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import pathpy as pp
+>>> help(pp)
+Help on package pathpy:
+
+NAME
+    pathpy
+
+DESCRIPTION
+    An OpenSource python package to analyze and
+    visualize time series data on complex networks.
+[...]
+        </pre>
+        </div>
+    <p>If you see the help message above, <code>pathpy</code> has been set up successfully and you are ready to take your <a href="/tutorials/first_steps.html">first steps</a>.
+    </div>
+    <div class="w3-third w3-container"></div>
+
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">
+      <hr>
+      &copy; Data Analytics Group, University of Zurich, 2019
+    </div>
+  </footer>
+<!-- END MAIN -->
+</div>
+
+</body>
+</html>

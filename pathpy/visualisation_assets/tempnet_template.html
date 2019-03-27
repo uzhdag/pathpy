@@ -55,7 +55,8 @@ try {
     // Problem: require.config will raise an exception when called for the second time 
     require.config({
         paths: {
-            d3: "https://d3js.org/d3.v4.min"
+            //d3: "https://d3js.org/d3.v4.min"
+            d3: "$d3js_path".replace(".js", "")
         }
     });
     console.log("Detected requireJS");

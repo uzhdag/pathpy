@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>pathpy | first steps</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/pathpy.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+<script type="text/javascript" src="/js/menu.js"></script>
+<script type="text/javascript" src="/js/sidebar.js"></script>
+<body>
+
+<!-- Navigation bar -->
+<div id="nav"></div>
+
+<!-- Side bar -->
+<div id="side"></div>
+
+  <div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
+    <div class="w3-justify">
+        <h1 class="w3-text-theme">How can I work with paths?</h1>
+        <p>At this point you might ask yourself why the package is called <code>pathpy</code>. The reason for this is that <code>pathpy</code>'s key feature is its support to store, manipulate, analyze, and model path statistics extracted from different kinds of time series data on complex networks. For this <code>pathpy</code> provides the class <code>Paths</code>, which can store collections of paths with varying lengths. Let us start by creating an empty instance of this class":
+        </p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>p = pp.Paths()</pre>
+        </div>
+        <p>We now have an empty <code>Paths</code> instance that we can use to add path statistics using the method <code>add_path</code>. As the first parameter, the method accepts any iterable (list, string, etc.) of string variables (or objects that can be cast to string), where each entry in the iterable is one step (i.e. node) on a path. The optional frequency parameter captures the number of times a specific path has been observed. let us try this by adding 10 observations of paths <code>a -> c -> e</code> between three nodes a, c, and e:</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>p.add_path(('a', 'c', 'd'), frequency=10)</pre>
+        </div>
+        <p>We can create a toy example (directed) network by adding the following code and then running the cell:</p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>n = pp.Network(directed=True)
+n.add_edge('a', 'c')
+n.add_edge('b', 'c')
+n.add_edge('c', 'd')
+n.add_edge('c', 'e')
+print(n)</pre></div>
+        <p>Just like for the classes <code>Network</code> and <code>TemporalNetwork</code>, the <code>print</code> statement will output a default string representation of the paths instance, which provides some basic  statistics:</p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>print(p)</pre>
+        </div>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+<pre>Total path count: 		10.0 
+[Unique / Sub paths / Total]: 	[1.0 / 50.0 / 60.0]
+Nodes:				3 
+Edges:				2
+Max. path length:		2
+Avg path length:		2.0 
+Paths of length k = 0		0.0 [ 0.0 / 30.0 / 30.0 ]
+Paths of length k = 1		0.0 [ 0.0 / 20.0 / 20.0 ]
+Paths of length k = 2		10.0 [ 1.0 / 0.0 / 10.0 ]</pre>
+</div>
+        <p>This returns some summary statistics of the <code>Paths</code> instance. Our small example contains 10 observed paths between three nodes. These paths imply a graph topology with two edges (a,b) and (b,c). Both the maximum and the average path length is two (the path length counts the number of edge traversals of a path).</p>
+        <p>To understand the last three lines and the second line in the output, we must look into the inner workings of pathpy. For the fitting of higher-order graphical models as well as for the representation learning algorithm, pathpy uses all path statistics available. Specifically to fit, say, a second-order model to a set of paths that all have length 10 or longer, we calculate which paths of length two are contained as sub-paths within these observations of longer paths. For this reason, pathpy automatically calculates the statistics of actual path observations as well as the statistics of sub-paths contained in these observed paths.</p>
+        <p>In our case, we have  10  observations of a single path  a→b→c  of length two, thus the last line in the output above. Each of these paths additionally contains two sub-paths  a→b  and  b→c  of length two, thus the number  20.0  in the sub-path count in the line  k=1 . Finally, each of the paths contains three "paths" of length zero, which are just observations of a single node (i.e. there is no transition across an edge), thus the sub-path count of  30.0  in the line  k=0 . This amounts to a total of  50.0  sub-paths +  10  observations of an actual (longest) path, thus explaining the second line in the output.</p>         
+        <p>Apart from adding paths as a tuple, we can also add them as string-encoded n-grams, using the parameter <code>separator</code> to specify a character that separates nodes.</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border"><pre>p2 = pp.Paths()
+                p2.add_path('b-c-e',  separator='-', frequency=10)
+                print(p2)</pre></div>
+<div class="w3-panel w3-light-gray w3-leftbar w3-border">
+<pre>Total path count: 		10.0 
+[Unique / Sub paths / Total]: 	[1.0 / 50.0 / 60.0]
+Nodes:				3 
+Edges:				2
+Max. path length:		2
+Avg path length:		2.0 
+Paths of length k = 0		0.0 [ 0.0 / 30.0 / 30.0 ]
+Paths of length k = 1		0.0 [ 0.0 / 20.0 / 20.0 ]
+Paths of length k = 2		10.0 [ 1.0 / 0.0 / 10.0 ]</pre>
+</div>
+        <p>We obtain a Paths object with 10 observations of path  b→c→ . We can add this to our previous toy_paths instance by using arithmetic operators on instances of the Paths class.</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>p += p2
+print(p)</pre>
+        </div>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+<pre>Total path count: 		20.0 
+[Unique / Sub paths / Total]: 	[2.0 / 100.0 / 120.0]
+Nodes:				5 
+Edges:				4
+Max. path length:		2
+Avg path length:		2.0 
+Paths of length k = 0		0.0 [ 0.0 / 60.0 / 60.0 ]
+Paths of length k = 1		0.0 [ 0.0 / 40.0 / 40.0 ]
+Paths of length k = 2		20.0 [ 2.0 / 0.0 / 20.0 ]</pre>
+</div>
+<p>We obtain a new Paths instance where 20 observed paths traverse five nodes a, b, c, d, and e across four edges (a,c), (c,d), (b,c) and (c,e).</p>
+<p>
+We often analyse or visualise graph or network topologies in which the observed paths have occurred. For this, pathpy provides the class Network, which you can use to read, manipulate, analyse, and visualise directed, undirected, weighted, and unweighted networks.
+
+We can easily turn any Paths instance into a network by using the class method Network.from_paths. This will cut each path  v0->v1->v2->... into multiple directed dyadic relations  (vi,vi+1)  that are represented by directed edges. Let us try this in our example:
+</p>
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>n = pp.Network.from_paths(p)
+print(n)</pre>
+        </div>
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+<pre>Directed network
+Nodes:	5
+Links:	4</pre>
+</div>
+<p>
+We obtain a network with five nodes a, b, c, d, and e and four directed edges. The number of times each edge is traversed by a path is captured by the weights of these edges. We can access these weights using the dictionary <code>toy_graph.edges[edge]</code>.
+</p>
+        </div>
+        <div class="w3-third w3-container"></div>        
+
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">
+      <hr>
+      &copy; Data Analytics Group, University of Zurich, 2019
+    </div>
+  </footer>
+<!-- END MAIN -->
+</div>
+
+</body>
+</html>

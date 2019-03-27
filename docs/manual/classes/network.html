@@ -1,0 +1,3059 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.classes.network API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.classes.network</code> module</h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+import collections as _co
+import copy
+import itertools
+
+import numpy as _np
+
+import scipy.sparse as _sparse
+import scipy.sparse.linalg as _sla
+
+from pathpy.utils import Log, Severity
+from pathpy.utils.exceptions import PathpyError, PathpyNotImplemented
+
+
+class Network:
+    r&#34;&#34;&#34;A graph or network that can be directed, undirected, unweighted or weighted
+    and whose edges can contain arbitrary attributes. This is the base class for 
+    HigherOrderNetwork
+
+    Attributes
+    ----------
+
+    nodes : list
+        A list of (string) nodes.
+    edges : dictionary
+        A dictionary containing edges (as tuple-valued keys) and their attributes (as value)
+    &#34;&#34;&#34;
+
+    def __init__(self, directed=False):
+        &#34;&#34;&#34;
+        Generates an empty network.
+        &#34;&#34;&#34;
+
+        # Boolean value that inidcates whether the network is directed or undirected
+        self.directed = directed
+
+        # A dictionary containing nodes as well as node properties
+        self.nodes = _co.defaultdict(dict)
+
+        # A dictionary containing edges as well as edge properties
+        if not directed:
+            self.edges = UnorderedDict()
+        else:
+            self.edges = _co.defaultdict(dict)
+
+        # A dictionary containing the sets of successors of all nodes
+        self.successors = _co.defaultdict(set)
+
+        # A dictionary containing the sets of predecessors of all nodes
+        self.predecessors = _co.defaultdict(set)
+
+
+    def __add__(self, other):
+        r&#34;&#34;&#34;Add two networks and return the union of both
+
+        Parameters
+        ----------
+        other : Network
+
+        Returns
+        -------
+        Network
+            Default operator +, which returns the sum of two Network objects
+        &#34;&#34;&#34;
+        n_sum = Network(directed = self.directed or other.directed)
+        n_sum.nodes = copy.deepcopy(self.nodes)
+        n_sum.edges = copy.deepcopy(self.edges)
+        n_sum.successors = copy.deepcopy(self.successors)
+        n_sum.predecessors = copy.deepcopy(self.predecessors)
+        for edge in other.edges:
+            n_sum.add_edge(edge[0], edge[1], weight=other.edges[edge][&#39;weight&#39;])
+        return n_sum
+
+    @classmethod
+    def read_file(cls, filename, separator=&#39;,&#39;, weighted=False, directed=False, header=False):
+        r&#34;&#34;&#34;Reads a network from an edge list file.
+
+        Reads data from a file containing multiple lines of *edges* of the
+        form &#34;v,w,frequency,X&#34; (where frequency is optional and X are
+        arbitrary additional columns). The default separating character &#39;,&#39;
+        can be changed. In order to calculate the statistics of paths of any length,
+        by default all subpaths of length 0 (i.e. single nodes) contained in an edge
+        will be considered.
+
+        Parameters
+        ----------
+        filename : str
+            path to edgelist file
+        separator : str
+            character separating the nodes
+        weighted : bool
+            is a weight given? if ``True`` it is the last element in the edge
+            (i.e. ``a,b,2``)
+        directed : bool
+            are the edges directed or undirected
+        header : bool
+            if true skip the first row, useful if header row in file
+
+        Returns
+        -------
+        Network
+            a ``Network`` object obtained from the edgelist
+        &#34;&#34;&#34;
+        net = cls(directed)
+
+        with open(filename, &#39;r&#39;) as f:
+            Log.add(&#39;Reading edge list ... &#39;)
+            header_offset = 0
+            if header:
+                f.readline()
+                header_offset = 1
+
+            for n, line in enumerate(f):
+                fields = line.rstrip().split(separator)
+                fields = [field.strip() for field in fields]
+                if len(fields) &lt; 2:
+                    Log.add(&#39;Ignoring malformed line {0}: {1}&#39;.format(n, line+header_offset), Severity.WARNING)
+                else:
+                    if weighted:
+                        net.add_edge(fields[0], fields[1], weight=int(fields[2]))
+                    else:
+                        net.add_edge(fields[0], fields[1])
+
+        Log.add(&#39;finished.&#39;)
+
+        return net
+
+
+    def write_file(self, filename, separator=&#39;,&#39;, weighted=False, header=False):
+        r&#34;&#34;&#34;Writes a network to an edge file&#34;&#34;&#34;
+        with open(filename, &#39;w+&#39;) as f:
+            if header:
+                if weighted:
+                    f.write(&#39;source&#39; + separator + &#39;target&#39; + separator + &#39;weight&#39; + &#39;\n&#39;)
+                else:
+                    f.write(&#39;source&#39; + separator + &#39;target&#39; + &#39;\n&#39;)
+            for edge in self.edges:
+                if weighted:       
+                    f.write(str(edge[0]) + separator + str(edge[1]) + separator + str(self.edges[edge][&#39;weight&#39;])+&#39;\n&#39;)
+                else:
+                    f.write(str(edge[0]) + separator + str(edge[1]) + &#39;\n&#39;)
+
+    @classmethod
+    def from_sqlite(cls, cursor, directed=True):
+        r&#34;&#34;&#34;Returns a new Network instance generated from links obtained 
+        from an SQLite cursor. The cursor must refer to a table with at least
+        two columns
+
+                source target
+
+        in which each row contains one link. Additional columns will be used as
+        named edge properties. Since columns are accessed by name this function requires that a
+        row factory object is set for the SQLite connection prior to cursor creation,
+        i.e. you should set
+
+                connection.row_factory = sqlite3.Row
+
+        Parameters
+        ----------
+        cursor : 
+            The SQLite cursor to fetch rows from. 
+        directed : bool
+            Whether or not links should be interpreted as directed. Default is True.
+
+        Returns
+        -------
+        Network
+            A Network instance created from the SQLite database.
+
+        &#34;&#34;&#34;
+        from pathpy.classes import DAG
+        if cls == DAG:
+            n = cls()
+        else:
+            n = cls(directed=directed)
+
+        assert cursor.connection.row_factory, \
+            &#39;Cannot access columns by name. Please set &#39; \
+            &#39;connection.row_factory = sqlite3.Row before creating DB cursor.&#39;
+
+        Log.add(&#39;Retrieving links from database ...&#39;)
+
+        for row in cursor:
+            n.add_edge(str(row[&#39;source&#39;]), str(row[&#39;target&#39;]))
+
+        return n
+
+
+    @classmethod
+    def from_paths(cls, paths):
+        r&#34;&#34;&#34;Generates a weighted directed network from a Paths
+            object. The weight of directed links will correspond 
+            to the statistics of (sub)-paths of length one&#34;&#34;&#34;
+        network = cls(directed=True)
+
+        # check all sub-paths of length one
+        for p in paths.paths[1]:
+            network.add_edge(p[0], p[1], weight=paths.paths[1][p].sum())
+
+        return network
+
+    @classmethod
+    def from_temporal_network(cls, tempnet, min_time=None, max_time=None, directed=True):
+        r&#34;&#34;&#34;Returns a time-aggregated directed network representation
+        of a temporal network. The number of occurrences of
+        the same edge at different time stamps is captured
+        by edge weights.
+        &#34;&#34;&#34;
+        network = cls(directed=directed)
+
+        for (v, w, t) in tempnet.tedges:
+            if (min_time is None or t &gt;= min_time) and (max_time is None or t &lt; max_time):
+                if (v, w) in network.edges:
+                    network.add_edge(v, w, weight=network.edges[(v, w)][&#39;weight&#39;]+1.0)
+                else:
+                    network.add_edge(v, w)
+
+        return network
+
+
+    def to_unweighted(self):
+        r&#34;&#34;&#34;Returns an unweighted copy of a directed or undirected network.
+        In this copy all edge and node properties of the original network
+        are removed, but the directionality of links is retained.
+        &#34;&#34;&#34;
+        n = Network(directed = self.directed)
+
+        for (v,w) in self.edges:
+            n.add_edge(v, w)
+        return n
+
+
+    def to_undirected(self):
+        r&#34;&#34;&#34;Returns an undirected copy of the network, in which all
+        node and edge properties are removed.
+        &#34;&#34;&#34;
+        n = Network(directed = False)
+
+        for (v,w) in self.edges:
+            #if v!=w:
+            n.add_edge(v, w)
+        return n
+
+
+    def add_node(self, v, **node_attributes):
+        r&#34;&#34;&#34;Adds a node to a network and assigns arbitrary
+        node attributes.
+
+        Parameters
+        ----------
+        node_attributes : dict
+            Key-value pairs that will be stored as
+            named node attributes in a dictionary. An
+            attribute set via network.add_node(v, x=42) can be
+            assessed via network.nodes[v][&#39;x&#39;]. Any node in an undirected
+            network will have the default attributes &#39;degree&#39;, &#39;inweight&#39;,
+            and &#39;outweight&#39;. Any node in a directed network will have the 
+            default attributes &#39;indegree&#39;, &#39;outdegree&#39;, &#39;inweight&#39;, and &#39;outweight&#39;.
+            See examples below.
+
+        Examples
+        --------
+            &gt;&gt;&gt; network = pathpy.Network(directed=False)
+            &gt;&gt;&gt; network.add_node(v)
+            &gt;&gt;&gt; print(network.nodes[v])
+            &gt;&gt;&gt; {&#39;inweight&#39;: 0.0, &#39;outweight&#39;: 0.0, &#39;degree&#39;: 0}            
+            &gt;&gt;&gt; network = pathpy.Network(directed=True)
+            &gt;&gt;&gt; network.add_node(v)
+            &gt;&gt;&gt; print(network.nodes[v])
+            &gt;&gt;&gt; {&#39;inweight&#39;: 0.0, &#39;outweight&#39;: 0.0, &#39;indegree&#39;: 0, &#39;outdegree&#39;: 0}
+        &#34;&#34;&#34;
+        if v not in self.nodes:
+            self.nodes[v] = {**self.nodes[v], **node_attributes}
+
+            # set default values if not set already
+            if &#39;inweight&#39; not in self.nodes[v]:
+                self.nodes[v][&#39;inweight&#39;] = 0.0
+            if &#39;outweight&#39; not in self.nodes[v]:
+                self.nodes[v][&#39;outweight&#39;] = 0.0
+            if self.directed:
+                self.nodes[v][&#39;indegree&#39;] = 0
+                self.nodes[v][&#39;outdegree&#39;] = 0
+            else:
+                self.nodes[v][&#39;degree&#39;] = 0
+
+
+    def remove_node(self, v):
+        r&#34;&#34;&#34;Removes a node and all of its attributes from the network.&#34;&#34;&#34;
+        if v in self.nodes:
+            # remove all incident edges and update neighbors
+            if not self.directed:
+                for w in list(self.successors[v]):
+                    edge = (v, w)
+                    self.nodes[w][&#39;degree&#39;] -= 1
+                    self.nodes[w][&#39;inweight&#39;] -= self.edges[edge][&#39;weight&#39;]
+                    self.nodes[w][&#39;outweight&#39;] -= self.edges[edge][&#39;weight&#39;]
+                    self.successors[w].remove(v)
+                    self.predecessors[w].remove(v)
+                    del self.edges[edge]
+            else:
+                for w in list(self.successors[v]):
+                    self.nodes[w][&#39;indegree&#39;] -= 1
+                    self.nodes[w][&#39;inweight&#39;] -= self.edges[(v, w)][&#39;weight&#39;]
+                    self.predecessors[w].remove(v)
+                    del self.edges[(v, w)]
+                for w in list(self.predecessors[v]):
+                    self.nodes[w][&#39;outdegree&#39;] -= 1
+                    self.nodes[w][&#39;outweight&#39;] -= self.edges[(w, v)][&#39;weight&#39;]
+                    self.successors[w].remove(v)
+                    del self.edges[(w, v)]
+            del self.nodes[v]
+        if v in self.successors:
+            del self.successors[v]
+        if v in self.predecessors:
+            del self.predecessors[v]
+
+
+    def remove_edge(self, source, target):
+        r&#34;&#34;&#34;
+        Remove an edge and all of its attributes from the network.
+
+        Parameters
+        ----------
+        source : str
+            Source node of the edge to remove
+        target : str
+            Target node of the edge to remove
+        &#34;&#34;&#34;
+        if not (source in self.nodes and target in self.nodes):
+            return None
+
+        if self.directed:
+            # take care of source
+            self.nodes[source][&#39;outdegree&#39;] -= 1
+            self.nodes[source][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.successors[source].remove(target)
+
+            # take care of target
+            self.nodes[target][&#39;indegree&#39;] -= 1
+            self.nodes[target][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.predecessors[target].remove(source)
+
+            del self.edges[(source, target)]
+        else:
+            # take care of source
+            self.nodes[source][&#39;degree&#39;] -= 1
+            self.nodes[source][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.nodes[source][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.successors[source].remove(target)
+            self.predecessors[source].remove(target)
+
+            # take care of target
+            if source != target:
+                self.nodes[target][&#39;degree&#39;] -= 1
+                self.nodes[target][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+                self.nodes[target][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+                self.successors[target].remove(source)
+                self.predecessors[target].remove(source)
+
+            del self.edges[(source, target)]
+
+
+    def add_clique(self, node_list, **edge_attributes):
+        r&#34;&#34;&#34;
+        Adds a fully connected clique to the network. This will 
+        automatically create all edges between all pairs of nodes
+        (without self-loops). Depending on the network type
+        edges will be directed or undirected.
+
+        Parameters
+        ----------
+        node_list: iterable
+            the list of nodes for which all pairs will be connected
+        edge_attributes: dict
+            edge attributes that will be assigned to all generated edges
+        &#34;&#34;&#34;        
+        for v, w in itertools.combinations(node_list, 2):            
+            self.add_edge(v, w, **edge_attributes)
+            if self.directed:
+                self.add_edge(w, v, **edge_attributes)
+
+
+
+    def add_edge(self, v, w, **edge_attributes):
+        r&#34;&#34;&#34;
+        Adds an edge to a network and assigns arbitrary
+        key-value pairs as edge attribute.
+
+        Parameters
+        ----------
+        v : str
+            String label of the source node
+        w : str
+            String label of the target node
+        edge_attributes : dict
+            Key-value pairs that will be stored as
+            named edge attributes in a dictionary. An
+            attribute set via network.add_edge(v, w, x=42) can be
+            assessed via network.edges[(v,w)][&#39;x&#39;].
+            Any edge will have the default attribute &#39;weight&#39;, which
+            is set to 1.0 by default. Edge weights are overwritten
+            if an additional weighted edge is added later
+            (see example below).
+
+        Examples
+        --------
+            &gt;&gt;&gt; network.add_edge(&#39;a&#39;,&#39;b&#39;)
+            &gt;&gt;&gt; print(network.edges[(&#39;a&#39;, &#39;b&#39;)][&#39;weight&#39;])
+            &gt;&gt;&gt; 1.0 
+            &gt;&gt;&gt; network.add_edge(&#39;a&#39;,&#39;b&#39;, weight = 2.0)
+            &gt;&gt;&gt; print(network.edges[(&#39;a&#39;, &#39;b&#39;)][&#39;weight&#39;])
+            &gt;&gt;&gt; 2.0
+        &#34;&#34;&#34;
+
+        # Add nodes if they don&#39;t exist
+        self.add_node(v)
+        self.add_node(w)
+
+        e = (v, w)
+
+        if &#39;weight&#39; in edge_attributes and isinstance(edge_attributes[&#39;weight&#39;], int):
+            edge_attributes[&#39;weight&#39;] = float(edge_attributes[&#39;weight&#39;])
+
+        # add any new atributes to the edge
+        self.edges[e] = {**self.edges[e], **edge_attributes}
+
+        # add default weight of one, if no weight is specified
+        if &#39;weight&#39; not in self.edges[e]:
+            self.edges[e][&#39;weight&#39;] = 1.0
+
+        # update predecessor and successor lists
+        self.successors[v].add(w)
+        self.predecessors[w].add(v)
+        if not self.directed:
+            self.successors[w].add(v)
+            self.predecessors[v].add(w)
+
+        # update degrees and node weights
+        if not self.directed:
+            # update degree, in- and outweight
+            self.nodes[v][&#39;degree&#39;] = len(self.successors[v])
+            self.nodes[w][&#39;degree&#39;] = len(self.successors[w])
+
+            S = [self.edges[(v,w)][&#39;weight&#39;] for w in self.successors[v]]
+            if S:
+                self.nodes[v][&#39;outweight&#39;] = sum(S)
+                self.nodes[v][&#39;inweight&#39;] = self.nodes[v][&#39;outweight&#39;]
+
+            S = [self.edges[(v,w)][&#39;weight&#39;] for v in self.predecessors[w]]
+            if S:
+                self.nodes[w][&#39;outweight&#39;] = sum(S)
+                self.nodes[w][&#39;inweight&#39;] = self.nodes[w][&#39;outweight&#39;]
+        else:
+            self.nodes[v][&#39;outdegree&#39;] = len(self.successors[v])
+            self.nodes[v][&#39;indegree&#39;] = len(self.predecessors[v])
+            self.nodes[w][&#39;outdegree&#39;] = len(self.successors[w])
+            self.nodes[w][&#39;indegree&#39;] = len(self.predecessors[w])
+
+            # Note: Weights will be 0 for nodes with empty successors or predecessors. This is a
+            # problem for higher-order networks, where the zero weight is assumed to be a vector
+            # (0,0), Not updating weights in this case will ensure that we keep the initial value
+            # of weights
+
+            S = [self.edges[(v, x)][&#39;weight&#39;] for x in self.successors[v]]
+            if S:
+                self.nodes[v][&#39;outweight&#39;] = sum(S)
+            S = [self.edges[(x, v)][&#39;weight&#39;] for x in self.predecessors[v]]
+            if S:
+                self.nodes[v][&#39;inweight&#39;] = sum(S)
+            S = [self.edges[(w, x)][&#39;weight&#39;] for x in self.successors[w]]
+            if S:
+                self.nodes[w][&#39;outweight&#39;] = sum(S)
+            S = [self.edges[(x, w)][&#39;weight&#39;] for x in self.predecessors[w]]
+            if S:
+                self.nodes[w][&#39;inweight&#39;] = sum(S)
+
+
+    def find_nodes(self, select_node=lambda v: True):
+        r&#34;&#34;&#34;
+        Returns all nodes that satisfy a given condition. In the select_node
+        lambda function, node attributes can be accessed by calling v[&#39;attr&#39;]
+        &#34;&#34;&#34;
+        return [n for n in self.nodes if select_node(self.nodes[n])]
+
+
+    def find_edges(self, select_nodes=lambda v, w: True, select_edges=lambda e: True):
+        r&#34;&#34;&#34;
+        Returns all edges that satisfy a given condition. Edges can be selected based
+        on attributes of the adjacent nodes as well as attributes of the edge. In the select_edges
+        lambda function,.
+
+        Parameters
+        ----------
+        select_nodes : lambda
+            a lambda function that takes two parameters v, w corresponding to the source and 
+            target node of an edge. All edges for which the lambda function returns True will be 
+            selected. Default is lambda v,w: True.
+        select_edges : lambda
+            a lambda function that takes a single parameter e corresponding to an edge tuple. 
+            Edge attributes can be accessed by e[&#39;attr&#39;]. All edges for which the lambda function 
+            returns True will be selected.  Default is lambda e: True.
+
+        Example:
+        &gt;&gt;&gt; network.find_edges(select_nodes = lambda v,w: True if v[&#39;desired_node_property&#39;] else False, 
+                               select_edges = lambda e: True if e[&#39;desired_edge_property&#39;] else False)
+        &#34;&#34;&#34;
+        return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
+
+
+    def ncount(self):
+        &#34;&#34;&#34; Returns the number of nodes &#34;&#34;&#34;
+        return len(self.nodes)
+
+
+    def ecount(self):
+        r&#34;&#34;&#34;Returns the number of links &#34;&#34;&#34;
+        return len(self.edges)
+
+
+    def total_edge_weight(self):
+        r&#34;&#34;&#34;Returns the sum of all edge weights &#34;&#34;&#34;
+        if self.edges:
+            return _np.sum(e[&#39;weight&#39;] for e in self.edges.values())
+        return 0
+
+
+    def node_properties(self, prop):
+        r&#34;&#34;&#34;Returns a list of arbitrary node properties in the network, 
+        where entries have the same order as in network.nodes. If a property
+        is not present for a given node, None will be added to the list.
+        &#34;&#34;&#34;
+        properties = []
+        for v in self.nodes:
+            if prop in self.nodes[v]:
+                properties.append(self.nodes[v][prop])
+            else:
+                properties.append(None)
+        return properties
+
+
+    def degrees(self, mode=&#39;degree&#39;):
+        r&#34;&#34;&#34;Returns the sequence of node degrees in the network, where
+        entries have the same order as in network.nodes. Note that 
+        if mode == &#39;degree&#39; for a directed network, the degree sequence
+        of the undirected network will be returned.
+
+        Parameters
+        ----------
+        mode : str
+            either &#39;degree&#39;, &#39;indegree&#39;, or &#39;outdegree&#39;
+        &#34;&#34;&#34;
+        assert mode is &#39;degree&#39; or mode is &#39;indegree&#39; or mode is &#39;outdegree&#39;, \
+            &#39;Only &#34;degree&#34;, &#34;indegree&#34;, or &#34;outdegree&#34; are supported.&#39;
+        
+        if self.directed and mode == &#39;degree&#39;:
+            return self.to_undirected().degrees()
+
+        return self.node_properties(mode)
+
+
+    def node_to_name_map(self):
+        &#34;&#34;&#34;Returns a dictionary that can be used to map nodes to matrix/vector indices&#34;&#34;&#34;
+        return {v: idx for idx, v in enumerate(self.nodes)}
+
+
+    def adjacency_matrix(self, weighted=True, transposed=False):
+        &#34;&#34;&#34;Returns a sparse adjacency matrix of the higher-order network. Unless transposed
+        is set to true, the entry corresponding to a directed link s-&gt;t is stored in row s and
+        column t and can be accessed via A[s,t].
+
+        Parameters
+        ----------
+        weighted: bool
+            if set to False, the function returns a binary adjacency matrix.
+            If set to True, adjacency matrix entries contain edge weights.
+        transposed: bool
+            whether to transpose the matrix or not.
+
+        Returns
+        -------
+        numpy cooc matrix
+        &#34;&#34;&#34;
+        row = []
+        col = []
+        data = []
+
+        edgeC = self.ecount()
+        if not self.directed:
+            n_self_loops = sum(s == t for (s, t) in self.edges)
+            edgeC *= 2
+            edgeC -= n_self_loops
+
+        node_to_coord = self.node_to_name_map()
+
+        for (s, t), e in self.edges.items():
+            row.append(node_to_coord[s])
+            col.append(node_to_coord[t])
+            if weighted:
+                data.append(e[&#39;weight&#39;])
+            else:
+                data.append(1)
+
+            if not self.directed and t != s:
+                row.append(node_to_coord[t])
+                col.append(node_to_coord[s])
+                if weighted:
+                    data.append(e[&#39;weight&#39;])
+                else:
+                    data.append(1)
+
+        shape = (self.ncount(), self.ncount())
+        A = _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+
+        if transposed:
+            return A.transpose()
+        return A
+
+
+    def transition_matrix(self):
+        &#34;&#34;&#34;Returns a (transposed) transition matrix of a random walk process
+        on the network
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        row = []
+        col = []
+        data = []
+
+        # calculate weighted out-degrees of all nodes
+        D = {n: self.nodes[n][&#39;outweight&#39;] for n in self.nodes}
+
+        node_to_coord = self.node_to_name_map()
+
+        for s, t in self.edges:
+            # the following makes sure that we do not accidentally consider zero-weight
+            # edges (automatically added by default_dic)
+            weight = self.edges[(s, t)][&#39;weight&#39;]
+            if weight &gt; 0:
+                # add transition from s to t
+                row.append(node_to_coord[t])
+                col.append(node_to_coord[s])
+                assert D[s] &gt; 0, \
+                    &#39;Encountered zero out-weight or out-degree for node &#34;{s}&#34; &#39; \
+                    &#39;while weight of link ({s}, {t}) is non-zero.&#39;.format(s=s, t=t)
+                prob = weight / D[s]
+                if prob &lt; 0 or prob &gt; 1:  # pragma: no cover
+                    raise ValueError(&#39;Encountered transition probability {p} outside &#39;
+                                     &#39;[0,1] range.&#39;.format(p=prob))
+                data.append(prob)
+
+                # add transition from t to s for undirected network
+                if not self.directed and s!=t:
+                    row.append(node_to_coord[s])
+                    col.append(node_to_coord[t])
+                    assert D[t] &gt; 0, \
+                    &#39;Encountered zero out-degree for node &#34;{t}&#34; &#39; \
+                    &#39;while weight of link ({t}, {s}) is non-zero.&#39;.format(s=s, t=t)
+                    prob = weight / D[t]
+                    if prob &lt; 0 or prob &gt; 1:  # pragma: no cover
+                        raise ValueError(&#39;Encountered transition probability {p} outside &#39;
+                                        &#39;[0,1] range.&#39;.format(p=prob))
+                    data.append(prob)
+
+        data = _np.array(data)
+        data = data.reshape(data.size, )
+
+        shape = self.ncount(), self.ncount()
+        return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+
+
+    def laplacian_matrix(self, weighted=False, transposed=False):
+        &#34;&#34;&#34;
+        Returns the transposed normalized Laplacian matrix corresponding to the network.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        if weighted:
+            A = self.transition_matrix().transpose()
+            D = _sparse.identity(self.ncount())
+        else:
+            A = self.adjacency_matrix(weighted=False)
+            D = _sparse.diags(_np.array([float(self.nodes[v][&#39;degree&#39;]) for v in self.nodes]))
+        L = D - A
+        if transposed:
+            return L.transpose()
+        return L
+
+
+    @staticmethod
+    def leading_eigenvector(A, normalized=True, lanczos_vecs=None, maxiter=None):
+        &#34;&#34;&#34;Compute normalized leading eigenvector of a given matrix A.
+
+        Parameters
+        ----------
+        A:
+            sparse matrix for which leading eigenvector will be computed
+        normalized: bool
+            whether or not to normalize, default is True
+        lanczos_vecs: int
+            number of Lanczos vectors to be used in the approximate
+            calculation of eigenvectors and eigenvalues. This maps to the ncv parameter
+            of scipy&#39;s underlying function eigs.
+        maxiter: int
+            scaling factor for the number of iterations to be used in the
+            approximate calculation of eigenvectors and eigenvalues.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        if not _sparse.issparse(A):  # pragma: no cover
+            raise TypeError(&#34;A must be a sparse matrix&#34;)
+
+        # NOTE: ncv sets additional auxiliary eigenvectors that are computed
+        # NOTE: in order to be more confident to find the one with the largest
+        # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
+        if lanczos_vecs == None or maxiter == None:
+            w, pi = _sla.eigs(A, k=1, which=&#34;LM&#34;)
+        else:
+            w, pi = _sla.eigs(A, k=1, which=&#34;LM&#34;, ncv=lanczos_vecs, maxiter=maxiter)
+        pi = pi.reshape(pi.size, )
+        if normalized:
+            pi /= sum(pi)
+        return pi
+
+
+    def summary(self):
+        &#34;&#34;&#34;Returns a string containing basic summary statistics of this network instance
+        &#34;&#34;&#34;
+        summary_fmt = (
+            &#39;{directed_str} network\n&#39;
+            &#39;Nodes:\t\t\t\t{ncount}\n&#39;
+            &#39;Links:\t\t\t\t{ecount}\n&#39;
+        )
+        if self.directed:
+            directed_str = &#39;Directed&#39;
+        else:
+            directed_str = &#39;Undirected&#39;
+        summary = summary_fmt.format(directed_str=directed_str, ncount=self.ncount(), ecount=self.ecount())
+        return summary
+
+    def __str__(self):
+        &#34;&#34;&#34;Returns the default string representation of this network instance&#34;&#34;&#34;
+        return self.summary()
+
+    def _repr_(self):
+        &#34;&#34;&#34;Returns the default string representation for jupyter&#34;&#34;&#34;
+        return self.summary()
+
+    def _repr_html_(self):
+        &#34;&#34;&#34;
+        display an interactive d3js visualisation of the network in jupyter
+        &#34;&#34;&#34;
+        from pathpy.visualisation.html import generate_html
+        return generate_html(self)
+        
+
+
+def network_from_networkx(graph):
+    &#34;&#34;&#34;method to load a networkx graph into a pathpy.Network instance
+
+    Parameters
+    ----------
+    garph
+
+    Returns
+    -------
+    Network
+    &#34;&#34;&#34;
+    try:
+        import networkx as nx
+    except ImportError:
+        raise PathpyError(&#34;To load a network from networkx it must be installed&#34;)
+
+    if isinstance(graph, nx.DiGraph):
+        directed = True
+    elif isinstance(graph, nx.Graph):
+        directed = False
+    else:
+        raise PathpyNotImplemented(&#34;At the moment only DiGraph and Graph are supported.&#34;)
+
+    net = Network(directed=directed)
+    for node_id in graph.nodes:
+        net.add_node(str(node_id), **graph.node[node_id])
+
+    for edge in graph.edges:
+        net.add_edge(str(edge[0]), str(edge[1]), **graph.edges[edge])
+
+    return net
+
+
+def network_to_networkx(network):
+    &#34;&#34;&#34;method to export a pathpy Network to a networkx compatible graph
+
+    Parameters
+    ----------
+    network: Network
+
+    Returns
+    -------
+    networkx Graph or DiGraph
+    &#34;&#34;&#34;
+    # keys to exclude since they are handled differently in networkx
+    excluded_node_props = {&#34;degree&#34;, &#34;inweight&#34;, &#34;outweight&#34;, &#34;indegree&#34;, &#34;outdegree&#34;}
+    try:
+        import networkx as nx
+    except ImportError:
+        raise PathpyError(&#34;To export a network to networkx it must be installed&#34;)
+
+    directed = network.directed
+    if directed:
+        graph = nx.DiGraph()
+    else:
+        graph = nx.Graph()
+
+    for node_id, node_props in network.nodes.items():
+        valid_props = {k: v for k, v in node_props.items() if k not in excluded_node_props}
+        graph.add_node(node_id, **valid_props)
+
+    for edge, edge_props in network.edges.items():
+        graph.add_edge(*edge, **edge_props)
+
+    return graph
+
+
+class UnorderedDict(dict):
+    &#34;&#34;&#34;A dictionary that applies an arbitrary key-altering
+       function before accessing the keys
+
+       Source: https://stackoverflow.com/questions/3387691/how-to-perfectly-override-a-dict
+       &#34;&#34;&#34;
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.store = _co.defaultdict(dict)
+        self.update(dict(*args, **kwargs))  # use the free update to set keys
+
+    def __getitem__(self, key):
+        return self.store[self.__keytransform__(key)]
+
+    def __setitem__(self, key, value):
+        self.store[self.__keytransform__(key)] = value
+
+    def __delitem__(self, key):
+        del self.store[self.__keytransform__(key)]
+
+    def __contains__(self, item):
+        return self.__keytransform__(item) in self.store
+
+    def __iter__(self):
+        return iter(self.store)
+
+    def __len__(self):
+        return len(self.store)
+
+    def __missing__(self, key):
+        return {}
+
+    def keys(self):
+        return self.store.keys()
+
+    def values(self):
+        return self.store.values()
+
+    def items(self):
+        return self.store.items()
+
+    def __keytransform__(self, key):
+        return tuple(sorted(key))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.classes.network.network_from_networkx"><code class="name flex">
+<span>def <span class="ident">network_from_networkx</span></span>(<span>graph)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>method to load a networkx graph into a pathpy.Network instance</p>
+<h2 id="parameters">Parameters</h2>
+<p>garph</p>
+<h2 id="returns">Returns</h2>
+<p>Network</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def network_from_networkx(graph):
+    &#34;&#34;&#34;method to load a networkx graph into a pathpy.Network instance
+
+    Parameters
+    ----------
+    garph
+
+    Returns
+    -------
+    Network
+    &#34;&#34;&#34;
+    try:
+        import networkx as nx
+    except ImportError:
+        raise PathpyError(&#34;To load a network from networkx it must be installed&#34;)
+
+    if isinstance(graph, nx.DiGraph):
+        directed = True
+    elif isinstance(graph, nx.Graph):
+        directed = False
+    else:
+        raise PathpyNotImplemented(&#34;At the moment only DiGraph and Graph are supported.&#34;)
+
+    net = Network(directed=directed)
+    for node_id in graph.nodes:
+        net.add_node(str(node_id), **graph.node[node_id])
+
+    for edge in graph.edges:
+        net.add_edge(str(edge[0]), str(edge[1]), **graph.edges[edge])
+
+    return net</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.network_to_networkx"><code class="name flex">
+<span>def <span class="ident">network_to_networkx</span></span>(<span>network)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>method to export a pathpy Network to a networkx compatible graph</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;<a title="pathpy.classes.network.Network" href="#pathpy.classes.network.Network"><code>Network</code></a></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>networkx Graph or DiGraph</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def network_to_networkx(network):
+    &#34;&#34;&#34;method to export a pathpy Network to a networkx compatible graph
+
+    Parameters
+    ----------
+    network: Network
+
+    Returns
+    -------
+    networkx Graph or DiGraph
+    &#34;&#34;&#34;
+    # keys to exclude since they are handled differently in networkx
+    excluded_node_props = {&#34;degree&#34;, &#34;inweight&#34;, &#34;outweight&#34;, &#34;indegree&#34;, &#34;outdegree&#34;}
+    try:
+        import networkx as nx
+    except ImportError:
+        raise PathpyError(&#34;To export a network to networkx it must be installed&#34;)
+
+    directed = network.directed
+    if directed:
+        graph = nx.DiGraph()
+    else:
+        graph = nx.Graph()
+
+    for node_id, node_props in network.nodes.items():
+        valid_props = {k: v for k, v in node_props.items() if k not in excluded_node_props}
+        graph.add_node(node_id, **valid_props)
+
+    for edge, edge_props in network.edges.items():
+        graph.add_edge(*edge, **edge_props)
+
+    return graph</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pathpy.classes.network.Network"><code class="flex name class">
+<span>class <span class="ident">Network</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>A graph or network that can be directed, undirected, unweighted or weighted
+and whose edges can contain arbitrary attributes. This is the base class for
+HigherOrderNetwork</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>nodes</code></strong> :&ensp;<code>list</code></dt>
+<dd>A list of (string) nodes.</dd>
+<dt><strong><code>edges</code></strong> :&ensp;<code>dictionary</code></dt>
+<dd>A dictionary containing edges (as tuple-valued keys) and their attributes (as value)</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class Network:
+    r&#34;&#34;&#34;A graph or network that can be directed, undirected, unweighted or weighted
+    and whose edges can contain arbitrary attributes. This is the base class for 
+    HigherOrderNetwork
+
+    Attributes
+    ----------
+
+    nodes : list
+        A list of (string) nodes.
+    edges : dictionary
+        A dictionary containing edges (as tuple-valued keys) and their attributes (as value)
+    &#34;&#34;&#34;
+
+    def __init__(self, directed=False):
+        &#34;&#34;&#34;
+        Generates an empty network.
+        &#34;&#34;&#34;
+
+        # Boolean value that inidcates whether the network is directed or undirected
+        self.directed = directed
+
+        # A dictionary containing nodes as well as node properties
+        self.nodes = _co.defaultdict(dict)
+
+        # A dictionary containing edges as well as edge properties
+        if not directed:
+            self.edges = UnorderedDict()
+        else:
+            self.edges = _co.defaultdict(dict)
+
+        # A dictionary containing the sets of successors of all nodes
+        self.successors = _co.defaultdict(set)
+
+        # A dictionary containing the sets of predecessors of all nodes
+        self.predecessors = _co.defaultdict(set)
+
+
+    def __add__(self, other):
+        r&#34;&#34;&#34;Add two networks and return the union of both
+
+        Parameters
+        ----------
+        other : Network
+
+        Returns
+        -------
+        Network
+            Default operator +, which returns the sum of two Network objects
+        &#34;&#34;&#34;
+        n_sum = Network(directed = self.directed or other.directed)
+        n_sum.nodes = copy.deepcopy(self.nodes)
+        n_sum.edges = copy.deepcopy(self.edges)
+        n_sum.successors = copy.deepcopy(self.successors)
+        n_sum.predecessors = copy.deepcopy(self.predecessors)
+        for edge in other.edges:
+            n_sum.add_edge(edge[0], edge[1], weight=other.edges[edge][&#39;weight&#39;])
+        return n_sum
+
+    @classmethod
+    def read_file(cls, filename, separator=&#39;,&#39;, weighted=False, directed=False, header=False):
+        r&#34;&#34;&#34;Reads a network from an edge list file.
+
+        Reads data from a file containing multiple lines of *edges* of the
+        form &#34;v,w,frequency,X&#34; (where frequency is optional and X are
+        arbitrary additional columns). The default separating character &#39;,&#39;
+        can be changed. In order to calculate the statistics of paths of any length,
+        by default all subpaths of length 0 (i.e. single nodes) contained in an edge
+        will be considered.
+
+        Parameters
+        ----------
+        filename : str
+            path to edgelist file
+        separator : str
+            character separating the nodes
+        weighted : bool
+            is a weight given? if ``True`` it is the last element in the edge
+            (i.e. ``a,b,2``)
+        directed : bool
+            are the edges directed or undirected
+        header : bool
+            if true skip the first row, useful if header row in file
+
+        Returns
+        -------
+        Network
+            a ``Network`` object obtained from the edgelist
+        &#34;&#34;&#34;
+        net = cls(directed)
+
+        with open(filename, &#39;r&#39;) as f:
+            Log.add(&#39;Reading edge list ... &#39;)
+            header_offset = 0
+            if header:
+                f.readline()
+                header_offset = 1
+
+            for n, line in enumerate(f):
+                fields = line.rstrip().split(separator)
+                fields = [field.strip() for field in fields]
+                if len(fields) &lt; 2:
+                    Log.add(&#39;Ignoring malformed line {0}: {1}&#39;.format(n, line+header_offset), Severity.WARNING)
+                else:
+                    if weighted:
+                        net.add_edge(fields[0], fields[1], weight=int(fields[2]))
+                    else:
+                        net.add_edge(fields[0], fields[1])
+
+        Log.add(&#39;finished.&#39;)
+
+        return net
+
+
+    def write_file(self, filename, separator=&#39;,&#39;, weighted=False, header=False):
+        r&#34;&#34;&#34;Writes a network to an edge file&#34;&#34;&#34;
+        with open(filename, &#39;w+&#39;) as f:
+            if header:
+                if weighted:
+                    f.write(&#39;source&#39; + separator + &#39;target&#39; + separator + &#39;weight&#39; + &#39;\n&#39;)
+                else:
+                    f.write(&#39;source&#39; + separator + &#39;target&#39; + &#39;\n&#39;)
+            for edge in self.edges:
+                if weighted:       
+                    f.write(str(edge[0]) + separator + str(edge[1]) + separator + str(self.edges[edge][&#39;weight&#39;])+&#39;\n&#39;)
+                else:
+                    f.write(str(edge[0]) + separator + str(edge[1]) + &#39;\n&#39;)
+
+    @classmethod
+    def from_sqlite(cls, cursor, directed=True):
+        r&#34;&#34;&#34;Returns a new Network instance generated from links obtained 
+        from an SQLite cursor. The cursor must refer to a table with at least
+        two columns
+
+                source target
+
+        in which each row contains one link. Additional columns will be used as
+        named edge properties. Since columns are accessed by name this function requires that a
+        row factory object is set for the SQLite connection prior to cursor creation,
+        i.e. you should set
+
+                connection.row_factory = sqlite3.Row
+
+        Parameters
+        ----------
+        cursor : 
+            The SQLite cursor to fetch rows from. 
+        directed : bool
+            Whether or not links should be interpreted as directed. Default is True.
+
+        Returns
+        -------
+        Network
+            A Network instance created from the SQLite database.
+
+        &#34;&#34;&#34;
+        from pathpy.classes import DAG
+        if cls == DAG:
+            n = cls()
+        else:
+            n = cls(directed=directed)
+
+        assert cursor.connection.row_factory, \
+            &#39;Cannot access columns by name. Please set &#39; \
+            &#39;connection.row_factory = sqlite3.Row before creating DB cursor.&#39;
+
+        Log.add(&#39;Retrieving links from database ...&#39;)
+
+        for row in cursor:
+            n.add_edge(str(row[&#39;source&#39;]), str(row[&#39;target&#39;]))
+
+        return n
+
+
+    @classmethod
+    def from_paths(cls, paths):
+        r&#34;&#34;&#34;Generates a weighted directed network from a Paths
+            object. The weight of directed links will correspond 
+            to the statistics of (sub)-paths of length one&#34;&#34;&#34;
+        network = cls(directed=True)
+
+        # check all sub-paths of length one
+        for p in paths.paths[1]:
+            network.add_edge(p[0], p[1], weight=paths.paths[1][p].sum())
+
+        return network
+
+    @classmethod
+    def from_temporal_network(cls, tempnet, min_time=None, max_time=None, directed=True):
+        r&#34;&#34;&#34;Returns a time-aggregated directed network representation
+        of a temporal network. The number of occurrences of
+        the same edge at different time stamps is captured
+        by edge weights.
+        &#34;&#34;&#34;
+        network = cls(directed=directed)
+
+        for (v, w, t) in tempnet.tedges:
+            if (min_time is None or t &gt;= min_time) and (max_time is None or t &lt; max_time):
+                if (v, w) in network.edges:
+                    network.add_edge(v, w, weight=network.edges[(v, w)][&#39;weight&#39;]+1.0)
+                else:
+                    network.add_edge(v, w)
+
+        return network
+
+
+    def to_unweighted(self):
+        r&#34;&#34;&#34;Returns an unweighted copy of a directed or undirected network.
+        In this copy all edge and node properties of the original network
+        are removed, but the directionality of links is retained.
+        &#34;&#34;&#34;
+        n = Network(directed = self.directed)
+
+        for (v,w) in self.edges:
+            n.add_edge(v, w)
+        return n
+
+
+    def to_undirected(self):
+        r&#34;&#34;&#34;Returns an undirected copy of the network, in which all
+        node and edge properties are removed.
+        &#34;&#34;&#34;
+        n = Network(directed = False)
+
+        for (v,w) in self.edges:
+            #if v!=w:
+            n.add_edge(v, w)
+        return n
+
+
+    def add_node(self, v, **node_attributes):
+        r&#34;&#34;&#34;Adds a node to a network and assigns arbitrary
+        node attributes.
+
+        Parameters
+        ----------
+        node_attributes : dict
+            Key-value pairs that will be stored as
+            named node attributes in a dictionary. An
+            attribute set via network.add_node(v, x=42) can be
+            assessed via network.nodes[v][&#39;x&#39;]. Any node in an undirected
+            network will have the default attributes &#39;degree&#39;, &#39;inweight&#39;,
+            and &#39;outweight&#39;. Any node in a directed network will have the 
+            default attributes &#39;indegree&#39;, &#39;outdegree&#39;, &#39;inweight&#39;, and &#39;outweight&#39;.
+            See examples below.
+
+        Examples
+        --------
+            &gt;&gt;&gt; network = pathpy.Network(directed=False)
+            &gt;&gt;&gt; network.add_node(v)
+            &gt;&gt;&gt; print(network.nodes[v])
+            &gt;&gt;&gt; {&#39;inweight&#39;: 0.0, &#39;outweight&#39;: 0.0, &#39;degree&#39;: 0}            
+            &gt;&gt;&gt; network = pathpy.Network(directed=True)
+            &gt;&gt;&gt; network.add_node(v)
+            &gt;&gt;&gt; print(network.nodes[v])
+            &gt;&gt;&gt; {&#39;inweight&#39;: 0.0, &#39;outweight&#39;: 0.0, &#39;indegree&#39;: 0, &#39;outdegree&#39;: 0}
+        &#34;&#34;&#34;
+        if v not in self.nodes:
+            self.nodes[v] = {**self.nodes[v], **node_attributes}
+
+            # set default values if not set already
+            if &#39;inweight&#39; not in self.nodes[v]:
+                self.nodes[v][&#39;inweight&#39;] = 0.0
+            if &#39;outweight&#39; not in self.nodes[v]:
+                self.nodes[v][&#39;outweight&#39;] = 0.0
+            if self.directed:
+                self.nodes[v][&#39;indegree&#39;] = 0
+                self.nodes[v][&#39;outdegree&#39;] = 0
+            else:
+                self.nodes[v][&#39;degree&#39;] = 0
+
+
+    def remove_node(self, v):
+        r&#34;&#34;&#34;Removes a node and all of its attributes from the network.&#34;&#34;&#34;
+        if v in self.nodes:
+            # remove all incident edges and update neighbors
+            if not self.directed:
+                for w in list(self.successors[v]):
+                    edge = (v, w)
+                    self.nodes[w][&#39;degree&#39;] -= 1
+                    self.nodes[w][&#39;inweight&#39;] -= self.edges[edge][&#39;weight&#39;]
+                    self.nodes[w][&#39;outweight&#39;] -= self.edges[edge][&#39;weight&#39;]
+                    self.successors[w].remove(v)
+                    self.predecessors[w].remove(v)
+                    del self.edges[edge]
+            else:
+                for w in list(self.successors[v]):
+                    self.nodes[w][&#39;indegree&#39;] -= 1
+                    self.nodes[w][&#39;inweight&#39;] -= self.edges[(v, w)][&#39;weight&#39;]
+                    self.predecessors[w].remove(v)
+                    del self.edges[(v, w)]
+                for w in list(self.predecessors[v]):
+                    self.nodes[w][&#39;outdegree&#39;] -= 1
+                    self.nodes[w][&#39;outweight&#39;] -= self.edges[(w, v)][&#39;weight&#39;]
+                    self.successors[w].remove(v)
+                    del self.edges[(w, v)]
+            del self.nodes[v]
+        if v in self.successors:
+            del self.successors[v]
+        if v in self.predecessors:
+            del self.predecessors[v]
+
+
+    def remove_edge(self, source, target):
+        r&#34;&#34;&#34;
+        Remove an edge and all of its attributes from the network.
+
+        Parameters
+        ----------
+        source : str
+            Source node of the edge to remove
+        target : str
+            Target node of the edge to remove
+        &#34;&#34;&#34;
+        if not (source in self.nodes and target in self.nodes):
+            return None
+
+        if self.directed:
+            # take care of source
+            self.nodes[source][&#39;outdegree&#39;] -= 1
+            self.nodes[source][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.successors[source].remove(target)
+
+            # take care of target
+            self.nodes[target][&#39;indegree&#39;] -= 1
+            self.nodes[target][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.predecessors[target].remove(source)
+
+            del self.edges[(source, target)]
+        else:
+            # take care of source
+            self.nodes[source][&#39;degree&#39;] -= 1
+            self.nodes[source][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.nodes[source][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.successors[source].remove(target)
+            self.predecessors[source].remove(target)
+
+            # take care of target
+            if source != target:
+                self.nodes[target][&#39;degree&#39;] -= 1
+                self.nodes[target][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+                self.nodes[target][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+                self.successors[target].remove(source)
+                self.predecessors[target].remove(source)
+
+            del self.edges[(source, target)]
+
+
+    def add_clique(self, node_list, **edge_attributes):
+        r&#34;&#34;&#34;
+        Adds a fully connected clique to the network. This will 
+        automatically create all edges between all pairs of nodes
+        (without self-loops). Depending on the network type
+        edges will be directed or undirected.
+
+        Parameters
+        ----------
+        node_list: iterable
+            the list of nodes for which all pairs will be connected
+        edge_attributes: dict
+            edge attributes that will be assigned to all generated edges
+        &#34;&#34;&#34;        
+        for v, w in itertools.combinations(node_list, 2):            
+            self.add_edge(v, w, **edge_attributes)
+            if self.directed:
+                self.add_edge(w, v, **edge_attributes)
+
+
+
+    def add_edge(self, v, w, **edge_attributes):
+        r&#34;&#34;&#34;
+        Adds an edge to a network and assigns arbitrary
+        key-value pairs as edge attribute.
+
+        Parameters
+        ----------
+        v : str
+            String label of the source node
+        w : str
+            String label of the target node
+        edge_attributes : dict
+            Key-value pairs that will be stored as
+            named edge attributes in a dictionary. An
+            attribute set via network.add_edge(v, w, x=42) can be
+            assessed via network.edges[(v,w)][&#39;x&#39;].
+            Any edge will have the default attribute &#39;weight&#39;, which
+            is set to 1.0 by default. Edge weights are overwritten
+            if an additional weighted edge is added later
+            (see example below).
+
+        Examples
+        --------
+            &gt;&gt;&gt; network.add_edge(&#39;a&#39;,&#39;b&#39;)
+            &gt;&gt;&gt; print(network.edges[(&#39;a&#39;, &#39;b&#39;)][&#39;weight&#39;])
+            &gt;&gt;&gt; 1.0 
+            &gt;&gt;&gt; network.add_edge(&#39;a&#39;,&#39;b&#39;, weight = 2.0)
+            &gt;&gt;&gt; print(network.edges[(&#39;a&#39;, &#39;b&#39;)][&#39;weight&#39;])
+            &gt;&gt;&gt; 2.0
+        &#34;&#34;&#34;
+
+        # Add nodes if they don&#39;t exist
+        self.add_node(v)
+        self.add_node(w)
+
+        e = (v, w)
+
+        if &#39;weight&#39; in edge_attributes and isinstance(edge_attributes[&#39;weight&#39;], int):
+            edge_attributes[&#39;weight&#39;] = float(edge_attributes[&#39;weight&#39;])
+
+        # add any new atributes to the edge
+        self.edges[e] = {**self.edges[e], **edge_attributes}
+
+        # add default weight of one, if no weight is specified
+        if &#39;weight&#39; not in self.edges[e]:
+            self.edges[e][&#39;weight&#39;] = 1.0
+
+        # update predecessor and successor lists
+        self.successors[v].add(w)
+        self.predecessors[w].add(v)
+        if not self.directed:
+            self.successors[w].add(v)
+            self.predecessors[v].add(w)
+
+        # update degrees and node weights
+        if not self.directed:
+            # update degree, in- and outweight
+            self.nodes[v][&#39;degree&#39;] = len(self.successors[v])
+            self.nodes[w][&#39;degree&#39;] = len(self.successors[w])
+
+            S = [self.edges[(v,w)][&#39;weight&#39;] for w in self.successors[v]]
+            if S:
+                self.nodes[v][&#39;outweight&#39;] = sum(S)
+                self.nodes[v][&#39;inweight&#39;] = self.nodes[v][&#39;outweight&#39;]
+
+            S = [self.edges[(v,w)][&#39;weight&#39;] for v in self.predecessors[w]]
+            if S:
+                self.nodes[w][&#39;outweight&#39;] = sum(S)
+                self.nodes[w][&#39;inweight&#39;] = self.nodes[w][&#39;outweight&#39;]
+        else:
+            self.nodes[v][&#39;outdegree&#39;] = len(self.successors[v])
+            self.nodes[v][&#39;indegree&#39;] = len(self.predecessors[v])
+            self.nodes[w][&#39;outdegree&#39;] = len(self.successors[w])
+            self.nodes[w][&#39;indegree&#39;] = len(self.predecessors[w])
+
+            # Note: Weights will be 0 for nodes with empty successors or predecessors. This is a
+            # problem for higher-order networks, where the zero weight is assumed to be a vector
+            # (0,0), Not updating weights in this case will ensure that we keep the initial value
+            # of weights
+
+            S = [self.edges[(v, x)][&#39;weight&#39;] for x in self.successors[v]]
+            if S:
+                self.nodes[v][&#39;outweight&#39;] = sum(S)
+            S = [self.edges[(x, v)][&#39;weight&#39;] for x in self.predecessors[v]]
+            if S:
+                self.nodes[v][&#39;inweight&#39;] = sum(S)
+            S = [self.edges[(w, x)][&#39;weight&#39;] for x in self.successors[w]]
+            if S:
+                self.nodes[w][&#39;outweight&#39;] = sum(S)
+            S = [self.edges[(x, w)][&#39;weight&#39;] for x in self.predecessors[w]]
+            if S:
+                self.nodes[w][&#39;inweight&#39;] = sum(S)
+
+
+    def find_nodes(self, select_node=lambda v: True):
+        r&#34;&#34;&#34;
+        Returns all nodes that satisfy a given condition. In the select_node
+        lambda function, node attributes can be accessed by calling v[&#39;attr&#39;]
+        &#34;&#34;&#34;
+        return [n for n in self.nodes if select_node(self.nodes[n])]
+
+
+    def find_edges(self, select_nodes=lambda v, w: True, select_edges=lambda e: True):
+        r&#34;&#34;&#34;
+        Returns all edges that satisfy a given condition. Edges can be selected based
+        on attributes of the adjacent nodes as well as attributes of the edge. In the select_edges
+        lambda function,.
+
+        Parameters
+        ----------
+        select_nodes : lambda
+            a lambda function that takes two parameters v, w corresponding to the source and 
+            target node of an edge. All edges for which the lambda function returns True will be 
+            selected. Default is lambda v,w: True.
+        select_edges : lambda
+            a lambda function that takes a single parameter e corresponding to an edge tuple. 
+            Edge attributes can be accessed by e[&#39;attr&#39;]. All edges for which the lambda function 
+            returns True will be selected.  Default is lambda e: True.
+
+        Example:
+        &gt;&gt;&gt; network.find_edges(select_nodes = lambda v,w: True if v[&#39;desired_node_property&#39;] else False, 
+                               select_edges = lambda e: True if e[&#39;desired_edge_property&#39;] else False)
+        &#34;&#34;&#34;
+        return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
+
+
+    def ncount(self):
+        &#34;&#34;&#34; Returns the number of nodes &#34;&#34;&#34;
+        return len(self.nodes)
+
+
+    def ecount(self):
+        r&#34;&#34;&#34;Returns the number of links &#34;&#34;&#34;
+        return len(self.edges)
+
+
+    def total_edge_weight(self):
+        r&#34;&#34;&#34;Returns the sum of all edge weights &#34;&#34;&#34;
+        if self.edges:
+            return _np.sum(e[&#39;weight&#39;] for e in self.edges.values())
+        return 0
+
+
+    def node_properties(self, prop):
+        r&#34;&#34;&#34;Returns a list of arbitrary node properties in the network, 
+        where entries have the same order as in network.nodes. If a property
+        is not present for a given node, None will be added to the list.
+        &#34;&#34;&#34;
+        properties = []
+        for v in self.nodes:
+            if prop in self.nodes[v]:
+                properties.append(self.nodes[v][prop])
+            else:
+                properties.append(None)
+        return properties
+
+
+    def degrees(self, mode=&#39;degree&#39;):
+        r&#34;&#34;&#34;Returns the sequence of node degrees in the network, where
+        entries have the same order as in network.nodes. Note that 
+        if mode == &#39;degree&#39; for a directed network, the degree sequence
+        of the undirected network will be returned.
+
+        Parameters
+        ----------
+        mode : str
+            either &#39;degree&#39;, &#39;indegree&#39;, or &#39;outdegree&#39;
+        &#34;&#34;&#34;
+        assert mode is &#39;degree&#39; or mode is &#39;indegree&#39; or mode is &#39;outdegree&#39;, \
+            &#39;Only &#34;degree&#34;, &#34;indegree&#34;, or &#34;outdegree&#34; are supported.&#39;
+        
+        if self.directed and mode == &#39;degree&#39;:
+            return self.to_undirected().degrees()
+
+        return self.node_properties(mode)
+
+
+    def node_to_name_map(self):
+        &#34;&#34;&#34;Returns a dictionary that can be used to map nodes to matrix/vector indices&#34;&#34;&#34;
+        return {v: idx for idx, v in enumerate(self.nodes)}
+
+
+    def adjacency_matrix(self, weighted=True, transposed=False):
+        &#34;&#34;&#34;Returns a sparse adjacency matrix of the higher-order network. Unless transposed
+        is set to true, the entry corresponding to a directed link s-&gt;t is stored in row s and
+        column t and can be accessed via A[s,t].
+
+        Parameters
+        ----------
+        weighted: bool
+            if set to False, the function returns a binary adjacency matrix.
+            If set to True, adjacency matrix entries contain edge weights.
+        transposed: bool
+            whether to transpose the matrix or not.
+
+        Returns
+        -------
+        numpy cooc matrix
+        &#34;&#34;&#34;
+        row = []
+        col = []
+        data = []
+
+        edgeC = self.ecount()
+        if not self.directed:
+            n_self_loops = sum(s == t for (s, t) in self.edges)
+            edgeC *= 2
+            edgeC -= n_self_loops
+
+        node_to_coord = self.node_to_name_map()
+
+        for (s, t), e in self.edges.items():
+            row.append(node_to_coord[s])
+            col.append(node_to_coord[t])
+            if weighted:
+                data.append(e[&#39;weight&#39;])
+            else:
+                data.append(1)
+
+            if not self.directed and t != s:
+                row.append(node_to_coord[t])
+                col.append(node_to_coord[s])
+                if weighted:
+                    data.append(e[&#39;weight&#39;])
+                else:
+                    data.append(1)
+
+        shape = (self.ncount(), self.ncount())
+        A = _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+
+        if transposed:
+            return A.transpose()
+        return A
+
+
+    def transition_matrix(self):
+        &#34;&#34;&#34;Returns a (transposed) transition matrix of a random walk process
+        on the network
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        row = []
+        col = []
+        data = []
+
+        # calculate weighted out-degrees of all nodes
+        D = {n: self.nodes[n][&#39;outweight&#39;] for n in self.nodes}
+
+        node_to_coord = self.node_to_name_map()
+
+        for s, t in self.edges:
+            # the following makes sure that we do not accidentally consider zero-weight
+            # edges (automatically added by default_dic)
+            weight = self.edges[(s, t)][&#39;weight&#39;]
+            if weight &gt; 0:
+                # add transition from s to t
+                row.append(node_to_coord[t])
+                col.append(node_to_coord[s])
+                assert D[s] &gt; 0, \
+                    &#39;Encountered zero out-weight or out-degree for node &#34;{s}&#34; &#39; \
+                    &#39;while weight of link ({s}, {t}) is non-zero.&#39;.format(s=s, t=t)
+                prob = weight / D[s]
+                if prob &lt; 0 or prob &gt; 1:  # pragma: no cover
+                    raise ValueError(&#39;Encountered transition probability {p} outside &#39;
+                                     &#39;[0,1] range.&#39;.format(p=prob))
+                data.append(prob)
+
+                # add transition from t to s for undirected network
+                if not self.directed and s!=t:
+                    row.append(node_to_coord[s])
+                    col.append(node_to_coord[t])
+                    assert D[t] &gt; 0, \
+                    &#39;Encountered zero out-degree for node &#34;{t}&#34; &#39; \
+                    &#39;while weight of link ({t}, {s}) is non-zero.&#39;.format(s=s, t=t)
+                    prob = weight / D[t]
+                    if prob &lt; 0 or prob &gt; 1:  # pragma: no cover
+                        raise ValueError(&#39;Encountered transition probability {p} outside &#39;
+                                        &#39;[0,1] range.&#39;.format(p=prob))
+                    data.append(prob)
+
+        data = _np.array(data)
+        data = data.reshape(data.size, )
+
+        shape = self.ncount(), self.ncount()
+        return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+
+
+    def laplacian_matrix(self, weighted=False, transposed=False):
+        &#34;&#34;&#34;
+        Returns the transposed normalized Laplacian matrix corresponding to the network.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        if weighted:
+            A = self.transition_matrix().transpose()
+            D = _sparse.identity(self.ncount())
+        else:
+            A = self.adjacency_matrix(weighted=False)
+            D = _sparse.diags(_np.array([float(self.nodes[v][&#39;degree&#39;]) for v in self.nodes]))
+        L = D - A
+        if transposed:
+            return L.transpose()
+        return L
+
+
+    @staticmethod
+    def leading_eigenvector(A, normalized=True, lanczos_vecs=None, maxiter=None):
+        &#34;&#34;&#34;Compute normalized leading eigenvector of a given matrix A.
+
+        Parameters
+        ----------
+        A:
+            sparse matrix for which leading eigenvector will be computed
+        normalized: bool
+            whether or not to normalize, default is True
+        lanczos_vecs: int
+            number of Lanczos vectors to be used in the approximate
+            calculation of eigenvectors and eigenvalues. This maps to the ncv parameter
+            of scipy&#39;s underlying function eigs.
+        maxiter: int
+            scaling factor for the number of iterations to be used in the
+            approximate calculation of eigenvectors and eigenvalues.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        if not _sparse.issparse(A):  # pragma: no cover
+            raise TypeError(&#34;A must be a sparse matrix&#34;)
+
+        # NOTE: ncv sets additional auxiliary eigenvectors that are computed
+        # NOTE: in order to be more confident to find the one with the largest
+        # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
+        if lanczos_vecs == None or maxiter == None:
+            w, pi = _sla.eigs(A, k=1, which=&#34;LM&#34;)
+        else:
+            w, pi = _sla.eigs(A, k=1, which=&#34;LM&#34;, ncv=lanczos_vecs, maxiter=maxiter)
+        pi = pi.reshape(pi.size, )
+        if normalized:
+            pi /= sum(pi)
+        return pi
+
+
+    def summary(self):
+        &#34;&#34;&#34;Returns a string containing basic summary statistics of this network instance
+        &#34;&#34;&#34;
+        summary_fmt = (
+            &#39;{directed_str} network\n&#39;
+            &#39;Nodes:\t\t\t\t{ncount}\n&#39;
+            &#39;Links:\t\t\t\t{ecount}\n&#39;
+        )
+        if self.directed:
+            directed_str = &#39;Directed&#39;
+        else:
+            directed_str = &#39;Undirected&#39;
+        summary = summary_fmt.format(directed_str=directed_str, ncount=self.ncount(), ecount=self.ecount())
+        return summary
+
+    def __str__(self):
+        &#34;&#34;&#34;Returns the default string representation of this network instance&#34;&#34;&#34;
+        return self.summary()
+
+    def _repr_(self):
+        &#34;&#34;&#34;Returns the default string representation for jupyter&#34;&#34;&#34;
+        return self.summary()
+
+    def _repr_html_(self):
+        &#34;&#34;&#34;
+        display an interactive d3js visualisation of the network in jupyter
+        &#34;&#34;&#34;
+        from pathpy.visualisation.html import generate_html
+        return generate_html(self)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="pathpy.classes.network.Network.from_paths"><code class="name flex">
+<span>def <span class="ident">from_paths</span></span>(<span>cls, paths)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates a weighted directed network from a Paths
+object. The weight of directed links will correspond
+to the statistics of (sub)-paths of length one</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@classmethod
+def from_paths(cls, paths):
+    r&#34;&#34;&#34;Generates a weighted directed network from a Paths
+        object. The weight of directed links will correspond 
+        to the statistics of (sub)-paths of length one&#34;&#34;&#34;
+    network = cls(directed=True)
+
+    # check all sub-paths of length one
+    for p in paths.paths[1]:
+        network.add_edge(p[0], p[1], weight=paths.paths[1][p].sum())
+
+    return network</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.from_sqlite"><code class="name flex">
+<span>def <span class="ident">from_sqlite</span></span>(<span>cls, cursor, directed=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a new Network instance generated from links obtained
+from an SQLite cursor. The cursor must refer to a table with at least
+two columns</p>
+<pre><code>    source target
+</code></pre>
+<p>in which each row contains one link. Additional columns will be used as
+named edge properties. Since columns are accessed by name this function requires that a
+row factory object is set for the SQLite connection prior to cursor creation,
+i.e. you should set</p>
+<pre><code>    connection.row_factory = sqlite3.Row
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cursor</code></strong></dt>
+<dd>The SQLite cursor to fetch rows from.</dd>
+<dt><strong><code>directed</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether or not links should be interpreted as directed. Default is True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><a title="pathpy.classes.network.Network" href="#pathpy.classes.network.Network"><code>Network</code></a></strong></dt>
+<dd>A Network instance created from the SQLite database.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@classmethod
+def from_sqlite(cls, cursor, directed=True):
+    r&#34;&#34;&#34;Returns a new Network instance generated from links obtained 
+    from an SQLite cursor. The cursor must refer to a table with at least
+    two columns
+
+            source target
+
+    in which each row contains one link. Additional columns will be used as
+    named edge properties. Since columns are accessed by name this function requires that a
+    row factory object is set for the SQLite connection prior to cursor creation,
+    i.e. you should set
+
+            connection.row_factory = sqlite3.Row
+
+    Parameters
+    ----------
+    cursor : 
+        The SQLite cursor to fetch rows from. 
+    directed : bool
+        Whether or not links should be interpreted as directed. Default is True.
+
+    Returns
+    -------
+    Network
+        A Network instance created from the SQLite database.
+
+    &#34;&#34;&#34;
+    from pathpy.classes import DAG
+    if cls == DAG:
+        n = cls()
+    else:
+        n = cls(directed=directed)
+
+    assert cursor.connection.row_factory, \
+        &#39;Cannot access columns by name. Please set &#39; \
+        &#39;connection.row_factory = sqlite3.Row before creating DB cursor.&#39;
+
+    Log.add(&#39;Retrieving links from database ...&#39;)
+
+    for row in cursor:
+        n.add_edge(str(row[&#39;source&#39;]), str(row[&#39;target&#39;]))
+
+    return n</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.from_temporal_network"><code class="name flex">
+<span>def <span class="ident">from_temporal_network</span></span>(<span>cls, tempnet, min_time=None, max_time=None, directed=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a time-aggregated directed network representation
+of a temporal network. The number of occurrences of
+the same edge at different time stamps is captured
+by edge weights.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@classmethod
+def from_temporal_network(cls, tempnet, min_time=None, max_time=None, directed=True):
+    r&#34;&#34;&#34;Returns a time-aggregated directed network representation
+    of a temporal network. The number of occurrences of
+    the same edge at different time stamps is captured
+    by edge weights.
+    &#34;&#34;&#34;
+    network = cls(directed=directed)
+
+    for (v, w, t) in tempnet.tedges:
+        if (min_time is None or t &gt;= min_time) and (max_time is None or t &lt; max_time):
+            if (v, w) in network.edges:
+                network.add_edge(v, w, weight=network.edges[(v, w)][&#39;weight&#39;]+1.0)
+            else:
+                network.add_edge(v, w)
+
+    return network</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.leading_eigenvector"><code class="name flex">
+<span>def <span class="ident">leading_eigenvector</span></span>(<span>A, normalized=True, lanczos_vecs=None, maxiter=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Compute normalized leading eigenvector of a given matrix A.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>A:</dt>
+<dt>sparse matrix for which leading eigenvector will be computed</dt>
+<dt><strong><code>normalized</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether or not to normalize, default is True</dd>
+<dt><strong><code>lanczos_vecs</code></strong> :&ensp;<code>int</code></dt>
+<dd>number of Lanczos vectors to be used in the approximate
+calculation of eigenvectors and eigenvalues. This maps to the ncv parameter
+of scipy's underlying function eigs.</dd>
+<dt><strong><code>maxiter</code></strong> :&ensp;<code>int</code></dt>
+<dd>scaling factor for the number of iterations to be used in the
+approximate calculation of eigenvectors and eigenvalues.</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@staticmethod
+def leading_eigenvector(A, normalized=True, lanczos_vecs=None, maxiter=None):
+    &#34;&#34;&#34;Compute normalized leading eigenvector of a given matrix A.
+
+    Parameters
+    ----------
+    A:
+        sparse matrix for which leading eigenvector will be computed
+    normalized: bool
+        whether or not to normalize, default is True
+    lanczos_vecs: int
+        number of Lanczos vectors to be used in the approximate
+        calculation of eigenvectors and eigenvalues. This maps to the ncv parameter
+        of scipy&#39;s underlying function eigs.
+    maxiter: int
+        scaling factor for the number of iterations to be used in the
+        approximate calculation of eigenvectors and eigenvalues.
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    if not _sparse.issparse(A):  # pragma: no cover
+        raise TypeError(&#34;A must be a sparse matrix&#34;)
+
+    # NOTE: ncv sets additional auxiliary eigenvectors that are computed
+    # NOTE: in order to be more confident to find the one with the largest
+    # NOTE: magnitude, see https://github.com/scipy/scipy/issues/4987
+    if lanczos_vecs == None or maxiter == None:
+        w, pi = _sla.eigs(A, k=1, which=&#34;LM&#34;)
+    else:
+        w, pi = _sla.eigs(A, k=1, which=&#34;LM&#34;, ncv=lanczos_vecs, maxiter=maxiter)
+    pi = pi.reshape(pi.size, )
+    if normalized:
+        pi /= sum(pi)
+    return pi</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.read_file"><code class="name flex">
+<span>def <span class="ident">read_file</span></span>(<span>cls, filename, separator=&#39;,&#39;, weighted=False, directed=False, header=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Reads a network from an edge list file.</p>
+<p>Reads data from a file containing multiple lines of <em>edges</em> of the
+form "v,w,frequency,X" (where frequency is optional and X are
+arbitrary additional columns). The default separating character ','
+can be changed. In order to calculate the statistics of paths of any length,
+by default all subpaths of length 0 (i.e. single nodes) contained in an edge
+will be considered.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>path to edgelist file</dd>
+<dt><strong><code>separator</code></strong> :&ensp;<code>str</code></dt>
+<dd>character separating the nodes</dd>
+<dt><strong><code>weighted</code></strong> :&ensp;<code>bool</code></dt>
+<dd>is a weight given? if <code>True</code> it is the last element in the edge
+(i.e. <code>a,b,2</code>)</dd>
+<dt><strong><code>directed</code></strong> :&ensp;<code>bool</code></dt>
+<dd>are the edges directed or undirected</dd>
+<dt><strong><code>header</code></strong> :&ensp;<code>bool</code></dt>
+<dd>if true skip the first row, useful if header row in file</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>Network</code></strong></dt>
+<dd>a <code>&lt;a title="pathpy.classes.network.Network" href="#pathpy.classes.network.Network"&gt;</code>Network<code>&lt;/a&gt;</code> object obtained from the edgelist</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@classmethod
+def read_file(cls, filename, separator=&#39;,&#39;, weighted=False, directed=False, header=False):
+    r&#34;&#34;&#34;Reads a network from an edge list file.
+
+    Reads data from a file containing multiple lines of *edges* of the
+    form &#34;v,w,frequency,X&#34; (where frequency is optional and X are
+    arbitrary additional columns). The default separating character &#39;,&#39;
+    can be changed. In order to calculate the statistics of paths of any length,
+    by default all subpaths of length 0 (i.e. single nodes) contained in an edge
+    will be considered.
+
+    Parameters
+    ----------
+    filename : str
+        path to edgelist file
+    separator : str
+        character separating the nodes
+    weighted : bool
+        is a weight given? if ``True`` it is the last element in the edge
+        (i.e. ``a,b,2``)
+    directed : bool
+        are the edges directed or undirected
+    header : bool
+        if true skip the first row, useful if header row in file
+
+    Returns
+    -------
+    Network
+        a ``Network`` object obtained from the edgelist
+    &#34;&#34;&#34;
+    net = cls(directed)
+
+    with open(filename, &#39;r&#39;) as f:
+        Log.add(&#39;Reading edge list ... &#39;)
+        header_offset = 0
+        if header:
+            f.readline()
+            header_offset = 1
+
+        for n, line in enumerate(f):
+            fields = line.rstrip().split(separator)
+            fields = [field.strip() for field in fields]
+            if len(fields) &lt; 2:
+                Log.add(&#39;Ignoring malformed line {0}: {1}&#39;.format(n, line+header_offset), Severity.WARNING)
+            else:
+                if weighted:
+                    net.add_edge(fields[0], fields[1], weight=int(fields[2]))
+                else:
+                    net.add_edge(fields[0], fields[1])
+
+    Log.add(&#39;finished.&#39;)
+
+    return net</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pathpy.classes.network.Network.__init__"><code class="name flex">
+<span>def <span class="ident">__init__</span></span>(<span>self, directed=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates an empty network.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def __init__(self, directed=False):
+    &#34;&#34;&#34;
+    Generates an empty network.
+    &#34;&#34;&#34;
+
+    # Boolean value that inidcates whether the network is directed or undirected
+    self.directed = directed
+
+    # A dictionary containing nodes as well as node properties
+    self.nodes = _co.defaultdict(dict)
+
+    # A dictionary containing edges as well as edge properties
+    if not directed:
+        self.edges = UnorderedDict()
+    else:
+        self.edges = _co.defaultdict(dict)
+
+    # A dictionary containing the sets of successors of all nodes
+    self.successors = _co.defaultdict(set)
+
+    # A dictionary containing the sets of predecessors of all nodes
+    self.predecessors = _co.defaultdict(set)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.add_clique"><code class="name flex">
+<span>def <span class="ident">add_clique</span></span>(<span>self, node_list, **edge_attributes)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Adds a fully connected clique to the network. This will
+automatically create all edges between all pairs of nodes
+(without self-loops). Depending on the network type
+edges will be directed or undirected.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node_list</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>the list of nodes for which all pairs will be connected</dd>
+<dt><strong><code>edge_attributes</code></strong> :&ensp;<code>dict</code></dt>
+<dd>edge attributes that will be assigned to all generated edges</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def add_clique(self, node_list, **edge_attributes):
+    r&#34;&#34;&#34;
+    Adds a fully connected clique to the network. This will 
+    automatically create all edges between all pairs of nodes
+    (without self-loops). Depending on the network type
+    edges will be directed or undirected.
+
+    Parameters
+    ----------
+    node_list: iterable
+        the list of nodes for which all pairs will be connected
+    edge_attributes: dict
+        edge attributes that will be assigned to all generated edges
+    &#34;&#34;&#34;        
+    for v, w in itertools.combinations(node_list, 2):            
+        self.add_edge(v, w, **edge_attributes)
+        if self.directed:
+            self.add_edge(w, v, **edge_attributes)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.add_edge"><code class="name flex">
+<span>def <span class="ident">add_edge</span></span>(<span>self, v, w, **edge_attributes)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Adds an edge to a network and assigns arbitrary
+key-value pairs as edge attribute.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>v</code></strong> :&ensp;<code>str</code></dt>
+<dd>String label of the source node</dd>
+<dt><strong><code>w</code></strong> :&ensp;<code>str</code></dt>
+<dd>String label of the target node</dd>
+<dt><strong><code>edge_attributes</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Key-value pairs that will be stored as
+named edge attributes in a dictionary. An
+attribute set via network.add_edge(v, w, x=42) can be
+assessed via network.edges[(v,w)]['x'].
+Any edge will have the default attribute 'weight', which
+is set to 1.0 by default. Edge weights are overwritten
+if an additional weighted edge is added later
+(see example below).</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code>&gt;&gt;&gt; network.add_edge('a','b')
+&gt;&gt;&gt; print(network.edges[('a', 'b')]['weight'])
+&gt;&gt;&gt; 1.0 
+&gt;&gt;&gt; network.add_edge('a','b', weight = 2.0)
+&gt;&gt;&gt; print(network.edges[('a', 'b')]['weight'])
+&gt;&gt;&gt; 2.0
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def add_edge(self, v, w, **edge_attributes):
+    r&#34;&#34;&#34;
+    Adds an edge to a network and assigns arbitrary
+    key-value pairs as edge attribute.
+
+    Parameters
+    ----------
+    v : str
+        String label of the source node
+    w : str
+        String label of the target node
+    edge_attributes : dict
+        Key-value pairs that will be stored as
+        named edge attributes in a dictionary. An
+        attribute set via network.add_edge(v, w, x=42) can be
+        assessed via network.edges[(v,w)][&#39;x&#39;].
+        Any edge will have the default attribute &#39;weight&#39;, which
+        is set to 1.0 by default. Edge weights are overwritten
+        if an additional weighted edge is added later
+        (see example below).
+
+    Examples
+    --------
+        &gt;&gt;&gt; network.add_edge(&#39;a&#39;,&#39;b&#39;)
+        &gt;&gt;&gt; print(network.edges[(&#39;a&#39;, &#39;b&#39;)][&#39;weight&#39;])
+        &gt;&gt;&gt; 1.0 
+        &gt;&gt;&gt; network.add_edge(&#39;a&#39;,&#39;b&#39;, weight = 2.0)
+        &gt;&gt;&gt; print(network.edges[(&#39;a&#39;, &#39;b&#39;)][&#39;weight&#39;])
+        &gt;&gt;&gt; 2.0
+    &#34;&#34;&#34;
+
+    # Add nodes if they don&#39;t exist
+    self.add_node(v)
+    self.add_node(w)
+
+    e = (v, w)
+
+    if &#39;weight&#39; in edge_attributes and isinstance(edge_attributes[&#39;weight&#39;], int):
+        edge_attributes[&#39;weight&#39;] = float(edge_attributes[&#39;weight&#39;])
+
+    # add any new atributes to the edge
+    self.edges[e] = {**self.edges[e], **edge_attributes}
+
+    # add default weight of one, if no weight is specified
+    if &#39;weight&#39; not in self.edges[e]:
+        self.edges[e][&#39;weight&#39;] = 1.0
+
+    # update predecessor and successor lists
+    self.successors[v].add(w)
+    self.predecessors[w].add(v)
+    if not self.directed:
+        self.successors[w].add(v)
+        self.predecessors[v].add(w)
+
+    # update degrees and node weights
+    if not self.directed:
+        # update degree, in- and outweight
+        self.nodes[v][&#39;degree&#39;] = len(self.successors[v])
+        self.nodes[w][&#39;degree&#39;] = len(self.successors[w])
+
+        S = [self.edges[(v,w)][&#39;weight&#39;] for w in self.successors[v]]
+        if S:
+            self.nodes[v][&#39;outweight&#39;] = sum(S)
+            self.nodes[v][&#39;inweight&#39;] = self.nodes[v][&#39;outweight&#39;]
+
+        S = [self.edges[(v,w)][&#39;weight&#39;] for v in self.predecessors[w]]
+        if S:
+            self.nodes[w][&#39;outweight&#39;] = sum(S)
+            self.nodes[w][&#39;inweight&#39;] = self.nodes[w][&#39;outweight&#39;]
+    else:
+        self.nodes[v][&#39;outdegree&#39;] = len(self.successors[v])
+        self.nodes[v][&#39;indegree&#39;] = len(self.predecessors[v])
+        self.nodes[w][&#39;outdegree&#39;] = len(self.successors[w])
+        self.nodes[w][&#39;indegree&#39;] = len(self.predecessors[w])
+
+        # Note: Weights will be 0 for nodes with empty successors or predecessors. This is a
+        # problem for higher-order networks, where the zero weight is assumed to be a vector
+        # (0,0), Not updating weights in this case will ensure that we keep the initial value
+        # of weights
+
+        S = [self.edges[(v, x)][&#39;weight&#39;] for x in self.successors[v]]
+        if S:
+            self.nodes[v][&#39;outweight&#39;] = sum(S)
+        S = [self.edges[(x, v)][&#39;weight&#39;] for x in self.predecessors[v]]
+        if S:
+            self.nodes[v][&#39;inweight&#39;] = sum(S)
+        S = [self.edges[(w, x)][&#39;weight&#39;] for x in self.successors[w]]
+        if S:
+            self.nodes[w][&#39;outweight&#39;] = sum(S)
+        S = [self.edges[(x, w)][&#39;weight&#39;] for x in self.predecessors[w]]
+        if S:
+            self.nodes[w][&#39;inweight&#39;] = sum(S)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.add_node"><code class="name flex">
+<span>def <span class="ident">add_node</span></span>(<span>self, v, **node_attributes)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Adds a node to a network and assigns arbitrary
+node attributes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node_attributes</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Key-value pairs that will be stored as
+named node attributes in a dictionary. An
+attribute set via network.add_node(v, x=42) can be
+assessed via network.nodes[v]['x']. Any node in an undirected
+network will have the default attributes 'degree', 'inweight',
+and 'outweight'. Any node in a directed network will have the
+default attributes 'indegree', 'outdegree', 'inweight', and 'outweight'.
+See examples below.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code>&gt;&gt;&gt; network = pathpy.Network(directed=False)
+&gt;&gt;&gt; network.add_node(v)
+&gt;&gt;&gt; print(network.nodes[v])
+&gt;&gt;&gt; {'inweight': 0.0, 'outweight': 0.0, 'degree': 0}            
+&gt;&gt;&gt; network = pathpy.Network(directed=True)
+&gt;&gt;&gt; network.add_node(v)
+&gt;&gt;&gt; print(network.nodes[v])
+&gt;&gt;&gt; {'inweight': 0.0, 'outweight': 0.0, 'indegree': 0, 'outdegree': 0}
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def add_node(self, v, **node_attributes):
+    r&#34;&#34;&#34;Adds a node to a network and assigns arbitrary
+    node attributes.
+
+    Parameters
+    ----------
+    node_attributes : dict
+        Key-value pairs that will be stored as
+        named node attributes in a dictionary. An
+        attribute set via network.add_node(v, x=42) can be
+        assessed via network.nodes[v][&#39;x&#39;]. Any node in an undirected
+        network will have the default attributes &#39;degree&#39;, &#39;inweight&#39;,
+        and &#39;outweight&#39;. Any node in a directed network will have the 
+        default attributes &#39;indegree&#39;, &#39;outdegree&#39;, &#39;inweight&#39;, and &#39;outweight&#39;.
+        See examples below.
+
+    Examples
+    --------
+        &gt;&gt;&gt; network = pathpy.Network(directed=False)
+        &gt;&gt;&gt; network.add_node(v)
+        &gt;&gt;&gt; print(network.nodes[v])
+        &gt;&gt;&gt; {&#39;inweight&#39;: 0.0, &#39;outweight&#39;: 0.0, &#39;degree&#39;: 0}            
+        &gt;&gt;&gt; network = pathpy.Network(directed=True)
+        &gt;&gt;&gt; network.add_node(v)
+        &gt;&gt;&gt; print(network.nodes[v])
+        &gt;&gt;&gt; {&#39;inweight&#39;: 0.0, &#39;outweight&#39;: 0.0, &#39;indegree&#39;: 0, &#39;outdegree&#39;: 0}
+    &#34;&#34;&#34;
+    if v not in self.nodes:
+        self.nodes[v] = {**self.nodes[v], **node_attributes}
+
+        # set default values if not set already
+        if &#39;inweight&#39; not in self.nodes[v]:
+            self.nodes[v][&#39;inweight&#39;] = 0.0
+        if &#39;outweight&#39; not in self.nodes[v]:
+            self.nodes[v][&#39;outweight&#39;] = 0.0
+        if self.directed:
+            self.nodes[v][&#39;indegree&#39;] = 0
+            self.nodes[v][&#39;outdegree&#39;] = 0
+        else:
+            self.nodes[v][&#39;degree&#39;] = 0</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.adjacency_matrix"><code class="name flex">
+<span>def <span class="ident">adjacency_matrix</span></span>(<span>self, weighted=True, transposed=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a sparse adjacency matrix of the higher-order network. Unless transposed
+is set to true, the entry corresponding to a directed link s-&gt;t is stored in row s and
+column t and can be accessed via A[s,t].</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>weighted</code></strong> :&ensp;<code>bool</code></dt>
+<dd>if set to False, the function returns a binary adjacency matrix.
+If set to True, adjacency matrix entries contain edge weights.</dd>
+<dt><strong><code>transposed</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether to transpose the matrix or not.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>numpy cooc matrix</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def adjacency_matrix(self, weighted=True, transposed=False):
+    &#34;&#34;&#34;Returns a sparse adjacency matrix of the higher-order network. Unless transposed
+    is set to true, the entry corresponding to a directed link s-&gt;t is stored in row s and
+    column t and can be accessed via A[s,t].
+
+    Parameters
+    ----------
+    weighted: bool
+        if set to False, the function returns a binary adjacency matrix.
+        If set to True, adjacency matrix entries contain edge weights.
+    transposed: bool
+        whether to transpose the matrix or not.
+
+    Returns
+    -------
+    numpy cooc matrix
+    &#34;&#34;&#34;
+    row = []
+    col = []
+    data = []
+
+    edgeC = self.ecount()
+    if not self.directed:
+        n_self_loops = sum(s == t for (s, t) in self.edges)
+        edgeC *= 2
+        edgeC -= n_self_loops
+
+    node_to_coord = self.node_to_name_map()
+
+    for (s, t), e in self.edges.items():
+        row.append(node_to_coord[s])
+        col.append(node_to_coord[t])
+        if weighted:
+            data.append(e[&#39;weight&#39;])
+        else:
+            data.append(1)
+
+        if not self.directed and t != s:
+            row.append(node_to_coord[t])
+            col.append(node_to_coord[s])
+            if weighted:
+                data.append(e[&#39;weight&#39;])
+            else:
+                data.append(1)
+
+    shape = (self.ncount(), self.ncount())
+    A = _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()
+
+    if transposed:
+        return A.transpose()
+    return A</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.degrees"><code class="name flex">
+<span>def <span class="ident">degrees</span></span>(<span>self, mode=&#39;degree&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the sequence of node degrees in the network, where
+entries have the same order as in network.nodes. Note that
+if mode == 'degree' for a directed network, the degree sequence
+of the undirected network will be returned.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>mode</code></strong> :&ensp;<code>str</code></dt>
+<dd>either 'degree', 'indegree', or 'outdegree'</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def degrees(self, mode=&#39;degree&#39;):
+    r&#34;&#34;&#34;Returns the sequence of node degrees in the network, where
+    entries have the same order as in network.nodes. Note that 
+    if mode == &#39;degree&#39; for a directed network, the degree sequence
+    of the undirected network will be returned.
+
+    Parameters
+    ----------
+    mode : str
+        either &#39;degree&#39;, &#39;indegree&#39;, or &#39;outdegree&#39;
+    &#34;&#34;&#34;
+    assert mode is &#39;degree&#39; or mode is &#39;indegree&#39; or mode is &#39;outdegree&#39;, \
+        &#39;Only &#34;degree&#34;, &#34;indegree&#34;, or &#34;outdegree&#34; are supported.&#39;
+    
+    if self.directed and mode == &#39;degree&#39;:
+        return self.to_undirected().degrees()
+
+    return self.node_properties(mode)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.ecount"><code class="name flex">
+<span>def <span class="ident">ecount</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the number of links</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def ecount(self):
+    r&#34;&#34;&#34;Returns the number of links &#34;&#34;&#34;
+    return len(self.edges)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.find_edges"><code class="name flex">
+<span>def <span class="ident">find_edges</span></span>(<span>self, select_nodes=&lt;function Network.&lt;lambda&gt; at 0x00000188BBF28268&gt;, select_edges=&lt;function Network.&lt;lambda&gt; at 0x00000188BBF282F0&gt;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns all edges that satisfy a given condition. Edges can be selected based
+on attributes of the adjacent nodes as well as attributes of the edge. In the select_edges
+lambda function,.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>select_nodes</code></strong> :&ensp;<code>lambda</code></dt>
+<dd>a lambda function that takes two parameters v, w corresponding to the source and
+target node of an edge. All edges for which the lambda function returns True will be
+selected. Default is lambda v,w: True.</dd>
+<dt><strong><code>select_edges</code></strong> :&ensp;<code>lambda</code></dt>
+<dd>a lambda function that takes a single parameter e corresponding to an edge tuple.
+Edge attributes can be accessed by e['attr']. All edges for which the lambda function
+returns True will be selected.
+Default is lambda e: True.</dd>
+</dl>
+<p>Example:</p>
+<pre><code>&gt;&gt;&gt; network.find_edges(select_nodes = lambda v,w: True if v['desired_node_property'] else False,
+
+
+                   select_edges = lambda e: True if e['desired_edge_property'] else False)
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def find_edges(self, select_nodes=lambda v, w: True, select_edges=lambda e: True):
+    r&#34;&#34;&#34;
+    Returns all edges that satisfy a given condition. Edges can be selected based
+    on attributes of the adjacent nodes as well as attributes of the edge. In the select_edges
+    lambda function,.
+
+    Parameters
+    ----------
+    select_nodes : lambda
+        a lambda function that takes two parameters v, w corresponding to the source and 
+        target node of an edge. All edges for which the lambda function returns True will be 
+        selected. Default is lambda v,w: True.
+    select_edges : lambda
+        a lambda function that takes a single parameter e corresponding to an edge tuple. 
+        Edge attributes can be accessed by e[&#39;attr&#39;]. All edges for which the lambda function 
+        returns True will be selected.  Default is lambda e: True.
+
+    Example:
+    &gt;&gt;&gt; network.find_edges(select_nodes = lambda v,w: True if v[&#39;desired_node_property&#39;] else False, 
+                           select_edges = lambda e: True if e[&#39;desired_edge_property&#39;] else False)
+    &#34;&#34;&#34;
+    return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.find_nodes"><code class="name flex">
+<span>def <span class="ident">find_nodes</span></span>(<span>self, select_node=&lt;function Network.&lt;lambda&gt; at 0x00000188BBF28158&gt;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns all nodes that satisfy a given condition. In the select_node
+lambda function, node attributes can be accessed by calling v['attr']</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def find_nodes(self, select_node=lambda v: True):
+    r&#34;&#34;&#34;
+    Returns all nodes that satisfy a given condition. In the select_node
+    lambda function, node attributes can be accessed by calling v[&#39;attr&#39;]
+    &#34;&#34;&#34;
+    return [n for n in self.nodes if select_node(self.nodes[n])]</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.laplacian_matrix"><code class="name flex">
+<span>def <span class="ident">laplacian_matrix</span></span>(<span>self, weighted=False, transposed=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the transposed normalized Laplacian matrix corresponding to the network.</p>
+<h2 id="parameters">Parameters</h2>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def laplacian_matrix(self, weighted=False, transposed=False):
+    &#34;&#34;&#34;
+    Returns the transposed normalized Laplacian matrix corresponding to the network.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    if weighted:
+        A = self.transition_matrix().transpose()
+        D = _sparse.identity(self.ncount())
+    else:
+        A = self.adjacency_matrix(weighted=False)
+        D = _sparse.diags(_np.array([float(self.nodes[v][&#39;degree&#39;]) for v in self.nodes]))
+    L = D - A
+    if transposed:
+        return L.transpose()
+    return L</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.ncount"><code class="name flex">
+<span>def <span class="ident">ncount</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the number of nodes</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def ncount(self):
+    &#34;&#34;&#34; Returns the number of nodes &#34;&#34;&#34;
+    return len(self.nodes)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.node_properties"><code class="name flex">
+<span>def <span class="ident">node_properties</span></span>(<span>self, prop)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a list of arbitrary node properties in the network,
+where entries have the same order as in network.nodes. If a property
+is not present for a given node, None will be added to the list.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def node_properties(self, prop):
+    r&#34;&#34;&#34;Returns a list of arbitrary node properties in the network, 
+    where entries have the same order as in network.nodes. If a property
+    is not present for a given node, None will be added to the list.
+    &#34;&#34;&#34;
+    properties = []
+    for v in self.nodes:
+        if prop in self.nodes[v]:
+            properties.append(self.nodes[v][prop])
+        else:
+            properties.append(None)
+    return properties</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.node_to_name_map"><code class="name flex">
+<span>def <span class="ident">node_to_name_map</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a dictionary that can be used to map nodes to matrix/vector indices</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def node_to_name_map(self):
+    &#34;&#34;&#34;Returns a dictionary that can be used to map nodes to matrix/vector indices&#34;&#34;&#34;
+    return {v: idx for idx, v in enumerate(self.nodes)}</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.remove_edge"><code class="name flex">
+<span>def <span class="ident">remove_edge</span></span>(<span>self, source, target)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Remove an edge and all of its attributes from the network.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>str</code></dt>
+<dd>Source node of the edge to remove</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>str</code></dt>
+<dd>Target node of the edge to remove</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def remove_edge(self, source, target):
+    r&#34;&#34;&#34;
+    Remove an edge and all of its attributes from the network.
+
+    Parameters
+    ----------
+    source : str
+        Source node of the edge to remove
+    target : str
+        Target node of the edge to remove
+    &#34;&#34;&#34;
+    if not (source in self.nodes and target in self.nodes):
+        return None
+
+    if self.directed:
+        # take care of source
+        self.nodes[source][&#39;outdegree&#39;] -= 1
+        self.nodes[source][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+        self.successors[source].remove(target)
+
+        # take care of target
+        self.nodes[target][&#39;indegree&#39;] -= 1
+        self.nodes[target][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+        self.predecessors[target].remove(source)
+
+        del self.edges[(source, target)]
+    else:
+        # take care of source
+        self.nodes[source][&#39;degree&#39;] -= 1
+        self.nodes[source][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+        self.nodes[source][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+        self.successors[source].remove(target)
+        self.predecessors[source].remove(target)
+
+        # take care of target
+        if source != target:
+            self.nodes[target][&#39;degree&#39;] -= 1
+            self.nodes[target][&#39;outweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.nodes[target][&#39;inweight&#39;] -= self.edges[(source, target)][&#39;weight&#39;]
+            self.successors[target].remove(source)
+            self.predecessors[target].remove(source)
+
+        del self.edges[(source, target)]</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.remove_node"><code class="name flex">
+<span>def <span class="ident">remove_node</span></span>(<span>self, v)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Removes a node and all of its attributes from the network.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def remove_node(self, v):
+    r&#34;&#34;&#34;Removes a node and all of its attributes from the network.&#34;&#34;&#34;
+    if v in self.nodes:
+        # remove all incident edges and update neighbors
+        if not self.directed:
+            for w in list(self.successors[v]):
+                edge = (v, w)
+                self.nodes[w][&#39;degree&#39;] -= 1
+                self.nodes[w][&#39;inweight&#39;] -= self.edges[edge][&#39;weight&#39;]
+                self.nodes[w][&#39;outweight&#39;] -= self.edges[edge][&#39;weight&#39;]
+                self.successors[w].remove(v)
+                self.predecessors[w].remove(v)
+                del self.edges[edge]
+        else:
+            for w in list(self.successors[v]):
+                self.nodes[w][&#39;indegree&#39;] -= 1
+                self.nodes[w][&#39;inweight&#39;] -= self.edges[(v, w)][&#39;weight&#39;]
+                self.predecessors[w].remove(v)
+                del self.edges[(v, w)]
+            for w in list(self.predecessors[v]):
+                self.nodes[w][&#39;outdegree&#39;] -= 1
+                self.nodes[w][&#39;outweight&#39;] -= self.edges[(w, v)][&#39;weight&#39;]
+                self.successors[w].remove(v)
+                del self.edges[(w, v)]
+        del self.nodes[v]
+    if v in self.successors:
+        del self.successors[v]
+    if v in self.predecessors:
+        del self.predecessors[v]</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.summary"><code class="name flex">
+<span>def <span class="ident">summary</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a string containing basic summary statistics of this network instance</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def summary(self):
+    &#34;&#34;&#34;Returns a string containing basic summary statistics of this network instance
+    &#34;&#34;&#34;
+    summary_fmt = (
+        &#39;{directed_str} network\n&#39;
+        &#39;Nodes:\t\t\t\t{ncount}\n&#39;
+        &#39;Links:\t\t\t\t{ecount}\n&#39;
+    )
+    if self.directed:
+        directed_str = &#39;Directed&#39;
+    else:
+        directed_str = &#39;Undirected&#39;
+    summary = summary_fmt.format(directed_str=directed_str, ncount=self.ncount(), ecount=self.ecount())
+    return summary</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.to_undirected"><code class="name flex">
+<span>def <span class="ident">to_undirected</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns an undirected copy of the network, in which all
+node and edge properties are removed.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def to_undirected(self):
+    r&#34;&#34;&#34;Returns an undirected copy of the network, in which all
+    node and edge properties are removed.
+    &#34;&#34;&#34;
+    n = Network(directed = False)
+
+    for (v,w) in self.edges:
+        #if v!=w:
+        n.add_edge(v, w)
+    return n</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.to_unweighted"><code class="name flex">
+<span>def <span class="ident">to_unweighted</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns an unweighted copy of a directed or undirected network.
+In this copy all edge and node properties of the original network
+are removed, but the directionality of links is retained.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def to_unweighted(self):
+    r&#34;&#34;&#34;Returns an unweighted copy of a directed or undirected network.
+    In this copy all edge and node properties of the original network
+    are removed, but the directionality of links is retained.
+    &#34;&#34;&#34;
+    n = Network(directed = self.directed)
+
+    for (v,w) in self.edges:
+        n.add_edge(v, w)
+    return n</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.total_edge_weight"><code class="name flex">
+<span>def <span class="ident">total_edge_weight</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the sum of all edge weights</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def total_edge_weight(self):
+    r&#34;&#34;&#34;Returns the sum of all edge weights &#34;&#34;&#34;
+    if self.edges:
+        return _np.sum(e[&#39;weight&#39;] for e in self.edges.values())
+    return 0</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.transition_matrix"><code class="name flex">
+<span>def <span class="ident">transition_matrix</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a (transposed) transition matrix of a random walk process
+on the network</p>
+<h2 id="parameters">Parameters</h2>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def transition_matrix(self):
+    &#34;&#34;&#34;Returns a (transposed) transition matrix of a random walk process
+    on the network
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    row = []
+    col = []
+    data = []
+
+    # calculate weighted out-degrees of all nodes
+    D = {n: self.nodes[n][&#39;outweight&#39;] for n in self.nodes}
+
+    node_to_coord = self.node_to_name_map()
+
+    for s, t in self.edges:
+        # the following makes sure that we do not accidentally consider zero-weight
+        # edges (automatically added by default_dic)
+        weight = self.edges[(s, t)][&#39;weight&#39;]
+        if weight &gt; 0:
+            # add transition from s to t
+            row.append(node_to_coord[t])
+            col.append(node_to_coord[s])
+            assert D[s] &gt; 0, \
+                &#39;Encountered zero out-weight or out-degree for node &#34;{s}&#34; &#39; \
+                &#39;while weight of link ({s}, {t}) is non-zero.&#39;.format(s=s, t=t)
+            prob = weight / D[s]
+            if prob &lt; 0 or prob &gt; 1:  # pragma: no cover
+                raise ValueError(&#39;Encountered transition probability {p} outside &#39;
+                                 &#39;[0,1] range.&#39;.format(p=prob))
+            data.append(prob)
+
+            # add transition from t to s for undirected network
+            if not self.directed and s!=t:
+                row.append(node_to_coord[s])
+                col.append(node_to_coord[t])
+                assert D[t] &gt; 0, \
+                &#39;Encountered zero out-degree for node &#34;{t}&#34; &#39; \
+                &#39;while weight of link ({t}, {s}) is non-zero.&#39;.format(s=s, t=t)
+                prob = weight / D[t]
+                if prob &lt; 0 or prob &gt; 1:  # pragma: no cover
+                    raise ValueError(&#39;Encountered transition probability {p} outside &#39;
+                                    &#39;[0,1] range.&#39;.format(p=prob))
+                data.append(prob)
+
+    data = _np.array(data)
+    data = data.reshape(data.size, )
+
+    shape = self.ncount(), self.ncount()
+    return _sparse.coo_matrix((data, (row, col)), shape=shape).tocsr()</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.Network.write_file"><code class="name flex">
+<span>def <span class="ident">write_file</span></span>(<span>self, filename, separator=&#39;,&#39;, weighted=False, header=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Writes a network to an edge file</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def write_file(self, filename, separator=&#39;,&#39;, weighted=False, header=False):
+    r&#34;&#34;&#34;Writes a network to an edge file&#34;&#34;&#34;
+    with open(filename, &#39;w+&#39;) as f:
+        if header:
+            if weighted:
+                f.write(&#39;source&#39; + separator + &#39;target&#39; + separator + &#39;weight&#39; + &#39;\n&#39;)
+            else:
+                f.write(&#39;source&#39; + separator + &#39;target&#39; + &#39;\n&#39;)
+        for edge in self.edges:
+            if weighted:       
+                f.write(str(edge[0]) + separator + str(edge[1]) + separator + str(self.edges[edge][&#39;weight&#39;])+&#39;\n&#39;)
+            else:
+                f.write(str(edge[0]) + separator + str(edge[1]) + &#39;\n&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pathpy.classes.network.UnorderedDict"><code class="flex name class">
+<span>class <span class="ident">UnorderedDict</span></span>
+<span>(</span><span><small>ancestors:</small> builtins.dict)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A dictionary that applies an arbitrary key-altering
+function before accessing the keys</p>
+<dl>
+<dt><strong><code>Source</code></strong> :&ensp;&lt;<code>https</code>://<code>stackoverflow.com</code>/<code>questions</code>/<code>3387691</code>/<code>how</code>-<code>to</code>-<code>perfectly</code>-<code>override</code>-<code>a</code>-<code>dict</code>&gt;</dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class UnorderedDict(dict):
+    &#34;&#34;&#34;A dictionary that applies an arbitrary key-altering
+       function before accessing the keys
+
+       Source: https://stackoverflow.com/questions/3387691/how-to-perfectly-override-a-dict
+       &#34;&#34;&#34;
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.store = _co.defaultdict(dict)
+        self.update(dict(*args, **kwargs))  # use the free update to set keys
+
+    def __getitem__(self, key):
+        return self.store[self.__keytransform__(key)]
+
+    def __setitem__(self, key, value):
+        self.store[self.__keytransform__(key)] = value
+
+    def __delitem__(self, key):
+        del self.store[self.__keytransform__(key)]
+
+    def __contains__(self, item):
+        return self.__keytransform__(item) in self.store
+
+    def __iter__(self):
+        return iter(self.store)
+
+    def __len__(self):
+        return len(self.store)
+
+    def __missing__(self, key):
+        return {}
+
+    def keys(self):
+        return self.store.keys()
+
+    def values(self):
+        return self.store.values()
+
+    def items(self):
+        return self.store.items()
+
+    def __keytransform__(self, key):
+        return tuple(sorted(key))</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pathpy.classes.network.UnorderedDict.__init__"><code class="name flex">
+<span>def <span class="ident">__init__</span></span>(<span>self, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Initialize self.
+See help(type(self)) for accurate signature.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def __init__(self, *args, **kwargs):
+    super().__init__()
+    self.store = _co.defaultdict(dict)
+    self.update(dict(*args, **kwargs))  # use the free update to set keys</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.UnorderedDict.items"><code class="name flex">
+<span>def <span class="ident">items</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>D.items() -&gt; a set-like object providing a view on D's items</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def items(self):
+    return self.store.items()</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.UnorderedDict.keys"><code class="name flex">
+<span>def <span class="ident">keys</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>D.keys() -&gt; a set-like object providing a view on D's keys</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def keys(self):
+    return self.store.keys()</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.network.UnorderedDict.values"><code class="name flex">
+<span>def <span class="ident">values</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>D.values() -&gt; an object providing a view on D's values</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def values(self):
+    return self.store.values()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.classes" href="index.html">pathpy.classes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.classes.network.network_from_networkx" href="#pathpy.classes.network.network_from_networkx">network_from_networkx</a></code></li>
+<li><code><a title="pathpy.classes.network.network_to_networkx" href="#pathpy.classes.network.network_to_networkx">network_to_networkx</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pathpy.classes.network.Network" href="#pathpy.classes.network.Network">Network</a></code></h4>
+<ul class="">
+<li><code><a title="pathpy.classes.network.Network.__init__" href="#pathpy.classes.network.Network.__init__">__init__</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.add_clique" href="#pathpy.classes.network.Network.add_clique">add_clique</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.add_edge" href="#pathpy.classes.network.Network.add_edge">add_edge</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.add_node" href="#pathpy.classes.network.Network.add_node">add_node</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.adjacency_matrix" href="#pathpy.classes.network.Network.adjacency_matrix">adjacency_matrix</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.degrees" href="#pathpy.classes.network.Network.degrees">degrees</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.ecount" href="#pathpy.classes.network.Network.ecount">ecount</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.find_edges" href="#pathpy.classes.network.Network.find_edges">find_edges</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.find_nodes" href="#pathpy.classes.network.Network.find_nodes">find_nodes</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.from_paths" href="#pathpy.classes.network.Network.from_paths">from_paths</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.from_sqlite" href="#pathpy.classes.network.Network.from_sqlite">from_sqlite</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.from_temporal_network" href="#pathpy.classes.network.Network.from_temporal_network">from_temporal_network</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.laplacian_matrix" href="#pathpy.classes.network.Network.laplacian_matrix">laplacian_matrix</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.leading_eigenvector" href="#pathpy.classes.network.Network.leading_eigenvector">leading_eigenvector</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.ncount" href="#pathpy.classes.network.Network.ncount">ncount</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.node_properties" href="#pathpy.classes.network.Network.node_properties">node_properties</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.node_to_name_map" href="#pathpy.classes.network.Network.node_to_name_map">node_to_name_map</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.read_file" href="#pathpy.classes.network.Network.read_file">read_file</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.remove_edge" href="#pathpy.classes.network.Network.remove_edge">remove_edge</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.remove_node" href="#pathpy.classes.network.Network.remove_node">remove_node</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.summary" href="#pathpy.classes.network.Network.summary">summary</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.to_undirected" href="#pathpy.classes.network.Network.to_undirected">to_undirected</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.to_unweighted" href="#pathpy.classes.network.Network.to_unweighted">to_unweighted</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.total_edge_weight" href="#pathpy.classes.network.Network.total_edge_weight">total_edge_weight</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.transition_matrix" href="#pathpy.classes.network.Network.transition_matrix">transition_matrix</a></code></li>
+<li><code><a title="pathpy.classes.network.Network.write_file" href="#pathpy.classes.network.Network.write_file">write_file</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pathpy.classes.network.UnorderedDict" href="#pathpy.classes.network.UnorderedDict">UnorderedDict</a></code></h4>
+<ul class="">
+<li><code><a title="pathpy.classes.network.UnorderedDict.__init__" href="#pathpy.classes.network.UnorderedDict.__init__">__init__</a></code></li>
+<li><code><a title="pathpy.classes.network.UnorderedDict.items" href="#pathpy.classes.network.UnorderedDict.items">items</a></code></li>
+<li><code><a title="pathpy.classes.network.UnorderedDict.keys" href="#pathpy.classes.network.UnorderedDict.keys">keys</a></code></li>
+<li><code><a title="pathpy.classes.network.UnorderedDict.values" href="#pathpy.classes.network.UnorderedDict.values">values</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

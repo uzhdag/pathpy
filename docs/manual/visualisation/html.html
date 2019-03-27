@@ -1,0 +1,1673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.visualisation.html API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.visualisation.html</code> module</h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+
+from functools import singledispatch
+import json
+import os
+import string
+from string import Template
+import random
+
+import numpy as _np
+
+from pathpy.classes.network import Network
+from pathpy.classes.higher_order_network import HigherOrderNetwork
+from pathpy.classes.multi_order_model import MultiOrderModel
+from pathpy.classes.temporal_network import TemporalNetwork
+from pathpy.classes.paths import Paths
+
+from pathpy.visualisation.alluvial import generate_memory_net
+from pathpy.visualisation.alluvial import generate_diffusion_net
+from pathpy.visualisation.alluvial import generate_memory_net_markov
+
+@singledispatch
+def plot(network, **params):
+    &#34;&#34;&#34;
+    Plots an interactive visualisation of pathpy objects
+    in a jupyter notebook. This generic function supports instances of
+    pathpy.Network, pathpy.TemporalNetwork, pathpy.HigherOrderNetwork,
+    pathpy.MultiOrderModel, and pathpy.Paths. See description of different
+    visualisations in the parameter description.
+
+    Parameters
+    ----------
+    network: Network, TemporalNetwork, HigherOrderNetwork, MultiOrderModel, Paths
+        The object to visualize. Depending on the type of the object passed, the following
+        visualisations are generated:
+            Network: interactive visualisation of a network with a force-directed layout.
+            HigherOrderNetwork: interactive visualisation of the first-order network
+                with forces calculated based on the higher-order network. By setting
+                plot_higher_order_nodes=True a network with unprojected
+                higher-order nodes can be plotted instead.
+            MultiOrderModel: interactive visualisation of the first-order network
+                with forces calculated based on the multi-order model.
+            TemporalNetwork: interactive and dynamic visualisation of a temporal
+                network.
+            Paths: alluvial diagram showing markov or non-Markov trajectories through
+                a given focal node.
+    params: dict
+        A dictionary with visualisation parameters. These parameters are passed through to
+        visualisation templates that are extendable by the user. The default pathpy templates
+        support the following parameters, depending on the type of object being visualised
+        (see brackets).
+            width: int (all)
+                Width of the div element containing the jupyter visualization.
+                Default value is 400.
+            height: int (all)
+                Height of the div element containing the jupyter visualization.
+                Default value is 400.
+            template: string (all)
+                Path to custom visualization template file. If this parameter is omitted, the
+                default pathpy visualistion template fitting the corresponding object will be used.
+            d3js_path: string (all)
+                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
+                For offline operation, the URL to a local copy of d3js can be specified instead. For custom
+                templates, a specific d3js version can be used.
+            node_size: int, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                Either an int value that specifies the radius of all nodes, or
+                a dictionary that assigns custom node sizes to invidual nodes.
+                Default value is 5.0.
+            edge_width: int, float, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                Either an int value that specifies the radius of all edges, or
+                a dictionary that assigns custom edge widths to invidual edges.
+                Default value is 0.5.
+            node_color: string, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                Either a string value that specifies the HTML color of all nodes,
+                or a dictionary that assigns custom node colors to invidual nodes.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#99ccff&#34;. (lightblue)
+            node_text: string, dict (Network, HigherOrderNetwork, MultiOrderModel)
+                A text displayed when hovering over nodes, e.g. containing node properties, full names, etc. 
+                Defaults to node names.
+            edge_color: string, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                Either a string value that specifies the HTML color of all edges,
+                or a dictionary that assigns custom edge color to invidual edges.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#cccccc&#34; (lightgray).
+            edge_opacity: float (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                The opacity of all edges in a range from 0.0 to 1.0. Default value is 1.0.             
+            edge_arrows: bool (Network, HigherOrderNetwork, MultiOrderNetwork)
+                Whether to draw edge arrows for directed networks. Default value is True.
+            label_color: string (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                The HTML color of node labels.  Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) 
+                or HEX-RGB values can be used.Default value is &#39;#cccccc&#39; (lightgray).
+            label_opacity: float (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                The opacity of the label. Default value is 1.0.
+            label_size: str (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderNetwork)
+                CSS string specifying the font size to be used for labels. Default is &#39;8px&#39;.
+            label_offset: list (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderNetwork)
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be
+                displayed in the center of nodes. Positive values for the first and second component
+                move the label to the right and top respectively. Default is [0, -10], which
+                displays labels above nodes to accomodate for labels wider than nodes.
+            force_charge: float, int ()
+                The charge strength of nodes to be used in the force-directed layout. Default value is -20
+            force_repel: float, int (all)
+                The strength of the repulsive force between nodes. Larger negative values will increase the distance
+                between nodes. Default value is -200.
+            force_alpha: float (all)
+                The alpha target (convergence threshold) to be passed to the underlying force-directed
+                layout algorithm. Default value is 0.0.
+            plot_higher_order_nodes: HigherOrderNetwork
+                If set to True, a raw higher-order network with higher-order nodes will be plotted. If
+                False, a first-order projection with a higher-order force-directed layout will be plotted.
+                The default value is True.
+            ms_per_frame: int (TemporalNetwork)
+                how many milliseconds each frame shall be displayed in the visualisation of a TemporalNetwork.
+                The 1000/ms_per_frame specifies the framerate of the visualisation. The default value of 20 yields a
+                framerate of 50 fps.
+            ts_per_frame: int (TemporalNetwork)
+                How many timestamps in a temporal network shall be displayed in every frame
+                of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
+                For higher values, multiple timestamps will be aggregated in a single frame. For a
+                value of zero, simulation speed is adjusted to the inter event time distribution such
+                that on average five interactions are shown per second. Default value is 1.
+            look_behind: int (TemporalNetwork)
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout.
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
+            look_ahead: int (TemporalNetwork)
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout.
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
+            max_time: int (TemporalNetwork)
+                maximum time stamp to visualise. Useful to limit visualisation of very long Temporal Networks. 
+                If None, the whole sequence will be shown. Default is None.
+            active_edge_width: float (TemporalNetwork)
+                A float value that specifies the width of currently active edges.
+                Default value is 4.0.
+            inactive_edge_width: float (TemporalNetwork)
+                A float value that specifies the width of currently active edges.
+                Default value is 0.5.
+            active_edge_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of currently active edges.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#ff0000&#34; (red).
+            inactive_edge_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of inactive edges.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#cccccc&#34; (lightgray).
+            active_node_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of active nodes.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#ff0000&#34; (red).
+            inactive_node_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of inactive nodes.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#cccccc&#34; (lightgray).
+
+    Examples:
+    ---------
+    &gt;&gt;&gt; paths = pp.Paths()
+    &gt;&gt;&gt; paths.add_path(&#39;a,b,c&#39;)
+    &gt;&gt;&gt; n = pp.Network.from_paths(paths)
+    &gt;&gt;&gt; params = {&#39;label_color&#39;: &#39;#ff0000&#39;,
+                  &#39;node_color&#39;: { &#39;a&#39;: &#39;#ff0000&#39;, &#39;b&#39;: &#39;#00ff00&#39;, &#39;c&#39;: &#39;#0000ff&#39;}
+    &gt;&gt;&gt;          }
+    &gt;&gt;&gt; pp.visualisation.plot(n, **params)
+    &gt;&gt;&gt; [inline visualisation]
+    &gt;&gt;&gt; pp.visualisation.export_html(n, filename=&#39;myvisualisation.html&#39;, **params)
+    &#34;&#34;&#34;
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel), \
+        &#34;network must be an instance of Network&#34;
+
+    from IPython.core.display import display, HTML
+    display(HTML(generate_html(network, **params)))
+
+
+@singledispatch
+def generate_html(network, **params):
+    &#34;&#34;&#34;
+    Generates an HTML snippet that contains an interactive d3js visualization
+    of the given instance. This function supports instances of pathpy.Network,
+    pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths.
+    
+    Parameters:
+    -----------
+        network: Network, TemporalNetwork, HigherOrderNetwork, MultiOrderModel, Paths
+            The pathpy object that should be visualised.
+        params: dict
+            A dictionary with visualization parameters to be passed to the HTML
+            generation function. These parameters can be processed by custom
+            visualisation templates extendable by the user. For supported parameters
+            see docstring of plot.
+    &#34;&#34;&#34;
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel),\
+        &#34;Argument must be an instance of Network, HigherOrderNetwork, or MultiOrderModel&#34;
+
+    if &#39;plot_higher_order_nodes&#39; not in params:
+        params[&#39;plot_higher_order_nodes&#39;] = True
+
+    if isinstance(network, HigherOrderNetwork):
+        mog = None
+        hon = None
+        if not params[&#39;plot_higher_order_nodes&#39;]:
+            hon = network
+            network = Network.from_paths(hon.paths)
+    elif isinstance(network, Network):
+        hon = None
+        mog = None
+    elif isinstance(network, MultiOrderModel):
+        hon = None
+        mog = network
+        network = mog.layers[1]
+
+    # prefix nodes starting with number as such IDs are not supported in HTML5
+    def fix_node_name(v):
+        if str(v)[0].isdigit():
+            return &#34;n_&#34; + str(v)
+        return str(v)
+
+    # function to assign node/edge attributes based on params
+    def get_attr(key, attr_name, attr_default):
+        # If parameter does not exist assign default
+        if attr_name not in params:
+            return attr_default
+        # if parameter is a scalar, assign the specified value
+        elif isinstance(params[attr_name], type(attr_default)):
+            return params[attr_name]
+        # if parameter is a dictionary, assign node/edge specific value
+        elif isinstance(params[attr_name], dict):
+            if key in params[attr_name]:
+                return params[attr_name][key]
+            # ... or default value if node/edge is not in dictionary
+            else:
+                return attr_default
+        # raise exception if parameter is of unexpected type
+        else:
+            raise Exception(
+                &#39;Edge and node attribute must either be dict or {0}&#39;.format(type(attr_default))
+                )
+
+    def compute_weight(network, e):
+        &#34;&#34;&#34;
+        Calculates a normalized force weight for an edge in a network
+        &#34;&#34;&#34;
+        if &#39;force_weighted&#39; in params and not params[&#39;force_weighted&#39;]:
+            weight = network.edges[e][&#39;degree&#39;]
+            source_weight = network.nodes[e[0]][&#39;indegree&#39;] + network.nodes[e[0]][&#39;outdegree&#39;]
+            target_weight = network.nodes[e[1]][&#39;indegree&#39;] + network.nodes[e[1]][&#39;outdegree&#39;]
+        else:
+            weight = network.edges[e][&#39;weight&#39;]
+            source_weight = network.nodes[e[0]][&#39;inweight&#39;] + network.nodes[e[0]][&#39;outweight&#39;]
+            target_weight = network.nodes[e[1]][&#39;inweight&#39;] + network.nodes[e[1]][&#39;outweight&#39;]
+
+        if isinstance(weight, _np.ndarray):
+            weight = weight.sum()
+            source_weight = source_weight.sum()
+            target_weight = target_weight.sum()
+        s = min(source_weight, target_weight)
+        if s&gt;0.0:
+            return weight/s
+        else:
+            return 0.0
+
+    # Create network data that will be passed as JSON object
+    network_data = {&#39;links&#39;: [{&#39;source&#39;: fix_node_name(e[0]),
+                               &#39;target&#39;: fix_node_name(e[1]),
+                               &#39;color&#39;: get_attr((e[0], e[1]), &#39;edge_color&#39;, &#39;#999999&#39;),
+                               &#39;width&#39;: get_attr((e[0], e[1]), &#39;edge_width&#39;, 0.5),
+                               &#39;weight&#39;: compute_weight(network, e) if hon is None and mog is None else 0.0
+                              } for e in network.edges.keys()]
+                   }
+    network_data[&#39;nodes&#39;] = [{&#39;id&#39;: fix_node_name(v),
+                              &#39;text&#39;: get_attr(v, &#39;node_text&#39;, fix_node_name(v)),
+                              &#39;color&#39;: get_attr(v, &#39;node_color&#39;, &#39;#99ccff&#39;),
+                              &#39;size&#39;: get_attr(v, &#39;node_size&#39;, 5.0)} for v in network.nodes]
+    
+    # calculate network of higher-order forces between nodes
+    from collections import defaultdict
+    higher_order_forces = Network()
+
+    if hon is not None:
+        for e in hon.edges:
+            v = fix_node_name(hon.higher_order_node_to_path(e[0])[0])
+            w = fix_node_name(hon.higher_order_node_to_path(e[1])[-1])
+            if (v,w) in higher_order_forces.edges:
+                weight = higher_order_forces.edges[(v,w)][&#39;weight&#39;] + hon.edges[e][&#39;weight&#39;]
+            else: 
+                weight = hon.edges[e][&#39;weight&#39;]
+            higher_order_forces.add_edge(v, w, weight=weight)
+
+    if mog is not None:
+        for l in range(1, mog.max_order+1):
+            for e in mog.layers[l].edges:
+                v = fix_node_name(mog.layers[l].higher_order_node_to_path(e[0])[0])
+                w = fix_node_name(mog.layers[l].higher_order_node_to_path(e[1])[-1])
+                if (v, w) in higher_order_forces.edges:
+                    weight = higher_order_forces.edges[(v, w)][&#39;weight&#39;] + mog.layers[l].edges[e][&#39;weight&#39;]
+                else:
+                    weight = mog.layers[l].edges[e][&#39;weight&#39;]
+                higher_order_forces.add_edge(v, w, weight=weight)
+
+    for (v, w) in higher_order_forces.edges:
+        # add invisible links for higher-order forces
+        network_data[&#39;links&#39;].append({&#39;source&#39;: v,
+                                      &#39;target&#39;: w,
+                                      &#39;width&#39;: 0.0,
+                                      &#39;weight&#39;: compute_weight(higher_order_forces, (v, w)),
+                                      &#39;color&#39;: &#39; #999999&#39;})
+
+    # DIV params
+    if &#39;height&#39; not in params:
+        params[&#39;height&#39;] = 400
+
+    if &#39;width&#39; not in params:
+        params[&#39;width&#39;] = 400
+
+    # label params
+    if &#39;label_size&#39; not in params:
+        params[&#39;label_size&#39;] = &#39;8px&#39;
+
+    if &#39;label_offset&#39; not in params:
+        params[&#39;label_offset&#39;] = [0, -10]
+
+    if &#39;label_color&#39; not in params:
+        params[&#39;label_color&#39;] = &#39;#999999&#39;
+
+    if &#39;label_opacity&#39; not in params:
+        params[&#39;label_opacity&#39;] = 1.0
+
+    if &#39;edge_opacity&#39; not in params:
+        params[&#39;edge_opacity&#39;] = 1.0
+
+    # layout params
+    if &#39;force_repel&#39; not in params:
+        params[&#39;force_repel&#39;] = -200
+
+    if &#39;force_charge&#39; not in params:
+        params[&#39;force_charge&#39;] = -20
+
+    if &#39;force_alpha&#39; not in params:
+        params[&#39;force_alpha&#39;] = 0.0
+
+    # arrows
+    if &#39;edge_arrows&#39; not in params:
+            params[&#39;edge_arrows&#39;] = &#39;true&#39;
+    else:
+        params[&#39;edge_arrows&#39;] = str(params[&#39;edge_arrows&#39;]).lower()
+
+    if not network.directed:
+        params[&#39;edge_arrows&#39;] = &#39;false&#39;
+
+    # Create a random DIV ID to avoid conflicts within the same notebook
+    div_id = &#34;&#34;.join(random.choice(string.ascii_letters) for x in range(8))
+
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+    
+    # We have three options to lod the d3js library:
+
+    # 1.) Via a URL of a local copy in pathpy&#39;s visualisation assets
+    # from urllib.parse import urljoin
+    # from urllib.request import pathname2url
+    # d3js_path = urljoin(&#39;file://&#39;, pathname2url(os.path.abspath(os.path.join(html_dir, &#39;d3.v4.min.js&#39;))))
+
+    # 2.) Assuming a local copy in the startup folder of jupyter
+    # d3js_path = &#39;d3.v4.min.js&#39;
+
+    # 3.) Direct import from the d3js server (default)
+
+    # All three options work with the export to a stand-alone HTML viewed via the browser
+    # in jupyter, options 1 + 2 do not work at all, while option 3 unfortunately requires us to be online
+    if &#39;d3js_path&#39; not in params:
+        params[&#39;d3js_path&#39;] = &#39;https://d3js.org/d3.v4.min.js&#39;
+
+    d3js_params = {
+        &#39;network_data&#39;: json.dumps(network_data),
+        &#39;div_id&#39;: div_id,
+    }
+
+    # Resolve the template ...
+    if &#39;template&#39; not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+        template_file = os.path.abspath(os.path.join(html_dir, &#39;network_template.html&#39;))
+    else:
+        template_file = params[&#39;template&#39;]
+
+    # Read template file ... 
+    with open(template_file) as f:
+        html_str = f.read()
+
+    # substitute variables in template file
+    html = Template(html_str).substitute({**d3js_params, **params})
+
+    return html
+
+
+@singledispatch
+def export_html(network, filename, **params):
+    &#34;&#34;&#34;
+    Exports a stand-alone HTML file that contains an interactive d3js visualization
+    of the given pathpy instance. function supports instances of pathpy.Network, 
+    pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths.
+
+    Parameters
+    ----------
+    network: Network
+        The network to visualize
+    filename: string
+        Path where the HTML file will be saved
+    params: dict
+        A dictionary with visualization parameters to be passed to the HTML
+        generation function. These parameters can be processed by custom
+        visualisation templates extendable by the user. For supported parameters
+        see docstring of plot.
+    &#34;&#34;&#34;
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel), \
+        &#34;network must be an instance of Network&#34;
+    html = generate_html(network, **params)
+    if &#39;template&#39; not in params:
+        html = &#39;&lt;!DOCTYPE html&gt;\n&lt;html&gt;&lt;body&gt;\n&#39; + html + &#39;&lt;/body&gt;\n&lt;/html&gt;&#39;
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(html)
+
+
+@plot.register(TemporalNetwork)
+def _plot_tempnet(tempnet, **params):
+    assert isinstance(tempnet, TemporalNetwork), \
+        &#34;tempnet must be an instance of TemporalNetwork&#34;
+    from IPython.core.display import display, HTML
+    display(HTML(generate_html(tempnet, **params)))
+
+
+@generate_html.register(TemporalNetwork)
+def _generate_html_tempnet(tempnet, **params):
+    
+    if &#39;ms_per_frame&#39; not in params:
+        params[&#39;ms_per_frame&#39;] = 50
+
+    if &#39;ts_per_frame&#39; not in params:
+        params[&#39;ts_per_frame&#39;] = 1
+
+    if &#39;max_time&#39; not in params:
+        params[&#39;max_time&#39;] = None
+
+    if params[&#39;max_time&#39;] is not None:
+        tempnet = tempnet.filter_edges(lambda u, v, t: t &lt;= params[&#39;max_time&#39;])
+
+    # auto-adjust simulation speed to temporal characteristics
+    if params[&#39;ts_per_frame&#39;] == 0:
+        d = tempnet.inter_event_times()
+        avg_ts_bw_interactions = _np.mean(d)
+        fps = 1000.0/float(params[&#39;ms_per_frame&#39;])
+        x = avg_ts_bw_interactions/fps
+        # set time scale so that we expect 5 interactions per frame
+        params[&#39;ts_per_frame&#39;] = _np.max([1, int(20 * x)])
+
+    if &#39;look_ahead&#39; not in params:
+        params[&#39;look_ahead&#39;] = 10
+
+    if &#39;look_behind&#39; not in params:
+        params[&#39;look_behind&#39;] = 10
+
+    # prefix nodes starting with number
+    def fix_node_name(v):
+        new_v = str(v)
+        if str(v)[0].isdigit():
+            new_v = &#34;n_&#34; + str(v)
+        if new_v[0] == &#39;_&#39;:
+            new_v = &#34;n_&#34; + str(v)
+        if &#39;-&#39; in new_v:
+            new_v = new_v.replace(&#39;-&#39;, &#39;_&#39;)
+        return new_v
+
+    network_data = {
+        &#39;nodes&#39;: [{&#39;id&#39;: fix_node_name(v),
+                   &#39;group&#39;: 1} for v in tempnet.nodes],
+        &#39;links&#39;: [{&#39;source&#39;: fix_node_name(s),
+                   &#39;target&#39;: fix_node_name(v),
+                   &#39;width&#39;: 1,
+                   &#39;time&#39;: t} for s, v, t in tempnet.tedges
+                 ]
+    }
+
+    # Size of DIV
+    if &#39;width&#39; not in params:
+        params[&#39;width&#39;] = 400
+
+    if &#39;height&#39; not in params:
+        params[&#39;height&#39;] = 400
+
+    # label params
+    if &#39;label_size&#39; not in params:
+        params[&#39;label_size&#39;] = &#39;8px&#39;
+
+    if &#39;label_offset&#39; not in params:
+        params[&#39;label_offset&#39;] = [0, -10]
+
+    if &#39;label_color&#39; not in params:
+        params[&#39;label_color&#39;] = &#39;#cccccc&#39;
+
+    if &#39;label_opacity&#39; not in params:
+        params[&#39;label_opacity&#39;] = 1.0
+
+    # layout params
+    if &#39;force_repel&#39; not in params:
+        params[&#39;force_repel&#39;] = -200
+
+    if &#39;force_charge&#39; not in params:
+        params[&#39;force_charge&#39;] = -20
+
+    if &#39;force_alpha&#39; not in params:
+        params[&#39;force_alpha&#39;] = 0.0
+
+    # Colors and sizes
+    if &#39;node_size&#39; not in params:
+        params[&#39;node_size&#39;] = 5.0
+
+    if &#39;active_edge_color&#39; not in params:
+        params[&#39;active_edge_color&#39;] = &#39;#ff0000&#39;
+
+    if &#39;edge_opacity&#39; not in params:
+        params[&#39;edge_opacity&#39;] = 1.0
+
+    if &#39;inactive_edge_width&#39; not in params:
+        params[&#39;inactive_edge_width&#39;] = 0.5
+
+    if &#39;active_edge_width&#39; not in params:
+        params[&#39;active_edge_width&#39;] = 4.0
+
+    if &#39;inactive_edge_color&#39; not in params:
+        params[&#39;inactive_edge_color&#39;] = &#39;#cccccc&#39;
+
+    if &#39;active_node_color&#39; not in params:
+        params[&#39;active_node_color&#39;] = &#39;#ff0000&#39;
+
+    if &#39;inactive_node_color&#39; not in params:
+        params[&#39;inactive_node_color&#39;] = &#39;#cccccc&#39;
+
+    # Create a random DIV ID to avoid conflicts within the same notebook
+    div_id = &#34;&#34;.join(random.choice(string.ascii_letters) for x in range(8))
+
+    # use standard template file if no custom template is specified
+    if &#39;template&#39; not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+        template_file = os.path.abspath(os.path.join(html_dir, &#39;tempnet_template.html&#39;))
+    else:
+        template_file = params[&#39;template&#39;]
+
+    with open(template_file) as f:
+        html_str = f.read()
+
+    if &#39;d3js_path&#39; not in params:
+        params[&#39;d3js_path&#39;] = &#39;https://d3js.org/d3.v4.min.js&#39;
+
+    d3js_params = {
+        &#39;network_data&#39;: json.dumps(network_data),
+        &#39;div_id&#39;: div_id
+    }
+
+    # substitute variables in template file
+    html = Template(html_str).substitute({**d3js_params, **params})
+
+    return html
+
+
+@export_html.register(TemporalNetwork)
+def _export_html_tempnet(tempnet, filename, **params):
+
+    html = generate_html(tempnet, **params)
+
+    # for the inner HTML generated from the default templates, we add the surrounding DOCTYPE
+    # and body needed for a stand-alone HTML file.
+    if &#39;template&#39; not in params:
+        html = &#39;&lt;!DOCTYPE html&gt;\n&lt;html&gt;&lt;body&gt;\n&#39; + html + &#39;&lt;/body&gt;\n&lt;/html&gt;&#39;
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(html)
+
+
+@plot.register(Paths)
+def _plot_paths(paths, **params):
+    html = generate_html(paths, **params)
+    from IPython.core.display import display, HTML
+    display(HTML(html))
+
+
+@generate_html.register(Paths)
+def _generate_html_paths(paths, **params):
+    if &#39;self_loops&#39; in params:
+        self_loops = params[&#39;self_loops&#39;]
+    else:
+        self_loops = True
+
+    if &#39;node&#39; in params:
+        node = params[&#39;node&#39;]
+    else:
+        params[&#39;node&#39;] = list(paths.nodes)[0]
+        node = params[&#39;node&#39;]
+    
+    if &#39;markov&#39; in params and params[&#39;markov&#39;]:
+        n = generate_memory_net_markov(HigherOrderNetwork(paths, k=1), node, self_loops=self_loops)
+    else:
+        n = generate_memory_net(paths, node, self_loops=self_loops)
+
+    node_idx = {}
+    i = 0
+    for v in n.nodes:
+        node_idx[v] = i
+        i += 1
+
+    data = {
+        &#39;nodes&#39;: [{&#39;name&#39;: v, &#39;id&#39;: v} for v in n.nodes],
+        &#39;links&#39;: [{&#39;source&#39;: int(node_idx[e[0]]),
+                   &#39;target&#39;: int(node_idx[e[1]]),
+                   &#39;value&#39;: n.edges[e][&#39;weight&#39;]
+                  } for e in n.edges]
+    }
+
+    div_id = &#34;&#34;.join(random.choice(string.ascii_letters) for x in range(8))
+
+    if &#39;width&#39; not in params:
+        params[&#39;width&#39;] = 400
+
+    if &#39;height&#39; not in params:
+        params[&#39;height&#39;] = 400
+
+    if &#39;d3js_path&#39; not in params:
+        params[&#39;d3js_path&#39;] = &#39;http://d3js.org/d3.v3.min.js&#39;
+
+    if &#39;template&#39; not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+        template_file = os.path.join(html_dir, &#39;paths_template.html&#39;)
+    else:
+        template_file = params[&#39;template&#39;]
+
+    with open(template_file) as f:
+        html_str = f.read()
+
+    d3js_params = {
+        &#39;flow_data&#39;: json.dumps(data),
+        &#39;div_id&#39;: div_id,
+    }
+    html = Template(html_str).substitute({**d3js_params, **params})
+    return html
+
+
+@export_html.register(Paths)
+def _export_html_paths(paths, filename, **params):
+    html = generate_html(paths, **params)
+    if &#39;template&#39; not in params:
+        html = &#39;&lt;!DOCTYPE html&gt;\n&lt;html&gt;&lt;body&gt;\n&#39; + html + &#39;&lt;/body&gt;\n&lt;/html&gt;&#39;
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(html)
+
+def generate_html_diffusion(paths, **params):
+    &#34;&#34;&#34;
+    Parameters
+    ----------
+    params : dict
+        paths: Paths
+        node : str
+        markov : bool
+        steps : int
+        width : int
+        height : int
+        template : str
+    &#34;&#34;&#34;
+    if &#39;node&#39; in params:
+        node = params[&#39;node&#39;]
+    else:
+        params[&#39;node&#39;] = list(paths.nodes)[0]
+        node = params[&#39;node&#39;]
+    
+    if &#39;markov&#39; in params:
+        markov = params[&#39;markov&#39;]
+    else:
+        markov = False
+    if &#39;steps&#39; in params:
+        steps = params[&#39;steps&#39;]
+    else:
+        steps = 5
+    n = generate_diffusion_net(paths, node=node, markov=markov, steps=steps)
+
+    node_map = {v: idx for idx, v in enumerate(n.nodes)}
+
+    data = {
+        &#39;nodes&#39;: [{&#39;name&#39;: v, &#39;id&#39;: v} for v in n.nodes],
+        &#39;links&#39;: [{&#39;source&#39;: node_map[e[0]], &#39;target&#39;: node_map[e[1]], &#39;value&#39;: n.edges[e][&#39;weight&#39;]} for e in n.edges]
+    }
+
+    div_id = &#34;&#34;.join(random.choice(string.ascii_letters) for x in range(8))
+
+    if &#39;d3js_path&#39; not in params:
+        params[&#39;d3js_path&#39;] = &#39;http://d3js.org/d3.v3.min.js&#39;
+
+    if &#39;template&#39; not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+        template_file = os.path.join(html_dir, &#39;diffusion_template.html&#39;)
+
+    with open(template_file) as f:
+        html_str = f.read()
+
+    d3js_params = {
+        &#39;flow_data&#39;: json.dumps(data),
+        &#39;div_id&#39;: div_id
+    }
+
+    # replace all placeholders in template
+    html = Template(html_str).substitute({**d3js_params, **params})
+    return html
+
+
+def plot_diffusion(paths, **params):
+    html = generate_html_diffusion(paths, **params)
+    from IPython.core.display import display, HTML
+    display(HTML(html))
+
+
+def export_html_diffusion(paths, filename, **params):
+    html = generate_html_diffusion(paths, **params)
+    if &#39;template&#39; not in params:
+        html = &#39;&lt;!DOCTYPE html&gt;\n&lt;html&gt;&lt;body&gt;\n&#39; + html + &#39;&lt;/body&gt;\n&lt;/html&gt;&#39;
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(html)
+
+
+def plot_walk(network, walk, **params):
+    &#34;&#34;&#34;
+    Plots an interactive visualisation of a random walk trajectory in 
+    a network.
+    &#34;&#34;&#34;
+
+    def fix_node_name(v):
+        new_v = v
+        if v[0].isdigit():
+            new_v = &#34;n_&#34; + v
+        if new_v[0] == &#39;_&#39;:
+            new_v = &#34;n_&#34; + v
+        if &#39;-&#39; in new_v:
+            new_v = new_v.replace(&#39;-&#39;, &#39;_&#39;)
+        return new_v
+
+    from IPython.core.display import display, HTML
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+    params[&#39;template&#39;] = os.path.join(html_dir, &#39;walk_template.html&#39;)
+    params[&#39;itinerary&#39;] = [ fix_node_name(v) for v in walk ]
+    if &#39;active_node_color&#39; not in params:
+        params[&#39;active_node_color&#39;] = &#39;red&#39;
+    if &#39;inactive_node_color&#39; not in params:
+        params[&#39;inactive_node_color&#39;] = &#39;lightblue&#39;
+    params[&#39;plot_higher_order_nodes&#39;] = False
+    if &#39;ms_per_frame&#39; not in params:
+        params[&#39;ms_per_frame&#39;] = 500
+    display(HTML(generate_html(network, **params)))
+
+
+def export_html_walk(network, walk, filename, **params):
+    &#34;&#34;&#34;
+    Exports an interactive visualisation of a random walk trajectory in 
+    a network to a file.
+    &#34;&#34;&#34;
+    
+    def fix_node_name(v):
+        new_v = v
+        if v[0].isdigit():
+            new_v = &#34;n_&#34; + v
+        if new_v[0] == &#39;_&#39;:
+            new_v = &#34;n_&#34; + v
+        if &#39;-&#39; in new_v:
+            new_v = new_v.replace(&#39;-&#39;, &#39;_&#39;)
+        return new_v
+
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+    params[&#39;template&#39;] = os.path.join(html_dir, &#39;walk_template.html&#39;)
+    params[&#39;itinerary&#39;] = [ fix_node_name(v) for v in walk ]
+    if &#39;active_node_color&#39; not in params:
+        params[&#39;active_node_color&#39;] = &#39;red&#39;
+    if &#39;inactive_node_color&#39; not in params:
+        params[&#39;inactive_node_color&#39;] = &#39;lightblue&#39;
+    params[&#39;plot_higher_order_nodes&#39;] = False
+    if &#39;ms_per_frame&#39; not in params:
+        params[&#39;ms_per_frame&#39;] = 500
+    html = generate_html(network, **params)
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(html)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.visualisation.html.export_html"><code class="name flex">
+<span>def <span class="ident">export_html</span></span>(<span>network, filename, **params)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Exports a stand-alone HTML file that contains an interactive d3js visualization
+of the given pathpy instance. function supports instances of pathpy.Network,
+pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;<code>Network</code></dt>
+<dd>The network to visualize</dd>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code></dt>
+<dd>Path where the HTML file will be saved</dd>
+<dt><strong><code>params</code></strong> :&ensp;<code>dict</code></dt>
+<dd>A dictionary with visualization parameters to be passed to the HTML
+generation function. These parameters can be processed by custom
+visualisation templates extendable by the user. For supported parameters
+see docstring of plot.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def export_html(network, filename, **params):
+    &#34;&#34;&#34;
+    Exports a stand-alone HTML file that contains an interactive d3js visualization
+    of the given pathpy instance. function supports instances of pathpy.Network, 
+    pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths.
+
+    Parameters
+    ----------
+    network: Network
+        The network to visualize
+    filename: string
+        Path where the HTML file will be saved
+    params: dict
+        A dictionary with visualization parameters to be passed to the HTML
+        generation function. These parameters can be processed by custom
+        visualisation templates extendable by the user. For supported parameters
+        see docstring of plot.
+    &#34;&#34;&#34;
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel), \
+        &#34;network must be an instance of Network&#34;
+    html = generate_html(network, **params)
+    if &#39;template&#39; not in params:
+        html = &#39;&lt;!DOCTYPE html&gt;\n&lt;html&gt;&lt;body&gt;\n&#39; + html + &#39;&lt;/body&gt;\n&lt;/html&gt;&#39;
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(html)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.visualisation.html.export_html_diffusion"><code class="name flex">
+<span>def <span class="ident">export_html_diffusion</span></span>(<span>paths, filename, **params)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def export_html_diffusion(paths, filename, **params):
+    html = generate_html_diffusion(paths, **params)
+    if &#39;template&#39; not in params:
+        html = &#39;&lt;!DOCTYPE html&gt;\n&lt;html&gt;&lt;body&gt;\n&#39; + html + &#39;&lt;/body&gt;\n&lt;/html&gt;&#39;
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(html)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.visualisation.html.export_html_walk"><code class="name flex">
+<span>def <span class="ident">export_html_walk</span></span>(<span>network, walk, filename, **params)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Exports an interactive visualisation of a random walk trajectory in
+a network to a file.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def export_html_walk(network, walk, filename, **params):
+    &#34;&#34;&#34;
+    Exports an interactive visualisation of a random walk trajectory in 
+    a network to a file.
+    &#34;&#34;&#34;
+    
+    def fix_node_name(v):
+        new_v = v
+        if v[0].isdigit():
+            new_v = &#34;n_&#34; + v
+        if new_v[0] == &#39;_&#39;:
+            new_v = &#34;n_&#34; + v
+        if &#39;-&#39; in new_v:
+            new_v = new_v.replace(&#39;-&#39;, &#39;_&#39;)
+        return new_v
+
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+    params[&#39;template&#39;] = os.path.join(html_dir, &#39;walk_template.html&#39;)
+    params[&#39;itinerary&#39;] = [ fix_node_name(v) for v in walk ]
+    if &#39;active_node_color&#39; not in params:
+        params[&#39;active_node_color&#39;] = &#39;red&#39;
+    if &#39;inactive_node_color&#39; not in params:
+        params[&#39;inactive_node_color&#39;] = &#39;lightblue&#39;
+    params[&#39;plot_higher_order_nodes&#39;] = False
+    if &#39;ms_per_frame&#39; not in params:
+        params[&#39;ms_per_frame&#39;] = 500
+    html = generate_html(network, **params)
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(html)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.visualisation.html.generate_html"><code class="name flex">
+<span>def <span class="ident">generate_html</span></span>(<span>network, **params)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates an HTML snippet that contains an interactive d3js visualization
+of the given instance. This function supports instances of pathpy.Network,
+pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths.</p>
+<h2 id="parameters">Parameters:</h2>
+<pre><code>network: Network, TemporalNetwork, HigherOrderNetwork, MultiOrderModel, Paths
+    The pathpy object that should be visualised.
+params: dict
+    A dictionary with visualization parameters to be passed to the HTML
+    generation function. These parameters can be processed by custom
+    visualisation templates extendable by the user. For supported parameters
+    see docstring of plot.
+</code></pre></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def generate_html(network, **params):
+    &#34;&#34;&#34;
+    Generates an HTML snippet that contains an interactive d3js visualization
+    of the given instance. This function supports instances of pathpy.Network,
+    pathpy.TemporalNetwork, pathpy.HigherOrderNetwork, pathpy.Paths, and pathpy.Paths.
+    
+    Parameters:
+    -----------
+        network: Network, TemporalNetwork, HigherOrderNetwork, MultiOrderModel, Paths
+            The pathpy object that should be visualised.
+        params: dict
+            A dictionary with visualization parameters to be passed to the HTML
+            generation function. These parameters can be processed by custom
+            visualisation templates extendable by the user. For supported parameters
+            see docstring of plot.
+    &#34;&#34;&#34;
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel),\
+        &#34;Argument must be an instance of Network, HigherOrderNetwork, or MultiOrderModel&#34;
+
+    if &#39;plot_higher_order_nodes&#39; not in params:
+        params[&#39;plot_higher_order_nodes&#39;] = True
+
+    if isinstance(network, HigherOrderNetwork):
+        mog = None
+        hon = None
+        if not params[&#39;plot_higher_order_nodes&#39;]:
+            hon = network
+            network = Network.from_paths(hon.paths)
+    elif isinstance(network, Network):
+        hon = None
+        mog = None
+    elif isinstance(network, MultiOrderModel):
+        hon = None
+        mog = network
+        network = mog.layers[1]
+
+    # prefix nodes starting with number as such IDs are not supported in HTML5
+    def fix_node_name(v):
+        if str(v)[0].isdigit():
+            return &#34;n_&#34; + str(v)
+        return str(v)
+
+    # function to assign node/edge attributes based on params
+    def get_attr(key, attr_name, attr_default):
+        # If parameter does not exist assign default
+        if attr_name not in params:
+            return attr_default
+        # if parameter is a scalar, assign the specified value
+        elif isinstance(params[attr_name], type(attr_default)):
+            return params[attr_name]
+        # if parameter is a dictionary, assign node/edge specific value
+        elif isinstance(params[attr_name], dict):
+            if key in params[attr_name]:
+                return params[attr_name][key]
+            # ... or default value if node/edge is not in dictionary
+            else:
+                return attr_default
+        # raise exception if parameter is of unexpected type
+        else:
+            raise Exception(
+                &#39;Edge and node attribute must either be dict or {0}&#39;.format(type(attr_default))
+                )
+
+    def compute_weight(network, e):
+        &#34;&#34;&#34;
+        Calculates a normalized force weight for an edge in a network
+        &#34;&#34;&#34;
+        if &#39;force_weighted&#39; in params and not params[&#39;force_weighted&#39;]:
+            weight = network.edges[e][&#39;degree&#39;]
+            source_weight = network.nodes[e[0]][&#39;indegree&#39;] + network.nodes[e[0]][&#39;outdegree&#39;]
+            target_weight = network.nodes[e[1]][&#39;indegree&#39;] + network.nodes[e[1]][&#39;outdegree&#39;]
+        else:
+            weight = network.edges[e][&#39;weight&#39;]
+            source_weight = network.nodes[e[0]][&#39;inweight&#39;] + network.nodes[e[0]][&#39;outweight&#39;]
+            target_weight = network.nodes[e[1]][&#39;inweight&#39;] + network.nodes[e[1]][&#39;outweight&#39;]
+
+        if isinstance(weight, _np.ndarray):
+            weight = weight.sum()
+            source_weight = source_weight.sum()
+            target_weight = target_weight.sum()
+        s = min(source_weight, target_weight)
+        if s&gt;0.0:
+            return weight/s
+        else:
+            return 0.0
+
+    # Create network data that will be passed as JSON object
+    network_data = {&#39;links&#39;: [{&#39;source&#39;: fix_node_name(e[0]),
+                               &#39;target&#39;: fix_node_name(e[1]),
+                               &#39;color&#39;: get_attr((e[0], e[1]), &#39;edge_color&#39;, &#39;#999999&#39;),
+                               &#39;width&#39;: get_attr((e[0], e[1]), &#39;edge_width&#39;, 0.5),
+                               &#39;weight&#39;: compute_weight(network, e) if hon is None and mog is None else 0.0
+                              } for e in network.edges.keys()]
+                   }
+    network_data[&#39;nodes&#39;] = [{&#39;id&#39;: fix_node_name(v),
+                              &#39;text&#39;: get_attr(v, &#39;node_text&#39;, fix_node_name(v)),
+                              &#39;color&#39;: get_attr(v, &#39;node_color&#39;, &#39;#99ccff&#39;),
+                              &#39;size&#39;: get_attr(v, &#39;node_size&#39;, 5.0)} for v in network.nodes]
+    
+    # calculate network of higher-order forces between nodes
+    from collections import defaultdict
+    higher_order_forces = Network()
+
+    if hon is not None:
+        for e in hon.edges:
+            v = fix_node_name(hon.higher_order_node_to_path(e[0])[0])
+            w = fix_node_name(hon.higher_order_node_to_path(e[1])[-1])
+            if (v,w) in higher_order_forces.edges:
+                weight = higher_order_forces.edges[(v,w)][&#39;weight&#39;] + hon.edges[e][&#39;weight&#39;]
+            else: 
+                weight = hon.edges[e][&#39;weight&#39;]
+            higher_order_forces.add_edge(v, w, weight=weight)
+
+    if mog is not None:
+        for l in range(1, mog.max_order+1):
+            for e in mog.layers[l].edges:
+                v = fix_node_name(mog.layers[l].higher_order_node_to_path(e[0])[0])
+                w = fix_node_name(mog.layers[l].higher_order_node_to_path(e[1])[-1])
+                if (v, w) in higher_order_forces.edges:
+                    weight = higher_order_forces.edges[(v, w)][&#39;weight&#39;] + mog.layers[l].edges[e][&#39;weight&#39;]
+                else:
+                    weight = mog.layers[l].edges[e][&#39;weight&#39;]
+                higher_order_forces.add_edge(v, w, weight=weight)
+
+    for (v, w) in higher_order_forces.edges:
+        # add invisible links for higher-order forces
+        network_data[&#39;links&#39;].append({&#39;source&#39;: v,
+                                      &#39;target&#39;: w,
+                                      &#39;width&#39;: 0.0,
+                                      &#39;weight&#39;: compute_weight(higher_order_forces, (v, w)),
+                                      &#39;color&#39;: &#39; #999999&#39;})
+
+    # DIV params
+    if &#39;height&#39; not in params:
+        params[&#39;height&#39;] = 400
+
+    if &#39;width&#39; not in params:
+        params[&#39;width&#39;] = 400
+
+    # label params
+    if &#39;label_size&#39; not in params:
+        params[&#39;label_size&#39;] = &#39;8px&#39;
+
+    if &#39;label_offset&#39; not in params:
+        params[&#39;label_offset&#39;] = [0, -10]
+
+    if &#39;label_color&#39; not in params:
+        params[&#39;label_color&#39;] = &#39;#999999&#39;
+
+    if &#39;label_opacity&#39; not in params:
+        params[&#39;label_opacity&#39;] = 1.0
+
+    if &#39;edge_opacity&#39; not in params:
+        params[&#39;edge_opacity&#39;] = 1.0
+
+    # layout params
+    if &#39;force_repel&#39; not in params:
+        params[&#39;force_repel&#39;] = -200
+
+    if &#39;force_charge&#39; not in params:
+        params[&#39;force_charge&#39;] = -20
+
+    if &#39;force_alpha&#39; not in params:
+        params[&#39;force_alpha&#39;] = 0.0
+
+    # arrows
+    if &#39;edge_arrows&#39; not in params:
+            params[&#39;edge_arrows&#39;] = &#39;true&#39;
+    else:
+        params[&#39;edge_arrows&#39;] = str(params[&#39;edge_arrows&#39;]).lower()
+
+    if not network.directed:
+        params[&#39;edge_arrows&#39;] = &#39;false&#39;
+
+    # Create a random DIV ID to avoid conflicts within the same notebook
+    div_id = &#34;&#34;.join(random.choice(string.ascii_letters) for x in range(8))
+
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+    
+    # We have three options to lod the d3js library:
+
+    # 1.) Via a URL of a local copy in pathpy&#39;s visualisation assets
+    # from urllib.parse import urljoin
+    # from urllib.request import pathname2url
+    # d3js_path = urljoin(&#39;file://&#39;, pathname2url(os.path.abspath(os.path.join(html_dir, &#39;d3.v4.min.js&#39;))))
+
+    # 2.) Assuming a local copy in the startup folder of jupyter
+    # d3js_path = &#39;d3.v4.min.js&#39;
+
+    # 3.) Direct import from the d3js server (default)
+
+    # All three options work with the export to a stand-alone HTML viewed via the browser
+    # in jupyter, options 1 + 2 do not work at all, while option 3 unfortunately requires us to be online
+    if &#39;d3js_path&#39; not in params:
+        params[&#39;d3js_path&#39;] = &#39;https://d3js.org/d3.v4.min.js&#39;
+
+    d3js_params = {
+        &#39;network_data&#39;: json.dumps(network_data),
+        &#39;div_id&#39;: div_id,
+    }
+
+    # Resolve the template ...
+    if &#39;template&#39; not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+        template_file = os.path.abspath(os.path.join(html_dir, &#39;network_template.html&#39;))
+    else:
+        template_file = params[&#39;template&#39;]
+
+    # Read template file ... 
+    with open(template_file) as f:
+        html_str = f.read()
+
+    # substitute variables in template file
+    html = Template(html_str).substitute({**d3js_params, **params})
+
+    return html</code></pre>
+</details>
+</dd>
+<dt id="pathpy.visualisation.html.generate_html_diffusion"><code class="name flex">
+<span>def <span class="ident">generate_html_diffusion</span></span>(<span>paths, **params)</span>
+</code></dt>
+<dd>
+<section class="desc"><h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>params</code></strong> :&ensp;<code>dict</code></dt>
+<dd>paths: Paths
+node : str
+markov : bool
+steps : int
+width : int
+height : int
+template : str</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def generate_html_diffusion(paths, **params):
+    &#34;&#34;&#34;
+    Parameters
+    ----------
+    params : dict
+        paths: Paths
+        node : str
+        markov : bool
+        steps : int
+        width : int
+        height : int
+        template : str
+    &#34;&#34;&#34;
+    if &#39;node&#39; in params:
+        node = params[&#39;node&#39;]
+    else:
+        params[&#39;node&#39;] = list(paths.nodes)[0]
+        node = params[&#39;node&#39;]
+    
+    if &#39;markov&#39; in params:
+        markov = params[&#39;markov&#39;]
+    else:
+        markov = False
+    if &#39;steps&#39; in params:
+        steps = params[&#39;steps&#39;]
+    else:
+        steps = 5
+    n = generate_diffusion_net(paths, node=node, markov=markov, steps=steps)
+
+    node_map = {v: idx for idx, v in enumerate(n.nodes)}
+
+    data = {
+        &#39;nodes&#39;: [{&#39;name&#39;: v, &#39;id&#39;: v} for v in n.nodes],
+        &#39;links&#39;: [{&#39;source&#39;: node_map[e[0]], &#39;target&#39;: node_map[e[1]], &#39;value&#39;: n.edges[e][&#39;weight&#39;]} for e in n.edges]
+    }
+
+    div_id = &#34;&#34;.join(random.choice(string.ascii_letters) for x in range(8))
+
+    if &#39;d3js_path&#39; not in params:
+        params[&#39;d3js_path&#39;] = &#39;http://d3js.org/d3.v3.min.js&#39;
+
+    if &#39;template&#39; not in params:
+        module_dir = os.path.dirname(os.path.realpath(__file__))
+        html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+        template_file = os.path.join(html_dir, &#39;diffusion_template.html&#39;)
+
+    with open(template_file) as f:
+        html_str = f.read()
+
+    d3js_params = {
+        &#39;flow_data&#39;: json.dumps(data),
+        &#39;div_id&#39;: div_id
+    }
+
+    # replace all placeholders in template
+    html = Template(html_str).substitute({**d3js_params, **params})
+    return html</code></pre>
+</details>
+</dd>
+<dt id="pathpy.visualisation.html.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>network, **params)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Plots an interactive visualisation of pathpy objects
+in a jupyter notebook. This generic function supports instances of
+pathpy.Network, pathpy.TemporalNetwork, pathpy.HigherOrderNetwork,
+pathpy.MultiOrderModel, and pathpy.Paths. See description of different
+visualisations in the parameter description.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;<code>Network</code>, <code>TemporalNetwork</code>, <code>HigherOrderNetwork</code>, <code>MultiOrderModel</code>, <code>Paths</code></dt>
+<dd>The object to visualize. Depending on the type of the object passed, the following
+visualisations are generated:
+Network: interactive visualisation of a network with a force-directed layout.
+HigherOrderNetwork: interactive visualisation of the first-order network
+with forces calculated based on the higher-order network. By setting
+plot_higher_order_nodes=True a network with unprojected
+higher-order nodes can be plotted instead.
+MultiOrderModel: interactive visualisation of the first-order network
+with forces calculated based on the multi-order model.
+TemporalNetwork: interactive and dynamic visualisation of a temporal
+network.
+Paths: alluvial diagram showing markov or non-Markov trajectories through
+a given focal node.</dd>
+<dt><strong><code>params</code></strong> :&ensp;<code>dict</code></dt>
+<dd>A dictionary with visualisation parameters. These parameters are passed through to
+visualisation templates that are extendable by the user. The default pathpy templates
+support the following parameters, depending on the type of object being visualised
+(see brackets).
+width: int (all)
+Width of the div element containing the jupyter visualization.
+Default value is 400.
+height: int (all)
+Height of the div element containing the jupyter visualization.
+Default value is 400.
+template: string (all)
+Path to custom visualization template file. If this parameter is omitted, the
+default pathpy visualistion template fitting the corresponding object will be used.
+d3js_path: string (all)
+URL to the d3js library. By default, d3js will be loaded from <a href="https://d3js.org/d3.v4.min.js.">https://d3js.org/d3.v4.min.js.</a>
+For offline operation, the URL to a local copy of d3js can be specified instead. For custom
+templates, a specific d3js version can be used.
+node_size: int, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+Either an int value that specifies the radius of all nodes, or
+a dictionary that assigns custom node sizes to invidual nodes.
+Default value is 5.0.
+edge_width: int, float, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+Either an int value that specifies the radius of all edges, or
+a dictionary that assigns custom edge widths to invidual edges.
+Default value is 0.5.
+node_color: string, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+Either a string value that specifies the HTML color of all nodes,
+or a dictionary that assigns custom node colors to invidual nodes.
+Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+be used. Default value is "#99ccff". (lightblue)
+node_text: string, dict (Network, HigherOrderNetwork, MultiOrderModel)
+A text displayed when hovering over nodes, e.g. containing node properties, full names, etc.
+Defaults to node names.
+edge_color: string, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+Either a string value that specifies the HTML color of all edges,
+or a dictionary that assigns custom edge color to invidual edges.
+Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+be used. Default value is "#cccccc" (lightgray).
+edge_opacity: float (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+The opacity of all edges in a range from 0.0 to 1.0. Default value is 1.0.
+<br>
+edge_arrows: bool (Network, HigherOrderNetwork, MultiOrderNetwork)
+Whether to draw edge arrows for directed networks. Default value is True.
+label_color: string (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+The HTML color of node labels.
+Both HTML named colors ('red, 'blue', 'yellow')
+or HEX-RGB values can be used.Default value is '#cccccc' (lightgray).
+label_opacity: float (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+The opacity of the label. Default value is 1.0.
+label_size: str (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderNetwork)
+CSS string specifying the font size to be used for labels. Default is '8px'.
+label_offset: list (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderNetwork)
+The offset [x,y] of the label from the center of a node. For [0,0] labels will be
+displayed in the center of nodes. Positive values for the first and second component
+move the label to the right and top respectively. Default is [0, -10], which
+displays labels above nodes to accomodate for labels wider than nodes.
+force_charge: float, int ()
+The charge strength of nodes to be used in the force-directed layout. Default value is -20
+force_repel: float, int (all)
+The strength of the repulsive force between nodes. Larger negative values will increase the distance
+between nodes. Default value is -200.
+force_alpha: float (all)
+The alpha target (convergence threshold) to be passed to the underlying force-directed
+layout algorithm. Default value is 0.0.
+plot_higher_order_nodes: HigherOrderNetwork
+If set to True, a raw higher-order network with higher-order nodes will be plotted. If
+False, a first-order projection with a higher-order force-directed layout will be plotted.
+The default value is True.
+ms_per_frame: int (TemporalNetwork)
+how many milliseconds each frame shall be displayed in the visualisation of a TemporalNetwork.
+The 1000/ms_per_frame specifies the framerate of the visualisation. The default value of 20 yields a
+framerate of 50 fps.
+ts_per_frame: int (TemporalNetwork)
+How many timestamps in a temporal network shall be displayed in every frame
+of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
+For higher values, multiple timestamps will be aggregated in a single frame. For a
+value of zero, simulation speed is adjusted to the inter event time distribution such
+that on average five interactions are shown per second. Default value is 1.
+look_behind: int (TemporalNetwork)
+The look_ahead and look_behind parameters define a temporal range around the current time
+stamp within which time-stamped edges will be considered for the force-directed layout.
+Values larger than one result in smoothly changing layouts.
+Default value is 10.
+look_ahead: int (TemporalNetwork)
+The look_ahead and look_behind parameters define a temporal range around the current time
+stamp within which time-stamped edges will be considered for the force-directed layout.
+Values larger than one result in smoothly changing layouts.
+Default value is 10.
+max_time: int (TemporalNetwork)
+maximum time stamp to visualise. Useful to limit visualisation of very long Temporal Networks.
+If None, the whole sequence will be shown. Default is None.
+active_edge_width: float (TemporalNetwork)
+A float value that specifies the width of currently active edges.
+Default value is 4.0.
+inactive_edge_width: float (TemporalNetwork)
+A float value that specifies the width of currently active edges.
+Default value is 0.5.
+active_edge_color: string (TemporalNetwork)
+A string value that specifies the HTML color of currently active edges.
+Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+be used. Default value is "#ff0000" (red).
+inactive_edge_color: string (TemporalNetwork)
+A string value that specifies the HTML color of inactive edges.
+Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+be used. Default value is "#cccccc" (lightgray).
+active_node_color: string (TemporalNetwork)
+A string value that specifies the HTML color of active nodes.
+Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+be used. Default value is "#ff0000" (red).
+inactive_node_color: string (TemporalNetwork)
+A string value that specifies the HTML color of inactive nodes.
+Both HTML named colors ('red, 'blue', 'yellow') or HEX-RGB values can
+be used. Default value is "#cccccc" (lightgray).</dd>
+</dl>
+<h2 id="examples">Examples:</h2>
+<pre><code>&gt;&gt;&gt; paths = pp.Paths()
+&gt;&gt;&gt; paths.add_path('a,b,c')
+&gt;&gt;&gt; n = pp.Network.from_paths(paths)
+&gt;&gt;&gt; params = {'label_color': '#ff0000',
+              'node_color': { 'a': '#ff0000', 'b': '#00ff00', 'c': '#0000ff'}
+&gt;&gt;&gt;          }
+&gt;&gt;&gt; pp.visualisation.plot(n, **params)
+&gt;&gt;&gt; [inline visualisation]
+</code></pre>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>pp.visualisation.export_html(n, filename='myvisualisation.html', **params)</p>
+</blockquote>
+</blockquote>
+</blockquote></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def plot(network, **params):
+    &#34;&#34;&#34;
+    Plots an interactive visualisation of pathpy objects
+    in a jupyter notebook. This generic function supports instances of
+    pathpy.Network, pathpy.TemporalNetwork, pathpy.HigherOrderNetwork,
+    pathpy.MultiOrderModel, and pathpy.Paths. See description of different
+    visualisations in the parameter description.
+
+    Parameters
+    ----------
+    network: Network, TemporalNetwork, HigherOrderNetwork, MultiOrderModel, Paths
+        The object to visualize. Depending on the type of the object passed, the following
+        visualisations are generated:
+            Network: interactive visualisation of a network with a force-directed layout.
+            HigherOrderNetwork: interactive visualisation of the first-order network
+                with forces calculated based on the higher-order network. By setting
+                plot_higher_order_nodes=True a network with unprojected
+                higher-order nodes can be plotted instead.
+            MultiOrderModel: interactive visualisation of the first-order network
+                with forces calculated based on the multi-order model.
+            TemporalNetwork: interactive and dynamic visualisation of a temporal
+                network.
+            Paths: alluvial diagram showing markov or non-Markov trajectories through
+                a given focal node.
+    params: dict
+        A dictionary with visualisation parameters. These parameters are passed through to
+        visualisation templates that are extendable by the user. The default pathpy templates
+        support the following parameters, depending on the type of object being visualised
+        (see brackets).
+            width: int (all)
+                Width of the div element containing the jupyter visualization.
+                Default value is 400.
+            height: int (all)
+                Height of the div element containing the jupyter visualization.
+                Default value is 400.
+            template: string (all)
+                Path to custom visualization template file. If this parameter is omitted, the
+                default pathpy visualistion template fitting the corresponding object will be used.
+            d3js_path: string (all)
+                URL to the d3js library. By default, d3js will be loaded from https://d3js.org/d3.v4.min.js.
+                For offline operation, the URL to a local copy of d3js can be specified instead. For custom
+                templates, a specific d3js version can be used.
+            node_size: int, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                Either an int value that specifies the radius of all nodes, or
+                a dictionary that assigns custom node sizes to invidual nodes.
+                Default value is 5.0.
+            edge_width: int, float, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                Either an int value that specifies the radius of all edges, or
+                a dictionary that assigns custom edge widths to invidual edges.
+                Default value is 0.5.
+            node_color: string, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                Either a string value that specifies the HTML color of all nodes,
+                or a dictionary that assigns custom node colors to invidual nodes.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#99ccff&#34;. (lightblue)
+            node_text: string, dict (Network, HigherOrderNetwork, MultiOrderModel)
+                A text displayed when hovering over nodes, e.g. containing node properties, full names, etc. 
+                Defaults to node names.
+            edge_color: string, dict (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                Either a string value that specifies the HTML color of all edges,
+                or a dictionary that assigns custom edge color to invidual edges.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#cccccc&#34; (lightgray).
+            edge_opacity: float (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                The opacity of all edges in a range from 0.0 to 1.0. Default value is 1.0.             
+            edge_arrows: bool (Network, HigherOrderNetwork, MultiOrderNetwork)
+                Whether to draw edge arrows for directed networks. Default value is True.
+            label_color: string (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                The HTML color of node labels.  Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) 
+                or HEX-RGB values can be used.Default value is &#39;#cccccc&#39; (lightgray).
+            label_opacity: float (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderModel)
+                The opacity of the label. Default value is 1.0.
+            label_size: str (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderNetwork)
+                CSS string specifying the font size to be used for labels. Default is &#39;8px&#39;.
+            label_offset: list (Network, HigherOrderNetwork, TemporalNetwork, MultiOrderNetwork)
+                The offset [x,y] of the label from the center of a node. For [0,0] labels will be
+                displayed in the center of nodes. Positive values for the first and second component
+                move the label to the right and top respectively. Default is [0, -10], which
+                displays labels above nodes to accomodate for labels wider than nodes.
+            force_charge: float, int ()
+                The charge strength of nodes to be used in the force-directed layout. Default value is -20
+            force_repel: float, int (all)
+                The strength of the repulsive force between nodes. Larger negative values will increase the distance
+                between nodes. Default value is -200.
+            force_alpha: float (all)
+                The alpha target (convergence threshold) to be passed to the underlying force-directed
+                layout algorithm. Default value is 0.0.
+            plot_higher_order_nodes: HigherOrderNetwork
+                If set to True, a raw higher-order network with higher-order nodes will be plotted. If
+                False, a first-order projection with a higher-order force-directed layout will be plotted.
+                The default value is True.
+            ms_per_frame: int (TemporalNetwork)
+                how many milliseconds each frame shall be displayed in the visualisation of a TemporalNetwork.
+                The 1000/ms_per_frame specifies the framerate of the visualisation. The default value of 20 yields a
+                framerate of 50 fps.
+            ts_per_frame: int (TemporalNetwork)
+                How many timestamps in a temporal network shall be displayed in every frame
+                of the visualisation. For a value of 1 each timestamp is shown in a separate frame.
+                For higher values, multiple timestamps will be aggregated in a single frame. For a
+                value of zero, simulation speed is adjusted to the inter event time distribution such
+                that on average five interactions are shown per second. Default value is 1.
+            look_behind: int (TemporalNetwork)
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout.
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
+            look_ahead: int (TemporalNetwork)
+                The look_ahead and look_behind parameters define a temporal range around the current time
+                stamp within which time-stamped edges will be considered for the force-directed layout.
+                Values larger than one result in smoothly changing layouts.
+                Default value is 10.
+            max_time: int (TemporalNetwork)
+                maximum time stamp to visualise. Useful to limit visualisation of very long Temporal Networks. 
+                If None, the whole sequence will be shown. Default is None.
+            active_edge_width: float (TemporalNetwork)
+                A float value that specifies the width of currently active edges.
+                Default value is 4.0.
+            inactive_edge_width: float (TemporalNetwork)
+                A float value that specifies the width of currently active edges.
+                Default value is 0.5.
+            active_edge_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of currently active edges.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#ff0000&#34; (red).
+            inactive_edge_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of inactive edges.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#cccccc&#34; (lightgray).
+            active_node_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of active nodes.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#ff0000&#34; (red).
+            inactive_node_color: string (TemporalNetwork)
+                A string value that specifies the HTML color of inactive nodes.
+                Both HTML named colors (&#39;red, &#39;blue&#39;, &#39;yellow&#39;) or HEX-RGB values can
+                be used. Default value is &#34;#cccccc&#34; (lightgray).
+
+    Examples:
+    ---------
+    &gt;&gt;&gt; paths = pp.Paths()
+    &gt;&gt;&gt; paths.add_path(&#39;a,b,c&#39;)
+    &gt;&gt;&gt; n = pp.Network.from_paths(paths)
+    &gt;&gt;&gt; params = {&#39;label_color&#39;: &#39;#ff0000&#39;,
+                  &#39;node_color&#39;: { &#39;a&#39;: &#39;#ff0000&#39;, &#39;b&#39;: &#39;#00ff00&#39;, &#39;c&#39;: &#39;#0000ff&#39;}
+    &gt;&gt;&gt;          }
+    &gt;&gt;&gt; pp.visualisation.plot(n, **params)
+    &gt;&gt;&gt; [inline visualisation]
+    &gt;&gt;&gt; pp.visualisation.export_html(n, filename=&#39;myvisualisation.html&#39;, **params)
+    &#34;&#34;&#34;
+    assert isinstance(network, Network) or isinstance(network, MultiOrderModel), \
+        &#34;network must be an instance of Network&#34;
+
+    from IPython.core.display import display, HTML
+    display(HTML(generate_html(network, **params)))</code></pre>
+</details>
+</dd>
+<dt id="pathpy.visualisation.html.plot_diffusion"><code class="name flex">
+<span>def <span class="ident">plot_diffusion</span></span>(<span>paths, **params)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def plot_diffusion(paths, **params):
+    html = generate_html_diffusion(paths, **params)
+    from IPython.core.display import display, HTML
+    display(HTML(html))</code></pre>
+</details>
+</dd>
+<dt id="pathpy.visualisation.html.plot_walk"><code class="name flex">
+<span>def <span class="ident">plot_walk</span></span>(<span>network, walk, **params)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Plots an interactive visualisation of a random walk trajectory in
+a network.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def plot_walk(network, walk, **params):
+    &#34;&#34;&#34;
+    Plots an interactive visualisation of a random walk trajectory in 
+    a network.
+    &#34;&#34;&#34;
+
+    def fix_node_name(v):
+        new_v = v
+        if v[0].isdigit():
+            new_v = &#34;n_&#34; + v
+        if new_v[0] == &#39;_&#39;:
+            new_v = &#34;n_&#34; + v
+        if &#39;-&#39; in new_v:
+            new_v = new_v.replace(&#39;-&#39;, &#39;_&#39;)
+        return new_v
+
+    from IPython.core.display import display, HTML
+    module_dir = os.path.dirname(os.path.realpath(__file__))
+    html_dir = os.path.join(module_dir, os.path.pardir, &#39;visualisation_assets&#39;)
+    params[&#39;template&#39;] = os.path.join(html_dir, &#39;walk_template.html&#39;)
+    params[&#39;itinerary&#39;] = [ fix_node_name(v) for v in walk ]
+    if &#39;active_node_color&#39; not in params:
+        params[&#39;active_node_color&#39;] = &#39;red&#39;
+    if &#39;inactive_node_color&#39; not in params:
+        params[&#39;inactive_node_color&#39;] = &#39;lightblue&#39;
+    params[&#39;plot_higher_order_nodes&#39;] = False
+    if &#39;ms_per_frame&#39; not in params:
+        params[&#39;ms_per_frame&#39;] = 500
+    display(HTML(generate_html(network, **params)))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.visualisation" href="index.html">pathpy.visualisation</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.visualisation.html.export_html" href="#pathpy.visualisation.html.export_html">export_html</a></code></li>
+<li><code><a title="pathpy.visualisation.html.export_html_diffusion" href="#pathpy.visualisation.html.export_html_diffusion">export_html_diffusion</a></code></li>
+<li><code><a title="pathpy.visualisation.html.export_html_walk" href="#pathpy.visualisation.html.export_html_walk">export_html_walk</a></code></li>
+<li><code><a title="pathpy.visualisation.html.generate_html" href="#pathpy.visualisation.html.generate_html">generate_html</a></code></li>
+<li><code><a title="pathpy.visualisation.html.generate_html_diffusion" href="#pathpy.visualisation.html.generate_html_diffusion">generate_html_diffusion</a></code></li>
+<li><code><a title="pathpy.visualisation.html.plot" href="#pathpy.visualisation.html.plot">plot</a></code></li>
+<li><code><a title="pathpy.visualisation.html.plot_diffusion" href="#pathpy.visualisation.html.plot_diffusion">plot_diffusion</a></code></li>
+<li><code><a title="pathpy.visualisation.html.plot_walk" href="#pathpy.visualisation.html.plot_walk">plot_walk</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -1,0 +1,2146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.classes.temporal_network API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.classes.temporal_network</code> module</h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+import sys
+from collections import defaultdict
+import bisect
+import datetime
+from time import mktime
+
+import numpy as _np
+
+from pathpy.utils import Log, Severity
+
+
+class TemporalNetwork:
+    &#34;&#34;&#34;
+      This class represents a sequence of time-stamped edges.
+       Instances of this class can be used to generate path statistics
+       based on the time-respecting paths resulting from a given maximum
+       time difference between consecutive time-stamped edges.
+    &#34;&#34;&#34;
+
+    def __init__(self, tedges=None):
+        &#34;&#34;&#34;Constructor that generates a temporal network instance.
+
+        Parameters
+        ----------
+        tedges:
+            an optional list of directed time-stamped edges from which to construct a
+            temporal network instance. For the default value None an empty temporal
+            network will be created.
+        &#34;&#34;&#34;
+        # A list of time-stamped edges of this temporal network
+        self.tedges = []
+
+        # A list of nodes of this temporal network
+        self.nodes = []
+
+        # A dictionary storing all time-stamped links, indexed by time-stamps
+        self.time = defaultdict(lambda: list())
+
+        # A dictionary storing all time-stamped links, indexed by time and target node
+        self.targets = defaultdict(lambda: dict())
+
+        # A dictionary storing all time-stamped links, indexed by time and source node
+        self.sources = defaultdict(lambda: dict())
+
+        # A dictionary storing time stamps at which links (v,*;t) originate from node v
+        self.activities = defaultdict(lambda: list())
+
+        # A dictionary storing sets of time stamps at which links (v,*;t) originate from
+        # node v
+        # Note that the insertion into a set is much faster than repeatedly checking
+        # whether an element already exists in a list!
+        self.activities_sets = defaultdict(lambda: set())
+
+        # An ordered list of time-stamps
+        self.ordered_times = []
+
+        nodes_seen = defaultdict(lambda: False)
+
+        if tedges is not None:
+            Log.add(&#39;Building index data structures ...&#39;)
+
+            for e in tedges:
+                self.activities_sets[e[0]].add(e[2])
+                self.time[e[2]].append(e)
+                self.targets[e[2]].setdefault(e[1], []).append(e)
+                self.sources[e[2]].setdefault(e[0], []).append(e)
+                if not nodes_seen[e[0]]:
+                    nodes_seen[e[0]] = True
+                if not nodes_seen[e[1]]:
+                    nodes_seen[e[1]] = True
+            self.tedges = tedges
+            self.nodes = list(nodes_seen.keys())
+
+            Log.add(&#39;Sorting time stamps ...&#39;)
+
+            self.ordered_times = sorted(list(self.time.keys()))
+            for v in self.nodes:
+                self.activities[v] = sorted(self.activities_sets[v])
+            Log.add(&#39;finished.&#39;)
+
+    @classmethod
+    def from_sqlite(cls, cursor, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;, time_rescale=1):
+        &#34;&#34;&#34;Reads time-stamped links from an SQLite cursor and returns a new instance of
+        the class TemporalNetwork. The cursor is assumed to refer to a table that
+        minimally has three columns
+
+                source target time
+
+        and where each row refers to a directed link. Time stamps can be integers,
+        or strings to be converted to UNIX time stamps via a custom timestamp format.
+        For this, the python function datetime.strptime will be used.
+
+        Important: Since columns are accessed by name this function requires that a
+        row factory object is set for the SQLite connection prior to cursor creation,
+        i.e. you should set
+
+                connection.row_factory = sqlite3.Row
+
+        Parameters
+        ----------
+        cursor:
+            The SQLite cursor to fetch rows
+        directed: bool
+        timestamp_format: str
+            used to convert string timestamps to UNIX timestamps. This parameter is
+            ignored, if the timestamps are digit types (like a simple int).
+        time_rescale: int
+            can be used to rescale integer timestamps by diving each time stamp by 
+            time_rescale. This is useful for high-resolution data with a sampling 
+            interval larger than one second. Default is 1.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        tedges = []
+
+        assert cursor.connection.row_factory, \
+            &#39;Cannot access columns by name. Please set &#39; \
+            &#39;connection.row_factory = sqlite3.Row before creating DB cursor.&#39;
+
+        if not directed:
+            Log.add(&#39;Retrieving undirected time-stamped links ...&#39;)
+        else:
+            Log.add(&#39;Retrieving directed time-stamped links ...&#39;)
+
+        for row in cursor:
+            # r = sqlite3.Row(row)
+            timestamp = row[&#39;time&#39;]
+            assert isinstance(timestamp, int) or isinstance(timestamp, str), \
+                &#39;Error: pathpy only supports integer or string timestamps&#39;
+            # if the timestamp is a number, we use this
+            if isinstance(timestamp, int):
+                t = timestamp
+            else:
+                # if it is a string, we use the timestamp format to convert it to
+                # a UNIX timestamp
+                x = datetime.datetime.strptime(timestamp, timestamp_format)
+                t = int(mktime(x.timetuple()))
+            tedges.append((str(row[&#39;source&#39;]), str(row[&#39;target&#39;]), int(t/time_rescale)))
+            if not directed:
+                tedges.append((str(row[&#39;target&#39;]), str(row[&#39;source&#39;]), int(t/time_rescale)))
+
+        return cls(tedges=tedges)
+
+    @classmethod
+    def read_file(cls, filename, separator=&#39;,&#39;, directed=True,
+                  timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;, maxlines=sys.maxsize, time_rescale=1):
+        &#34;&#34;&#34;
+        Reads time-stamped links from a file and returns a new instance of the class
+        TemporalNetwork. The file is assumed to have a header
+
+                source target time
+
+        where columns can be in arbitrary order and separated by arbitrary characters.
+        Each time-stamped link must occur in a separate line and links are assumed to be
+        directed.
+
+        The time column can be omitted and in this case all links are assumed to occur
+        in consecutive time stamps (that have a distance of one). Time stamps can be
+        simple integers, or strings to be converted to UNIX time stamps via a custom
+        timestamp format. For this, the python function datetime.strptime will be used.
+
+        Parameters
+        ----------
+        filename: str
+            path of the file to read from
+        sep: str
+            the character that separates columns (default &#39;,&#39;)
+        directed: bool
+            whether to read edges as directed (default True)
+        timestamp_format: str
+            used to convert string timestamps to UNIX timestamps. This parameter is
+            ignored, if timestamps are digit types (like a simple int).
+            The default is &#39;%Y-%m-%d %H:%M&#39;
+        maxlines: int
+            limit reading of file to a given number of lines (default sys.maxsize)
+        time_rescale: int
+            can be used to rescale integer timestamps by diving each time stamp by 
+            time_rescale. This is useful for high-resolution data with a sampling 
+            interval larger than one second. Default is 1.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        assert (filename != &#39;&#39;), &#39;Empty filename given&#39;
+
+        # Read header
+        with open(filename, &#39;r&#39;) as f:
+            tedges = []
+
+            header = f.readline()
+            header = header.split(separator)
+
+            # If header columns are included, arbitrary column orders are supported
+            time_ix = -1
+            source_ix = -1
+            target_ix = -1
+            for i in range(len(header)):
+                header[i] = header[i].strip()
+                if header[i] == &#39;node1&#39; or header[i] == &#39;source&#39;:
+                    source_ix = i
+                elif header[i] == &#39;node2&#39; or header[i] == &#39;target&#39;:
+                    target_ix = i
+                elif header[i] == &#39;time&#39; or header[i] == &#39;timestamp&#39;:
+                    time_ix = i            
+
+            assert (source_ix &gt;= 0 and target_ix &gt;= 0), \
+                &#34;Detected invalid header columns: %s&#34; % header
+
+            if time_ix &lt; 0:  # pragma: no cover
+                Log.add(&#39;No time stamps found in data, assuming consecutive links&#39;,
+                        Severity.WARNING)
+
+            if not directed:
+                Log.add(&#39;Reading undirected time-stamped links ...&#39;)
+            else:
+                Log.add(&#39;Reading directed time-stamped links ...&#39;)
+
+            line = f.readline()
+            n = 1
+            while line and n &lt;= maxlines:
+                fields = line.rstrip().split(separator)
+                try:
+                    if time_ix &gt;= 0:
+                        timestamp = fields[time_ix]
+                        # if the timestamp is a number, we use this
+                        if timestamp.isdigit():
+                            t = int(timestamp)
+                        else:
+                            # if it is a string, we use the timestamp format to convert
+                            # it to a UNIX timestamp
+                            x = datetime.datetime.strptime(timestamp, timestamp_format)
+                            t = int(mktime(x.timetuple()))
+                    else:
+                        t = n
+                    if t &gt;= 0 and fields[source_ix] != &#39;&#39; and fields[target_ix] != &#39;&#39;:
+                        tedge = (fields[source_ix], fields[target_ix], int(t/time_rescale))
+                        tedges.append(tedge)
+                        if not directed:
+                            tedges.append((fields[target_ix], fields[source_ix], int(t/time_rescale)))
+                    else:  # pragma: no cover
+                        s_line = line.strip()
+                        if fields[source_ix] == &#39;&#39; or fields[target_ix] == &#39;&#39;:
+                            msg = &#39;Empty node in line {0}: {1}&#39;.format(n+1, s_line)
+                        else: 
+                            msg = &#39;Negative timestamp in line {0}: {1}&#39;.format(n+1, s_line)
+                        Log.add(msg, Severity.WARNING)
+                except (IndexError, ValueError):  # pragma: no cover
+                    s_line = line.strip()
+                    msg = &#39;Malformed line {0}: {1}&#39;.format(n+1, s_line)
+                    Log.add(msg, Severity.WARNING)
+                line = f.readline()
+                n += 1
+        # end of with open()
+
+        return cls(tedges=tedges)
+
+    def write_file(self, filename, separator=&#39;,&#39;):
+        &#34;&#34;&#34;Writes the time-stamped edge list of this temporal network instance as CSV file
+
+        Parameters
+        ----------
+        filename: str
+            name of CSV file to save data to
+        separator: str
+            character used to separate columns in generated CSV file
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        msg = &#39;Writing {0} time-stamped edges to file {1}&#39;.format(self.ecount(), filename)
+        Log.add(msg, Severity.INFO)
+        with open(filename, &#39;w+&#39;) as f:
+            f.write(&#39;source&#39; + separator + &#39;target&#39; + separator + &#39;time&#39; + &#39;\n&#39;)
+            for time in self.ordered_times:
+                for (v, w, t) in self.time[time]:
+                    f.write(str(v) + separator + str(w) + separator + str(t)+&#39;\n&#39;)
+
+
+    def filter_nodes(self, nodes):
+        &#34;&#34;&#34;Returns a copy of the temporal network where time-stamped edges are filtered 
+        according to a given set of nodes.
+
+        Parameters
+        ----------
+        node_filter: iterable
+            a list or set of nodes that shall be included in the returned temporal network
+
+        Returns
+        -------
+        &#34;&#34;&#34;
+        def edge_filter(v, w, t):
+            if v in nodes and w in nodes: 
+                return True
+            return False
+
+        return self.filter_edges(edge_filter)
+
+    def filter_edges(self, edge_filter):
+        &#34;&#34;&#34;Returns a copy of the temporal network where time-stamped edges are filtered 
+        according to a given filter expression. This can be used, e.g., to create time 
+        slice networks by filtering edges within certain time windows, or to reduce a 
+        temporal network to interactions between a subset of nodes.
+
+        Parameters
+        ----------
+        edge_filter: callable
+            an arbitrary filter function of the form filter_func(v, w, time) that returns
+            True for time-stamped edges that shall pass the filter, and False for time-stamped
+            edges that shall be filtered out.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        Log.add(&#39;Starting filtering ...&#39;, Severity.INFO)
+        new_t_edges = []
+
+        for (v, w, t) in self.tedges:
+            if edge_filter(v, w, t):
+                new_t_edges.append((v, w, t))
+
+        n_filtered = self.ecount() - len(new_t_edges)
+        msg = &#39;finished. Filtered out {} time-stamped edges.&#39;.format(n_filtered)
+        Log.add(msg,  Severity.INFO)
+
+        return TemporalNetwork(tedges=new_t_edges)
+
+    def add_edge(self, source, target, ts, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;):
+        &#34;&#34;&#34;Adds a time-stamped edge (source,target;time) to the temporal network.
+        Unless specified otherwise, time-stamped edges are assumed to be directed.
+
+        Parameters
+        ----------
+        source:
+            name of the source node of a directed, time-stamped link
+        target:
+            name of the target node of a directed, time-stamped link
+        ts: int
+            time-stamp of the time-stamped link
+        directed: bool
+        timestamp_format: string
+            if timestamps are passed as strings, the following timestamp format is used 
+            to parse the timestamps in order to obtain UNIX timestamps (seconds since 1970).
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        assert isinstance(ts, int) or isinstance(ts, str), &#39;Timestamp must either be string or int&#39; 
+
+        if isinstance(ts, str):
+            if ts.isdigit():
+                t = int(ts)
+            else:
+                # if it is a string, we use the timestamp format to convert
+                # it to a UNIX timestamp
+                x = datetime.datetime.strptime(ts, timestamp_format)
+                t = int(mktime(x.timetuple()))
+        else:
+            t = ts
+
+        e = (source, target, t)
+        self.tedges.append(e)
+        if source not in self.nodes:
+            self.nodes.append(source)
+        if target not in self.nodes:
+            self.nodes.append(target)
+
+        # Add edge to index structures
+        self.time[t].append(e)
+        self.targets[t].setdefault(target, []).append(e)
+        self.sources[t].setdefault(source, []).append(e)
+
+        if t not in self.activities[source]:
+            self.activities[source].append(t)
+            self.activities[source].sort()
+
+        # Maintain order of time stamps
+        index = bisect.bisect_left(self.ordered_times, t)
+        # add if ts is not already in list
+        if index == len(self.ordered_times) or self.ordered_times[index] != t:
+            self.ordered_times.insert(index, t)
+
+        # make edge undirected by adding another directed edge
+        if not directed:
+            self.add_edge(target, source, t)
+
+    def vcount(self):
+        &#34;&#34;&#34;Returns the number of vertices in the temporal network.
+        This number corresponds to the number of nodes in the (first-order)
+        time-aggregated network.
+        &#34;&#34;&#34;
+
+        return len(self.nodes)
+
+    def ecount(self):
+        &#34;&#34;&#34;Returns the number of time-stamped edges (u,v;t) in the temporal network.
+        This number corresponds to the sum of link weights in the (first-order)
+        time-aggregated network.
+        &#34;&#34;&#34;
+
+        return len(self.tedges)
+
+    def observation_length(self):
+        &#34;&#34;&#34;Returns the length of the observation time in time units.&#34;&#34;&#34;
+
+        return max(self.ordered_times)-min(self.ordered_times)
+
+    def inter_event_times(self):
+        &#34;&#34;&#34;
+        Returns an array containing all time differences between any
+        two consecutive time-stamped links (involving any node)
+        &#34;&#34;&#34;
+        time_diffs = []
+        for i in range(1, len(self.ordered_times)):
+            time_diffs += [self.ordered_times[i] - self.ordered_times[i-1]]
+        return _np.array(time_diffs)
+
+    def inter_path_times(self):
+        &#34;&#34;&#34;Returns a dictionary which, for each node v, contains all time differences
+        between any time-stamped link (*,v;t) and the next link (v,*;t&#39;) (t&#39;&gt;t) in the
+        temporal network
+        &#34;&#34;&#34;
+        ip_times = defaultdict(list)
+        for e in self.tedges:
+            # Get target v of current edge e=(u,v,t)
+            v = e[1]
+            t = e[2]
+
+            # Get time stamp of link (v,*,t_next)
+            # with smallest t_next such that t_next &gt; t
+            i = bisect.bisect_right(self.activities[v], t)
+            if i != len(self.activities[v]):
+                ip_times[v].append(self.activities[v][i]-t)
+        return ip_times
+
+    def summary(self):
+        &#34;&#34;&#34;
+        Returns a string containing basic summary statistics of this temporal network
+        &#34;&#34;&#34;
+
+        summary = &#39;&#39;
+
+        summary += &#39;Nodes:\t\t\t&#39; + str(self.vcount()) + &#39;\n&#39;
+        summary += &#39;Time-stamped links:\t&#39; + str(self.ecount()) + &#39;\n&#39;
+        if self.vcount() &gt; 0:
+            summary += &#39;Links/Nodes:\t\t&#39; + str(self.ecount()/self.vcount()) + &#39;\n&#39;
+        else:
+            summary += &#39;Links/Nodes:\t\tN/A\n&#39;
+        if len(self.ordered_times) &gt; 1:
+            min_o = min(self.ordered_times)
+            max_o = max(self.ordered_times)
+            obs_len = max_o - min_o
+            n_stamps = len(self.ordered_times)
+            summary += &#39;Observation period:\t[{}, {}]\n&#39;.format(min_o, max_o)
+            summary += &#39;Observation length:\t {} \n&#39;.format(obs_len)
+            summary += &#39;Time stamps:\t\t {} \n&#39;.format(n_stamps)
+
+            d = self.inter_event_times()
+            mean_d = _np.mean(d)
+
+            summary += &#39;Avg. inter-event dt:\t {}\n&#39;.format(mean_d)
+            summary += &#39;Min/Max inter-event dt:\t {}/{}&#39;.format(min(d), max(d))
+
+        return summary
+
+    def __str__(self):
+        &#34;&#34;&#34;Returns the default string representation of this temporal network instance.
+        &#34;&#34;&#34;
+        return self.summary()
+
+    def shuffle_edges(self, l=0, with_replacement=False, window_splits=None,
+                      maintain_undirected=True):
+        &#34;&#34;&#34;Generates a shuffled version of the temporal network in which edge statistics
+        (i.e. the frequencies of time-stamped edges) and inter-event time  statistics are
+        preserved, while all order correlations are destroyed by randomly reshuffling the
+        time stamps of links.
+
+        Parameters
+        ----------
+        l: int
+            For the default value l=0, the length of the original temporal network is
+            used.
+        with_replacement: bool
+            Whether or not the sampling of new time-stamped edges should be with
+            replacement (default False). If False, the exact edge frequencies and
+            inter-event time statistics in the original network will be preserved.
+        window_splits: list
+            a list of time stamps that separate shuffling windows. E.g. specifying
+            window_splits = [7,14,21] will separately shuffle edges within intervals
+            [min_timestamp,7], (7,14], (14,21], (21,max_timestamp] (default None). The
+            number of edges l to generate applies separately for each time window. For
+            l=0, the original number of edges in each time window will be used.
+        maintain_undirected: bool
+            if True, two directed edges (a,b,t) (b,a,t) occurring at the same time will be
+            treated as a single undirected edge, i.e. both are reassigned to a different
+            time stamp at once (default True). This ensures that undirected edges are
+            preserved as atomic objects.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        tedges = []
+
+        if window_splits is None:
+            window_splits = [max(self.time)]
+        else:
+            window_splits.append(max(self.time))
+
+        window_min = min(self.time)-1
+        for window_max in window_splits:
+
+            timestamps = []
+            edges = []
+            for e in self.tedges:
+                if window_min &lt; e[2] &lt;= window_max:
+                    timestamps.append(e[2])
+                    edges.append(e)
+
+            if l == 0:
+                l = len(edges)
+            if with_replacement:  # sample l edges with replacement
+                for i in range(l):
+                    # Pick random link
+                    edge = edges[_np.random.randint(0, len(edges))]
+                    # Pick random time stamp
+                    time = timestamps[_np.random.randint(0, len(timestamps))]
+                    # Generate new time-stamped link
+                    tedges.append((edge[0], edge[1], time))
+            else:
+                # shuffle edges while avoiding multiple identical edges at same time stamp
+                i = 0
+                while i &lt; l:
+                    # Pick random link
+                    edge = edges.pop(_np.random.randint(0, len(edges)))
+
+                    # Pick random time stamp
+                    time = timestamps.pop(_np.random.randint(0, len(timestamps)))
+                    rewired = False
+
+                    # for undirected edges, rewire both directed edges at once
+                    if maintain_undirected and (edge[1], edge[0], edge[2]) in edges:
+
+                        # check whether one of the time-stamped edges already exists
+                        if (
+                                (edge[0], edge[1], time) not in tedges and
+                                (edge[1], edge[0], time) not in tedges
+                        ):
+                            tedges.append((edge[0], edge[1], time))
+                            tedges.append((edge[1], edge[0], time))
+                            edges.remove((edge[1], edge[0], edge[2]))
+                            rewired = True
+
+                    # rewire a single directed edge individually
+                    elif (edge[0], edge[1], time) not in tedges:
+                        tedges.append((edge[0], edge[1], time))
+                        rewired = True
+
+                    # edge could not be rewired to the chosen time stamp, so re-append
+                    # both to the list for future sampling
+                    if not rewired:
+                        edges.append(edge)
+                        timestamps.append(time)
+                    else:
+                        i += 1
+
+            window_min = window_max
+
+        # Generate temporal network
+        t = TemporalNetwork(tedges=tedges)
+
+        # Fix node order to correspond to original network
+        t.nodes = self.nodes
+        return t
+
+    def reverse_time(self):
+        &#34;&#34;&#34;
+        Returns a copy of the temporal network in which time has been reversed
+        &#34;&#34;&#34;
+        t = TemporalNetwork()
+        t_reversed = self.ordered_times.copy()
+        t_reversed.reverse()
+        time_r = 1
+        for i in range(len(t_reversed)):
+            if i &gt; 0:
+                time_r += abs(t_reversed[i] - t_reversed[i-1])
+            for (v, w, x) in self.time[t_reversed[i]]:
+                t.add_edge(v, w, time_r)
+        return t
+
+    def _repr_html_(self):
+        &#34;&#34;&#34;
+        display an interactive d3js visualisation of the temporal network in jupyter
+        &#34;&#34;&#34;
+        from pathpy.visualisation.html import generate_html
+        return generate_html(self)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork"><code class="flex name class">
+<span>class <span class="ident">TemporalNetwork</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>This class represents a sequence of time-stamped edges.
+Instances of this class can be used to generate path statistics
+based on the time-respecting paths resulting from a given maximum
+time difference between consecutive time-stamped edges.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class TemporalNetwork:
+    &#34;&#34;&#34;
+      This class represents a sequence of time-stamped edges.
+       Instances of this class can be used to generate path statistics
+       based on the time-respecting paths resulting from a given maximum
+       time difference between consecutive time-stamped edges.
+    &#34;&#34;&#34;
+
+    def __init__(self, tedges=None):
+        &#34;&#34;&#34;Constructor that generates a temporal network instance.
+
+        Parameters
+        ----------
+        tedges:
+            an optional list of directed time-stamped edges from which to construct a
+            temporal network instance. For the default value None an empty temporal
+            network will be created.
+        &#34;&#34;&#34;
+        # A list of time-stamped edges of this temporal network
+        self.tedges = []
+
+        # A list of nodes of this temporal network
+        self.nodes = []
+
+        # A dictionary storing all time-stamped links, indexed by time-stamps
+        self.time = defaultdict(lambda: list())
+
+        # A dictionary storing all time-stamped links, indexed by time and target node
+        self.targets = defaultdict(lambda: dict())
+
+        # A dictionary storing all time-stamped links, indexed by time and source node
+        self.sources = defaultdict(lambda: dict())
+
+        # A dictionary storing time stamps at which links (v,*;t) originate from node v
+        self.activities = defaultdict(lambda: list())
+
+        # A dictionary storing sets of time stamps at which links (v,*;t) originate from
+        # node v
+        # Note that the insertion into a set is much faster than repeatedly checking
+        # whether an element already exists in a list!
+        self.activities_sets = defaultdict(lambda: set())
+
+        # An ordered list of time-stamps
+        self.ordered_times = []
+
+        nodes_seen = defaultdict(lambda: False)
+
+        if tedges is not None:
+            Log.add(&#39;Building index data structures ...&#39;)
+
+            for e in tedges:
+                self.activities_sets[e[0]].add(e[2])
+                self.time[e[2]].append(e)
+                self.targets[e[2]].setdefault(e[1], []).append(e)
+                self.sources[e[2]].setdefault(e[0], []).append(e)
+                if not nodes_seen[e[0]]:
+                    nodes_seen[e[0]] = True
+                if not nodes_seen[e[1]]:
+                    nodes_seen[e[1]] = True
+            self.tedges = tedges
+            self.nodes = list(nodes_seen.keys())
+
+            Log.add(&#39;Sorting time stamps ...&#39;)
+
+            self.ordered_times = sorted(list(self.time.keys()))
+            for v in self.nodes:
+                self.activities[v] = sorted(self.activities_sets[v])
+            Log.add(&#39;finished.&#39;)
+
+    @classmethod
+    def from_sqlite(cls, cursor, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;, time_rescale=1):
+        &#34;&#34;&#34;Reads time-stamped links from an SQLite cursor and returns a new instance of
+        the class TemporalNetwork. The cursor is assumed to refer to a table that
+        minimally has three columns
+
+                source target time
+
+        and where each row refers to a directed link. Time stamps can be integers,
+        or strings to be converted to UNIX time stamps via a custom timestamp format.
+        For this, the python function datetime.strptime will be used.
+
+        Important: Since columns are accessed by name this function requires that a
+        row factory object is set for the SQLite connection prior to cursor creation,
+        i.e. you should set
+
+                connection.row_factory = sqlite3.Row
+
+        Parameters
+        ----------
+        cursor:
+            The SQLite cursor to fetch rows
+        directed: bool
+        timestamp_format: str
+            used to convert string timestamps to UNIX timestamps. This parameter is
+            ignored, if the timestamps are digit types (like a simple int).
+        time_rescale: int
+            can be used to rescale integer timestamps by diving each time stamp by 
+            time_rescale. This is useful for high-resolution data with a sampling 
+            interval larger than one second. Default is 1.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        tedges = []
+
+        assert cursor.connection.row_factory, \
+            &#39;Cannot access columns by name. Please set &#39; \
+            &#39;connection.row_factory = sqlite3.Row before creating DB cursor.&#39;
+
+        if not directed:
+            Log.add(&#39;Retrieving undirected time-stamped links ...&#39;)
+        else:
+            Log.add(&#39;Retrieving directed time-stamped links ...&#39;)
+
+        for row in cursor:
+            # r = sqlite3.Row(row)
+            timestamp = row[&#39;time&#39;]
+            assert isinstance(timestamp, int) or isinstance(timestamp, str), \
+                &#39;Error: pathpy only supports integer or string timestamps&#39;
+            # if the timestamp is a number, we use this
+            if isinstance(timestamp, int):
+                t = timestamp
+            else:
+                # if it is a string, we use the timestamp format to convert it to
+                # a UNIX timestamp
+                x = datetime.datetime.strptime(timestamp, timestamp_format)
+                t = int(mktime(x.timetuple()))
+            tedges.append((str(row[&#39;source&#39;]), str(row[&#39;target&#39;]), int(t/time_rescale)))
+            if not directed:
+                tedges.append((str(row[&#39;target&#39;]), str(row[&#39;source&#39;]), int(t/time_rescale)))
+
+        return cls(tedges=tedges)
+
+    @classmethod
+    def read_file(cls, filename, separator=&#39;,&#39;, directed=True,
+                  timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;, maxlines=sys.maxsize, time_rescale=1):
+        &#34;&#34;&#34;
+        Reads time-stamped links from a file and returns a new instance of the class
+        TemporalNetwork. The file is assumed to have a header
+
+                source target time
+
+        where columns can be in arbitrary order and separated by arbitrary characters.
+        Each time-stamped link must occur in a separate line and links are assumed to be
+        directed.
+
+        The time column can be omitted and in this case all links are assumed to occur
+        in consecutive time stamps (that have a distance of one). Time stamps can be
+        simple integers, or strings to be converted to UNIX time stamps via a custom
+        timestamp format. For this, the python function datetime.strptime will be used.
+
+        Parameters
+        ----------
+        filename: str
+            path of the file to read from
+        sep: str
+            the character that separates columns (default &#39;,&#39;)
+        directed: bool
+            whether to read edges as directed (default True)
+        timestamp_format: str
+            used to convert string timestamps to UNIX timestamps. This parameter is
+            ignored, if timestamps are digit types (like a simple int).
+            The default is &#39;%Y-%m-%d %H:%M&#39;
+        maxlines: int
+            limit reading of file to a given number of lines (default sys.maxsize)
+        time_rescale: int
+            can be used to rescale integer timestamps by diving each time stamp by 
+            time_rescale. This is useful for high-resolution data with a sampling 
+            interval larger than one second. Default is 1.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        assert (filename != &#39;&#39;), &#39;Empty filename given&#39;
+
+        # Read header
+        with open(filename, &#39;r&#39;) as f:
+            tedges = []
+
+            header = f.readline()
+            header = header.split(separator)
+
+            # If header columns are included, arbitrary column orders are supported
+            time_ix = -1
+            source_ix = -1
+            target_ix = -1
+            for i in range(len(header)):
+                header[i] = header[i].strip()
+                if header[i] == &#39;node1&#39; or header[i] == &#39;source&#39;:
+                    source_ix = i
+                elif header[i] == &#39;node2&#39; or header[i] == &#39;target&#39;:
+                    target_ix = i
+                elif header[i] == &#39;time&#39; or header[i] == &#39;timestamp&#39;:
+                    time_ix = i            
+
+            assert (source_ix &gt;= 0 and target_ix &gt;= 0), \
+                &#34;Detected invalid header columns: %s&#34; % header
+
+            if time_ix &lt; 0:  # pragma: no cover
+                Log.add(&#39;No time stamps found in data, assuming consecutive links&#39;,
+                        Severity.WARNING)
+
+            if not directed:
+                Log.add(&#39;Reading undirected time-stamped links ...&#39;)
+            else:
+                Log.add(&#39;Reading directed time-stamped links ...&#39;)
+
+            line = f.readline()
+            n = 1
+            while line and n &lt;= maxlines:
+                fields = line.rstrip().split(separator)
+                try:
+                    if time_ix &gt;= 0:
+                        timestamp = fields[time_ix]
+                        # if the timestamp is a number, we use this
+                        if timestamp.isdigit():
+                            t = int(timestamp)
+                        else:
+                            # if it is a string, we use the timestamp format to convert
+                            # it to a UNIX timestamp
+                            x = datetime.datetime.strptime(timestamp, timestamp_format)
+                            t = int(mktime(x.timetuple()))
+                    else:
+                        t = n
+                    if t &gt;= 0 and fields[source_ix] != &#39;&#39; and fields[target_ix] != &#39;&#39;:
+                        tedge = (fields[source_ix], fields[target_ix], int(t/time_rescale))
+                        tedges.append(tedge)
+                        if not directed:
+                            tedges.append((fields[target_ix], fields[source_ix], int(t/time_rescale)))
+                    else:  # pragma: no cover
+                        s_line = line.strip()
+                        if fields[source_ix] == &#39;&#39; or fields[target_ix] == &#39;&#39;:
+                            msg = &#39;Empty node in line {0}: {1}&#39;.format(n+1, s_line)
+                        else: 
+                            msg = &#39;Negative timestamp in line {0}: {1}&#39;.format(n+1, s_line)
+                        Log.add(msg, Severity.WARNING)
+                except (IndexError, ValueError):  # pragma: no cover
+                    s_line = line.strip()
+                    msg = &#39;Malformed line {0}: {1}&#39;.format(n+1, s_line)
+                    Log.add(msg, Severity.WARNING)
+                line = f.readline()
+                n += 1
+        # end of with open()
+
+        return cls(tedges=tedges)
+
+    def write_file(self, filename, separator=&#39;,&#39;):
+        &#34;&#34;&#34;Writes the time-stamped edge list of this temporal network instance as CSV file
+
+        Parameters
+        ----------
+        filename: str
+            name of CSV file to save data to
+        separator: str
+            character used to separate columns in generated CSV file
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        msg = &#39;Writing {0} time-stamped edges to file {1}&#39;.format(self.ecount(), filename)
+        Log.add(msg, Severity.INFO)
+        with open(filename, &#39;w+&#39;) as f:
+            f.write(&#39;source&#39; + separator + &#39;target&#39; + separator + &#39;time&#39; + &#39;\n&#39;)
+            for time in self.ordered_times:
+                for (v, w, t) in self.time[time]:
+                    f.write(str(v) + separator + str(w) + separator + str(t)+&#39;\n&#39;)
+
+
+    def filter_nodes(self, nodes):
+        &#34;&#34;&#34;Returns a copy of the temporal network where time-stamped edges are filtered 
+        according to a given set of nodes.
+
+        Parameters
+        ----------
+        node_filter: iterable
+            a list or set of nodes that shall be included in the returned temporal network
+
+        Returns
+        -------
+        &#34;&#34;&#34;
+        def edge_filter(v, w, t):
+            if v in nodes and w in nodes: 
+                return True
+            return False
+
+        return self.filter_edges(edge_filter)
+
+    def filter_edges(self, edge_filter):
+        &#34;&#34;&#34;Returns a copy of the temporal network where time-stamped edges are filtered 
+        according to a given filter expression. This can be used, e.g., to create time 
+        slice networks by filtering edges within certain time windows, or to reduce a 
+        temporal network to interactions between a subset of nodes.
+
+        Parameters
+        ----------
+        edge_filter: callable
+            an arbitrary filter function of the form filter_func(v, w, time) that returns
+            True for time-stamped edges that shall pass the filter, and False for time-stamped
+            edges that shall be filtered out.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        Log.add(&#39;Starting filtering ...&#39;, Severity.INFO)
+        new_t_edges = []
+
+        for (v, w, t) in self.tedges:
+            if edge_filter(v, w, t):
+                new_t_edges.append((v, w, t))
+
+        n_filtered = self.ecount() - len(new_t_edges)
+        msg = &#39;finished. Filtered out {} time-stamped edges.&#39;.format(n_filtered)
+        Log.add(msg,  Severity.INFO)
+
+        return TemporalNetwork(tedges=new_t_edges)
+
+    def add_edge(self, source, target, ts, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;):
+        &#34;&#34;&#34;Adds a time-stamped edge (source,target;time) to the temporal network.
+        Unless specified otherwise, time-stamped edges are assumed to be directed.
+
+        Parameters
+        ----------
+        source:
+            name of the source node of a directed, time-stamped link
+        target:
+            name of the target node of a directed, time-stamped link
+        ts: int
+            time-stamp of the time-stamped link
+        directed: bool
+        timestamp_format: string
+            if timestamps are passed as strings, the following timestamp format is used 
+            to parse the timestamps in order to obtain UNIX timestamps (seconds since 1970).
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        assert isinstance(ts, int) or isinstance(ts, str), &#39;Timestamp must either be string or int&#39; 
+
+        if isinstance(ts, str):
+            if ts.isdigit():
+                t = int(ts)
+            else:
+                # if it is a string, we use the timestamp format to convert
+                # it to a UNIX timestamp
+                x = datetime.datetime.strptime(ts, timestamp_format)
+                t = int(mktime(x.timetuple()))
+        else:
+            t = ts
+
+        e = (source, target, t)
+        self.tedges.append(e)
+        if source not in self.nodes:
+            self.nodes.append(source)
+        if target not in self.nodes:
+            self.nodes.append(target)
+
+        # Add edge to index structures
+        self.time[t].append(e)
+        self.targets[t].setdefault(target, []).append(e)
+        self.sources[t].setdefault(source, []).append(e)
+
+        if t not in self.activities[source]:
+            self.activities[source].append(t)
+            self.activities[source].sort()
+
+        # Maintain order of time stamps
+        index = bisect.bisect_left(self.ordered_times, t)
+        # add if ts is not already in list
+        if index == len(self.ordered_times) or self.ordered_times[index] != t:
+            self.ordered_times.insert(index, t)
+
+        # make edge undirected by adding another directed edge
+        if not directed:
+            self.add_edge(target, source, t)
+
+    def vcount(self):
+        &#34;&#34;&#34;Returns the number of vertices in the temporal network.
+        This number corresponds to the number of nodes in the (first-order)
+        time-aggregated network.
+        &#34;&#34;&#34;
+
+        return len(self.nodes)
+
+    def ecount(self):
+        &#34;&#34;&#34;Returns the number of time-stamped edges (u,v;t) in the temporal network.
+        This number corresponds to the sum of link weights in the (first-order)
+        time-aggregated network.
+        &#34;&#34;&#34;
+
+        return len(self.tedges)
+
+    def observation_length(self):
+        &#34;&#34;&#34;Returns the length of the observation time in time units.&#34;&#34;&#34;
+
+        return max(self.ordered_times)-min(self.ordered_times)
+
+    def inter_event_times(self):
+        &#34;&#34;&#34;
+        Returns an array containing all time differences between any
+        two consecutive time-stamped links (involving any node)
+        &#34;&#34;&#34;
+        time_diffs = []
+        for i in range(1, len(self.ordered_times)):
+            time_diffs += [self.ordered_times[i] - self.ordered_times[i-1]]
+        return _np.array(time_diffs)
+
+    def inter_path_times(self):
+        &#34;&#34;&#34;Returns a dictionary which, for each node v, contains all time differences
+        between any time-stamped link (*,v;t) and the next link (v,*;t&#39;) (t&#39;&gt;t) in the
+        temporal network
+        &#34;&#34;&#34;
+        ip_times = defaultdict(list)
+        for e in self.tedges:
+            # Get target v of current edge e=(u,v,t)
+            v = e[1]
+            t = e[2]
+
+            # Get time stamp of link (v,*,t_next)
+            # with smallest t_next such that t_next &gt; t
+            i = bisect.bisect_right(self.activities[v], t)
+            if i != len(self.activities[v]):
+                ip_times[v].append(self.activities[v][i]-t)
+        return ip_times
+
+    def summary(self):
+        &#34;&#34;&#34;
+        Returns a string containing basic summary statistics of this temporal network
+        &#34;&#34;&#34;
+
+        summary = &#39;&#39;
+
+        summary += &#39;Nodes:\t\t\t&#39; + str(self.vcount()) + &#39;\n&#39;
+        summary += &#39;Time-stamped links:\t&#39; + str(self.ecount()) + &#39;\n&#39;
+        if self.vcount() &gt; 0:
+            summary += &#39;Links/Nodes:\t\t&#39; + str(self.ecount()/self.vcount()) + &#39;\n&#39;
+        else:
+            summary += &#39;Links/Nodes:\t\tN/A\n&#39;
+        if len(self.ordered_times) &gt; 1:
+            min_o = min(self.ordered_times)
+            max_o = max(self.ordered_times)
+            obs_len = max_o - min_o
+            n_stamps = len(self.ordered_times)
+            summary += &#39;Observation period:\t[{}, {}]\n&#39;.format(min_o, max_o)
+            summary += &#39;Observation length:\t {} \n&#39;.format(obs_len)
+            summary += &#39;Time stamps:\t\t {} \n&#39;.format(n_stamps)
+
+            d = self.inter_event_times()
+            mean_d = _np.mean(d)
+
+            summary += &#39;Avg. inter-event dt:\t {}\n&#39;.format(mean_d)
+            summary += &#39;Min/Max inter-event dt:\t {}/{}&#39;.format(min(d), max(d))
+
+        return summary
+
+    def __str__(self):
+        &#34;&#34;&#34;Returns the default string representation of this temporal network instance.
+        &#34;&#34;&#34;
+        return self.summary()
+
+    def shuffle_edges(self, l=0, with_replacement=False, window_splits=None,
+                      maintain_undirected=True):
+        &#34;&#34;&#34;Generates a shuffled version of the temporal network in which edge statistics
+        (i.e. the frequencies of time-stamped edges) and inter-event time  statistics are
+        preserved, while all order correlations are destroyed by randomly reshuffling the
+        time stamps of links.
+
+        Parameters
+        ----------
+        l: int
+            For the default value l=0, the length of the original temporal network is
+            used.
+        with_replacement: bool
+            Whether or not the sampling of new time-stamped edges should be with
+            replacement (default False). If False, the exact edge frequencies and
+            inter-event time statistics in the original network will be preserved.
+        window_splits: list
+            a list of time stamps that separate shuffling windows. E.g. specifying
+            window_splits = [7,14,21] will separately shuffle edges within intervals
+            [min_timestamp,7], (7,14], (14,21], (21,max_timestamp] (default None). The
+            number of edges l to generate applies separately for each time window. For
+            l=0, the original number of edges in each time window will be used.
+        maintain_undirected: bool
+            if True, two directed edges (a,b,t) (b,a,t) occurring at the same time will be
+            treated as a single undirected edge, i.e. both are reassigned to a different
+            time stamp at once (default True). This ensures that undirected edges are
+            preserved as atomic objects.
+
+        Returns
+        -------
+
+        &#34;&#34;&#34;
+        tedges = []
+
+        if window_splits is None:
+            window_splits = [max(self.time)]
+        else:
+            window_splits.append(max(self.time))
+
+        window_min = min(self.time)-1
+        for window_max in window_splits:
+
+            timestamps = []
+            edges = []
+            for e in self.tedges:
+                if window_min &lt; e[2] &lt;= window_max:
+                    timestamps.append(e[2])
+                    edges.append(e)
+
+            if l == 0:
+                l = len(edges)
+            if with_replacement:  # sample l edges with replacement
+                for i in range(l):
+                    # Pick random link
+                    edge = edges[_np.random.randint(0, len(edges))]
+                    # Pick random time stamp
+                    time = timestamps[_np.random.randint(0, len(timestamps))]
+                    # Generate new time-stamped link
+                    tedges.append((edge[0], edge[1], time))
+            else:
+                # shuffle edges while avoiding multiple identical edges at same time stamp
+                i = 0
+                while i &lt; l:
+                    # Pick random link
+                    edge = edges.pop(_np.random.randint(0, len(edges)))
+
+                    # Pick random time stamp
+                    time = timestamps.pop(_np.random.randint(0, len(timestamps)))
+                    rewired = False
+
+                    # for undirected edges, rewire both directed edges at once
+                    if maintain_undirected and (edge[1], edge[0], edge[2]) in edges:
+
+                        # check whether one of the time-stamped edges already exists
+                        if (
+                                (edge[0], edge[1], time) not in tedges and
+                                (edge[1], edge[0], time) not in tedges
+                        ):
+                            tedges.append((edge[0], edge[1], time))
+                            tedges.append((edge[1], edge[0], time))
+                            edges.remove((edge[1], edge[0], edge[2]))
+                            rewired = True
+
+                    # rewire a single directed edge individually
+                    elif (edge[0], edge[1], time) not in tedges:
+                        tedges.append((edge[0], edge[1], time))
+                        rewired = True
+
+                    # edge could not be rewired to the chosen time stamp, so re-append
+                    # both to the list for future sampling
+                    if not rewired:
+                        edges.append(edge)
+                        timestamps.append(time)
+                    else:
+                        i += 1
+
+            window_min = window_max
+
+        # Generate temporal network
+        t = TemporalNetwork(tedges=tedges)
+
+        # Fix node order to correspond to original network
+        t.nodes = self.nodes
+        return t
+
+    def reverse_time(self):
+        &#34;&#34;&#34;
+        Returns a copy of the temporal network in which time has been reversed
+        &#34;&#34;&#34;
+        t = TemporalNetwork()
+        t_reversed = self.ordered_times.copy()
+        t_reversed.reverse()
+        time_r = 1
+        for i in range(len(t_reversed)):
+            if i &gt; 0:
+                time_r += abs(t_reversed[i] - t_reversed[i-1])
+            for (v, w, x) in self.time[t_reversed[i]]:
+                t.add_edge(v, w, time_r)
+        return t
+
+    def _repr_html_(self):
+        &#34;&#34;&#34;
+        display an interactive d3js visualisation of the temporal network in jupyter
+        &#34;&#34;&#34;
+        from pathpy.visualisation.html import generate_html
+        return generate_html(self)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.from_sqlite"><code class="name flex">
+<span>def <span class="ident">from_sqlite</span></span>(<span>cls, cursor, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;, time_rescale=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Reads time-stamped links from an SQLite cursor and returns a new instance of
+the class TemporalNetwork. The cursor is assumed to refer to a table that
+minimally has three columns</p>
+<pre><code>    source target time
+</code></pre>
+<p>and where each row refers to a directed link. Time stamps can be integers,
+or strings to be converted to UNIX time stamps via a custom timestamp format.
+For this, the python function datetime.strptime will be used.</p>
+<dl>
+<dt><strong><code>Important</code></strong> :&ensp;<code>Since</code> <code>columns</code> <code>are</code> <code>accessed</code> <code>by</code> <code>name</code> <code>this</code> <code>function</code> <code>requires</code> <code>that</code> <code>a</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>row factory object is set for the SQLite connection prior to cursor creation,
+i.e. you should set</p>
+<pre><code>    connection.row_factory = sqlite3.Row
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>cursor:</dt>
+<dt>The SQLite cursor to fetch rows</dt>
+<dt><strong><code>directed</code></strong> :&ensp;<code>bool</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>timestamp_format</code></strong> :&ensp;<code>str</code></dt>
+<dd>used to convert string timestamps to UNIX timestamps. This parameter is
+ignored, if the timestamps are digit types (like a simple int).</dd>
+<dt><strong><code>time_rescale</code></strong> :&ensp;<code>int</code></dt>
+<dd>can be used to rescale integer timestamps by diving each time stamp by
+time_rescale. This is useful for high-resolution data with a sampling
+interval larger than one second. Default is 1.</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@classmethod
+def from_sqlite(cls, cursor, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;, time_rescale=1):
+    &#34;&#34;&#34;Reads time-stamped links from an SQLite cursor and returns a new instance of
+    the class TemporalNetwork. The cursor is assumed to refer to a table that
+    minimally has three columns
+
+            source target time
+
+    and where each row refers to a directed link. Time stamps can be integers,
+    or strings to be converted to UNIX time stamps via a custom timestamp format.
+    For this, the python function datetime.strptime will be used.
+
+    Important: Since columns are accessed by name this function requires that a
+    row factory object is set for the SQLite connection prior to cursor creation,
+    i.e. you should set
+
+            connection.row_factory = sqlite3.Row
+
+    Parameters
+    ----------
+    cursor:
+        The SQLite cursor to fetch rows
+    directed: bool
+    timestamp_format: str
+        used to convert string timestamps to UNIX timestamps. This parameter is
+        ignored, if the timestamps are digit types (like a simple int).
+    time_rescale: int
+        can be used to rescale integer timestamps by diving each time stamp by 
+        time_rescale. This is useful for high-resolution data with a sampling 
+        interval larger than one second. Default is 1.
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    tedges = []
+
+    assert cursor.connection.row_factory, \
+        &#39;Cannot access columns by name. Please set &#39; \
+        &#39;connection.row_factory = sqlite3.Row before creating DB cursor.&#39;
+
+    if not directed:
+        Log.add(&#39;Retrieving undirected time-stamped links ...&#39;)
+    else:
+        Log.add(&#39;Retrieving directed time-stamped links ...&#39;)
+
+    for row in cursor:
+        # r = sqlite3.Row(row)
+        timestamp = row[&#39;time&#39;]
+        assert isinstance(timestamp, int) or isinstance(timestamp, str), \
+            &#39;Error: pathpy only supports integer or string timestamps&#39;
+        # if the timestamp is a number, we use this
+        if isinstance(timestamp, int):
+            t = timestamp
+        else:
+            # if it is a string, we use the timestamp format to convert it to
+            # a UNIX timestamp
+            x = datetime.datetime.strptime(timestamp, timestamp_format)
+            t = int(mktime(x.timetuple()))
+        tedges.append((str(row[&#39;source&#39;]), str(row[&#39;target&#39;]), int(t/time_rescale)))
+        if not directed:
+            tedges.append((str(row[&#39;target&#39;]), str(row[&#39;source&#39;]), int(t/time_rescale)))
+
+    return cls(tedges=tedges)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.read_file"><code class="name flex">
+<span>def <span class="ident">read_file</span></span>(<span>cls, filename, separator=&#39;,&#39;, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;, maxlines=9223372036854775807, time_rescale=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Reads time-stamped links from a file and returns a new instance of the class
+TemporalNetwork. The file is assumed to have a header</p>
+<pre><code>    source target time
+</code></pre>
+<p>where columns can be in arbitrary order and separated by arbitrary characters.
+Each time-stamped link must occur in a separate line and links are assumed to be
+directed.</p>
+<p>The time column can be omitted and in this case all links are assumed to occur
+in consecutive time stamps (that have a distance of one). Time stamps can be
+simple integers, or strings to be converted to UNIX time stamps via a custom
+timestamp format. For this, the python function datetime.strptime will be used.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>path of the file to read from</dd>
+<dt><strong><code>sep</code></strong> :&ensp;<code>str</code></dt>
+<dd>the character that separates columns (default ',')</dd>
+<dt><strong><code>directed</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether to read edges as directed (default True)</dd>
+<dt><strong><code>timestamp_format</code></strong> :&ensp;<code>str</code></dt>
+<dd>used to convert string timestamps to UNIX timestamps. This parameter is
+ignored, if timestamps are digit types (like a simple int).
+The default is '%Y-%m-%d %H:%M'</dd>
+<dt><strong><code>maxlines</code></strong> :&ensp;<code>int</code></dt>
+<dd>limit reading of file to a given number of lines (default sys.maxsize)</dd>
+<dt><strong><code>time_rescale</code></strong> :&ensp;<code>int</code></dt>
+<dd>can be used to rescale integer timestamps by diving each time stamp by
+time_rescale. This is useful for high-resolution data with a sampling
+interval larger than one second. Default is 1.</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@classmethod
+def read_file(cls, filename, separator=&#39;,&#39;, directed=True,
+              timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;, maxlines=sys.maxsize, time_rescale=1):
+    &#34;&#34;&#34;
+    Reads time-stamped links from a file and returns a new instance of the class
+    TemporalNetwork. The file is assumed to have a header
+
+            source target time
+
+    where columns can be in arbitrary order and separated by arbitrary characters.
+    Each time-stamped link must occur in a separate line and links are assumed to be
+    directed.
+
+    The time column can be omitted and in this case all links are assumed to occur
+    in consecutive time stamps (that have a distance of one). Time stamps can be
+    simple integers, or strings to be converted to UNIX time stamps via a custom
+    timestamp format. For this, the python function datetime.strptime will be used.
+
+    Parameters
+    ----------
+    filename: str
+        path of the file to read from
+    sep: str
+        the character that separates columns (default &#39;,&#39;)
+    directed: bool
+        whether to read edges as directed (default True)
+    timestamp_format: str
+        used to convert string timestamps to UNIX timestamps. This parameter is
+        ignored, if timestamps are digit types (like a simple int).
+        The default is &#39;%Y-%m-%d %H:%M&#39;
+    maxlines: int
+        limit reading of file to a given number of lines (default sys.maxsize)
+    time_rescale: int
+        can be used to rescale integer timestamps by diving each time stamp by 
+        time_rescale. This is useful for high-resolution data with a sampling 
+        interval larger than one second. Default is 1.
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    assert (filename != &#39;&#39;), &#39;Empty filename given&#39;
+
+    # Read header
+    with open(filename, &#39;r&#39;) as f:
+        tedges = []
+
+        header = f.readline()
+        header = header.split(separator)
+
+        # If header columns are included, arbitrary column orders are supported
+        time_ix = -1
+        source_ix = -1
+        target_ix = -1
+        for i in range(len(header)):
+            header[i] = header[i].strip()
+            if header[i] == &#39;node1&#39; or header[i] == &#39;source&#39;:
+                source_ix = i
+            elif header[i] == &#39;node2&#39; or header[i] == &#39;target&#39;:
+                target_ix = i
+            elif header[i] == &#39;time&#39; or header[i] == &#39;timestamp&#39;:
+                time_ix = i            
+
+        assert (source_ix &gt;= 0 and target_ix &gt;= 0), \
+            &#34;Detected invalid header columns: %s&#34; % header
+
+        if time_ix &lt; 0:  # pragma: no cover
+            Log.add(&#39;No time stamps found in data, assuming consecutive links&#39;,
+                    Severity.WARNING)
+
+        if not directed:
+            Log.add(&#39;Reading undirected time-stamped links ...&#39;)
+        else:
+            Log.add(&#39;Reading directed time-stamped links ...&#39;)
+
+        line = f.readline()
+        n = 1
+        while line and n &lt;= maxlines:
+            fields = line.rstrip().split(separator)
+            try:
+                if time_ix &gt;= 0:
+                    timestamp = fields[time_ix]
+                    # if the timestamp is a number, we use this
+                    if timestamp.isdigit():
+                        t = int(timestamp)
+                    else:
+                        # if it is a string, we use the timestamp format to convert
+                        # it to a UNIX timestamp
+                        x = datetime.datetime.strptime(timestamp, timestamp_format)
+                        t = int(mktime(x.timetuple()))
+                else:
+                    t = n
+                if t &gt;= 0 and fields[source_ix] != &#39;&#39; and fields[target_ix] != &#39;&#39;:
+                    tedge = (fields[source_ix], fields[target_ix], int(t/time_rescale))
+                    tedges.append(tedge)
+                    if not directed:
+                        tedges.append((fields[target_ix], fields[source_ix], int(t/time_rescale)))
+                else:  # pragma: no cover
+                    s_line = line.strip()
+                    if fields[source_ix] == &#39;&#39; or fields[target_ix] == &#39;&#39;:
+                        msg = &#39;Empty node in line {0}: {1}&#39;.format(n+1, s_line)
+                    else: 
+                        msg = &#39;Negative timestamp in line {0}: {1}&#39;.format(n+1, s_line)
+                    Log.add(msg, Severity.WARNING)
+            except (IndexError, ValueError):  # pragma: no cover
+                s_line = line.strip()
+                msg = &#39;Malformed line {0}: {1}&#39;.format(n+1, s_line)
+                Log.add(msg, Severity.WARNING)
+            line = f.readline()
+            n += 1
+    # end of with open()
+
+    return cls(tedges=tedges)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.__init__"><code class="name flex">
+<span>def <span class="ident">__init__</span></span>(<span>self, tedges=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Constructor that generates a temporal network instance.</p>
+<h2 id="parameters">Parameters</h2>
+<p>tedges:
+an optional list of directed time-stamped edges from which to construct a
+temporal network instance. For the default value None an empty temporal
+network will be created.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def __init__(self, tedges=None):
+    &#34;&#34;&#34;Constructor that generates a temporal network instance.
+
+    Parameters
+    ----------
+    tedges:
+        an optional list of directed time-stamped edges from which to construct a
+        temporal network instance. For the default value None an empty temporal
+        network will be created.
+    &#34;&#34;&#34;
+    # A list of time-stamped edges of this temporal network
+    self.tedges = []
+
+    # A list of nodes of this temporal network
+    self.nodes = []
+
+    # A dictionary storing all time-stamped links, indexed by time-stamps
+    self.time = defaultdict(lambda: list())
+
+    # A dictionary storing all time-stamped links, indexed by time and target node
+    self.targets = defaultdict(lambda: dict())
+
+    # A dictionary storing all time-stamped links, indexed by time and source node
+    self.sources = defaultdict(lambda: dict())
+
+    # A dictionary storing time stamps at which links (v,*;t) originate from node v
+    self.activities = defaultdict(lambda: list())
+
+    # A dictionary storing sets of time stamps at which links (v,*;t) originate from
+    # node v
+    # Note that the insertion into a set is much faster than repeatedly checking
+    # whether an element already exists in a list!
+    self.activities_sets = defaultdict(lambda: set())
+
+    # An ordered list of time-stamps
+    self.ordered_times = []
+
+    nodes_seen = defaultdict(lambda: False)
+
+    if tedges is not None:
+        Log.add(&#39;Building index data structures ...&#39;)
+
+        for e in tedges:
+            self.activities_sets[e[0]].add(e[2])
+            self.time[e[2]].append(e)
+            self.targets[e[2]].setdefault(e[1], []).append(e)
+            self.sources[e[2]].setdefault(e[0], []).append(e)
+            if not nodes_seen[e[0]]:
+                nodes_seen[e[0]] = True
+            if not nodes_seen[e[1]]:
+                nodes_seen[e[1]] = True
+        self.tedges = tedges
+        self.nodes = list(nodes_seen.keys())
+
+        Log.add(&#39;Sorting time stamps ...&#39;)
+
+        self.ordered_times = sorted(list(self.time.keys()))
+        for v in self.nodes:
+            self.activities[v] = sorted(self.activities_sets[v])
+        Log.add(&#39;finished.&#39;)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.add_edge"><code class="name flex">
+<span>def <span class="ident">add_edge</span></span>(<span>self, source, target, ts, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Adds a time-stamped edge (source,target;time) to the temporal network.
+Unless specified otherwise, time-stamped edges are assumed to be directed.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>source:</dt>
+<dt>name of the source node of a directed, time-stamped link</dt>
+<dt>target:</dt>
+<dt>name of the target node of a directed, time-stamped link</dt>
+<dt><strong><code>ts</code></strong> :&ensp;<code>int</code></dt>
+<dd>time-stamp of the time-stamped link</dd>
+<dt><strong><code>directed</code></strong> :&ensp;<code>bool</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>timestamp_format</code></strong> :&ensp;<code>string</code></dt>
+<dd>if timestamps are passed as strings, the following timestamp format is used
+to parse the timestamps in order to obtain UNIX timestamps (seconds since 1970).</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def add_edge(self, source, target, ts, directed=True, timestamp_format=&#39;%Y-%m-%d %H:%M:%S&#39;):
+    &#34;&#34;&#34;Adds a time-stamped edge (source,target;time) to the temporal network.
+    Unless specified otherwise, time-stamped edges are assumed to be directed.
+
+    Parameters
+    ----------
+    source:
+        name of the source node of a directed, time-stamped link
+    target:
+        name of the target node of a directed, time-stamped link
+    ts: int
+        time-stamp of the time-stamped link
+    directed: bool
+    timestamp_format: string
+        if timestamps are passed as strings, the following timestamp format is used 
+        to parse the timestamps in order to obtain UNIX timestamps (seconds since 1970).
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    assert isinstance(ts, int) or isinstance(ts, str), &#39;Timestamp must either be string or int&#39; 
+
+    if isinstance(ts, str):
+        if ts.isdigit():
+            t = int(ts)
+        else:
+            # if it is a string, we use the timestamp format to convert
+            # it to a UNIX timestamp
+            x = datetime.datetime.strptime(ts, timestamp_format)
+            t = int(mktime(x.timetuple()))
+    else:
+        t = ts
+
+    e = (source, target, t)
+    self.tedges.append(e)
+    if source not in self.nodes:
+        self.nodes.append(source)
+    if target not in self.nodes:
+        self.nodes.append(target)
+
+    # Add edge to index structures
+    self.time[t].append(e)
+    self.targets[t].setdefault(target, []).append(e)
+    self.sources[t].setdefault(source, []).append(e)
+
+    if t not in self.activities[source]:
+        self.activities[source].append(t)
+        self.activities[source].sort()
+
+    # Maintain order of time stamps
+    index = bisect.bisect_left(self.ordered_times, t)
+    # add if ts is not already in list
+    if index == len(self.ordered_times) or self.ordered_times[index] != t:
+        self.ordered_times.insert(index, t)
+
+    # make edge undirected by adding another directed edge
+    if not directed:
+        self.add_edge(target, source, t)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.ecount"><code class="name flex">
+<span>def <span class="ident">ecount</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the number of time-stamped edges (u,v;t) in the temporal network.
+This number corresponds to the sum of link weights in the (first-order)
+time-aggregated network.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def ecount(self):
+    &#34;&#34;&#34;Returns the number of time-stamped edges (u,v;t) in the temporal network.
+    This number corresponds to the sum of link weights in the (first-order)
+    time-aggregated network.
+    &#34;&#34;&#34;
+
+    return len(self.tedges)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.filter_edges"><code class="name flex">
+<span>def <span class="ident">filter_edges</span></span>(<span>self, edge_filter)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a copy of the temporal network where time-stamped edges are filtered
+according to a given filter expression. This can be used, e.g., to create time
+slice networks by filtering edges within certain time windows, or to reduce a
+temporal network to interactions between a subset of nodes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>edge_filter</code></strong> :&ensp;<code>callable</code></dt>
+<dd>an arbitrary filter function of the form filter_func(v, w, time) that returns
+True for time-stamped edges that shall pass the filter, and False for time-stamped
+edges that shall be filtered out.</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def filter_edges(self, edge_filter):
+    &#34;&#34;&#34;Returns a copy of the temporal network where time-stamped edges are filtered 
+    according to a given filter expression. This can be used, e.g., to create time 
+    slice networks by filtering edges within certain time windows, or to reduce a 
+    temporal network to interactions between a subset of nodes.
+
+    Parameters
+    ----------
+    edge_filter: callable
+        an arbitrary filter function of the form filter_func(v, w, time) that returns
+        True for time-stamped edges that shall pass the filter, and False for time-stamped
+        edges that shall be filtered out.
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    Log.add(&#39;Starting filtering ...&#39;, Severity.INFO)
+    new_t_edges = []
+
+    for (v, w, t) in self.tedges:
+        if edge_filter(v, w, t):
+            new_t_edges.append((v, w, t))
+
+    n_filtered = self.ecount() - len(new_t_edges)
+    msg = &#39;finished. Filtered out {} time-stamped edges.&#39;.format(n_filtered)
+    Log.add(msg,  Severity.INFO)
+
+    return TemporalNetwork(tedges=new_t_edges)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.filter_nodes"><code class="name flex">
+<span>def <span class="ident">filter_nodes</span></span>(<span>self, nodes)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a copy of the temporal network where time-stamped edges are filtered
+according to a given set of nodes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node_filter</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>a list or set of nodes that shall be included in the returned temporal network</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def filter_nodes(self, nodes):
+    &#34;&#34;&#34;Returns a copy of the temporal network where time-stamped edges are filtered 
+    according to a given set of nodes.
+
+    Parameters
+    ----------
+    node_filter: iterable
+        a list or set of nodes that shall be included in the returned temporal network
+
+    Returns
+    -------
+    &#34;&#34;&#34;
+    def edge_filter(v, w, t):
+        if v in nodes and w in nodes: 
+            return True
+        return False
+
+    return self.filter_edges(edge_filter)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.inter_event_times"><code class="name flex">
+<span>def <span class="ident">inter_event_times</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns an array containing all time differences between any
+two consecutive time-stamped links (involving any node)</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def inter_event_times(self):
+    &#34;&#34;&#34;
+    Returns an array containing all time differences between any
+    two consecutive time-stamped links (involving any node)
+    &#34;&#34;&#34;
+    time_diffs = []
+    for i in range(1, len(self.ordered_times)):
+        time_diffs += [self.ordered_times[i] - self.ordered_times[i-1]]
+    return _np.array(time_diffs)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.inter_path_times"><code class="name flex">
+<span>def <span class="ident">inter_path_times</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a dictionary which, for each node v, contains all time differences
+between any time-stamped link (<em>,v;t) and the next link (v,</em>;t') (t'&gt;t) in the
+temporal network</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def inter_path_times(self):
+    &#34;&#34;&#34;Returns a dictionary which, for each node v, contains all time differences
+    between any time-stamped link (*,v;t) and the next link (v,*;t&#39;) (t&#39;&gt;t) in the
+    temporal network
+    &#34;&#34;&#34;
+    ip_times = defaultdict(list)
+    for e in self.tedges:
+        # Get target v of current edge e=(u,v,t)
+        v = e[1]
+        t = e[2]
+
+        # Get time stamp of link (v,*,t_next)
+        # with smallest t_next such that t_next &gt; t
+        i = bisect.bisect_right(self.activities[v], t)
+        if i != len(self.activities[v]):
+            ip_times[v].append(self.activities[v][i]-t)
+    return ip_times</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.observation_length"><code class="name flex">
+<span>def <span class="ident">observation_length</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the length of the observation time in time units.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def observation_length(self):
+    &#34;&#34;&#34;Returns the length of the observation time in time units.&#34;&#34;&#34;
+
+    return max(self.ordered_times)-min(self.ordered_times)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.reverse_time"><code class="name flex">
+<span>def <span class="ident">reverse_time</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a copy of the temporal network in which time has been reversed</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def reverse_time(self):
+    &#34;&#34;&#34;
+    Returns a copy of the temporal network in which time has been reversed
+    &#34;&#34;&#34;
+    t = TemporalNetwork()
+    t_reversed = self.ordered_times.copy()
+    t_reversed.reverse()
+    time_r = 1
+    for i in range(len(t_reversed)):
+        if i &gt; 0:
+            time_r += abs(t_reversed[i] - t_reversed[i-1])
+        for (v, w, x) in self.time[t_reversed[i]]:
+            t.add_edge(v, w, time_r)
+    return t</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.shuffle_edges"><code class="name flex">
+<span>def <span class="ident">shuffle_edges</span></span>(<span>self, l=0, with_replacement=False, window_splits=None, maintain_undirected=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Generates a shuffled version of the temporal network in which edge statistics
+(i.e. the frequencies of time-stamped edges) and inter-event time
+statistics are
+preserved, while all order correlations are destroyed by randomly reshuffling the
+time stamps of links.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>l</code></strong> :&ensp;<code>int</code></dt>
+<dd>For the default value l=0, the length of the original temporal network is
+used.</dd>
+<dt><strong><code>with_replacement</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether or not the sampling of new time-stamped edges should be with
+replacement (default False). If False, the exact edge frequencies and
+inter-event time statistics in the original network will be preserved.</dd>
+<dt><strong><code>window_splits</code></strong> :&ensp;<code>list</code></dt>
+<dd>a list of time stamps that separate shuffling windows. E.g. specifying
+window_splits = [7,14,21] will separately shuffle edges within intervals
+[min_timestamp,7], (7,14], (14,21], (21,max_timestamp] (default None). The
+number of edges l to generate applies separately for each time window. For
+l=0, the original number of edges in each time window will be used.</dd>
+<dt><strong><code>maintain_undirected</code></strong> :&ensp;<code>bool</code></dt>
+<dd>if True, two directed edges (a,b,t) (b,a,t) occurring at the same time will be
+treated as a single undirected edge, i.e. both are reassigned to a different
+time stamp at once (default True). This ensures that undirected edges are
+preserved as atomic objects.</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def shuffle_edges(self, l=0, with_replacement=False, window_splits=None,
+                  maintain_undirected=True):
+    &#34;&#34;&#34;Generates a shuffled version of the temporal network in which edge statistics
+    (i.e. the frequencies of time-stamped edges) and inter-event time  statistics are
+    preserved, while all order correlations are destroyed by randomly reshuffling the
+    time stamps of links.
+
+    Parameters
+    ----------
+    l: int
+        For the default value l=0, the length of the original temporal network is
+        used.
+    with_replacement: bool
+        Whether or not the sampling of new time-stamped edges should be with
+        replacement (default False). If False, the exact edge frequencies and
+        inter-event time statistics in the original network will be preserved.
+    window_splits: list
+        a list of time stamps that separate shuffling windows. E.g. specifying
+        window_splits = [7,14,21] will separately shuffle edges within intervals
+        [min_timestamp,7], (7,14], (14,21], (21,max_timestamp] (default None). The
+        number of edges l to generate applies separately for each time window. For
+        l=0, the original number of edges in each time window will be used.
+    maintain_undirected: bool
+        if True, two directed edges (a,b,t) (b,a,t) occurring at the same time will be
+        treated as a single undirected edge, i.e. both are reassigned to a different
+        time stamp at once (default True). This ensures that undirected edges are
+        preserved as atomic objects.
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    tedges = []
+
+    if window_splits is None:
+        window_splits = [max(self.time)]
+    else:
+        window_splits.append(max(self.time))
+
+    window_min = min(self.time)-1
+    for window_max in window_splits:
+
+        timestamps = []
+        edges = []
+        for e in self.tedges:
+            if window_min &lt; e[2] &lt;= window_max:
+                timestamps.append(e[2])
+                edges.append(e)
+
+        if l == 0:
+            l = len(edges)
+        if with_replacement:  # sample l edges with replacement
+            for i in range(l):
+                # Pick random link
+                edge = edges[_np.random.randint(0, len(edges))]
+                # Pick random time stamp
+                time = timestamps[_np.random.randint(0, len(timestamps))]
+                # Generate new time-stamped link
+                tedges.append((edge[0], edge[1], time))
+        else:
+            # shuffle edges while avoiding multiple identical edges at same time stamp
+            i = 0
+            while i &lt; l:
+                # Pick random link
+                edge = edges.pop(_np.random.randint(0, len(edges)))
+
+                # Pick random time stamp
+                time = timestamps.pop(_np.random.randint(0, len(timestamps)))
+                rewired = False
+
+                # for undirected edges, rewire both directed edges at once
+                if maintain_undirected and (edge[1], edge[0], edge[2]) in edges:
+
+                    # check whether one of the time-stamped edges already exists
+                    if (
+                            (edge[0], edge[1], time) not in tedges and
+                            (edge[1], edge[0], time) not in tedges
+                    ):
+                        tedges.append((edge[0], edge[1], time))
+                        tedges.append((edge[1], edge[0], time))
+                        edges.remove((edge[1], edge[0], edge[2]))
+                        rewired = True
+
+                # rewire a single directed edge individually
+                elif (edge[0], edge[1], time) not in tedges:
+                    tedges.append((edge[0], edge[1], time))
+                    rewired = True
+
+                # edge could not be rewired to the chosen time stamp, so re-append
+                # both to the list for future sampling
+                if not rewired:
+                    edges.append(edge)
+                    timestamps.append(time)
+                else:
+                    i += 1
+
+        window_min = window_max
+
+    # Generate temporal network
+    t = TemporalNetwork(tedges=tedges)
+
+    # Fix node order to correspond to original network
+    t.nodes = self.nodes
+    return t</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.summary"><code class="name flex">
+<span>def <span class="ident">summary</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a string containing basic summary statistics of this temporal network</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def summary(self):
+    &#34;&#34;&#34;
+    Returns a string containing basic summary statistics of this temporal network
+    &#34;&#34;&#34;
+
+    summary = &#39;&#39;
+
+    summary += &#39;Nodes:\t\t\t&#39; + str(self.vcount()) + &#39;\n&#39;
+    summary += &#39;Time-stamped links:\t&#39; + str(self.ecount()) + &#39;\n&#39;
+    if self.vcount() &gt; 0:
+        summary += &#39;Links/Nodes:\t\t&#39; + str(self.ecount()/self.vcount()) + &#39;\n&#39;
+    else:
+        summary += &#39;Links/Nodes:\t\tN/A\n&#39;
+    if len(self.ordered_times) &gt; 1:
+        min_o = min(self.ordered_times)
+        max_o = max(self.ordered_times)
+        obs_len = max_o - min_o
+        n_stamps = len(self.ordered_times)
+        summary += &#39;Observation period:\t[{}, {}]\n&#39;.format(min_o, max_o)
+        summary += &#39;Observation length:\t {} \n&#39;.format(obs_len)
+        summary += &#39;Time stamps:\t\t {} \n&#39;.format(n_stamps)
+
+        d = self.inter_event_times()
+        mean_d = _np.mean(d)
+
+        summary += &#39;Avg. inter-event dt:\t {}\n&#39;.format(mean_d)
+        summary += &#39;Min/Max inter-event dt:\t {}/{}&#39;.format(min(d), max(d))
+
+    return summary</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.vcount"><code class="name flex">
+<span>def <span class="ident">vcount</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the number of vertices in the temporal network.
+This number corresponds to the number of nodes in the (first-order)
+time-aggregated network.</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def vcount(self):
+    &#34;&#34;&#34;Returns the number of vertices in the temporal network.
+    This number corresponds to the number of nodes in the (first-order)
+    time-aggregated network.
+    &#34;&#34;&#34;
+
+    return len(self.nodes)</code></pre>
+</details>
+</dd>
+<dt id="pathpy.classes.temporal_network.TemporalNetwork.write_file"><code class="name flex">
+<span>def <span class="ident">write_file</span></span>(<span>self, filename, separator=&#39;,&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Writes the time-stamped edge list of this temporal network instance as CSV file</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>name of CSV file to save data to</dd>
+<dt><strong><code>separator</code></strong> :&ensp;<code>str</code></dt>
+<dd>character used to separate columns in generated CSV file</dd>
+</dl>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def write_file(self, filename, separator=&#39;,&#39;):
+    &#34;&#34;&#34;Writes the time-stamped edge list of this temporal network instance as CSV file
+
+    Parameters
+    ----------
+    filename: str
+        name of CSV file to save data to
+    separator: str
+        character used to separate columns in generated CSV file
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    msg = &#39;Writing {0} time-stamped edges to file {1}&#39;.format(self.ecount(), filename)
+    Log.add(msg, Severity.INFO)
+    with open(filename, &#39;w+&#39;) as f:
+        f.write(&#39;source&#39; + separator + &#39;target&#39; + separator + &#39;time&#39; + &#39;\n&#39;)
+        for time in self.ordered_times:
+            for (v, w, t) in self.time[time]:
+                f.write(str(v) + separator + str(w) + separator + str(t)+&#39;\n&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.classes" href="index.html">pathpy.classes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pathpy.classes.temporal_network.TemporalNetwork" href="#pathpy.classes.temporal_network.TemporalNetwork">TemporalNetwork</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.__init__" href="#pathpy.classes.temporal_network.TemporalNetwork.__init__">__init__</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.add_edge" href="#pathpy.classes.temporal_network.TemporalNetwork.add_edge">add_edge</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.ecount" href="#pathpy.classes.temporal_network.TemporalNetwork.ecount">ecount</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.filter_edges" href="#pathpy.classes.temporal_network.TemporalNetwork.filter_edges">filter_edges</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.filter_nodes" href="#pathpy.classes.temporal_network.TemporalNetwork.filter_nodes">filter_nodes</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.from_sqlite" href="#pathpy.classes.temporal_network.TemporalNetwork.from_sqlite">from_sqlite</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.inter_event_times" href="#pathpy.classes.temporal_network.TemporalNetwork.inter_event_times">inter_event_times</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.inter_path_times" href="#pathpy.classes.temporal_network.TemporalNetwork.inter_path_times">inter_path_times</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.observation_length" href="#pathpy.classes.temporal_network.TemporalNetwork.observation_length">observation_length</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.read_file" href="#pathpy.classes.temporal_network.TemporalNetwork.read_file">read_file</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.reverse_time" href="#pathpy.classes.temporal_network.TemporalNetwork.reverse_time">reverse_time</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.shuffle_edges" href="#pathpy.classes.temporal_network.TemporalNetwork.shuffle_edges">shuffle_edges</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.summary" href="#pathpy.classes.temporal_network.TemporalNetwork.summary">summary</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.vcount" href="#pathpy.classes.temporal_network.TemporalNetwork.vcount">vcount</a></code></li>
+<li><code><a title="pathpy.classes.temporal_network.TemporalNetwork.write_file" href="#pathpy.classes.temporal_network.TemporalNetwork.write_file">write_file</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

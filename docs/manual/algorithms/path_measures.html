@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.algorithms.path_measures API documentation</title>
+<meta name="description" content="Spectral and information-theoretic measures that can be calculated
+based on higher-order models of paths." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.algorithms.path_measures</code> module</h1>
+</header>
+<section id="section-intro">
+<p>Spectral and information-theoretic measures that can be calculated
+based on higher-order models of paths.</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Spectral and information-theoretic measures that can be calculated
+based on higher-order models of paths.
+&#34;&#34;&#34;
+
+# -*- coding: utf-8 -*-
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+from collections import defaultdict
+
+import numpy as np
+import scipy.sparse.linalg as sla
+
+from pathpy import HigherOrderNetwork
+from pathpy.utils import Log, Severity
+from pathpy import Paths
+from pathpy.utils import PathpyError
+
+
+__all__ = [&#39;slow_down_factor&#39;, &#39;entropy_growth_rate_ratio&#39;,
+           &#39;betweenness_preference&#39;, &#39;betweenness_preference_matrix&#39;]
+
+
+def slow_down_factor(paths, k=2, lanczos_vectors=15, maxiter=1000):
+    &#34;&#34;&#34;Returns a factor S that indicates how much slower (S&gt;1) or faster (S&lt;1)
+    a diffusion process evolves in a k-order model of the path statistics
+    compared to what is expected based on a first-order model. This value captures
+    the effect of order correlations of length k on a diffusion process which evolves
+    based on the observed paths.
+
+    Parameters
+    ----------
+    paths: Paths
+        the Paths object to compute the slow down factor for
+    k: int
+        order of the model to consider
+    lanczos_vectors: int
+        number of Lanczos vectors to be used in the approximate calculation of
+        eigenvectors and eigenvalues. This maps to the ncv parameter of scipy&#39;s
+        underlying function eigs.
+    maxiter: int
+        scaling factor for the number of iterations to be used in the approximate
+        calculation of eigenvectors and eigenvalues. The number of iterations passed to
+        scipy&#39;s underlying eigs function will be n*maxiter where n is the number of
+        rows/columns of the Laplacian matrix.
+
+    Returns
+    -------
+    float
+    &#34;&#34;&#34;
+    assert k &gt; 1, &#39;Slow-down factor can only be calculated for orders larger than one&#39;
+
+    # NOTE to myself: most of the time goes for construction of the 2nd order
+    # NOTE            null graph, then for the 2nd order null transition matrix
+
+    gk = HigherOrderNetwork(paths, k=k)
+    gkn = HigherOrderNetwork(paths, k=k, null_model=True)
+
+    Log.add(&#39;Calculating slow down factor ... &#39;, Severity.INFO)
+
+    # Build transition matrices
+    Tk = gk.transition_matrix()
+    Tkn = gkn.transition_matrix()
+
+    # Compute eigenvector sequences
+    # NOTE: ncv=13 sets additional auxiliary eigenvectors that are computed
+    # NOTE: in order to be more confident to find the one with the largest
+    # NOTE: magnitude, see
+    # NOTE: https://github.com/scipy/scipy/issues/4987
+    w2 = sla.eigs(Tk, which=&#34;LM&#34;, k=2, ncv=lanczos_vectors, return_eigenvectors=False,
+                  maxiter=maxiter)
+    eigen_values2_sorted = np.sort(-np.absolute(w2))
+
+    w2n = sla.eigs(Tkn, which=&#34;LM&#34;, k=2, ncv=lanczos_vectors, return_eigenvectors=False,
+                   maxiter=maxiter)
+    eigen_values2n_sorted = np.sort(-np.absolute(w2n))
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    abs_eigen_values2 = np.abs(eigen_values2_sorted[1])
+    abs_eigen_values2n = np.abs(eigen_values2n_sorted[1])
+    return np.log(abs_eigen_values2n) / np.log(abs_eigen_values2)
+
+
+def entropy_growth_rate_ratio(paths, method=&#39;MLE&#39;, k=2, lanczos_vectors=15, maxiter=1000):
+    &#34;&#34;&#34;Computes the ratio between the entropy growth rate ratio between
+    the k-order and first-order model of a temporal network t. Ratios smaller
+    than one indicate that the temporal network exhibits non-Markovian characteristics
+
+    Parameters
+    ----------
+    paths: Paths
+    method:
+        which method to use for the entropy calculation. The default &#39;MLE&#39; uses
+        the standard Maximum-Likelihood estimation of entropy. Setting method to
+        &#39;Miller&#39; additionally applies a Miller-correction.
+        see e.g.
+    k: int
+        order of the higher order network to generate
+    lanczos_vectors:
+        number of Lanczos vectors to be used in the approximate calculation of
+        eigenvectors and eigenvalues. This maps to the ncv parameter of scipy&#39;s underlying
+        function eigs.
+    maxiter:
+        Maximum number of Arnoldi update iterations allowed Default: n*10
+        See scipy.sparse.linalg.eigs for more details
+
+
+    References
+    ---------
+        Liam Paninski: Estimation of Entropy and Mutual Information, Neural Computation 5,
+        2003 or
+        http://www.nowozin.net/sebastian/blog/estimating-discrete-entropy-part-2.html
+
+    Returns
+    -------
+    float
+    &#34;&#34;&#34;
+    # NOTE to myself: most of the time here goes into computation of the
+    # NOTE            EV of the transition matrix for the bigger of the
+    # NOTE            two graphs below (either 2nd-order or 2nd-order null)
+
+    assert (method == &#39;MLE&#39; or method == &#39;Miller&#39;), \
+        &#39;Only methods MLE or Miller are supported&#39;
+
+    # Generate k-order network
+    gk = HigherOrderNetwork(paths, k=k)
+    g1 = HigherOrderNetwork(paths, k=1)
+
+    Log.add(&#39;Calculating entropy growth rate ratio ... &#39;, Severity.INFO)
+
+    # Compute entropy growth rate of observed transition matrix
+    adj_matrix = g1.adjacency_matrix(weighted=False, transposed=True)
+    tran_mat_k = gk.transition_matrix()
+    leading_eigen_vec_k = HigherOrderNetwork.leading_eigenvector(
+        tran_mat_k, normalized=True, lanczos_vecs=lanczos_vectors, maxiter=maxiter
+    )
+
+    tran_mat_k.data *= np.log2(tran_mat_k.data)
+
+    # Apply Miller correction to the entropy estimation
+    if method == &#39;Miller&#39;:
+        # Here, &#39;possible_k_paths&#39; is the number of different k-paths that can exist
+        # based on the observed edges
+        possible_k_paths = (adj_matrix ** k).sum()
+        print(&#39;K = &#39;, possible_k_paths)
+
+        # N is the number of observations used to estimate the transition probabilities
+        # in the second-order network. This corresponds to the total edge weight in the
+        # k-order network, or - alternatively - to the number of paths of length k
+        num_obs = 0
+        for p in paths.paths[k]:
+            num_obs += paths.paths[k][p].sum()
+        print(&#39;N = &#39;, num_obs)
+        h_mat_k = (- np.sum(tran_mat_k * leading_eigen_vec_k) +
+                   (possible_k_paths - 1) / (2 * num_obs))
+    else:
+        # simple MLE estimation
+        h_mat_k = - np.sum(tran_mat_k * leading_eigen_vec_k)
+
+    h_mat_k = np.absolute(h_mat_k)
+
+    # Compute entropy rate of first-order model
+    gk_n = HigherOrderNetwork(paths, k=1, null_model=False)
+
+    # For the entropy rate of the null model, no Miller correction is needed
+    # since we assume that transitions correspond to the true probabilities
+    trans_mat_null = gk_n.transition_matrix()
+    leading_eigen_v_null = HigherOrderNetwork.leading_eigenvector(trans_mat_null)
+    trans_mat_null.data *= np.log2(trans_mat_null.data)
+    h_mat_null = -np.sum(trans_mat_null * leading_eigen_v_null)
+    h_mat_null = np.absolute(h_mat_null)
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    print(&#39;entropy rate (k) = &#39;, h_mat_k)
+    print(&#39;entropy rate (1) = &#39;, h_mat_null)
+    # Return ratio
+    return h_mat_k / h_mat_null
+
+
+def betweenness_preference_matrix(paths, v):
+    &#34;&#34;&#34;Computes a betweenness preference matrix for a node v
+
+    Parameters
+    ----------
+    paths: Paths
+    v:
+        Node for which the betweenness preference matrix shall
+        be calculated
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    # create first-order network
+    g = HigherOrderNetwork(paths)
+
+    in_degree = len(g.predecessors[v])
+    out_degree = len(g.successors[v])
+
+    index_succ = {}
+    index_pred = {}
+
+    B_v = np.zeros(shape=(in_degree, out_degree))
+
+    # Create an index-to-node mapping for predecessors and successors
+    i = 0
+    for u in g.predecessors[v]:
+        index_pred[u] = i
+        i = i + 1
+
+    i = 0
+    for w in g.successors[v]:
+        index_succ[w] = i
+        i = i + 1
+
+    # Calculate entries of betweenness preference matrix
+    for p in paths.paths[2]:
+        if p[1] == v:
+            B_v[index_pred[p[0]], index_succ[p[2]]] += paths.paths[2][p].sum()
+
+    return B_v
+
+
+def betweenness_preference(paths, v, normalized=False, method=&#39;MLE&#39;):
+    &#34;&#34;&#34;Calculates the betweenness preferences of a node v based on the mutual information
+     of path statistics of length two.
+
+    Parameters
+    ----------
+    paths: Paths
+    v:
+        Node for which the betweenness preference will be calculated
+    normalized: bool
+        whether or not to normalize betweenness preference values
+    method: str
+        which method to use for the entropy calculation. The default &#39;MLE&#39; uses the
+        standard Maximum-Likelihood estimation of entropy. Setting method to &#39;Miller&#39;
+        additionally applies a Miller-correction.
+
+    References
+    ---------
+        see e.g. Liam Paninski: Estimation of Entropy and Mutual Information,
+        Neural Computation 5, 2003 or
+        http://www.nowozin.net/sebastian/blog/estimating-discrete-entropy-part-2.html
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    assert method in [&#39;MLE&#39;, &#39;Miller&#39;], &#34;method must be one of &#39;MLE&#39; or &#39;Miller&#39;&#34;
+
+    # If the network is empty, just return zero
+    if not paths.nodes:
+        return 0.0
+
+    # First create the betweenness preference matrix (equation (2) of the paper)
+    B_v = betweenness_preference_matrix(paths, v)
+
+    if B_v.shape[0] == 0 or B_v.shape[1] == 0:
+        return None
+
+    # Normalize matrix (equation (3) of the paper)
+    # NOTE: P_v has the same shape as B_v
+    P_v = np.zeros(shape=B_v.shape)
+    S = np.sum(B_v)
+
+    if S &gt; 0:
+        P_v = B_v / S
+
+    # Compute marginal probabilities
+    # Marginal probabilities P^v_d = \sum_s&#39;{P_{s&#39;d}}
+    marginal_d = np.sum(P_v, axis=0)
+
+    # Marginal probabilities P^v_s = \sum_d&#39;{P_{sd&#39;}}
+    marginal_s = np.sum(P_v, axis=1)
+
+    if method == &#39;Miller&#39;:
+
+        # total number of samples, i.e. observed two-paths
+        N = np.sum(B_v)
+
+        # print(&#39;N = &#39;, N)
+        # print(&#39;B = &#39;, B_v)
+        # print(&#39;marginal_s = &#39;, marginal_s)
+        # print(&#39;marginal_d = &#39;, marginal_d)
+
+        # marginal entropy H(S)
+        H_s = _entropy(marginal_s, len(marginal_s), N, method=&#39;Miller&#39;)
+
+        # print(&#39;H(S) = &#39;, H_s)
+        # marginal entropy H(D)
+
+        H_d = _entropy(marginal_d, len(marginal_d), N, method=&#39;Miller&#39;)
+
+        # print(&#39;H(D) = &#39;, H_d)
+        # we need the conditional entropy H(D|S)
+
+        H_ds = 0
+        for s in range(len(marginal_s)):
+            # number of two paths s -&gt; v -&gt; * observed in the data
+            N_s = np.sum(B_v[s, :])
+
+            # print(&#39;N(s=&#39; + str(s) + &#39;) = &#39; +  str(N_s))
+
+            # probabilities of all destinations, given the particular source s
+            p_ds = B_v[s, :] / np.sum(B_v[s, :])
+
+            # print(&#39;P(D|S=&#39; + str(s) + &#39;) = &#39;+ str(p_ds))
+
+            # number of possible destinations d
+            K_s = len(p_ds)
+
+            # print(&#39;K(s=&#39; + str(s) + &#39;) = &#39; +  str(K_s))
+
+            # marginal_s[s] is the overall probability of source s
+            p_s = marginal_s[s]
+
+            # add to conditional entropy
+            H_ds += p_s * _entropy(p_ds, K_s, N_s, method=&#39;Miller&#39;)
+
+            I = H_d - H_ds
+
+        # print(&#39;H(D|S) = &#39;, H_ds)
+
+    else:
+        # use MLE estimation
+        H_s = _entropy(marginal_s)
+        H_d = _entropy(marginal_d)
+        # H_ds = 0
+
+        # for s in range(len(marginal_s)):
+        #    print(&#39;s = &#39; + str(s) + &#39;: &#39; + str(np.sum(P_v[s,:])))
+        #    p_ds = P_v[s,:]/np.sum(P_v[s,:])
+        #    H_ds += marginal_s[s] * Paths.__Entropy(p_ds)
+
+        # Alternative calculation (without explicit entropies)
+        # build mask for non-zero elements
+        row, col = np.nonzero(P_v)
+        pv = P_v[(row, col)]
+        marginal = np.outer(marginal_s, marginal_d)
+        log_argument = np.divide(pv, marginal[(row, col)])
+        I = np.dot(pv, np.log2(log_argument))
+
+    # I = H_d - H_ds
+
+    if normalized:
+        I = I / np.min([H_s, H_d])
+
+    return I
+
+
+def _entropy(prob, possible_outcomes=None, sample_size=None, method=&#39;MLE&#39;):
+    &#34;&#34;&#34;Calculates the entropy of an (observed) probability distribution based on Maximum
+    Likelihood Estimation (MLE) (default) or using a Miller correction.
+
+    Parameters
+    ----------
+    prob:
+        numpy array of the observed probabilities
+    possible_outcomes: int
+        the number of possible outcomes, i.e. outcomes with non-zero probability to be
+        used for the Miller correction (default None)
+    sample_size: int
+        number of samples based on which observed probabilities where computed. This is
+        needed for the Miller correction (default None)
+    method: str
+        The method to be used to calculate entropy. Can be &#39;MLE&#39; (default) or &#39;Miller&#39;
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    assert method in [&#34;MLE&#34;, &#34;Miller&#34;], &#34;method must be one of &#39;MLE&#39; or &#39;Miller&#39;&#34;
+    if method == &#39;MLE&#39;:
+        idx = np.nonzero(prob)
+        return -np.inner(np.log2(prob[idx]), prob[idx])
+    elif method == &#39;Miller&#39;:
+        assert (possible_outcomes is not None) and (sample_size is not None)
+        if sample_size == 0:
+            return 0
+
+        idx = np.nonzero(prob)
+
+        addition = (possible_outcomes - 1) / (2 * sample_size)
+        return -np.inner(np.log2(prob[idx]), prob[idx]) + addition
+    else:
+        raise PathpyError(&#34;method {} not supported&#34;.format(method))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.algorithms.path_measures.betweenness_preference"><code class="name flex">
+<span>def <span class="ident">betweenness_preference</span></span>(<span>paths, v, normalized=False, method=&#39;MLE&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the betweenness preferences of a node v based on the mutual information
+of path statistics of length two.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>paths</code></strong> :&ensp;<code>Paths</code></dt>
+<dd>&nbsp;</dd>
+<dt>v:</dt>
+<dt>Node for which the betweenness preference will be calculated</dt>
+<dt><strong><code>normalized</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether or not to normalize betweenness preference values</dd>
+<dt><strong><code>method</code></strong> :&ensp;<code>str</code></dt>
+<dd>which method to use for the entropy calculation. The default 'MLE' uses the
+standard Maximum-Likelihood estimation of entropy. Setting method to 'Miller'
+additionally applies a Miller-correction.</dd>
+</dl>
+<h2 id="references">References</h2>
+<pre><code>see e.g. Liam Paninski: Estimation of Entropy and Mutual Information,
+Neural Computation 5, 2003 or
+&lt;http://www.nowozin.net/sebastian/blog/estimating-discrete-entropy-part-2.html&gt;
+</code></pre>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def betweenness_preference(paths, v, normalized=False, method=&#39;MLE&#39;):
+    &#34;&#34;&#34;Calculates the betweenness preferences of a node v based on the mutual information
+     of path statistics of length two.
+
+    Parameters
+    ----------
+    paths: Paths
+    v:
+        Node for which the betweenness preference will be calculated
+    normalized: bool
+        whether or not to normalize betweenness preference values
+    method: str
+        which method to use for the entropy calculation. The default &#39;MLE&#39; uses the
+        standard Maximum-Likelihood estimation of entropy. Setting method to &#39;Miller&#39;
+        additionally applies a Miller-correction.
+
+    References
+    ---------
+        see e.g. Liam Paninski: Estimation of Entropy and Mutual Information,
+        Neural Computation 5, 2003 or
+        http://www.nowozin.net/sebastian/blog/estimating-discrete-entropy-part-2.html
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    assert method in [&#39;MLE&#39;, &#39;Miller&#39;], &#34;method must be one of &#39;MLE&#39; or &#39;Miller&#39;&#34;
+
+    # If the network is empty, just return zero
+    if not paths.nodes:
+        return 0.0
+
+    # First create the betweenness preference matrix (equation (2) of the paper)
+    B_v = betweenness_preference_matrix(paths, v)
+
+    if B_v.shape[0] == 0 or B_v.shape[1] == 0:
+        return None
+
+    # Normalize matrix (equation (3) of the paper)
+    # NOTE: P_v has the same shape as B_v
+    P_v = np.zeros(shape=B_v.shape)
+    S = np.sum(B_v)
+
+    if S &gt; 0:
+        P_v = B_v / S
+
+    # Compute marginal probabilities
+    # Marginal probabilities P^v_d = \sum_s&#39;{P_{s&#39;d}}
+    marginal_d = np.sum(P_v, axis=0)
+
+    # Marginal probabilities P^v_s = \sum_d&#39;{P_{sd&#39;}}
+    marginal_s = np.sum(P_v, axis=1)
+
+    if method == &#39;Miller&#39;:
+
+        # total number of samples, i.e. observed two-paths
+        N = np.sum(B_v)
+
+        # print(&#39;N = &#39;, N)
+        # print(&#39;B = &#39;, B_v)
+        # print(&#39;marginal_s = &#39;, marginal_s)
+        # print(&#39;marginal_d = &#39;, marginal_d)
+
+        # marginal entropy H(S)
+        H_s = _entropy(marginal_s, len(marginal_s), N, method=&#39;Miller&#39;)
+
+        # print(&#39;H(S) = &#39;, H_s)
+        # marginal entropy H(D)
+
+        H_d = _entropy(marginal_d, len(marginal_d), N, method=&#39;Miller&#39;)
+
+        # print(&#39;H(D) = &#39;, H_d)
+        # we need the conditional entropy H(D|S)
+
+        H_ds = 0
+        for s in range(len(marginal_s)):
+            # number of two paths s -&gt; v -&gt; * observed in the data
+            N_s = np.sum(B_v[s, :])
+
+            # print(&#39;N(s=&#39; + str(s) + &#39;) = &#39; +  str(N_s))
+
+            # probabilities of all destinations, given the particular source s
+            p_ds = B_v[s, :] / np.sum(B_v[s, :])
+
+            # print(&#39;P(D|S=&#39; + str(s) + &#39;) = &#39;+ str(p_ds))
+
+            # number of possible destinations d
+            K_s = len(p_ds)
+
+            # print(&#39;K(s=&#39; + str(s) + &#39;) = &#39; +  str(K_s))
+
+            # marginal_s[s] is the overall probability of source s
+            p_s = marginal_s[s]
+
+            # add to conditional entropy
+            H_ds += p_s * _entropy(p_ds, K_s, N_s, method=&#39;Miller&#39;)
+
+            I = H_d - H_ds
+
+        # print(&#39;H(D|S) = &#39;, H_ds)
+
+    else:
+        # use MLE estimation
+        H_s = _entropy(marginal_s)
+        H_d = _entropy(marginal_d)
+        # H_ds = 0
+
+        # for s in range(len(marginal_s)):
+        #    print(&#39;s = &#39; + str(s) + &#39;: &#39; + str(np.sum(P_v[s,:])))
+        #    p_ds = P_v[s,:]/np.sum(P_v[s,:])
+        #    H_ds += marginal_s[s] * Paths.__Entropy(p_ds)
+
+        # Alternative calculation (without explicit entropies)
+        # build mask for non-zero elements
+        row, col = np.nonzero(P_v)
+        pv = P_v[(row, col)]
+        marginal = np.outer(marginal_s, marginal_d)
+        log_argument = np.divide(pv, marginal[(row, col)])
+        I = np.dot(pv, np.log2(log_argument))
+
+    # I = H_d - H_ds
+
+    if normalized:
+        I = I / np.min([H_s, H_d])
+
+    return I</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.path_measures.betweenness_preference_matrix"><code class="name flex">
+<span>def <span class="ident">betweenness_preference_matrix</span></span>(<span>paths, v)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Computes a betweenness preference matrix for a node v</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>paths</code></strong> :&ensp;<code>Paths</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>v:
+Node for which the betweenness preference matrix shall
+be calculated</p>
+<h2 id="returns">Returns</h2></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def betweenness_preference_matrix(paths, v):
+    &#34;&#34;&#34;Computes a betweenness preference matrix for a node v
+
+    Parameters
+    ----------
+    paths: Paths
+    v:
+        Node for which the betweenness preference matrix shall
+        be calculated
+
+    Returns
+    -------
+
+    &#34;&#34;&#34;
+    # create first-order network
+    g = HigherOrderNetwork(paths)
+
+    in_degree = len(g.predecessors[v])
+    out_degree = len(g.successors[v])
+
+    index_succ = {}
+    index_pred = {}
+
+    B_v = np.zeros(shape=(in_degree, out_degree))
+
+    # Create an index-to-node mapping for predecessors and successors
+    i = 0
+    for u in g.predecessors[v]:
+        index_pred[u] = i
+        i = i + 1
+
+    i = 0
+    for w in g.successors[v]:
+        index_succ[w] = i
+        i = i + 1
+
+    # Calculate entries of betweenness preference matrix
+    for p in paths.paths[2]:
+        if p[1] == v:
+            B_v[index_pred[p[0]], index_succ[p[2]]] += paths.paths[2][p].sum()
+
+    return B_v</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.path_measures.entropy_growth_rate_ratio"><code class="name flex">
+<span>def <span class="ident">entropy_growth_rate_ratio</span></span>(<span>paths, method=&#39;MLE&#39;, k=2, lanczos_vectors=15, maxiter=1000)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Computes the ratio between the entropy growth rate ratio between
+the k-order and first-order model of a temporal network t. Ratios smaller
+than one indicate that the temporal network exhibits non-Markovian characteristics</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>paths</code></strong> :&ensp;<code>Paths</code></dt>
+<dd>&nbsp;</dd>
+<dt>method:</dt>
+<dt>which method to use for the entropy calculation. The default 'MLE' uses</dt>
+<dt>the standard Maximum-Likelihood estimation of entropy. Setting method to</dt>
+<dt>'Miller' additionally applies a Miller-correction.</dt>
+<dt>see e.g.</dt>
+<dt><strong><code>k</code></strong> :&ensp;<code>int</code></dt>
+<dd>order of the higher order network to generate</dd>
+</dl>
+<p>lanczos_vectors:
+number of Lanczos vectors to be used in the approximate calculation of
+eigenvectors and eigenvalues. This maps to the ncv parameter of scipy's underlying
+function eigs.
+maxiter:
+Maximum number of Arnoldi update iterations allowed Default: n*10
+See scipy.sparse.linalg.eigs for more details</p>
+<h2 id="references">References</h2>
+<pre><code>Liam Paninski: Estimation of Entropy and Mutual Information, Neural Computation 5,
+2003 or
+&lt;http://www.nowozin.net/sebastian/blog/estimating-discrete-entropy-part-2.html&gt;
+</code></pre>
+<h2 id="returns">Returns</h2>
+<p>float</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def entropy_growth_rate_ratio(paths, method=&#39;MLE&#39;, k=2, lanczos_vectors=15, maxiter=1000):
+    &#34;&#34;&#34;Computes the ratio between the entropy growth rate ratio between
+    the k-order and first-order model of a temporal network t. Ratios smaller
+    than one indicate that the temporal network exhibits non-Markovian characteristics
+
+    Parameters
+    ----------
+    paths: Paths
+    method:
+        which method to use for the entropy calculation. The default &#39;MLE&#39; uses
+        the standard Maximum-Likelihood estimation of entropy. Setting method to
+        &#39;Miller&#39; additionally applies a Miller-correction.
+        see e.g.
+    k: int
+        order of the higher order network to generate
+    lanczos_vectors:
+        number of Lanczos vectors to be used in the approximate calculation of
+        eigenvectors and eigenvalues. This maps to the ncv parameter of scipy&#39;s underlying
+        function eigs.
+    maxiter:
+        Maximum number of Arnoldi update iterations allowed Default: n*10
+        See scipy.sparse.linalg.eigs for more details
+
+
+    References
+    ---------
+        Liam Paninski: Estimation of Entropy and Mutual Information, Neural Computation 5,
+        2003 or
+        http://www.nowozin.net/sebastian/blog/estimating-discrete-entropy-part-2.html
+
+    Returns
+    -------
+    float
+    &#34;&#34;&#34;
+    # NOTE to myself: most of the time here goes into computation of the
+    # NOTE            EV of the transition matrix for the bigger of the
+    # NOTE            two graphs below (either 2nd-order or 2nd-order null)
+
+    assert (method == &#39;MLE&#39; or method == &#39;Miller&#39;), \
+        &#39;Only methods MLE or Miller are supported&#39;
+
+    # Generate k-order network
+    gk = HigherOrderNetwork(paths, k=k)
+    g1 = HigherOrderNetwork(paths, k=1)
+
+    Log.add(&#39;Calculating entropy growth rate ratio ... &#39;, Severity.INFO)
+
+    # Compute entropy growth rate of observed transition matrix
+    adj_matrix = g1.adjacency_matrix(weighted=False, transposed=True)
+    tran_mat_k = gk.transition_matrix()
+    leading_eigen_vec_k = HigherOrderNetwork.leading_eigenvector(
+        tran_mat_k, normalized=True, lanczos_vecs=lanczos_vectors, maxiter=maxiter
+    )
+
+    tran_mat_k.data *= np.log2(tran_mat_k.data)
+
+    # Apply Miller correction to the entropy estimation
+    if method == &#39;Miller&#39;:
+        # Here, &#39;possible_k_paths&#39; is the number of different k-paths that can exist
+        # based on the observed edges
+        possible_k_paths = (adj_matrix ** k).sum()
+        print(&#39;K = &#39;, possible_k_paths)
+
+        # N is the number of observations used to estimate the transition probabilities
+        # in the second-order network. This corresponds to the total edge weight in the
+        # k-order network, or - alternatively - to the number of paths of length k
+        num_obs = 0
+        for p in paths.paths[k]:
+            num_obs += paths.paths[k][p].sum()
+        print(&#39;N = &#39;, num_obs)
+        h_mat_k = (- np.sum(tran_mat_k * leading_eigen_vec_k) +
+                   (possible_k_paths - 1) / (2 * num_obs))
+    else:
+        # simple MLE estimation
+        h_mat_k = - np.sum(tran_mat_k * leading_eigen_vec_k)
+
+    h_mat_k = np.absolute(h_mat_k)
+
+    # Compute entropy rate of first-order model
+    gk_n = HigherOrderNetwork(paths, k=1, null_model=False)
+
+    # For the entropy rate of the null model, no Miller correction is needed
+    # since we assume that transitions correspond to the true probabilities
+    trans_mat_null = gk_n.transition_matrix()
+    leading_eigen_v_null = HigherOrderNetwork.leading_eigenvector(trans_mat_null)
+    trans_mat_null.data *= np.log2(trans_mat_null.data)
+    h_mat_null = -np.sum(trans_mat_null * leading_eigen_v_null)
+    h_mat_null = np.absolute(h_mat_null)
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    print(&#39;entropy rate (k) = &#39;, h_mat_k)
+    print(&#39;entropy rate (1) = &#39;, h_mat_null)
+    # Return ratio
+    return h_mat_k / h_mat_null</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.path_measures.slow_down_factor"><code class="name flex">
+<span>def <span class="ident">slow_down_factor</span></span>(<span>paths, k=2, lanczos_vectors=15, maxiter=1000)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a factor S that indicates how much slower (S&gt;1) or faster (S&lt;1)
+a diffusion process evolves in a k-order model of the path statistics
+compared to what is expected based on a first-order model. This value captures
+the effect of order correlations of length k on a diffusion process which evolves
+based on the observed paths.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>paths</code></strong> :&ensp;<code>Paths</code></dt>
+<dd>the Paths object to compute the slow down factor for</dd>
+<dt><strong><code>k</code></strong> :&ensp;<code>int</code></dt>
+<dd>order of the model to consider</dd>
+<dt><strong><code>lanczos_vectors</code></strong> :&ensp;<code>int</code></dt>
+<dd>number of Lanczos vectors to be used in the approximate calculation of
+eigenvectors and eigenvalues. This maps to the ncv parameter of scipy's
+underlying function eigs.</dd>
+<dt><strong><code>maxiter</code></strong> :&ensp;<code>int</code></dt>
+<dd>scaling factor for the number of iterations to be used in the approximate
+calculation of eigenvectors and eigenvalues. The number of iterations passed to
+scipy's underlying eigs function will be n*maxiter where n is the number of
+rows/columns of the Laplacian matrix.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>float</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def slow_down_factor(paths, k=2, lanczos_vectors=15, maxiter=1000):
+    &#34;&#34;&#34;Returns a factor S that indicates how much slower (S&gt;1) or faster (S&lt;1)
+    a diffusion process evolves in a k-order model of the path statistics
+    compared to what is expected based on a first-order model. This value captures
+    the effect of order correlations of length k on a diffusion process which evolves
+    based on the observed paths.
+
+    Parameters
+    ----------
+    paths: Paths
+        the Paths object to compute the slow down factor for
+    k: int
+        order of the model to consider
+    lanczos_vectors: int
+        number of Lanczos vectors to be used in the approximate calculation of
+        eigenvectors and eigenvalues. This maps to the ncv parameter of scipy&#39;s
+        underlying function eigs.
+    maxiter: int
+        scaling factor for the number of iterations to be used in the approximate
+        calculation of eigenvectors and eigenvalues. The number of iterations passed to
+        scipy&#39;s underlying eigs function will be n*maxiter where n is the number of
+        rows/columns of the Laplacian matrix.
+
+    Returns
+    -------
+    float
+    &#34;&#34;&#34;
+    assert k &gt; 1, &#39;Slow-down factor can only be calculated for orders larger than one&#39;
+
+    # NOTE to myself: most of the time goes for construction of the 2nd order
+    # NOTE            null graph, then for the 2nd order null transition matrix
+
+    gk = HigherOrderNetwork(paths, k=k)
+    gkn = HigherOrderNetwork(paths, k=k, null_model=True)
+
+    Log.add(&#39;Calculating slow down factor ... &#39;, Severity.INFO)
+
+    # Build transition matrices
+    Tk = gk.transition_matrix()
+    Tkn = gkn.transition_matrix()
+
+    # Compute eigenvector sequences
+    # NOTE: ncv=13 sets additional auxiliary eigenvectors that are computed
+    # NOTE: in order to be more confident to find the one with the largest
+    # NOTE: magnitude, see
+    # NOTE: https://github.com/scipy/scipy/issues/4987
+    w2 = sla.eigs(Tk, which=&#34;LM&#34;, k=2, ncv=lanczos_vectors, return_eigenvectors=False,
+                  maxiter=maxiter)
+    eigen_values2_sorted = np.sort(-np.absolute(w2))
+
+    w2n = sla.eigs(Tkn, which=&#34;LM&#34;, k=2, ncv=lanczos_vectors, return_eigenvectors=False,
+                   maxiter=maxiter)
+    eigen_values2n_sorted = np.sort(-np.absolute(w2n))
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    abs_eigen_values2 = np.abs(eigen_values2_sorted[1])
+    abs_eigen_values2n = np.abs(eigen_values2n_sorted[1])
+    return np.log(abs_eigen_values2n) / np.log(abs_eigen_values2)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.algorithms" href="index.html">pathpy.algorithms</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.algorithms.path_measures.betweenness_preference" href="#pathpy.algorithms.path_measures.betweenness_preference">betweenness_preference</a></code></li>
+<li><code><a title="pathpy.algorithms.path_measures.betweenness_preference_matrix" href="#pathpy.algorithms.path_measures.betweenness_preference_matrix">betweenness_preference_matrix</a></code></li>
+<li><code><a title="pathpy.algorithms.path_measures.entropy_growth_rate_ratio" href="#pathpy.algorithms.path_measures.entropy_growth_rate_ratio">entropy_growth_rate_ratio</a></code></li>
+<li><code><a title="pathpy.algorithms.path_measures.slow_down_factor" href="#pathpy.algorithms.path_measures.slow_down_factor">slow_down_factor</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

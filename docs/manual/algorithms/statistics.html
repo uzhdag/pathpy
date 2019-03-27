@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.algorithms.statistics API documentation</title>
+<meta name="description" content="Collection of statistical measures for
+paths, (higher-order) networks, and temporal networks" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.algorithms.statistics</code> module</h1>
+</header>
+<section id="section-intro">
+<p>Collection of statistical measures for
+paths, (higher-order) networks, and temporal networks</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Collection of statistical measures for  paths, (higher-order) networks, and temporal networks
+&#34;&#34;&#34;
+# -*- coding: utf-8 -*-
+
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+from collections import defaultdict
+from collections import Counter
+
+import numpy as _np
+import scipy as sp
+
+from pathpy .utils import Log, Severity
+from pathpy import Network
+
+from pathpy.utils import PathpyNotImplemented
+
+
+def local_clustering_coefficient(network, v):
+    r&#34;&#34;&#34;Calculates the local clustering coefficient of a node in a directed or undirected network.
+    The local clustering coefficient of any node with an (out-)degree smaller than two is defined
+    as zero. For all other nodes, it is defined as:
+
+        cc(c) := 2*k(i)/(d_i(d_i-1))
+    
+        or
+    
+        cc(c) := k(i)/(d_out_i(d_out_i-1))
+
+        in undirected and directed networks respectively.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the local clustering coefficient.
+    node:   str
+        The node for which the local clustering coefficient shall be calculated.
+    &#34;&#34;&#34;
+    if network.directed and network.nodes[v][&#39;outdegree&#39;] &lt; 2:
+        return 0.0
+    if not network.directed and network.nodes[v][&#39;degree&#39;] &lt; 2:
+        return 0.0
+    k_i = 0.0
+    for i in network.successors[v]:
+        for j in network.successors[v]:
+            if (i, j) in network.edges:
+                k_i += 1.0
+    if not network.directed:
+        return k_i/(network.nodes[v][&#39;degree&#39;]*(network.nodes[v][&#39;degree&#39;]-1.0))
+    return k_i/(network.nodes[v][&#39;outdegree&#39;]*(network.nodes[v][&#39;outdegree&#39;]-1.0))
+
+
+def avg_clustering_coefficient(network):
+    r&#34;&#34;&#34;Calculates the average (global) clustering coefficient of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the local clustering coefficient.
+    &#34;&#34;&#34;
+    return _np.mean([ local_clustering_coefficient(network, v) for v in network.nodes])
+
+
+def mean_degree(network, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Calculates the mean (in/out)-degree of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the mean degree
+    &#34;&#34;&#34;
+    assert degree is &#39;degree&#39; or degree is &#39;indegree&#39; or degree is &#39;outdegree&#39;, \
+            &#39;Unknown degree property&#39;
+    return _np.mean([network.nodes[x][degree] for x in network.nodes])
+
+
+def degree_dist(network, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Calculates the (in/out)-degree distribution of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network for which to calculate the degree distribution
+    &#34;&#34;&#34;
+    assert degree is &#39;degree&#39; or degree is &#39;indegree&#39; or degree is &#39;outdegree&#39;,\
+            &#39;Unknown degree property&#39;
+    p_k = Counter([network.nodes[x][degree] for x in network.nodes])
+    for x in p_k:
+        p_k[x] = p_k[x]/network.ncount()
+    return p_k
+
+
+def degree_moment(network, k, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Calculates the k-th moment of the (in/out)-degree distribution of a
+    directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the k-th moment of the degree distribution
+    &#34;&#34;&#34;
+    p_k = degree_dist(network, degree)
+    mom = 0
+    for x in p_k:
+        mom += x**k * p_k[x]
+    return mom
+
+
+def generating_func(network, x, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Returns f(x) where f is the probability generating function for the
+    (in/out)-degree distribution P(k) for a network. The function is defined in the interval [0,1].
+    The value returned is from the range [0,1]. The following properties hold:
+
+    [1/k! d^k/dx f]_{x=0} = P(k)    with d^k/dx f being the k-th derivative of f by x
+    f&#39;(1) = &lt;k&gt;                     with f&#39; being the first derivative and &lt;k&gt; the mean degree
+    [(x d/dx)^m f]_{x=1} = &lt;k^m&gt;    with &lt;k^m&gt; being the m-th raw moment of P
+
+    Parameters
+    ----------
+    x:  float, list, numpy.ndarray
+        The argument(s) for which the value f(x) shall be computed.
+
+    Returns
+    -------
+        Either a single float value f(x) (if x is float) or a numpy.ndarray
+        containing the function values f(x) for all arguments in x
+
+    Example
+    -------
+    &gt;&gt;&gt; import pathpy as pp
+    &gt;&gt;&gt; import numpy as np
+    &gt;&gt;&gt; import matplotlib.pyplot as plt
+
+    &gt;&gt;&gt; n = pp.Network()
+    &gt;&gt;&gt; n.add_edge(&#39;a&#39;, &#39;b&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;b&#39;, &#39;c&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;a&#39;, &#39;c&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;c&#39;, &#39;d&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;d&#39;, &#39;e&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;d&#39;, &#39;f&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;e&#39;, &#39;f&#39;)
+    
+    &gt;&gt;&gt; # print single value f(x)
+    &gt;&gt;&gt; print(pp.statistics.generating_func(n, 0.3))
+
+    &gt;&gt;&gt; # plot generating function
+    &gt;&gt;&gt; x = np.linspace(0, 1, 20)
+    &gt;&gt;&gt; y = pp.statistics.generating_func(n, x)
+    &gt;&gt;&gt; x = plt.plot(x, y)
+    &#34;&#34;&#34;
+
+    assert isinstance(x, (float, list, _np.ndarray)), \
+        &#39;Argument can only be float, list or numpy.ndarray&#39;
+
+    p_k = degree_dist(network, degree)
+
+    if isinstance(x, float):
+        x_range = [x]
+    else:
+        x_range = x
+
+    values = defaultdict(lambda: 0)
+    for k in p_k:
+        for v in x_range:
+            values[v] += p_k[k] * v**k
+
+    if len(x_range) &gt; 1:
+        return _np.array(list(values.values()))
+    else:
+        return values[x]
+
+
+def molloy_reed_fraction(network, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Calculates the Molloy-Reed fraction &lt;k**2&gt;/&lt;k&gt; based on the (in/out)-degree
+    distribution of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the Molloy-Reed fraction
+    &#34;&#34;&#34;
+    return degree_moment(network, k=2, degree=degree)/degree_moment(network, k=1, degree=degree)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.algorithms.statistics.avg_clustering_coefficient"><code class="name flex">
+<span>def <span class="ident">avg_clustering_coefficient</span></span>(<span>network)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the average (global) clustering coefficient of a directed or undirected network.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;
+<code>Network</code></dt>
+<dd>The network in which to calculate the local clustering coefficient.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def avg_clustering_coefficient(network):
+    r&#34;&#34;&#34;Calculates the average (global) clustering coefficient of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the local clustering coefficient.
+    &#34;&#34;&#34;
+    return _np.mean([ local_clustering_coefficient(network, v) for v in network.nodes])</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.statistics.degree_dist"><code class="name flex">
+<span>def <span class="ident">degree_dist</span></span>(<span>network, degree=&#39;degree&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the (in/out)-degree distribution of a directed or undirected network.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;
+<code>Network</code></dt>
+<dd>The network for which to calculate the degree distribution</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def degree_dist(network, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Calculates the (in/out)-degree distribution of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network for which to calculate the degree distribution
+    &#34;&#34;&#34;
+    assert degree is &#39;degree&#39; or degree is &#39;indegree&#39; or degree is &#39;outdegree&#39;,\
+            &#39;Unknown degree property&#39;
+    p_k = Counter([network.nodes[x][degree] for x in network.nodes])
+    for x in p_k:
+        p_k[x] = p_k[x]/network.ncount()
+    return p_k</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.statistics.degree_moment"><code class="name flex">
+<span>def <span class="ident">degree_moment</span></span>(<span>network, k, degree=&#39;degree&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the k-th moment of the (in/out)-degree distribution of a
+directed or undirected network.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;
+<code>Network</code></dt>
+<dd>The network in which to calculate the k-th moment of the degree distribution</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def degree_moment(network, k, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Calculates the k-th moment of the (in/out)-degree distribution of a
+    directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the k-th moment of the degree distribution
+    &#34;&#34;&#34;
+    p_k = degree_dist(network, degree)
+    mom = 0
+    for x in p_k:
+        mom += x**k * p_k[x]
+    return mom</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.statistics.generating_func"><code class="name flex">
+<span>def <span class="ident">generating_func</span></span>(<span>network, x, degree=&#39;degree&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns f(x) where f is the probability generating function for the
+(in/out)-degree distribution P(k) for a network. The function is defined in the interval [0,1].
+The value returned is from the range [0,1]. The following properties hold:</p>
+<p>[1/k! d^k/dx f]<em x="1">{x=0} = P(k)
+with d^k/dx f being the k-th derivative of f by x
+f'(1) = <k>
+with f' being the first derivative and <k> the mean degree
+[(x d/dx)^m f]</em> = <k^m>
+with <k^m> being the m-th raw moment of P</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp; <code>float</code>, <code>list</code>, <code>numpy.ndarray</code></dt>
+<dd>The argument(s) for which the value f(x) shall be computed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<pre><code>Either a single float value f(x) (if x is float) or a numpy.ndarray
+containing the function values f(x) for all arguments in x
+</code></pre>
+<h2 id="example">Example</h2>
+<pre><code>&gt;&gt;&gt; import pathpy as pp
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; import matplotlib.pyplot as plt
+
+&gt;&gt;&gt; n = pp.Network()
+&gt;&gt;&gt; n.add_edge('a', 'b')
+&gt;&gt;&gt; n.add_edge('b', 'c')
+&gt;&gt;&gt; n.add_edge('a', 'c')
+&gt;&gt;&gt; n.add_edge('c', 'd')
+&gt;&gt;&gt; n.add_edge('d', 'e')
+&gt;&gt;&gt; n.add_edge('d', 'f')
+&gt;&gt;&gt; n.add_edge('e', 'f')
+
+&gt;&gt;&gt; # print single value f(x)
+&gt;&gt;&gt; print(pp.statistics.generating_func(n, 0.3))
+
+&gt;&gt;&gt; # plot generating function
+&gt;&gt;&gt; x = np.linspace(0, 1, 20)
+&gt;&gt;&gt; y = pp.statistics.generating_func(n, x)
+</code></pre>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>x = plt.plot(x, y)</p>
+</blockquote>
+</blockquote>
+</blockquote></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def generating_func(network, x, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Returns f(x) where f is the probability generating function for the
+    (in/out)-degree distribution P(k) for a network. The function is defined in the interval [0,1].
+    The value returned is from the range [0,1]. The following properties hold:
+
+    [1/k! d^k/dx f]_{x=0} = P(k)    with d^k/dx f being the k-th derivative of f by x
+    f&#39;(1) = &lt;k&gt;                     with f&#39; being the first derivative and &lt;k&gt; the mean degree
+    [(x d/dx)^m f]_{x=1} = &lt;k^m&gt;    with &lt;k^m&gt; being the m-th raw moment of P
+
+    Parameters
+    ----------
+    x:  float, list, numpy.ndarray
+        The argument(s) for which the value f(x) shall be computed.
+
+    Returns
+    -------
+        Either a single float value f(x) (if x is float) or a numpy.ndarray
+        containing the function values f(x) for all arguments in x
+
+    Example
+    -------
+    &gt;&gt;&gt; import pathpy as pp
+    &gt;&gt;&gt; import numpy as np
+    &gt;&gt;&gt; import matplotlib.pyplot as plt
+
+    &gt;&gt;&gt; n = pp.Network()
+    &gt;&gt;&gt; n.add_edge(&#39;a&#39;, &#39;b&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;b&#39;, &#39;c&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;a&#39;, &#39;c&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;c&#39;, &#39;d&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;d&#39;, &#39;e&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;d&#39;, &#39;f&#39;)
+    &gt;&gt;&gt; n.add_edge(&#39;e&#39;, &#39;f&#39;)
+    
+    &gt;&gt;&gt; # print single value f(x)
+    &gt;&gt;&gt; print(pp.statistics.generating_func(n, 0.3))
+
+    &gt;&gt;&gt; # plot generating function
+    &gt;&gt;&gt; x = np.linspace(0, 1, 20)
+    &gt;&gt;&gt; y = pp.statistics.generating_func(n, x)
+    &gt;&gt;&gt; x = plt.plot(x, y)
+    &#34;&#34;&#34;
+
+    assert isinstance(x, (float, list, _np.ndarray)), \
+        &#39;Argument can only be float, list or numpy.ndarray&#39;
+
+    p_k = degree_dist(network, degree)
+
+    if isinstance(x, float):
+        x_range = [x]
+    else:
+        x_range = x
+
+    values = defaultdict(lambda: 0)
+    for k in p_k:
+        for v in x_range:
+            values[v] += p_k[k] * v**k
+
+    if len(x_range) &gt; 1:
+        return _np.array(list(values.values()))
+    else:
+        return values[x]</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.statistics.local_clustering_coefficient"><code class="name flex">
+<span>def <span class="ident">local_clustering_coefficient</span></span>(<span>network, v)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the local clustering coefficient of a node in a directed or undirected network.
+The local clustering coefficient of any node with an (out-)degree smaller than two is defined
+as zero. For all other nodes, it is defined as:</p>
+<pre><code>cc(c) := 2*k(i)/(d_i(d_i-1))
+
+or
+
+cc(c) := k(i)/(d_out_i(d_out_i-1))
+
+in undirected and directed networks respectively.
+</code></pre>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;
+<code>Network</code></dt>
+<dd>The network in which to calculate the local clustering coefficient.</dd>
+<dt><strong><code>node</code></strong> :&ensp;
+<code>str</code></dt>
+<dd>The node for which the local clustering coefficient shall be calculated.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def local_clustering_coefficient(network, v):
+    r&#34;&#34;&#34;Calculates the local clustering coefficient of a node in a directed or undirected network.
+    The local clustering coefficient of any node with an (out-)degree smaller than two is defined
+    as zero. For all other nodes, it is defined as:
+
+        cc(c) := 2*k(i)/(d_i(d_i-1))
+    
+        or
+    
+        cc(c) := k(i)/(d_out_i(d_out_i-1))
+
+        in undirected and directed networks respectively.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the local clustering coefficient.
+    node:   str
+        The node for which the local clustering coefficient shall be calculated.
+    &#34;&#34;&#34;
+    if network.directed and network.nodes[v][&#39;outdegree&#39;] &lt; 2:
+        return 0.0
+    if not network.directed and network.nodes[v][&#39;degree&#39;] &lt; 2:
+        return 0.0
+    k_i = 0.0
+    for i in network.successors[v]:
+        for j in network.successors[v]:
+            if (i, j) in network.edges:
+                k_i += 1.0
+    if not network.directed:
+        return k_i/(network.nodes[v][&#39;degree&#39;]*(network.nodes[v][&#39;degree&#39;]-1.0))
+    return k_i/(network.nodes[v][&#39;outdegree&#39;]*(network.nodes[v][&#39;outdegree&#39;]-1.0))</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.statistics.mean_degree"><code class="name flex">
+<span>def <span class="ident">mean_degree</span></span>(<span>network, degree=&#39;degree&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the mean (in/out)-degree of a directed or undirected network.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;
+<code>Network</code></dt>
+<dd>The network in which to calculate the mean degree</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def mean_degree(network, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Calculates the mean (in/out)-degree of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the mean degree
+    &#34;&#34;&#34;
+    assert degree is &#39;degree&#39; or degree is &#39;indegree&#39; or degree is &#39;outdegree&#39;, \
+            &#39;Unknown degree property&#39;
+    return _np.mean([network.nodes[x][degree] for x in network.nodes])</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.statistics.molloy_reed_fraction"><code class="name flex">
+<span>def <span class="ident">molloy_reed_fraction</span></span>(<span>network, degree=&#39;degree&#39;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the Molloy-Reed fraction <k**2>/<k> based on the (in/out)-degree
+distribution of a directed or undirected network.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;
+<code>Network</code></dt>
+<dd>The network in which to calculate the Molloy-Reed fraction</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def molloy_reed_fraction(network, degree=&#39;degree&#39;):
+    r&#34;&#34;&#34;Calculates the Molloy-Reed fraction &lt;k**2&gt;/&lt;k&gt; based on the (in/out)-degree
+    distribution of a directed or undirected network.
+
+    Parameters
+    ----------
+    network:    Network
+        The network in which to calculate the Molloy-Reed fraction
+    &#34;&#34;&#34;
+    return degree_moment(network, k=2, degree=degree)/degree_moment(network, k=1, degree=degree)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.algorithms" href="index.html">pathpy.algorithms</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.algorithms.statistics.avg_clustering_coefficient" href="#pathpy.algorithms.statistics.avg_clustering_coefficient">avg_clustering_coefficient</a></code></li>
+<li><code><a title="pathpy.algorithms.statistics.degree_dist" href="#pathpy.algorithms.statistics.degree_dist">degree_dist</a></code></li>
+<li><code><a title="pathpy.algorithms.statistics.degree_moment" href="#pathpy.algorithms.statistics.degree_moment">degree_moment</a></code></li>
+<li><code><a title="pathpy.algorithms.statistics.generating_func" href="#pathpy.algorithms.statistics.generating_func">generating_func</a></code></li>
+<li><code><a title="pathpy.algorithms.statistics.local_clustering_coefficient" href="#pathpy.algorithms.statistics.local_clustering_coefficient">local_clustering_coefficient</a></code></li>
+<li><code><a title="pathpy.algorithms.statistics.mean_degree" href="#pathpy.algorithms.statistics.mean_degree">mean_degree</a></code></li>
+<li><code><a title="pathpy.algorithms.statistics.molloy_reed_fraction" href="#pathpy.algorithms.statistics.molloy_reed_fraction">molloy_reed_fraction</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

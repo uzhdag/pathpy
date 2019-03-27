@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>pathpy | issues</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/pathpy.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/js/menu.js"></script>
+<script type="text/javascript" src="/js/sidebar.js"></script>
+<body>
+
+<!-- Navigation bar -->
+<div id="nav"></div>
+
+<!-- Side bar -->
+<div id="side"></div>
+
+<div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
+  <div class="w3-cell-row">
+  <div class="w3-justify w3-cell w3-mobile">
+    <h1 class="w3-text-theme">Are there known issues?</h1>
+    <p>We would like users to be aware of the following known issues in the latest version of <code>pathpy</code>:
+      <ul>
+        <li>Depending on whether or not the dependency package <code>scipy</code> has been compiled with the numerics package <code>MKL</code> or <code>openblas</code>, considerable numerical differences can occur, e.g. for eigenvalue centralities, PageRank, spectral clustering, and other measures that depend on the eigenvectors and eigenvalues of matrices. Please refer to <code>scipy.show_config()</code> to show compilation flags. We are currently investigating this issue.</li>
+        <li>Interactive visualisations in jupyter are currently only supported for <code>juypter</code> notebooks, stand-alone HTML files, and the <code>jupyter</code> display integrated in IDEs like Visual Studio Code. Due to its new widget mechanism, interactive d3js visualizations are currently not available for <code>jupyterLab</code>.</li>
+        <li>The visualisation module currently does not support the drawing of edge arrows for temporal networks with directed edges. However, a powerful templating mechanism is available to support custom interactive and dynamic visualisations both for static and temporal networks.</li>
+        <li>The visualisation of paths in terms of alluvial diagrams within jupyter is currently unstable. This is due to the asynchronous loading of external scripts and possible network latencies e.g. in wireless networks. We will replace this functionality in a future version.</li>
+      </ul>
+    </p>
+    <p>We are working on a solution to these issues in the next release. An up-to-date list of open issues can be found at our <a href="https://github.com/uzhdag/pathpy/issues">issue tracker</a>. For the installation of development versions in which your issue might already have been fixed please refer to the installation instructions above.</p>
+  </div>  
+</div>
+
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">
+      <hr>
+      &copy; Data Analytics Group, University of Zurich, 2019
+    </div>
+  </footer>
+
+<!-- END MAIN -->
+</div>
+
+</body>
+</html>

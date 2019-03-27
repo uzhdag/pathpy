@@ -1,0 +1,1212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.5.3" />
+<title>pathpy.algorithms.centralities API documentation</title>
+<meta name="description" content="Implementations of centrality measures for networks, higher-order networks and paths" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.name small{font-weight:normal}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title"><code>pathpy.algorithms.centralities</code> module</h1>
+</header>
+<section id="section-intro">
+<p>Implementations of centrality measures for networks, higher-order networks and paths</p>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Implementations of centrality measures for networks, higher-order networks and paths
+&#34;&#34;&#34;
+
+# -*- coding: utf-8 -*-
+#    pathpy is an OpenSource python package for the analysis of time series data
+#    on networks using higher- and multi order graphical models.
+#
+#    Copyright (C) 2016-2018 Ingo Scholtes, ETH Zürich/Universität Zürich
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+#
+#    Contact the developer:
+#
+#    E-mail: scholtes@ifi.uzh.ch
+#    Web:    http://www.ingoscholtes.net
+
+from functools import singledispatch
+from collections import defaultdict
+import operator
+
+import numpy as _np
+import scipy.sparse as sparse
+import scipy.sparse.linalg as sla
+import scipy.linalg as la
+import scipy as sp
+
+from pathpy.utils import Log, Severity
+from pathpy import HigherOrderNetwork
+from pathpy import Network
+from pathpy import Paths
+from pathpy.algorithms.shortest_paths import *
+
+from pathpy.utils import PathpyNotImplemented
+
+
+__all__ = [&#34;rank_centralities&#34;, &#34;closeness&#34;, &#34;betweenness&#34;,
+           &#34;eigenvector&#34;, &#34;pagerank&#34;, &#39;node_traversals&#39;,
+           &#39;visitation_probabilities&#39;]
+
+
+def rank_centralities(centralities):
+    &#34;&#34;&#34;Returns a list of (node, centrality) tuples in which tuples are ordered
+    by centrality in descending order
+
+    Parameters
+    ----------
+    centralities: dict
+        dictionary of centralities
+
+    Examples
+    --------
+    &gt;&gt;&gt; centralities = {&#39;a&#39;: .2, &#39;b&#39;: .8, &#39;c&#39;: .5}
+    &gt;&gt;&gt; rank_centralities(centralities)
+    [(&#39;b&#39;, 0.8), (&#39;c&#39;, 0.5), (&#39;a&#39;, 0.2)]
+
+    Returns
+    -------
+    list 
+        list of (node,centrality) tuples
+
+    &#34;&#34;&#34;
+    ranked_nodes = sorted(centralities.items(), key=operator.itemgetter(1))
+    ranked_nodes.reverse()
+    return ranked_nodes
+
+
+def degree(network, mode=&#39;degree&#39;):    
+    &#34;&#34;&#34;
+    Calculates different notions of degree centrality (directed, weighted) in a network
+
+    Parameters:
+    -----------
+
+    mode: str
+        &#39;degree&#39;
+        &#39;weight&#39;
+        &#39;indegree&#39;
+        &#39;inweight&#39;
+        &#39;outdegree&#39;
+        &#39;outweight&#39;
+    &#34;&#34;&#34;
+
+    assert mode == &#39;degree&#39; or mode == &#39;weight&#39; or mode == &#39;indegree&#39; or mode == &#39;outdegree&#39; \
+            or mode == &#39;inweight&#39; or mode == &#39;outweight&#39;, &#39;Error: Invalid mode&#39;
+
+    degree_centralities = defaultdict(lambda: 0.0)
+
+    for n in network.nodes:
+        # undirected network: only distinguish between degree and weighted degree
+        if not network.directed and (mode == &#39;degree&#39; or mode == &#39;outdegree&#39; or mode == &#39;indegree&#39;):
+            degree_centralities[n] = float(network.nodes[n][&#39;degree&#39;])
+        if not network.directed and (mode == &#39;weight&#39; or mode == &#39;outweight&#39; or mode == &#39;inweight&#39;):
+            degree_centralities[n] = float(network.nodes[n][&#39;inweight&#39;])
+        
+        # directed network: distinguish between degree, weighted degree, inweight, outweight, indegree and outdegree
+        if network.directed and mode == &#39;degree&#39;:
+            degree_centralities[n] = float(network.nodes[n][&#39;indegree&#39;])
+            degree_centralities[n] += float(network.nodes[n][&#39;outdegree&#39;])
+        if network.directed and mode == &#39;weight&#39;:
+            degree_centralities[n] = float(network.nodes[n][&#39;inweight&#39;])
+            degree_centralities[n] += float(network.nodes[n][&#39;outweight&#39;])
+        elif network.directed and mode == &#39;indegree&#39;:
+            degree_centralities[n] = float(network.nodes[n][&#39;indegree&#39;])
+        elif network.directed and mode == &#39;outdegree&#39;:
+            degree_centralities[n] = float(network.nodes[n][&#39;outdegree&#39;])
+        elif network.directed and mode == &#39;inweight&#39;:
+            degree_centralities[n] = float(network.nodes[n][&#39;inweight&#39;])
+        elif network.directed and mode == &#39;outweight&#39;:
+            degree_centralities[n] = float(network.nodes[n][&#39;outweight&#39;])
+    return degree_centralities
+
+
+@singledispatch
+def betweenness(network, normalized=False):
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+
+    Log.add(&#39;Calculating betweenness centralities ...&#39;, Severity.INFO)
+
+    all_paths = shortest_paths(network)
+    node_centralities = defaultdict(lambda: 0)
+
+    for s in all_paths:
+        for d in all_paths[s]:
+            for p in all_paths[s][d]:
+                for x in p[1:-1]:
+                    if s != d != x:
+                        node_centralities[x] += 1.0 / len(all_paths[s][d])
+    if normalized:
+        max_centr = max(node_centralities.values())
+        for v in node_centralities:
+            node_centralities[v] /= max_centr
+
+    # assign zero values to nodes not occurring on shortest paths
+    for v in network.nodes:
+        node_centralities[v] += 0
+
+    return node_centralities
+    
+
+
+@betweenness.register(HigherOrderNetwork)
+def _bw(higher_order_net, normalized=False):
+    &#34;&#34;&#34;Calculates the betweenness of all nodes.
+
+    If the order of the higher-order network is larger than one
+    centralities calculated based on the higher-order
+    topology will automatically be projected back to first-order
+    nodes.
+
+    Parameters
+    ----------
+    network: HigherOrderNetwork
+        an instance of a pathpy HigherOrderNetwork
+    normalized:
+        If set to True, betweenness centralities of nodes will be scaled by the maximum
+        value (default False)
+
+    Returns
+    -------
+    dict
+        Dictionary containing as the keys the higher order node and as values their
+        centralities
+    &#34;&#34;&#34;
+    assert isinstance(higher_order_net, HigherOrderNetwork), \
+        &#34;arguments must be an instance of HigherOrderNetwork&#34;
+
+    Log.add(&#39;Calculating betweenness (order k = %s) ...&#39; % \
+        higher_order_net.order, Severity.INFO)
+
+    all_paths = shortest_paths(higher_order_net)
+    node_centralities = defaultdict(lambda: 0)
+
+    shortest_paths_first_order = defaultdict(lambda: defaultdict(set))
+    shortest_paths_first_order_lengths = defaultdict(lambda: defaultdict(lambda: _np.inf))
+
+    for path_1_ord_k in all_paths:
+        for path_2_ord_k in all_paths:
+            source_k1 = higher_order_net.higher_order_node_to_path(path_1_ord_k)[0]
+            dest_k1 = higher_order_net.higher_order_node_to_path(path_2_ord_k)[-1]
+
+            # we consider a path in a k-th order network
+            # connecting first-order node s1 to d1
+            for path_ord_k in all_paths[path_1_ord_k][path_2_ord_k]:
+                # convert k-th order path to first-order path and add
+                #shortest_paths_first_order[source_k1][dest_k1].add(
+                #    higher_order_net.higher_order_path_to_first_order(path_ord_k))
+
+                p1 = higher_order_net.higher_order_path_to_first_order(path_ord_k)
+                # obtain start node and end node
+                s1 = p1[0]
+                d1 = p1[-1]
+                # compute the length of the first-order path
+                l = len(p1) - 1
+                # if path is a shortest path add it to dictionary
+                if l &lt; shortest_paths_first_order_lengths[s1][d1]:
+                    shortest_paths_first_order_lengths[s1][d1] = l
+                    shortest_paths_first_order[s1][d1] = set()
+                    shortest_paths_first_order[s1][d1].add(p1)
+                elif l == shortest_paths_first_order_lengths[s1][d1]:
+                    shortest_paths_first_order[s1][d1].add(p1)
+
+    for source_k1 in shortest_paths_first_order:
+        for dest_k1 in shortest_paths_first_order[source_k1]:
+            for path_k1 in shortest_paths_first_order[source_k1][dest_k1]:
+                # increase betweenness of all intermediary nodes
+                # on path from s1 to d1
+                for v in path_k1[1:-1]:
+                    if source_k1 != v != dest_k1:
+                        l_p = len(shortest_paths_first_order[source_k1][dest_k1])
+                        node_centralities[v] += 1.0 / l_p
+    if normalized:
+        max_centr = max(node_centralities.values())
+        for v in node_centralities:
+            node_centralities[v] /= max_centr
+
+    # assign centrality zero to nodes not occurring on higher-order shortest paths
+    nodes = higher_order_net.paths.nodes
+    for v in nodes:
+        node_centralities[v] += 0
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return node_centralities
+
+
+
+@betweenness.register(Paths)
+def _bw(paths, normalized=False):
+    &#34;&#34;&#34;Calculates the betweenness of nodes based on observed shortest paths
+    between all pairs of nodes
+
+    Parameters
+    ----------
+    paths:
+        Paths object
+    normalized: bool
+        normalize such that largest value is 1.0
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    assert isinstance(paths, Paths), &#34;argument must be an instance of pathpy.Paths&#34;
+    node_centralities = defaultdict(lambda: 0)
+
+    Log.add(&#39;Calculating betweenness in paths ...&#39;, Severity.INFO)
+
+    all_paths = shortest_paths(paths)
+
+    for s in all_paths:
+        for d in all_paths[s]:
+            for p in all_paths[s][d]:
+                for x in p[1:-1]:
+                    if s != d != x:
+                        node_centralities[x] += 1.0 / len(all_paths[s][d])
+    if normalized:
+        max_centr = max(node_centralities.values())
+        for v in node_centralities:
+            node_centralities[v] /= max_centr
+
+    # assign zero values to nodes not occurring on shortest paths
+    nodes = paths.nodes
+    for v in nodes:
+        node_centralities[v] += 0
+    Log.add(&#39;finished.&#39;)
+    return node_centralities
+
+
+
+@singledispatch
+def closeness(network, normalized=False):
+    &#34;&#34;&#34;Calculates the closeness of all nodes.
+
+    If the order of the higher-order network is larger than one
+    centralities calculated based on the higher-order
+    topology will automatically be projected back to first-order
+    nodes.
+
+    Parameters
+    ----------
+    network: HigherOrderNetwork
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    if not isinstance(network, Network):
+        raise PathpyNotImplemented(&#34;`network` must be an instance of Network&#34;)
+
+    distances = distance_matrix(network)
+    node_centralities = defaultdict(lambda: 0)
+
+    mapping = {idx:v for idx, v in enumerate(network.nodes)}
+
+    Log.add(&#39;Calculating closeness in network ...&#39;, Severity.INFO)
+    n = network.ncount()
+    # calculate closeness values
+    for d in range(n):
+        for x in range(n):
+            if d != x and distances[d, x] &lt; _np.inf:
+                node_centralities[mapping[x]] += distances[d, x]
+
+    # assign centrality zero to nodes not occurring on higher-order shortest paths
+    for v in network.nodes:
+        node_centralities[v] += 0.0
+        if node_centralities[v] &gt; 0.0:
+            node_centralities[v] = (network.ncount() - 1.0) / node_centralities[v]
+
+    if normalized:
+        max_centr = max(node_centralities.values())
+        for v in network.nodes:
+            node_centralities[v] /= max_centr
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return node_centralities
+
+
+
+@closeness.register(Paths)
+def _cl(paths, normalized=False):
+    &#34;&#34;&#34;Calculates the closeness of nodes based on observed shortest paths
+    between all nodes
+
+    Parameters
+    ----------
+    paths: Paths
+    normalized: bool
+        normalize such that largest value is 1.0
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    node_centralities = defaultdict(lambda: 0)
+    distances = distance_matrix(paths)
+    nodes = paths.nodes
+
+    for x in nodes:
+        # calculate closeness centrality of x
+        for d in nodes:
+            if x != d and distances[d][x] &lt; _np.inf:
+                node_centralities[x] += 1.0 / distances[d][x]
+
+    # assign zero values to nodes not occurring
+    
+    for v in nodes:
+        node_centralities[v] += 0
+
+    if normalized:
+        m = max(node_centralities.values())
+        for v in nodes:
+            node_centralities[v] /= m
+
+    return node_centralities
+
+
+
+@closeness.register(HigherOrderNetwork)
+def _cl(higher_order_net, normalized=False):
+
+    if not isinstance(higher_order_net, HigherOrderNetwork):
+        raise PathpyNotImplemented(&#34;`higher_order_net` must be an instance of HigherOrderNetwork&#34;)
+
+    distances = distance_matrix(higher_order_net)
+    node_centralities = defaultdict(lambda: 0)
+    nodes = higher_order_net.paths.nodes
+
+    Log.add(&#39;Calculating closeness (k = %s) ...&#39; % higher_order_net.order,
+            Severity.INFO)
+    
+    for x in nodes:
+        # calculate closeness centrality of x
+        for d in nodes:
+            if x != d and distances[d][x] &lt; _np.inf:
+                node_centralities[x] += 1.0 / distances[d][x]
+
+    # assign centrality zero to those nodes for which no higher-order path exists
+    for v in nodes:
+        node_centralities[v] += 0
+
+    if normalized:
+        m = max(node_centralities.values())
+        for v in nodes:
+            node_centralities[v] /= m
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return node_centralities
+
+
+
+def node_traversals(paths):
+    &#34;&#34;&#34;Calculates the number of times any path traverses each of the nodes.
+
+    Parameters
+    ----------
+    paths: Paths
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    if not isinstance(paths, Paths):
+        raise PathpyNotImplemented(&#34;`paths` must be an instance of Paths&#34;)
+
+    Log.add(&#39;Calculating node traversals...&#39;, Severity.INFO)
+
+    # entries capture the number of times nodes are &#34;visited by paths&#34;
+    # Note: this is identical to the subpath count of zero-length paths
+    traversals = defaultdict(lambda: 0)
+
+    for p in paths.paths[0]:
+        traversals[p[0]] += paths.paths[0][p].sum()
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return traversals
+
+
+
+def visitation_probabilities(paths):
+    &#34;&#34;&#34;Calculates the probabilities that a randomly chosen path passes through each of
+    the nodes. If 5 out of 100 paths (of any length) traverse node v, node v will be
+    assigned a visitation probability of 0.05. This measure can be interpreted as ground
+    truth for the notion of importance captured by PageRank applied to a graphical
+    abstraction of the paths.
+
+    Parameters
+    ----------
+    paths: Paths
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    if not isinstance(paths, Paths):
+        raise PathpyNotImplemented(&#34;`paths` must be an instance of Paths&#34;)
+    Log.add(&#39;Calculating visitation probabilities...&#39;, Severity.INFO)
+
+    # entries capture the probability that a given node is visited on an arbitrary path
+    # Note: this is identical to the subpath count of zero-length paths
+    # (i.e. the relative frequencies of nodes across all pathways)
+    visit_probabilities = node_traversals(paths)
+
+    # total number of visits
+    visits = 0.0
+    for v in visit_probabilities:
+        visits += visit_probabilities[v]
+
+    for v in visit_probabilities:
+        visit_probabilities[v] /= visits
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return visit_probabilities
+
+
+@singledispatch
+def eigenvector(network):
+    &#34;&#34;&#34;Calculates eigenvector centralities of nodes.
+
+    Parameters
+    ----------
+    network
+
+    Returns
+    -------
+    dict
+
+    &#34;&#34;&#34;
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+    adj_mat = network.adjacency_matrix(weighted=False, transposed=True).asfptype()
+    # calculate leading eigenvector of A
+    _, v = sla.eigs(adj_mat, k=1, which=&#34;LM&#34;)
+
+    v = v.reshape(v.size, )
+
+    eigen_vec_cent = dict(zip(network.nodes, map(_np.abs, v)))
+    S = sum(eigen_vec_cent.values())
+    for v in eigen_vec_cent:
+        eigen_vec_cent[v] /= S
+
+    return eigen_vec_cent
+
+
+
+@eigenvector.register(HigherOrderNetwork)
+def _ev(network, projection=&#39;scaled&#39;, include_sub_paths=True):
+    &#34;&#34;&#34;Calculates eigenvector centralities of higher-order nodes.
+
+    If the order of the HigherOrderNetwork is larger than one, the centralities
+    will be projected to the first-order nodes.
+
+    Parameters
+    ----------
+    network
+    projection: str
+        Indicates how the projection from k-th-order nodes (v1, v2, ... , v{k-1}) shall be
+        performed. For the method &#39;all&#39;, the eigenvector centrality of the higher-order
+        node will be added to *all* first-order nodes on the path corresponding to the
+        higher-order node. For the method &#39;last&#39;, the centrality of the higher-order node
+        will only be assigned to *last* first-order node v{k-1}. For the method &#39;scaled&#39;
+        (default), the eigenvector centrality of higher-order nodes will be assigned
+        proportionally to first-order nodes, i.e. each of the three nodes in the
+        third-order node (a,b,c) will receive one third of the eigenvector centrality
+        of (a,b,c).
+    include_sub_paths: bool
+        whether or not to include subpath statistics in the calculation (default True)
+
+    Returns
+    -------
+    dict
+
+    &#34;&#34;&#34;
+    assert isinstance(network, HigherOrderNetwork), \
+        &#34;network must be an instance of HigherOrderNetwork&#34;
+    adj_mat = network.adjacency_matrix(include_subpaths=include_sub_paths,
+                                       weighted=False, transposed=True).asfptype()
+    # calculate leading eigenvector of A
+    _, v = sla.eigs(adj_mat, k=1, which=&#34;LM&#34;)
+
+    v = v.reshape(v.size, )
+
+    higher_order_eigen_vec_cent = dict(zip(network.nodes, map(_np.abs, v)))
+
+    # project eigen_vec_cent of higher-order nodes to first-order network
+    first_order_eigen_vec_cent = defaultdict(lambda: 0.0)
+
+    # sum eigen_vec_cent values based on higher-order nodes
+    # and normalize the result
+    for v in network.nodes:
+        # turns node a-b-c in path tuple (a,b,c)
+        p = network.higher_order_node_to_path(v)
+        if projection == &#39;all&#39;:
+            # assign eigen_vec_cent of higher-order node to all first-order nodes
+            for x in p:
+                first_order_eigen_vec_cent[x] += higher_order_eigen_vec_cent[v]
+        elif projection == &#39;scaled&#39;:
+            for x in p:
+                n_p = float(len(p))
+                first_order_eigen_vec_cent[x] += higher_order_eigen_vec_cent[v] / n_p
+        elif projection == &#39;last&#39;:
+            # assign eigen_vec_cent  of higher-order node to last first-order node
+            first_order_eigen_vec_cent[p[-1]] += higher_order_eigen_vec_cent[v]
+        elif projection == &#39;first&#39;:
+            # assign eigen_vec_cent  of higher-order node to last first-order node
+            first_order_eigen_vec_cent[p[0]] += higher_order_eigen_vec_cent[v]
+
+    # for scaled, values sum to one anyway
+    S = sum(first_order_eigen_vec_cent.values())
+    for v in first_order_eigen_vec_cent:
+        first_order_eigen_vec_cent[v] /= S
+
+    return first_order_eigen_vec_cent
+
+
+@singledispatch
+def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, weighted=False):
+    &#34;&#34;&#34;Calculates the PageRank of nodes based on a power iteration.
+
+    Parameters
+    ----------
+    network: Netwokr
+    alpha: float
+        damping factor
+    max_iter: int
+        maximum number or iterations in solver
+    tol: float
+        accepted tolerance for convergence check
+    weighted: bool
+        use edge weights in the calculation
+
+    Returns
+    -------
+    dict
+
+    &#34;&#34;&#34;
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+
+    pr = defaultdict(lambda: 0)
+
+    n_nodes = float(len(network.nodes))
+
+    assert n_nodes &gt; 0, &#34;Number of nodes is zero&#34;
+
+    # entries A[s,t] give directed link s -&gt; t
+    adj_mat = network.adjacency_matrix(weighted=weighted, transposed=False).asfptype()
+
+    # sum of outgoing node degrees
+    row_sums = sp.array(adj_mat.sum(axis=1)).flatten()
+
+    # replace non-zero entries x by 1/x
+    row_sums[row_sums != 0] = 1.0 / row_sums[row_sums != 0]
+
+    # indices of zero entries in row_sums
+    d = sp.where(row_sums == 0)[0]
+
+    # create sparse matrix with row_sums as diagonal elements
+    q_mat = sparse.spdiags(row_sums.T, 0, adj_mat.shape[0], adj_mat.shape[1],
+                           format=&#39;csr&#39;)
+
+    # with this, we have divided elements in non-zero rows in A by 1 over the row sum
+    q_mat = q_mat * adj_mat
+
+    # vector with n entries 1/n
+    inv_n_nodes = sp.array([1.0 / n_nodes] * int(n_nodes))
+
+    p_rank = inv_n_nodes
+
+    # Power iteration
+    for _ in range(max_iter):
+        last = p_rank
+
+        # sum(pr[d]) is the sum of PageRanks for nodes with zero out-degree
+        # sum(pr[d]) * p yields a vector with length n
+        p_rank = (alpha * (p_rank * q_mat + sum(p_rank[d]) * inv_n_nodes) +
+                  (1 - alpha) * inv_n_nodes)
+
+        if sp.absolute(p_rank - last).sum() &lt; n_nodes * tol:
+            pr = dict(zip(network.nodes, map(float, p_rank)))
+            break
+    return pr
+
+
+@pagerank.register(HigherOrderNetwork)
+def _pr_ho(network, alpha=0.85, max_iter=100, tol=1.0e-6, projection=&#39;scaled&#39;,
+             include_sub_paths=True, weighted=False):
+    &#34;&#34;&#34;Calculates the PageRank of higher-order nodes based on a power iteration.
+
+    If the order of the higher-order network is larger than one, the PageRank calculated
+    based on the higher-order topology will automatically be projected back to first-order
+    nodes.
+
+    Parameters
+    ----------
+    network: HigherOrderNetwork
+    alpha: float
+        damping factor
+    max_iter: int
+        maximum number or iterations in solver
+    tol: float
+        accepted tolerance for convergence check
+    projection: str
+        Indicates how the projection from k-th-order nodes (v1, v2, ... , v{k-1}) shall be
+        performed. For the method &#39;all&#39;, the PageRank value of the higher-order node will
+        be added to *all* first-order nodes on the path corresponding to the higher-order
+        node. For the method &#39;last&#39;, the PR value of the higher-order node will only be
+        assigned to *last* first-order node v{k-1}. For the method &#39;scaled&#39; (default), the
+        PageRank of higher-order nodes will be assigned proportionally to first-order
+        nodes, i.e. each of the three nodes in the third-order node (a,b,c) will receive
+        one third of the PageRank of (a,b,c).
+    include_sub_paths: bool
+        whether or not to use subpath statistics in the PageRank calculation
+    weighted: bool
+        use path weights in the calculation
+
+    Returns
+    -------
+    dict
+
+    &#34;&#34;&#34;
+    assert isinstance(network, HigherOrderNetwork), \
+        &#34;network must be an instance of HigherOrderNetwork&#34;
+    assert projection in [&#39;all&#39;, &#39;last&#39;, &#39;first&#39;, &#39;scaled&#39;], &#39;Invalid projection method&#39;
+    
+    higher_order_pr = defaultdict(lambda: 0)
+
+    n_nodes = float(len(network.nodes))
+
+    assert n_nodes &gt; 0, &#34;Number of nodes is zero&#34;
+
+    # entries A[s,t] give directed link s -&gt; t
+    adj_mat = network.adjacency_matrix(include_subpaths=include_sub_paths,
+                                       weighted=weighted, transposed=False).asfptype()
+
+    # sum of outgoing node degrees
+    row_sums = sp.array(adj_mat.sum(axis=1)).flatten()
+
+    # replace non-zero entries x by 1/x
+    row_sums[row_sums != 0] = 1.0 / row_sums[row_sums != 0]
+
+    # indices of zero entries in row_sums
+    d = sp.where(row_sums == 0)[0]
+
+    # create sparse matrix with row_sums as diagonal elements
+    q_mat = sparse.spdiags(row_sums.T, 0, adj_mat.shape[0], adj_mat.shape[1],
+                           format=&#39;csr&#39;)
+
+    # with this, we have divided elements in non-zero rows in A by 1 over the row sum
+    q_mat = q_mat * adj_mat
+
+    # vector with n entries 1/n
+    inv_n_nodes = sp.array([1.0 / n_nodes] * int(n_nodes))
+
+    p_rank = inv_n_nodes
+
+    # Power iteration
+    for _ in range(max_iter):
+        last = p_rank
+
+        # sum(pr[d]) is the sum of PageRanks for nodes with zero out-degree
+        # sum(pr[d]) * p yields a vector with length n
+        p_rank = (alpha * (p_rank * q_mat + sum(p_rank[d]) * inv_n_nodes) +
+                  (1 - alpha) * inv_n_nodes)
+
+        if sp.absolute(p_rank - last).sum() &lt; n_nodes * tol:
+            higher_order_pr = dict(zip(network.nodes, map(float, p_rank)))
+            break
+
+    if network.order == 1:
+        return higher_order_pr
+
+    # project PageRank of higher-order nodes to first-order network
+    first_order_pr = defaultdict(lambda: 0.0)
+
+    # sum PageRank values based on higher-order nodes
+    # and normalize the result
+    for v in network.nodes:
+        # turns node a-b-c in path tuple (a,b,c)
+        inv_n_nodes = network.higher_order_node_to_path(v)
+        if projection == &#39;all&#39;:
+            # assign PR of higher-order node to all first-order nodes
+            for x in inv_n_nodes:
+                first_order_pr[x] += higher_order_pr[v] / len(inv_n_nodes)
+        elif projection == &#39;scaled&#39;:
+            for x in inv_n_nodes:
+                # each node on e.g. a 4-th-order path a-b-c-d receives one fourth of the
+                # PageRank value, to ensure that the resulting first-order PageRank sums
+                # to one
+                first_order_pr[x] += higher_order_pr[v] / float(len(inv_n_nodes))
+        elif projection == &#39;last&#39;:
+            # assign PR of higher-order node to last first-order node
+            first_order_pr[inv_n_nodes[-1]] += higher_order_pr[v]
+        elif projection == &#39;first&#39;:
+            # assign PR of higher-order node to last first-order node
+            first_order_pr[inv_n_nodes[0]] += higher_order_pr[v]
+
+    # for projection method &#39;scaled&#39;, the values sum to one anyway
+    if projection != &#39;scaled&#39;:
+        for v in first_order_pr:
+            first_order_pr[v] /= sum(first_order_pr.values())
+
+    # assign centrality zero to nodes not occurring in higher-order PR
+    nodes = network.paths.nodes
+    for v in nodes:
+        first_order_pr[v] += 0
+
+    return first_order_pr</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pathpy.algorithms.centralities.betweenness"><code class="name flex">
+<span>def <span class="ident">betweenness</span></span>(<span>network, normalized=False)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def betweenness(network, normalized=False):
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+
+    Log.add(&#39;Calculating betweenness centralities ...&#39;, Severity.INFO)
+
+    all_paths = shortest_paths(network)
+    node_centralities = defaultdict(lambda: 0)
+
+    for s in all_paths:
+        for d in all_paths[s]:
+            for p in all_paths[s][d]:
+                for x in p[1:-1]:
+                    if s != d != x:
+                        node_centralities[x] += 1.0 / len(all_paths[s][d])
+    if normalized:
+        max_centr = max(node_centralities.values())
+        for v in node_centralities:
+            node_centralities[v] /= max_centr
+
+    # assign zero values to nodes not occurring on shortest paths
+    for v in network.nodes:
+        node_centralities[v] += 0
+
+    return node_centralities</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.centralities.closeness"><code class="name flex">
+<span>def <span class="ident">closeness</span></span>(<span>network, normalized=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the closeness of all nodes.</p>
+<p>If the order of the higher-order network is larger than one
+centralities calculated based on the higher-order
+topology will automatically be projected back to first-order
+nodes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;<code>HigherOrderNetwork</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>dict</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def closeness(network, normalized=False):
+    &#34;&#34;&#34;Calculates the closeness of all nodes.
+
+    If the order of the higher-order network is larger than one
+    centralities calculated based on the higher-order
+    topology will automatically be projected back to first-order
+    nodes.
+
+    Parameters
+    ----------
+    network: HigherOrderNetwork
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    if not isinstance(network, Network):
+        raise PathpyNotImplemented(&#34;`network` must be an instance of Network&#34;)
+
+    distances = distance_matrix(network)
+    node_centralities = defaultdict(lambda: 0)
+
+    mapping = {idx:v for idx, v in enumerate(network.nodes)}
+
+    Log.add(&#39;Calculating closeness in network ...&#39;, Severity.INFO)
+    n = network.ncount()
+    # calculate closeness values
+    for d in range(n):
+        for x in range(n):
+            if d != x and distances[d, x] &lt; _np.inf:
+                node_centralities[mapping[x]] += distances[d, x]
+
+    # assign centrality zero to nodes not occurring on higher-order shortest paths
+    for v in network.nodes:
+        node_centralities[v] += 0.0
+        if node_centralities[v] &gt; 0.0:
+            node_centralities[v] = (network.ncount() - 1.0) / node_centralities[v]
+
+    if normalized:
+        max_centr = max(node_centralities.values())
+        for v in network.nodes:
+            node_centralities[v] /= max_centr
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return node_centralities</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.centralities.eigenvector"><code class="name flex">
+<span>def <span class="ident">eigenvector</span></span>(<span>network)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates eigenvector centralities of nodes.</p>
+<h2 id="parameters">Parameters</h2>
+<p>network</p>
+<h2 id="returns">Returns</h2>
+<p>dict</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def eigenvector(network):
+    &#34;&#34;&#34;Calculates eigenvector centralities of nodes.
+
+    Parameters
+    ----------
+    network
+
+    Returns
+    -------
+    dict
+
+    &#34;&#34;&#34;
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+    adj_mat = network.adjacency_matrix(weighted=False, transposed=True).asfptype()
+    # calculate leading eigenvector of A
+    _, v = sla.eigs(adj_mat, k=1, which=&#34;LM&#34;)
+
+    v = v.reshape(v.size, )
+
+    eigen_vec_cent = dict(zip(network.nodes, map(_np.abs, v)))
+    S = sum(eigen_vec_cent.values())
+    for v in eigen_vec_cent:
+        eigen_vec_cent[v] /= S
+
+    return eigen_vec_cent</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.centralities.node_traversals"><code class="name flex">
+<span>def <span class="ident">node_traversals</span></span>(<span>paths)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the number of times any path traverses each of the nodes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>paths</code></strong> :&ensp;<code>Paths</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>dict</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def node_traversals(paths):
+    &#34;&#34;&#34;Calculates the number of times any path traverses each of the nodes.
+
+    Parameters
+    ----------
+    paths: Paths
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    if not isinstance(paths, Paths):
+        raise PathpyNotImplemented(&#34;`paths` must be an instance of Paths&#34;)
+
+    Log.add(&#39;Calculating node traversals...&#39;, Severity.INFO)
+
+    # entries capture the number of times nodes are &#34;visited by paths&#34;
+    # Note: this is identical to the subpath count of zero-length paths
+    traversals = defaultdict(lambda: 0)
+
+    for p in paths.paths[0]:
+        traversals[p[0]] += paths.paths[0][p].sum()
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return traversals</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.centralities.pagerank"><code class="name flex">
+<span>def <span class="ident">pagerank</span></span>(<span>network, alpha=0.85, max_iter=100, tol=1e-06, weighted=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the PageRank of nodes based on a power iteration.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>network</code></strong> :&ensp;<code>Netwokr</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>alpha</code></strong> :&ensp;<code>float</code></dt>
+<dd>damping factor</dd>
+<dt><strong><code>max_iter</code></strong> :&ensp;<code>int</code></dt>
+<dd>maximum number or iterations in solver</dd>
+<dt><strong><code>tol</code></strong> :&ensp;<code>float</code></dt>
+<dd>accepted tolerance for convergence check</dd>
+<dt><strong><code>weighted</code></strong> :&ensp;<code>bool</code></dt>
+<dd>use edge weights in the calculation</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>dict</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">@singledispatch
+def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, weighted=False):
+    &#34;&#34;&#34;Calculates the PageRank of nodes based on a power iteration.
+
+    Parameters
+    ----------
+    network: Netwokr
+    alpha: float
+        damping factor
+    max_iter: int
+        maximum number or iterations in solver
+    tol: float
+        accepted tolerance for convergence check
+    weighted: bool
+        use edge weights in the calculation
+
+    Returns
+    -------
+    dict
+
+    &#34;&#34;&#34;
+    assert isinstance(network, Network), \
+        &#34;network must be an instance of Network&#34;
+
+    pr = defaultdict(lambda: 0)
+
+    n_nodes = float(len(network.nodes))
+
+    assert n_nodes &gt; 0, &#34;Number of nodes is zero&#34;
+
+    # entries A[s,t] give directed link s -&gt; t
+    adj_mat = network.adjacency_matrix(weighted=weighted, transposed=False).asfptype()
+
+    # sum of outgoing node degrees
+    row_sums = sp.array(adj_mat.sum(axis=1)).flatten()
+
+    # replace non-zero entries x by 1/x
+    row_sums[row_sums != 0] = 1.0 / row_sums[row_sums != 0]
+
+    # indices of zero entries in row_sums
+    d = sp.where(row_sums == 0)[0]
+
+    # create sparse matrix with row_sums as diagonal elements
+    q_mat = sparse.spdiags(row_sums.T, 0, adj_mat.shape[0], adj_mat.shape[1],
+                           format=&#39;csr&#39;)
+
+    # with this, we have divided elements in non-zero rows in A by 1 over the row sum
+    q_mat = q_mat * adj_mat
+
+    # vector with n entries 1/n
+    inv_n_nodes = sp.array([1.0 / n_nodes] * int(n_nodes))
+
+    p_rank = inv_n_nodes
+
+    # Power iteration
+    for _ in range(max_iter):
+        last = p_rank
+
+        # sum(pr[d]) is the sum of PageRanks for nodes with zero out-degree
+        # sum(pr[d]) * p yields a vector with length n
+        p_rank = (alpha * (p_rank * q_mat + sum(p_rank[d]) * inv_n_nodes) +
+                  (1 - alpha) * inv_n_nodes)
+
+        if sp.absolute(p_rank - last).sum() &lt; n_nodes * tol:
+            pr = dict(zip(network.nodes, map(float, p_rank)))
+            break
+    return pr</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.centralities.rank_centralities"><code class="name flex">
+<span>def <span class="ident">rank_centralities</span></span>(<span>centralities)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a list of (node, centrality) tuples in which tuples are ordered
+by centrality in descending order</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>centralities</code></strong> :&ensp;<code>dict</code></dt>
+<dd>dictionary of centralities</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code>&gt;&gt;&gt; centralities = {'a': .2, 'b': .8, 'c': .5}
+&gt;&gt;&gt; rank_centralities(centralities)
+[('b', 0.8), ('c', 0.5), ('a', 0.2)]
+</code></pre>
+<h2 id="returns">Returns</h2>
+<p>list
+list of (node,centrality) tuples</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def rank_centralities(centralities):
+    &#34;&#34;&#34;Returns a list of (node, centrality) tuples in which tuples are ordered
+    by centrality in descending order
+
+    Parameters
+    ----------
+    centralities: dict
+        dictionary of centralities
+
+    Examples
+    --------
+    &gt;&gt;&gt; centralities = {&#39;a&#39;: .2, &#39;b&#39;: .8, &#39;c&#39;: .5}
+    &gt;&gt;&gt; rank_centralities(centralities)
+    [(&#39;b&#39;, 0.8), (&#39;c&#39;, 0.5), (&#39;a&#39;, 0.2)]
+
+    Returns
+    -------
+    list 
+        list of (node,centrality) tuples
+
+    &#34;&#34;&#34;
+    ranked_nodes = sorted(centralities.items(), key=operator.itemgetter(1))
+    ranked_nodes.reverse()
+    return ranked_nodes</code></pre>
+</details>
+</dd>
+<dt id="pathpy.algorithms.centralities.visitation_probabilities"><code class="name flex">
+<span>def <span class="ident">visitation_probabilities</span></span>(<span>paths)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates the probabilities that a randomly chosen path passes through each of
+the nodes. If 5 out of 100 paths (of any length) traverse node v, node v will be
+assigned a visitation probability of 0.05. This measure can be interpreted as ground
+truth for the notion of importance captured by PageRank applied to a graphical
+abstraction of the paths.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>paths</code></strong> :&ensp;<code>Paths</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>dict</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def visitation_probabilities(paths):
+    &#34;&#34;&#34;Calculates the probabilities that a randomly chosen path passes through each of
+    the nodes. If 5 out of 100 paths (of any length) traverse node v, node v will be
+    assigned a visitation probability of 0.05. This measure can be interpreted as ground
+    truth for the notion of importance captured by PageRank applied to a graphical
+    abstraction of the paths.
+
+    Parameters
+    ----------
+    paths: Paths
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    if not isinstance(paths, Paths):
+        raise PathpyNotImplemented(&#34;`paths` must be an instance of Paths&#34;)
+    Log.add(&#39;Calculating visitation probabilities...&#39;, Severity.INFO)
+
+    # entries capture the probability that a given node is visited on an arbitrary path
+    # Note: this is identical to the subpath count of zero-length paths
+    # (i.e. the relative frequencies of nodes across all pathways)
+    visit_probabilities = node_traversals(paths)
+
+    # total number of visits
+    visits = 0.0
+    for v in visit_probabilities:
+        visits += visit_probabilities[v]
+
+    for v in visit_probabilities:
+        visit_probabilities[v] /= visits
+
+    Log.add(&#39;finished.&#39;, Severity.INFO)
+
+    return visit_probabilities</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pathpy.algorithms" href="index.html">pathpy.algorithms</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pathpy.algorithms.centralities.betweenness" href="#pathpy.algorithms.centralities.betweenness">betweenness</a></code></li>
+<li><code><a title="pathpy.algorithms.centralities.closeness" href="#pathpy.algorithms.centralities.closeness">closeness</a></code></li>
+<li><code><a title="pathpy.algorithms.centralities.eigenvector" href="#pathpy.algorithms.centralities.eigenvector">eigenvector</a></code></li>
+<li><code><a title="pathpy.algorithms.centralities.node_traversals" href="#pathpy.algorithms.centralities.node_traversals">node_traversals</a></code></li>
+<li><code><a title="pathpy.algorithms.centralities.pagerank" href="#pathpy.algorithms.centralities.pagerank">pagerank</a></code></li>
+<li><code><a title="pathpy.algorithms.centralities.rank_centralities" href="#pathpy.algorithms.centralities.rank_centralities">rank_centralities</a></code></li>
+<li><code><a title="pathpy.algorithms.centralities.visitation_probabilities" href="#pathpy.algorithms.centralities.visitation_probabilities">visitation_probabilities</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.5.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
