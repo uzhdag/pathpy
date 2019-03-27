@@ -41,8 +41,7 @@ n.add_edge('b', 'c')
 print(n)
 
 #%%
-n
-</pre>
+n</pre>
 </div>
 When you type this code, so-called <a href="https://code.visualstudio.com/blogs/2017/02/12/code-lens-roundup">code lenses</a> <code>Run Cell|Run Below</code> will appear above the two <code>#%%</code> tags. These tags, which will simply be ignored if you run the file with the standard python interpreter, mark the start of a cell in a jupyter notebook that we can be executed directly from within Visual Studio Code. If you click <code>Run Cell</code>, a new <code>jupyter</code> kernel will be started automatically, and the code in the current cell, i.e. between the current <code>#%%</code> tag and the next tag, will be executed. An output window will automatically open, which displays any output of your code.</p>
 <p><strong>Hint:</strong> Some users occasionally experience an <a href="https://github.com/Microsoft/vscode-python/issues/3533">issue</a> where the <code>jupyter</code> kernel fails to launch. One reason could be a missing installation of the python package <code>jupytext</code>. If you experience this problem, try to install the package by running:
