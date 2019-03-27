@@ -43,9 +43,9 @@ def local_clustering_coefficient(network, v):
     as zero. For all other nodes, it is defined as:
 
         cc(c) := 2*k(i)/(d_i(d_i-1))
-    
+
         or
-    
+
         cc(c) := k(i)/(d_out_i(d_out_i-1))
 
         in undirected and directed networks respectively.
@@ -101,7 +101,7 @@ def degree_dist(network, degree='degree'):
     Parameters
     ----------
     network:    Network
-        The network for which to calculate the degree distribution
+        The network for which to calculate the degree histogram
     """
     assert degree is 'degree' or degree is 'indegree' or degree is 'outdegree',\
             'Unknown degree property'
@@ -160,7 +160,7 @@ def generating_func(network, x, degree='degree'):
     >>> n.add_edge('d', 'e')
     >>> n.add_edge('d', 'f')
     >>> n.add_edge('e', 'f')
-    
+
     >>> # print single value f(x)
     >>> print(pp.statistics.generating_func(n, 0.3))
 
@@ -207,6 +207,9 @@ def get_bins(values, num_bins, log_bins=False):
     '''
     Compute (linear or logarithmic) bins for values.
 
+    NOTE: If log_bins is True, 0s should be removed from values _before_
+            calling this function.
+
     Parameters
     ---------
     values: np.array
@@ -235,6 +238,8 @@ def get_bins(values, num_bins, log_bins=False):
 def degree_dist_binned(network, num_bins=30, degree='degree', log_bins=True, is_pmf=True):
     '''
     Take a pathpy.network object and return the degree distribution.
+
+    NOTE: Ignores singleton (degree 0) nodes.
 
     Parameters
     ---------
@@ -291,16 +296,20 @@ def clustering_by_degree(network, num_bins=20, degree='degree', binned=True, log
     '''
     Compute binned clustering by degree.
 
+    NOTE: Ignores singleton (degree 0) nodes.
+
     Parameters
     ----------
     network: pp.Network
-        Network object
+        Network (or HigherOrderNetwork) object
     num_bins: int
-        Number of bins to use
+        Number of bins to use. Default 20.
     degree: str
-        Which degree to use for binning
+        Which degree to use for binning. Default is total degree.
+    binned: logical
+        If True, bin the distribution. Default is True.
     log_bins: logical
-        If True, use logarithmic bins. Default is linear bins.
+        If True, use logarithmic bins. Ignored when binned=False. Default is linear bins.
 
     Returns
     -------
@@ -325,9 +334,9 @@ def clustering_by_degree(network, num_bins=20, degree='degree', binned=True, log
 
     ## Get degrees
     degrees = _np.array(list(degrees_dict.values()))
+    degrees = degrees[degrees>0]
 
     if binned:
-        degrees = degrees[degrees>0]
         ## Get bins
         bins = get_bins(degrees, num_bins, log_bins)
         start = bins[:-1]
