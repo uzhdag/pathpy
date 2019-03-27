@@ -471,22 +471,22 @@ pp.visualisation.plot(t, **style)</pre>
             }
             });
         </script></div>
-The ordering and timing in which time-stamped edges occur in a TemporalNetwork gives rise to so-called causal or time-respecting paths. In a nutshell, for two time-stamped edges (a,b,t)  and  (b,c,t′)  to contribute to a causal path  a->b->c  it must hold that  t&lt;t'. If we swap timestamps such that the edge (b,c) occurs <strong>before</strong> (a,b), no causal path a->b->c exists.</p>
+The ordering and timing in which time-stamped edges occur in a temporal network gives rise to so-called causal or time-respecting paths. In a nutshell, two time-stamped edges (a,b,t) and (b,c,t′) ocurring at time stamps t and t' can only contribute to a causal path a->b->c if t&lt;t', i.e. the edge (b,c) occurs after (a,c). If we swap the two time stamps such that edge (b,c) occurs <strong>before</strong> (a,b) no causal path a->b->c exists.</p>
 
-<p>So we observe that the chronological order of time-stamped edges crucially influences causal paths, i.e. which nodes can possibly influence each other in time-stamped edge sequences. Moreover, we often want to limit the maximum time difference between consecutive edges that contribute to a causal path. For data on dynamic social interactions that spans several years, it does not make sense to consider all chronologically ordered edges as possible causal paths for the propagation of information. After all, humans have limited memory and we should thus consider interactions that occur far apart in time as independent.
-        
-        We can formally add this condition by setting a maximum time difference delta for the path calculation. That is, we only consider two edges  (a,b,t)  and  (b,c,t′) to contribute to a causal path  a->b->c  if  0&lt;t'−t&le;delta. With this definition at hand, and by setting the maximum time difference delta, you can alculate causal path statistics in time-stamped network data. <code>pathpy</code> provides algorithms to calculate (or estimate) causal path statistics based on a <code>TemporalNetwork</code> instance. You can try this in the example temporal network:</p>
-        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
-                <pre>p = pp.path_extraction.temporal_paths.paths_from_temporal_network_dag(t, delta=1)
+<p>This leads to an important observation: Due to the arrow of time, the chronological order of time-stamped edges in a temporal network crucially influences causal paths, i.e. it determines which nodes can possibly influence each other indirectly via sequences of time-stamped edges. Moreover, we often want to limit the maximum time difference between consecutive edges that contribute to a causal path. For data on dynamic social interactions that span several years, it does not make sense to consider all chronologically ordered edges as possible causal paths, e.g., for the propagation of information. After all, humans have limited memory and we should thus consider interactions that occur far apart in time as independent.</p>
+
+<p>We can formally add this condition by setting a maximum time difference delta for the path calculation. That is, we only consider two edges (a,b,t) and (b,c,t′) to contribute to a causal path a->b->c if 0&lt;t'−t&le;delta. With this definition at hand, and by setting the maximum time difference delta, we can calculate causal path statistics in time-stamped network data. In particular, <code>pathpy</code> provides algorithms to calculate (or estimate) causal path statistics based on a <code>TemporalNetwork</code> instance. Let us try this in the example temporal network above. We will also use a simply loop to iterate through all found paths and output them.</p>
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+<pre>p = pp.path_extraction.temporal_paths.paths_from_temporal_network_dag(t, delta=1)
 print(p)
 
 for l in p.paths:
     for x in p.paths[l]:
         if p.paths[l][x][1]>0:
             print('{0} -> {1}'.format(x, p.paths[l][x][1]))</pre>
-                </div>
-        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
-                <pre>Constructing time-unfolded DAG ... finished.
+</div>
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+<pre>Constructing time-unfolded DAG ... finished.
 Directed Acyclic Graph
 Nodes:		10
 Roots:		4
@@ -510,19 +510,19 @@ Paths of length k = 2		1.0 [ 1.0 / 0.0 / 1.0 ]
 ('a', 'b') -> 1.0
 ('d', 'c', 'd') -> 1.0</pre>
                 </div>
-<p>For  delta=1, it is easy to verify that this is correct. After all, there is only one pair of (directed) edges (d,c,4),(c,d,5) that contributes to a causal path of length two. In addition, we have four time-stamped edges, each of which is a trivial causal path of length one.</p>
-<p>While it is easy to understand the path statistics for a maximum time difference of  δ=1 , already for  δ=2  the situation gets more complicated.</p>
+<p>For  delta=1, it is easy to verify that this is correct in the example temporal network from above. There is only one pair of (directed) edges (d,c,4) and (c,d,5) that contributes to a causal path of length two. In addition, we have four time-stamped edges, each of which is a trivial causal path of length one.</p>
+<p>While it is relatively easy to verify the path statistics for a maximum time difference of delta=1, already for delta=2 the situation gets much more complicated:</p>
 <div class="w3-panel w3-light-grey w3-leftbar w3-border">
-        <pre>p = pp.path_extraction.paths_from_temporal_network_dag(t, delta=2)
-                print(p)
-                
-                for l in p.paths:
-                    for x in p.paths[l]:
-                        if p.paths[l][x][1]>0:
-                            print('{0} -> {1}'.format(x, p.paths[l][x][1]))</pre>
-        </div>
+<pre>p = pp.path_extraction.paths_from_temporal_network_dag(t, delta=2)
+print(p)
+
+for l in p.paths:
+    for x in p.paths[l]:
+        if p.paths[l][x][1]>0:
+            print('{0} -> {1}'.format(x, p.paths[l][x][1]))</pre>
+</div>
 <div class="w3-panel w3-light-grey w3-leftbar w3-border">
-        <pre>Constructing time-unfolded DAG ... finished.
+<pre>Constructing time-unfolded DAG ... finished.
 Directed Acyclic Graph
 Nodes:		13
 Roots:		2
@@ -547,7 +547,8 @@ Paths of length k = 3		1.0 [ 1.0 / 0.0 / 1.0 ]
 ('a', 'b', 'c', 'd') -> 1.0</pre>
         </div>
 <p>We now observe one causal path a->b->c->d of length three, and three additional causal paths of length two. All shorter causal paths are contained in those longer causal paths, as shown by the path statistics above.</p>
-<p>Now, to analyse time-stamped network data, iti s crucial to understand which causal paths exist, since it is only along such causal paths that nodes can directly or indirectly influence each other. <code>pathpy</code> allows you to extract such causal paths in time series data. Moreover, in a future unit we will see how we can use higher- and multi-order network models to analyze causal paths and detect significant patterns in time series data.</p>
+
+<p>To analyse time-stamped network data, it is crucial to understand which causal paths exist, since it is only along such causal paths that nodes can directly or indirectly influence each other. <code>pathpy</code> allows to analyse the resulting causal topology in time series data. Moreover, in a future unit we will see how we can use higher- and multi-order network models to analyze causal paths, and to detect significant patterns in time series data.</p>
         </div>
         <div class="w3-third w3-container"></div>
 
