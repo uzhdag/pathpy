@@ -553,7 +553,7 @@ first-order model  =  15
 second-order model =  14
 fifth-order model  =  11</pre></div>
 <p>To fix the issues above, we need a probabilistic generative model that can deal with large collections of (short) paths in a network. The key idea is to combine multiple higher-order network models into a single multi-layered, multi-order model. To calculate the likelihood of such a model we can use all layers, thus avoiding the problem that we discard prefixes of paths. For each path, we start the calculation at a layer of order zero, which considers the relative probabilities of nodes. We then use this model layer to calculate the probability to observe the first node on a path. For the next transition to step two, we then use a first-order model. The next transition is calculated in the second-order model and so on, until we have reached the maximum order of our multi-order model. At this point, we can transitively calculate the likelihood based on the remaining transitions of the path.</p>
-<p>The mathematical details of the method are described in this <a href="http://dl.acm.org/citation.cfm?id=3098145">KDD paper</a>. But let us move to practice. <code>pathpy</code> can directly generate, visualise, and analyse multi-order network models. Let us try this in our example:</p>
+<p>The mathematical details of the method are described in this <a href="http://dl.acm.org/citation.cfm?id=3098145">KDD paper</a>. But let us move to practice. <code>pathpy</code> can directly generate, visualise, and analyze multi-order network models. Let us try this in our example:</p>
 <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>mog = pp.MultiOrderModel(p, max_order=2)
 print(mog)
