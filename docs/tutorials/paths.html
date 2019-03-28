@@ -23,16 +23,16 @@
 
   <div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
     <div class="w3-justify">
-        <h1 class="w3-text-theme">How can I work with paths?</h1>
-        <p>At this point you might ask yourself: why is the package is called <code>pathpy</code>. The reason is <code>pathpy</code>'s key feature, namely its support to store, manipulate, analyze, and model <strong>path statistics</strong> that can be extracted from various kinds of data on complex networks. In particular <code>pathpy</code> provides the central class <code>Paths</code>, which can store collections of paths with varying lengths. Let us start by creating an empty instance of this class:
+        <h1 class="w3-text-theme">How can I work with path statistics?</h1>
+        <p>You may have asked yourself why our package is called <code>pathpy</code>. The name is due to <code>pathpy</code>'s key feature, namely its support to store, manipulate, analyze, and model <strong>path statistics</strong> that can be extracted from various kinds of (time series) data on complex networks. For this <code>pathpy</code> provides the central class <code><a href="http://www.pathpy.net/manual/classes/paths.html#pathpy.classes.paths.Paths">Paths</a></code>, which can store collections of paths with varying lengths. Let us start by creating an empty instance of this class:
         <div class="w3-panel w3-light-gray w3-leftbar w3-border">
         <pre>p = pp.Paths()</pre>
         </div>
-        We now have an empty <code>Paths</code> instance to which we can add path statistics using the method <code>add_path</code>. As the first parameter, the method accepts any iterable (<code>list</code>, <code>tuple</code>, etc.) of string variables (or objects that can be cast to <code>string</code>). Each entry in the iterable is interpreted as one step (i.e. node) on a path through a network. The optional  parameter <code>frequency</code> counts the number of times a path has been observed. We can try this by adding 10 observations of paths <code>a -> c -> e</code> observed in a network with three nodes a, c, and e:
+        We now have an empty <code>Paths</code> instance to which we can add path statistics using the method <code><a href="http://www.pathpy.net/manual/classes/paths.html#pathpy.classes.paths.Paths.add_path">add_path</a></code>. As the first parameter, the method accepts any iterable (<code>list</code>, <code>tuple</code>, etc.) of string variables (or objects that can be cast to <code>string</code>). Each entry in the iterable is interpreted as one step (i.e. node) on a path through a network. The optional  parameter <code>frequency</code> counts the number of times a path has been observed. We can try this by adding 10 observations of paths <code>a -> c -> e</code> observed in a network with three nodes a, c, and e:
         <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>p.add_path(('a', 'c', 'd'), frequency=10)</pre>
         </div>
-        <p>Just like for the classes <code>Network</code> and <code>TemporalNetwork</code>, the <code>print</code> statement will output a default string representation of the paths instance, which provides some basic  statistics:</p>
+        <p>Just like for the classes <code>Network</code> and <code>TemporalNetwork</code>, the <code>print</code> statement will output a default string representation of the paths instance, which provides basic aggregate statistics on the stored path data:</p>
         <div class="w3-panel w3-light-gray w3-leftbar w3-border">
         <pre>print(p)</pre>
         </div>
@@ -47,10 +47,13 @@ Paths of length k = 0		0.0 [ 0.0 / 30.0 / 30.0 ]
 Paths of length k = 1		0.0 [ 0.0 / 20.0 / 20.0 ]
 Paths of length k = 2		10.0 [ 1.0 / 0.0 / 10.0 ]</pre>
 </div>
-        <p>This returns some summary statistics of the <code>Paths</code> instance. Our small example contains 10 observed paths between three nodes. These paths imply a network topology comrprised of three nodes a,c, d and two (directed) edges (a,c) and (c,d). Both the maximum and the average path length is two (where the path length counts the number of edges traversed by a path).</p>
-        <p>To understand the last three lines and the second line in the output, we must look into the inner workings of pathpy. For the fitting of higher-order graphical models as well as for the representation learning algorithm, pathpy uses all path statistics available. Specifically to fit, say, a second-order model to a set of paths that all have length 10 or longer, we calculate which paths of length two are contained as sub-paths within these observations of longer paths. For this reason, pathpy automatically calculates the statistics of actual path observations as well as the statistics of sub-paths contained in these observed paths.</p>
-        <p>In our case, we have  10  observations of a single path  a→b→c  of length two, thus the last line in the output above. Each of these paths additionally contains two sub-paths  a→b  and  b→c  of length two, thus the number  20.0  in the sub-path count in the line  k=1 . Finally, each of the paths contains three "paths" of length zero, which are just observations of a single node (i.e. there is no transition across an edge), thus the sub-path count of  30.0  in the line  k=0 . This amounts to a total of  50.0  sub-paths +  10  observations of an actual (longest) path, thus explaining the second line in the output.</p>         
-        <p>Apart from adding paths as a tuple, we can also add them as string-encoded n-grams, using the parameter <code>separator</code> to specify a character that separates nodes.</p>
+        <p>Our example instance contains 10 observed paths. These paths imply a network topology comprised of three nodes a,c, and d and two (directed) edges (a,c) and (c,d). Both the maximum and the average path length is two (where the path length counts the number of edges traversed by a path).</p>
+
+        <p>To understand the last three lines and the second line in the output, we must look into the inner workings of pathpy. For the inference of <a href="/tutorials/higher_order.html">higher-order models</a> and the <a href="/tutorials/model_selection.html">model selection algorithm</a> that will be discussed in later units, <code>pathpy</code> uses all path statistics available. To fit, say, a second-order model to a set of paths that all have length 10 or longer, it actually calculates which paths of length two are contained as sub-paths within those observations of longer paths. For this reason, <code>pathpy</code> automatically calculates the statistics of actual path observations as well as the statistics of all sub-paths contained in these observed paths.</p>
+
+        <p>In our case, we have  10 observations of a single unique path a->b->c of length two. This path does not occur as a sub-path of a longer path, which explains the last line in the output above. Each of those 10 observations additionally contains two observations of sub-paths a->b and b->c, thus the number 20.0 in the sub-path count in the line corresponding to the path length k=1. Finally, each of the paths contains three "paths" of length zero, which are just observations of a single node (i.e. there is no transition across an edge), thus the sub-path count of 30.0  in the line k=0. This amounts to a total of 50.0 sub-paths plus 10 observations of a single unique (longest) path, thus explaining the second line in the output.</p>
+
+        <p>Apart from adding paths as a tuple, we can also add string-encoded n-grams, using the parameter <code>separator</code> to specify a character that separates nodes:</p>
         <div class="w3-panel w3-light-grey w3-leftbar w3-border"><pre>p2 = pp.Paths()
                 p2.add_path('b-c-e',  separator='-', frequency=10)
                 print(p2)</pre></div>
@@ -65,7 +68,7 @@ Paths of length k = 0		0.0 [ 0.0 / 30.0 / 30.0 ]
 Paths of length k = 1		0.0 [ 0.0 / 20.0 / 20.0 ]
 Paths of length k = 2		10.0 [ 1.0 / 0.0 / 10.0 ]</pre>
 </div>
-        <p>We obtain a Paths object with 10 observations of path  b -> c -> e. We can add this to our previous  instance <code>p</code> by using arithmetic operators:</p>
+        <p>We obtain a <code>Paths</code> object with 10 observations of path b -> c -> e. We can use arithmetic operators to add those paths to our previous instance <code>p</code>:</p>
         <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>p = p + p2
 print(p)</pre>
@@ -81,8 +84,8 @@ Paths of length k = 0		0.0 [ 0.0 / 60.0 / 60.0 ]
 Paths of length k = 1		0.0 [ 0.0 / 40.0 / 40.0 ]
 Paths of length k = 2		20.0 [ 2.0 / 0.0 / 20.0 ]</pre>
 </div>
-<p>We obtain a new instance, where 20 observed paths traverse five nodes a, b, c, d, and e across four edges (a,c), (c,d), (b,c) and (c,e).</p>
-<p>We are often interested in the network through with paths traverse. We can use an instance of <code>Paths</code> to generate a directed network which is comprised of all nodes and edges that are traversed by the paths. For this, we can simply use the class method <code>from_paths</code> of the class <code>Network</code>. This will cut each path  v0 -> v1 -> v2 -> ... into multiple directed dyadic edges (vi,vi+1). Let us try this in our example:</p>
+<p>The result is a new instance, where 20 observed paths traverse five nodes a, b, c, d, and e across four edges (a,c), (b,c), (c,d) and (c,e).</p>
+<p>We are often interested in the network through with paths traverse. We can use an instance of <code>Paths</code> to generate a directed network which is comprised of all nodes and edges that are traversed by the paths. For this, we can use the class method <code><a href="http://www.pathpy.net/manual/classes/network.html#pathpy.classes.network.Network.from_paths">from_paths</code></a> of the class <code><a href="http://www.pathpy.net/manual/classes/network.html#pathpy.classes.network.Network">Network</a></code>. This will cut each path  v0 -> v1 -> v2 -> ... into multiple directed dyadic edges (vi, vi+1). Let us try this in our example:</p>
 <div class="w3-panel w3-light-grey w3-leftbar w3-border">
         <pre>n = pp.Network.from_paths(p)
 print(n)</pre>
@@ -100,8 +103,8 @@ We obtain a network with five nodes a, b, c, d, and e and four directed edges. T
 <pre>Edge (a,c) has weight 10.0</pre>
 </div>
 </p>
-<h1 class="w3-text-theme">How can I extract paths in temporal networks?</h1>
-<p>The ability to efficiently work with path statistics is a unique feature of <code>pathpy</code>. But why is this important and how does it relate to time series data on networks? The important point is that any time-ordered data - and in fact also other data on complex networks - allows us to extract path statistics, which can then be used to reason about interesting patterns. An important data are time-stamped data on networks, e.g. time-stamped social interactions, where each interaction has its own time stamp. In a <a href="/tutorials/temporal_nets.html">previous unit</a> we have seen that we can represent and visualise such data with the class <code>TemporalNetwork</code>. Let us reuse the example temporal network from that unit:
+<h1 class="w3-text-theme">Can I calculate paths in temporal networks?</h1>
+<p>The ability to conveniently work with path statistics is a unique feature of <code>pathpy</code>. But why is this important and how does it relate to time series data on networks? The important point is that any time-ordered data - and in fact also other data on complex networks - allows us to extract paths, which can be used to detect and reason about patterns that <a href="https://www.nature.com/articles/s41567-019-0459-y">cannot be studied in the network topology alone</a>. An important example are time-stamped data on networks, e.g. time-stamped social interactions, where each interaction has its own time stamp. In a <a href="/tutorials/temporal_nets.html">previous unit</a> we have seen that we can represent and visualise such data with the class <code>TemporalNetwork</code>. We now reuse the example temporal network from that unit:
     <div class="w3-panel w3-light-grey w3-leftbar w3-border">
             <pre>t = pp.TemporalNetwork()
 t.add_edge('a', 'b', '2018-08-22 09:30:22')
@@ -367,7 +370,7 @@ pp.visualisation.plot(t, **style)</pre>
                                     console.log('Error: Could not find DOM node with id ' + node_ids[0]);
                                 }
                                 try {
-                                    nodes_to_dom[node_ids[1]].attr('class', 'active_YRaJGqIP').moveToFront();                            
+                                    nodes_to_dom[node_ids[1]].attr('class', 'active_YRaJGqIP').moveToFront();                   
                                 }
                                 catch(err){
                                     console.log('Error: Could not find DOM node with id ' + node_ids[1]);

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>pathpy | first steps</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/pathpy.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+<script type="text/javascript" src="/js/menu.js"></script>
+<script type="text/javascript" src="/js/sidebar.js"></script>
+<body>
+
+<!-- Navigation bar -->
+<div id="nav"></div>
+
+<!-- Side bar -->
+<div id="side"></div>
+
+  <div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
+    <div class="w3-justify">
+        <h1 class="w3-text-theme">What are higher-order network models?</h1>
+        <p>From a higher-order network analytic point of view, standard graph or network models are first-order probabilistic generative models for paths in complex networks. They can actually be viewed as maximum entropy models that consider first-order dyad statistics (i.e. edge frequencies), while ignoring higher-order dependencies in real-world path, sequence, or time series data. To address this open challenge in network science, <code>pathpy</code> builds on a generalisation of standard, first-order network models to k-dimensional De Bruijn graphs for paths in complex networks. If you are interested in the details of this modelling framework, you can listen to <a href="/edu.html">our lectures</a>, check our <a href="/index.html">publications</a>, or read our <a href="https://www.nature.com/articles/s41567-019-0459-y">Nature Physics research perspective</a>.</p>
+        <p>The class <a href="http://www.pathpy.net/manual/classes/higher_order_network.html#pathpy.classes.higher_order_network.HigherOrderNetwork">HigherOrderNetwork</a> allows us to generate such higher-order generalisations of network models of paths. The <a href="http://www.pathpy.net/manual/classes/higher_order_network.html#pathpy.classes.higher_order_network.HigherOrderNetwork.__init__">constructor of this class</a> takes a parameter paths, which contains the statistics of observed paths that we want to model. The parameter k allows us to specify the order k of the higher-order model that we want to fit. To understand this better, let us reuse our example from the previous unit:</p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>p = pp.Paths()
+p.add_path(('a', 'c', 'd'), frequency=10)
+p.add_path(('b', 'c', 'e'), frequency=10)
+
+hon_1 = pp.HigherOrderNetwork(p, k=1)
+print(hon_1)
+</pre></div>
+        <p>This generates a first-order model of our paths, with five nodes a, b, c, d and e, and four links (a,c),(b,c), (c,d), (c,e). It is virtually identical to the <code>Network</code> instance that we created in a <a href="/tutorial/paths.html">previous unit</a> using the <code>Network.from_paths</code> method. Indeed, the class <code><a href="http://www.pathpy.net/manual/classes/higher_order_network.html#pathpy.classes.higher_order_network.HigherOrderNetwork">HigherOrderNetwork</a></code> is derived from the class <code><a href="http://www.pathpy.net/manual/classes/network.html">Network</a></code>, which means that all methods available for networks can also be applied to higher-order network instances. We can, for instance use the same methods to visualize higher-order networks, and we can also access edges in the same way:</p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>style = { 
+    'label_offset': [0,-1], 
+    'label_color' : 'black', 
+    'width': 800, 
+    'height': 250 
+}
+pp.visualisation.plot(hon_1, **style)
+
+for e in hon_1.edges:
+    print(e, hon_1.edges[e]['weight'])</pre>
+        </div>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+            <div class="output_subarea output_html rendered_html output_result"><style>
+                text.label_dGxqPJTR {
+                    text-anchor: middle;
+                    font-size: 8px;
+                    font-family: Arial, Helvetica, sans-serif;
+                    fill: #999999;
+                    stroke: #ffffff;
+                    stroke-width: 0.1px;
+                    opacity: 1.0;
+                }
+                .links_dGxqPJTR line {
+                stroke-opacity: 1.0;
+                }
+                .arrows svg:path {
+                    stroke: #666;
+                }
+                .nodes_dGxqPJTR circle {
+                stroke: #fff;
+                stroke-width: 0.5px;
+                }
+            </style>
+            
+            <svg width="500" height="250" id="dGxqPJTR">        
+                <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="dGxqPJTR_svg_txt">[save svg]</text>
+            </svg>
+            
+            <script charset="utf-8">
+            require = function require(symbols, callback) {
+                var ms = 5;
+                window.setTimeout(function(t) {
+                    if (window[symbols[0]])
+                        callback(window[symbols[0]]);
+                    else 
+                        window.setTimeout(arguments.callee, ms);
+                }, ms);
+            }
+            
+            require(["d3"], function(d3) {
+                var svg = d3.select("#"+"dGxqPJTR"), radius = 6, width = +svg.attr("width"), height = +svg.attr("height");
+            
+                var color = d3.scaleOrdinal(d3.schemeCategory20);
+            
+                var graph = {"links": [{"source": "a", "target": "c", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "b", "target": "c", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "c", "target": "d", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "c", "target": "e", "color": "#999999", "width": 0.5, "weight": 1.0}], "nodes": [{"id": "a", "text": "a", "color": "#99ccff", "size": 5.0}, {"id": "c", "text": "c", "color": "#99ccff", "size": 5.0}, {"id": "b", "text": "b", "color": "#99ccff", "size": 5.0}, {"id": "d", "text": "d", "color": "#99ccff", "size": 5.0}, {"id": "e", "text": "e", "color": "#99ccff", "size": 5.0}]};
+                var directed = true;
+            
+                var simulation = d3.forceSimulation()        
+                   .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
+                    .force("charge", d3.forceManyBody().strength(-20).distanceMax(200))
+                   .force("repelForce", d3.forceManyBody().strength(-200).distanceMax(100))
+                   .force("center", d3.forceCenter(250 / 2, 250 / 2))
+                   .alphaTarget(0.0);
+            
+                svg.append("defs").selectAll("marker")
+                    .data(["end"])
+                .enter().append("marker")
+                    .attr("id", String)
+                    .attr("viewBox", "0 -5 20 20")
+                    .attr("refX", 34)
+                    .attr("refY", 0)
+                    .attr("markerWidth", 15)
+                    .attr("markerHeight", 15)
+                    .attr("orient", "auto")
+                .append("path")
+                    // draws a filled path (triangle) between three points
+                    .attr("d", "M0,-5 L20,0 L0,5 z")
+                    .attr("fill", '#999')
+                    .attr("stroke", 'none');
+            
+                var g = svg.append("g")
+                    .attr("class", "everything");
+            
+                var link = g.append("g")
+                    .attr("class", "links_dGxqPJTR")
+                    .selectAll("line")
+                    .data(graph.links)
+                    .enter().append("line")
+                    .attr("stroke-width", function(d) { return d.width; })
+                    .attr("stroke", function(d) { return d.color; } );
+            
+                if (directed)
+                    link.attr("marker-end", "url(#end)");
+            
+                var node_g = g.append("g")
+                    .attr("class", "nodes_dGxqPJTR")
+                    .selectAll("circle")
+                    .data(graph.nodes)
+                    .enter()
+                    .append("g"); 
+            
+                var node = node_g.append("circle")
+                    .attr('id', function(d) { return d.id; })
+                    .attr("r", function(d) { return d.size; })
+                    .attr("fill", function(d) { return d.color; })
+                    .call(d3.drag()
+                        .on("start", dragstarted)
+                        .on("drag", dragged)
+                        .on("end", dragended));
+            
+                var text = node_g.append("text")
+                .attr("x", [0, -10][0])
+                .attr("y", [0, -10][1]+3)
+                .attr("id", function(d) {return d.id; })
+                .attr("class", "label_dGxqPJTR")
+                .text(function(d) { return d.id; });
+            
+                node.append("title")
+                    .text(function(d) { return d.text; });
+            
+                var zoom_handler = d3.zoom()
+                    .on("zoom", zoom_actions);
+                zoom_handler(svg);
+            
+                // attach event handler for svg export
+                d3.select('#dGxqPJTR_svg_txt').on("click", save_svg);
+            
+                simulation
+                    .nodes(graph.nodes)
+                    .on("tick", ticked);
+            
+                simulation.force("link")
+                    .links(graph.links);
+            
+                function ticked() {
+                    link.attr("x1", function(d) { return d.source.x; })
+                        .attr("y1", function(d) { return d.source.y; })
+                        .attr("x2", function(d) { return d.target.x; })
+                        .attr("y2", function(d) { return d.target.y; });
+            
+                     text.attr("transform", transform);
+            
+            
+                    text.attr("cx", function(d) { return d.x; })
+                        .attr("cy", function(d) { return d.y; });
+            
+                    node.attr("cx", function(d) { return d.x; })
+                        .attr("cy", function(d) { return d.y; });
+                }
+            
+                function transform(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                }
+            
+                function dragstarted(d) {
+                if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+                }
+            
+                function zoom_actions(){
+                    g.attr("transform", d3.event.transform)
+                }    
+            
+                function dragged(d) {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+                }
+            
+                function dragended(d) {
+                if (!d3.event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+                }
+            
+                function to_svg() {
+                    // Returns a SVG representation of the current state of the visualisation
+                    var svg  = document.getElementById('dGxqPJTR');
+                    var xml = (new XMLSerializer).serializeToString(svg);
+                    return xml;
+                }
+            
+                function save_svg() {
+                    var svg  = document.getElementById('dGxqPJTR');
+                    var xml = (new XMLSerializer).serializeToString(svg);        
+                    var blob = new Blob([xml], {type: 'text/xml'});
+                    if(window.navigator.msSaveOrOpenBlob) {
+                        window.navigator.msSaveBlob(blob, 'network.svg');
+                    }
+                    else{
+                        var elem = window.document.createElement('a');
+                        elem.href = window.URL.createObjectURL(blob);
+                        elem.download = 'network.svg';
+                        document.body.appendChild(elem);
+                        elem.click();
+                        document.body.removeChild(elem);
+                    }
+                }
+            });
+            </script></div>
+<pre>('c', 'e') [10.  0.]
+('b', 'c') [10.  0.]
+('a', 'c') [10.  0.]
+('c', 'd') [10.  0.]
+</pre>
+        </div>
+        <p>This output confirms that a HigherOrderModel with  k=1  is identical to our Network model. WIth one exception: edge weights are vector-valued. Just like in Paths, the first entry captures the sub-path frequency while the second entry counts the occurrence of an edge as a longest path.</p>
+
+        <p>We can see this network as a first-order model for paths where edges are paths of length one. That is, in a model with order  k=1  edge weights capture the statistics of paths of length k=1 . We can generalise this idea to k-th-order models for paths, where nodes are paths of length k−1 while edge weights capture the statistics of paths of length k. We can generate such a k-th order model by performing a line graph transformation on a model with order k−1. That is, edges in the model of order k−1 become nodes in the model with order k. We then draw edges between higher-order nodes whenever there is a possible path of length k in the underlying network. The result is a k-dimensional De Bruijn graph model for paths. Let us try this in our example:</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+            <pre>hon_2 = pp.HigherOrderNetwork(toy_paths, k=2)
+pp.visualisation.plot(hon_2, **style)
+
+for e in hon_2.edges:
+    print(e, hon_2.edges[e])</pre></div>
+<div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <div class="output_html rendered_html output_subarea ">
+                <style>
+                    text.label_UBIOFsye {
+                        text-anchor: middle;
+                        font-size: 8px;
+                        font-family: Arial, Helvetica, sans-serif;
+                        fill: black;
+                        stroke: #ffffff;
+                        stroke-width: 0.1px;
+                        opacity: 1.0;
+                    }
+                    .links_UBIOFsye line {
+                    stroke-opacity: 1.0;
+                    }
+                    .arrows svg:path {
+                        stroke: #666;
+                    }
+                    .nodes circle {
+                    stroke: #fff;
+                    stroke-width: 0.5px;
+                    }
+                </style>
+                
+                <svg width="800" height="250" id="UBIOFsye">        
+                    <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="UBIOFsye_svg_txt">[save svg]</text>
+                <defs><marker id="end" viewBox="0 -5 20 20" refX="34" refY="0" markerWidth="15" markerHeight="15" orient="auto"><path d="M0,-5 L20,0 L0,5 z" fill="#999" stroke="none"></path></marker></defs><g class="everything"><g class="links_UBIOFsye"><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="292.73868962657446" y1="190.6468759126488" x2="310.9123163503068" y2="154.13185011230047"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="489.7765398411247" y1="59.0262007642508" x2="506.572454181994" y2="96.1950732107999"></line></g><g class="nodes"><g><circle id="c,e" r="5" fill="#99ccff" cx="310.9123163503068" cy="154.13185011230047"><title>c,e</title></circle><text x="0" y="2" id="c,e" class="label_UBIOFsye" transform="translate(310.9123163503068,154.13185011230047)" cx="310.9123163503068" cy="154.13185011230047">c,e</text></g><g><circle id="b,c" r="5" fill="#99ccff" cx="292.73868962657446" cy="190.6468759126488"><title>b,c</title></circle><text x="0" y="2" id="b,c" class="label_UBIOFsye" transform="translate(292.73868962657446,190.6468759126488)" cx="292.73868962657446" cy="190.6468759126488">b,c</text></g><g><circle id="a,c" r="5" fill="#99ccff" cx="489.7765398411247" cy="59.0262007642508"><title>a,c</title></circle><text x="0" y="2" id="a,c" class="label_UBIOFsye" transform="translate(489.7765398411247,59.0262007642508)" cx="489.7765398411247" cy="59.0262007642508">a,c</text></g><g><circle id="c,d" r="5" fill="#99ccff" cx="506.572454181994" cy="96.1950732107999"><title>c,d</title></circle><text x="0" y="2" id="c,d" class="label_UBIOFsye" transform="translate(506.572454181994,96.1950732107999)" cx="506.572454181994" cy="96.1950732107999">c,d</text></g></g></g></svg>
+                
+                <script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+                <script charset="utf-8">
+                
+                // Load via requireJS if available (jupyter notebook environment)
+                try {
+                    // Problem: require.config will raise an exception when called for the second time 
+                    require.config({
+                        paths: {
+                            d3: "https://d3js.org/d3.v4.min"
+                        }
+                    });
+                    console.log("Detected requireJS");
+                }
+                catch(err){
+                    // a reference error indicates that requireJS does not exist. 
+                    // other errors may occur due to multiple calls to config
+                    if (err instanceof ReferenceError){
+                        console.log("Detected no requireJS");
+                
+                        // Helper function that waits for d3js to be loaded
+                        require = function require(symbols, callback) {
+                            var ms = 5;
+                            window.setTimeout(function(t) {
+                                if (window[symbols[0]])
+                                    callback(window[symbols[0]]);
+                                else 
+                                    window.setTimeout(arguments.callee, ms);
+                            }, ms);
+                        }
+                    }
+                }
+                
+                // wait until d3js has been loaded
+                require(["d3"], function(d3) {
+                    var svg = d3.select("#"+"UBIOFsye"),
+                        radius = 6,
+                        width = +svg.attr("width"),
+                        height = +svg.attr("height");
+                
+                    var color = d3.scaleOrdinal(d3.schemeCategory20);
+                
+                    var graph = {"links": [{"source": "b,c", "width": 0.5, "color": "#999999", "weight": 1.0, "target": "c,e"}, {"source": "a,c", "width": 0.5, "color": "#999999", "weight": 1.0, "target": "c,d"}], "nodes": [{"id": "c,e", "size": 5.0, "color": "#99ccff"}, {"id": "b,c", "size": 5.0, "color": "#99ccff"}, {"id": "a,c", "size": 5.0, "color": "#99ccff"}, {"id": "c,d", "size": 5.0, "color": "#99ccff"}]};
+                    var directed = true;
+                
+                    var simulation = d3.forceSimulation()
+                        .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
+                        .force("charge", d3.forceManyBody().strength(-20).distanceMax(200))
+                        .force("repelForce", d3.forceManyBody().strength(-200).distanceMax(200))
+                        .force("center", d3.forceCenter(width / 2, height / 2))
+                        .alphaTarget(0.0);
+                
+                    svg.append("defs").selectAll("marker")
+                        .data(["end"])
+                    .enter().append("marker")
+                        .attr("id", String)
+                        .attr("viewBox", "0 -5 20 20")
+                        .attr("refX", 34)
+                        .attr("refY", 0)
+                        .attr("markerWidth", 15)
+                        .attr("markerHeight", 15)
+                        .attr("orient", "auto")
+                    .append("path")
+                        // draws a filled path (triangle) between three points
+                        .attr("d", "M0,-5 L20,0 L0,5 z")
+                        .attr("fill", '#999')
+                        .attr("stroke", 'none');
+                
+                    var g = svg.append("g")
+                        .attr("class", "everything");
+                
+                    var link = g.append("g")
+                        .attr("class", "links_UBIOFsye")
+                        .selectAll("line")
+                        .data(graph.links)
+                        .enter().append("line")
+                        .attr("stroke-width", function(d) { return d.width; })
+                        .attr("stroke", function(d) { return d.color; } );
+                
+                    if (directed)
+                        link.attr("marker-end", "url(#end)");
+                
+                    var node_g = g.append("g")
+                        .attr("class", "nodes")
+                        .selectAll("circle")
+                        .data(graph.nodes)
+                        .enter()
+                        .append("g"); 
+                
+                    var node = node_g.append("circle")
+                        .attr('id', function(d) { return d.id; })
+                        .attr("r", function(d) { return d.size; })
+                        .attr("fill", function(d) { return d.color; })
+                        .call(d3.drag()
+                            .on("start", dragstarted)
+                            .on("drag", dragged)
+                            .on("end", dragended));
+                
+                    var text = node_g.append("text")
+                    .attr("x", [0, -1][0])
+                    .attr("y", [0, -1][1]+3)
+                    .attr("id", function(d) {return d.id; })
+                    .attr("class", "label_UBIOFsye")
+                    .text(function(d) { return d.id; });
+                
+                    node.append("title")
+                        .text(function(d) { return d.id; });
+                
+                    var zoom_handler = d3.zoom()
+                        .on("zoom", zoom_actions);
+                    zoom_handler(svg);
+                
+                    // attach event handler for svg export
+                    d3.select('#UBIOFsye_svg_txt').on("click", save_svg);
+                
+                    simulation
+                        .nodes(graph.nodes)
+                        .on("tick", ticked);
+                
+                    simulation.force("link")
+                        .links(graph.links);
+                
+                    function ticked() {
+                        link.attr("x1", function(d) { return d.source.x; })
+                            .attr("y1", function(d) { return d.source.y; })
+                            .attr("x2", function(d) { return d.target.x; })
+                            .attr("y2", function(d) { return d.target.y; });
+                
+                         text.attr("transform", transform);
+                
+                
+                        text.attr("cx", function(d) { return d.x; })
+                            .attr("cy", function(d) { return d.y; });
+                
+                        node.attr("cx", function(d) { return d.x; })
+                            .attr("cy", function(d) { return d.y; });
+                    }
+                
+                    function transform(d) {
+                        return "translate(" + d.x + "," + d.y + ")";
+                    }
+                
+                    function dragstarted(d) {
+                    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                    }
+                
+                    function zoom_actions(){
+                        g.attr("transform", d3.event.transform)
+                    }    
+                
+                    function dragged(d) {
+                    d.fx = d3.event.x;
+                    d.fy = d3.event.y;
+                    }
+                
+                    function dragended(d) {
+                    if (!d3.event.active) simulation.alphaTarget(0);
+                    d.fx = null;
+                    d.fy = null;
+                    }
+                
+                    function to_svg() {
+                        // Returns a SVG representation of the current state of the visualisation
+                        var svg  = document.getElementById('UBIOFsye');
+                        var xml = (new XMLSerializer).serializeToString(svg);
+                        return xml;
+                    }
+                
+                    function save_svg() {
+                        var svg  = document.getElementById('UBIOFsye');
+                        var xml = (new XMLSerializer).serializeToString(svg);        
+                        var blob = new Blob([xml], {type: 'text/xml'});
+                        if(window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveBlob(blob, 'network.svg');
+                        }
+                        else{
+                            var elem = window.document.createElement('a');
+                            elem.href = window.URL.createObjectURL(blob);
+                            elem.download = 'network.svg';
+                            document.body.appendChild(elem);
+                            elem.click();
+                            document.body.removeChild(elem);
+                        }
+                    }
+                });
+                </script>
+                </div>
+<pre>('b,c', 'c,e') {'weight': array([ 0., 10.])}
+('a,c', 'c,d') {'weight': array([ 0., 10.])}</pre></div>
+        <p>Each of the four edges in the first-order model is now represented by a node in the second-order model. We further have two directed edges  (a−c,c−d)  and  (b−c,c−e) that represent the two paths of length two that occur in our data.</p>
+
+<p>This is important because it captures to what extent the paths that we observe in our data deviate from what we would expect based on the (first-order) network topology of the system. Considering such a first-order model, all four paths  a->c->d,a->c->e,b->c->d  and  b->c->e  of length two are possible. If edges were statistically independent we would expect those four paths to occur with the same frequency.</p>
+                
+<p>Another way to express this independence assumption is to consider Markov chain models for the sequences of nodes traversed by a path. In this view, independently occurring edges translate to a memoryless first-order Markov process for the node sequence. In our example, we expect paths  a->c->d and a->c->e to occur with the same probability, i.e. the next nodes d or e on a path through c are independent from the previous node a, their probabilities only depending on the relative frequency of edges (c,d) vs. (c,e). In our toy example, we have a total of 20 observed paths of length two, so we expect each of those paths to occur 5 times on average.</p>
+                
+<p><code>pathpy</code> can generate null models for paths within the space of possible second-order models. This allows us to compare how the observed path statistics deviate from a (Markovian) expectation.</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>hon_2_null = pp.HigherOrderNetwork(toy_paths, k=2, null_model=True)
+pp.visualisation.plot(hon_2_null, **style)
+
+for e in hon_2_null.edges:
+    print(e, hon_2_null.edges[e])</pre>
+        </div>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <div>
+                <style>
+                    text.label_pCWjzWrB {
+                        text-anchor: middle;
+                        font-size: 8px;
+                        font-family: Arial, Helvetica, sans-serif;
+                        fill: black;
+                        stroke: #ffffff;
+                        stroke-width: 0.1px;
+                        opacity: 1.0;
+                    }
+                    .links_pCWjzWrB line {
+                    stroke-opacity: 1.0;
+                    }
+                    .arrows svg:path {
+                        stroke: #666;
+                    }
+                    .nodes circle {
+                    stroke: #fff;
+                    stroke-width: 0.5px;
+                    }
+                </style>
+                
+                <svg width="800" height="250" id="pCWjzWrB">        
+                    <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="pCWjzWrB_svg_txt">[save svg]</text>
+                <defs><marker id="end" viewBox="0 -5 20 20" refX="34" refY="0" markerWidth="15" markerHeight="15" orient="auto"><path d="M0,-5 L20,0 L0,5 z" fill="#999" stroke="none"></path></marker></defs><g class="everything" transform="translate(-64.44178025492752,-47.50379197588728) scale(1.49830706367087)"><g class="links_pCWjzWrB"><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="376.7670207967328" y1="155.5773732674742" x2="369.4257319763632" y2="101.76938019055197"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="423.2329792032672" y1="94.42262673252577" x2="430.5742680236368" y2="148.2306198094481"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="423.2329792032672" y1="94.42262673252577" x2="369.4257319763632" y2="101.76938019055197"></line><line stroke-width="0.5" stroke="#999999" marker-end="url(#end)" x1="376.7670207967328" y1="155.5773732674742" x2="430.5742680236368" y2="148.2306198094481"></line></g><g class="nodes"><g><circle id="c,e" r="5" fill="#99ccff" cx="369.4257319763632" cy="101.76938019055197"><title>c,e</title></circle><text x="0" y="2" id="c,e" class="label_pCWjzWrB" transform="translate(369.4257319763632,101.76938019055197)" cx="369.4257319763632" cy="101.76938019055197">c,e</text></g><g><circle id="b,c" r="5" fill="#99ccff" cx="376.7670207967328" cy="155.5773732674742"><title>b,c</title></circle><text x="0" y="2" id="b,c" class="label_pCWjzWrB" transform="translate(376.7670207967328,155.5773732674742)" cx="376.7670207967328" cy="155.5773732674742">b,c</text></g><g><circle id="a,c" r="5" fill="#99ccff" cx="423.2329792032672" cy="94.42262673252577"><title>a,c</title></circle><text x="0" y="2" id="a,c" class="label_pCWjzWrB" transform="translate(423.2329792032672,94.42262673252577)" cx="423.2329792032672" cy="94.42262673252577">a,c</text></g><g><circle id="c,d" r="5" fill="#99ccff" cx="430.5742680236368" cy="148.2306198094481"><title>c,d</title></circle><text x="0" y="2" id="c,d" class="label_pCWjzWrB" transform="translate(430.5742680236368,148.2306198094481)" cx="430.5742680236368" cy="148.2306198094481">c,d</text></g></g></g></svg>
+                
+                <script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+                <script charset="utf-8">
+                
+                // Load via requireJS if available (jupyter notebook environment)
+                try {
+                    // Problem: require.config will raise an exception when called for the second time 
+                    require.config({
+                        paths: {
+                            d3: "https://d3js.org/d3.v4.min"
+                        }
+                    });
+                    console.log("Detected requireJS");
+                }
+                catch(err){
+                    // a reference error indicates that requireJS does not exist. 
+                    // other errors may occur due to multiple calls to config
+                    if (err instanceof ReferenceError){
+                        console.log("Detected no requireJS");
+                
+                        // Helper function that waits for d3js to be loaded
+                        require = function require(symbols, callback) {
+                            var ms = 5;
+                            window.setTimeout(function(t) {
+                                if (window[symbols[0]])
+                                    callback(window[symbols[0]]);
+                                else 
+                                    window.setTimeout(arguments.callee, ms);
+                            }, ms);
+                        }
+                    }
+                }
+                
+                // wait until d3js has been loaded
+                require(["d3"], function(d3) {
+                    var svg = d3.select("#"+"pCWjzWrB"),
+                        radius = 6,
+                        width = +svg.attr("width"),
+                        height = +svg.attr("height");
+                
+                    var color = d3.scaleOrdinal(d3.schemeCategory20);
+                
+                    var graph = {"links": [{"source": "b,c", "width": 0.5, "color": "#999999", "weight": 0.5, "target": "c,e"}, {"source": "a,c", "width": 0.5, "color": "#999999", "weight": 0.5, "target": "c,d"}, {"source": "a,c", "width": 0.5, "color": "#999999", "weight": 0.5, "target": "c,e"}, {"source": "b,c", "width": 0.5, "color": "#999999", "weight": 0.5, "target": "c,d"}], "nodes": [{"id": "c,e", "size": 5.0, "color": "#99ccff"}, {"id": "b,c", "size": 5.0, "color": "#99ccff"}, {"id": "a,c", "size": 5.0, "color": "#99ccff"}, {"id": "c,d", "size": 5.0, "color": "#99ccff"}]};
+                    var directed = true;
+                
+                    var simulation = d3.forceSimulation()
+                        .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
+                        .force("charge", d3.forceManyBody().strength(-20).distanceMax(200))
+                        .force("repelForce", d3.forceManyBody().strength(-200).distanceMax(200))
+                        .force("center", d3.forceCenter(width / 2, height / 2))
+                        .alphaTarget(0.0);
+                
+                    svg.append("defs").selectAll("marker")
+                        .data(["end"])
+                    .enter().append("marker")
+                        .attr("id", String)
+                        .attr("viewBox", "0 -5 20 20")
+                        .attr("refX", 34)
+                        .attr("refY", 0)
+                        .attr("markerWidth", 15)
+                        .attr("markerHeight", 15)
+                        .attr("orient", "auto")
+                    .append("path")
+                        // draws a filled path (triangle) between three points
+                        .attr("d", "M0,-5 L20,0 L0,5 z")
+                        .attr("fill", '#999')
+                        .attr("stroke", 'none');
+                
+                    var g = svg.append("g")
+                        .attr("class", "everything");
+                
+                    var link = g.append("g")
+                        .attr("class", "links_pCWjzWrB")
+                        .selectAll("line")
+                        .data(graph.links)
+                        .enter().append("line")
+                        .attr("stroke-width", function(d) { return d.width; })
+                        .attr("stroke", function(d) { return d.color; } );
+                
+                    if (directed)
+                        link.attr("marker-end", "url(#end)");
+                
+                    var node_g = g.append("g")
+                        .attr("class", "nodes")
+                        .selectAll("circle")
+                        .data(graph.nodes)
+                        .enter()
+                        .append("g"); 
+                
+                    var node = node_g.append("circle")
+                        .attr('id', function(d) { return d.id; })
+                        .attr("r", function(d) { return d.size; })
+                        .attr("fill", function(d) { return d.color; })
+                        .call(d3.drag()
+                            .on("start", dragstarted)
+                            .on("drag", dragged)
+                            .on("end", dragended));
+                
+                    var text = node_g.append("text")
+                    .attr("x", [0, -1][0])
+                    .attr("y", [0, -1][1]+3)
+                    .attr("id", function(d) {return d.id; })
+                    .attr("class", "label_pCWjzWrB")
+                    .text(function(d) { return d.id; });
+                
+                    node.append("title")
+                        .text(function(d) { return d.id; });
+                
+                    var zoom_handler = d3.zoom()
+                        .on("zoom", zoom_actions);
+                    zoom_handler(svg);
+                
+                    // attach event handler for svg export
+                    d3.select('#pCWjzWrB_svg_txt').on("click", save_svg);
+                
+                    simulation
+                        .nodes(graph.nodes)
+                        .on("tick", ticked);
+                
+                    simulation.force("link")
+                        .links(graph.links);
+                
+                    function ticked() {
+                        link.attr("x1", function(d) { return d.source.x; })
+                            .attr("y1", function(d) { return d.source.y; })
+                            .attr("x2", function(d) { return d.target.x; })
+                            .attr("y2", function(d) { return d.target.y; });
+                
+                         text.attr("transform", transform);
+                
+                
+                        text.attr("cx", function(d) { return d.x; })
+                            .attr("cy", function(d) { return d.y; });
+                
+                        node.attr("cx", function(d) { return d.x; })
+                            .attr("cy", function(d) { return d.y; });
+                    }
+                
+                    function transform(d) {
+                        return "translate(" + d.x + "," + d.y + ")";
+                    }
+                
+                    function dragstarted(d) {
+                    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                    }
+                
+                    function zoom_actions(){
+                        g.attr("transform", d3.event.transform)
+                    }    
+                
+                    function dragged(d) {
+                    d.fx = d3.event.x;
+                    d.fy = d3.event.y;
+                    }
+                
+                    function dragended(d) {
+                    if (!d3.event.active) simulation.alphaTarget(0);
+                    d.fx = null;
+                    d.fy = null;
+                    }
+                
+                    function to_svg() {
+                        // Returns a SVG representation of the current state of the visualisation
+                        var svg  = document.getElementById('pCWjzWrB');
+                        var xml = (new XMLSerializer).serializeToString(svg);
+                        return xml;
+                    }
+                
+                    function save_svg() {
+                        var svg  = document.getElementById('pCWjzWrB');
+                        var xml = (new XMLSerializer).serializeToString(svg);        
+                        var blob = new Blob([xml], {type: 'text/xml'});
+                        if(window.navigator.msSaveOrOpenBlob) {
+                            window.navigator.msSaveBlob(blob, 'network.svg');
+                        }
+                        else{
+                            var elem = window.document.createElement('a');
+                            elem.href = window.URL.createObjectURL(blob);
+                            elem.download = 'network.svg';
+                            document.body.appendChild(elem);
+                            elem.click();
+                            document.body.removeChild(elem);
+                        }
+                    }
+                });
+                </script>
+                </div>
+                <pre>('b,c', 'c,e') {'weight': array([0., 5.])}
+('a,c', 'c,d') {'weight': array([0., 5.])}
+('a,c', 'c,e') {'weight': array([0., 5.])}
+('b,c', 'c,d') {'weight': array([0., 5.])}
+</pre></div>
+        <p>The output highlights that the paths b->c->e and a->c->d occur five times more than we would expect at random, while the other two paths do occur five less times than expected (i.e. not at all). This deviation from our expectation changes the causal topology of the system, i.e. who can influence whom. In a network model we implicitly assume that paths are transitive, i.e. since node a is connected to node c and node c is connected to node d, we assume that there is a path by which a can influence d via node c. The second-order model of our toy example reveals that this transitivity assumption is misleading, highlighting higher-order dependencies in our data that result in the fact that neither a can influence d nor b can influence e.</p>
+        </div>
+        <div class="w3-third w3-container"></div>
+
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">
+      <hr>
+      &copy; Data Analytics Group, University of Zurich, 2019
+    </div>
+  </footer>
+<!-- END MAIN -->
+</div>
+
+</body>
+</html>
