@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>pathpy | first steps</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-indigo.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/css/pathpy.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script charset="utf-8" src="https://d3js.org/d3.v4.min.js"></script>
+<script type="text/javascript" src="/js/menu.js"></script>
+<script type="text/javascript" src="/js/sidebar.js"></script>
+<body>
+
+<!-- Navigation bar -->
+<div id="nav"></div>
+
+<!-- Side bar -->
+<div id="side"></div>
+
+  <div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
+    <div class="w3-justify">
+        <h1 class="w3-text-theme">How can I find optimal higher-order models?</h1>
+        <p>In the previous unit, we have considered higher-order network models for paths with a fixed order k. But how can we decide which order we should use to model a given data set? And how do we decide whether path statistics deviates significantly from the transitive, Markovian assumption made by a first-order model in the first place. We thus need methods to decide when higher-order models are actually needed and which is the optimal order to model paths.</p>
+        <p>Moreover, a higher-order model with order k can only capture higher-order dependencies at a single fixed correlation length k . But we may encounter data that exhibit multiple correlation lengths at once. How can we combine models with multiple higher orders into a multi-order model?</p>
+        <p>In this unit, we take a statistical inference and machine learning perspective to answer these questions. To show how the method works, we again start with a maximally simple toy example:</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>import pathpy as pp</pre>
+        </div>
+        <p>We can create a toy example (directed) network by adding the following code and then running the cell:</p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>p = pp.Paths()
+                p.add_path('a,c,d', 2)
+                p.add_path('b,c,e', 2)
+                print(p)
+</pre></div>
+<div class="w3-panel w3-light-gray w3-leftbar w3-border">
+<pre>Total path count: 		4.0 
+[Unique / Sub paths / Total]: 	[2.0 / 20.0 / 24.0]
+Nodes:				5 
+Edges:				4
+Max. path length:		2
+Avg path length:		2.0 
+Paths of length k = 0		0.0 [ 0.0 / 12.0 / 12.0 ]
+Paths of length k = 1		0.0 [ 0.0 / 8.0 / 8.0 ]
+Paths of length k = 2		4.0 [ 2.0 / 0.0 / 4.0 ]</pre>
+</div>
+        <p>As highlighted in the <a href="/tutorials/higher_order.html">previous unit</a>, in this example we only observe two of the four paths of length two that would be possible in the null model. Hence, this is an example for path statistics that exhibit correlations that warrant a second-order model.</p>
+
+        <p>But how can we decide this in a meaningful way? We can take a statistical inference perspective on the problem. More specifically, we will consider our higher-order networks as probabilistic generative models for paths in a given network topology. For this, let us use the weighted first-order network model to construct a transition matrix of a Markov chain model for paths in a network. We simply use the relative frequencies of edges to proportionally scale the probabilities of edge transitions in the model.</p>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>hon_1 = pp.HigherOrderNetwork(p-value)
+pp.visualisation.plot(hon_1)
+print(hon_1.transition_matrix())</pre>
+        </div>
+        <div class="w3-panel w3-light-gray w3-leftbar w3-border">
+            <div class="output_subarea output_html rendered_html output_result"><style>
+                text.label_dGxqPJTR {
+                    text-anchor: middle;
+                    font-size: 8px;
+                    font-family: Arial, Helvetica, sans-serif;
+                    fill: #999999;
+                    stroke: #ffffff;
+                    stroke-width: 0.1px;
+                    opacity: 1.0;
+                }
+                .links_dGxqPJTR line {
+                stroke-opacity: 1.0;
+                }
+                .arrows svg:path {
+                    stroke: #666;
+                }
+                .nodes_dGxqPJTR circle {
+                stroke: #fff;
+                stroke-width: 0.5px;
+                }
+            </style>
+            
+            <svg width="500" height="250" id="dGxqPJTR">        
+                <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="dGxqPJTR_svg_txt">[save svg]</text>
+            </svg>
+            
+            <script charset="utf-8">
+            require = function require(symbols, callback) {
+                var ms = 5;
+                window.setTimeout(function(t) {
+                    if (window[symbols[0]])
+                        callback(window[symbols[0]]);
+                    else 
+                        window.setTimeout(arguments.callee, ms);
+                }, ms);
+            }
+            
+            require(["d3"], function(d3) {
+                var svg = d3.select("#"+"dGxqPJTR"), radius = 6, width = +svg.attr("width"), height = +svg.attr("height");
+            
+                var color = d3.scaleOrdinal(d3.schemeCategory20);
+            
+                var graph = {"links": [{"source": "a", "target": "c", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "b", "target": "c", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "c", "target": "d", "color": "#999999", "width": 0.5, "weight": 1.0}, {"source": "c", "target": "e", "color": "#999999", "width": 0.5, "weight": 1.0}], "nodes": [{"id": "a", "text": "a", "color": "#99ccff", "size": 5.0}, {"id": "c", "text": "c", "color": "#99ccff", "size": 5.0}, {"id": "b", "text": "b", "color": "#99ccff", "size": 5.0}, {"id": "d", "text": "d", "color": "#99ccff", "size": 5.0}, {"id": "e", "text": "e", "color": "#99ccff", "size": 5.0}]};
+                var directed = true;
+            
+                var simulation = d3.forceSimulation()        
+                   .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
+                    .force("charge", d3.forceManyBody().strength(-20).distanceMax(200))
+                   .force("repelForce", d3.forceManyBody().strength(-200).distanceMax(100))
+                   .force("center", d3.forceCenter(250 / 2, 250 / 2))
+                   .alphaTarget(0.0);
+            
+                svg.append("defs").selectAll("marker")
+                    .data(["end"])
+                .enter().append("marker")
+                    .attr("id", String)
+                    .attr("viewBox", "0 -5 20 20")
+                    .attr("refX", 34)
+                    .attr("refY", 0)
+                    .attr("markerWidth", 15)
+                    .attr("markerHeight", 15)
+                    .attr("orient", "auto")
+                .append("path")
+                    // draws a filled path (triangle) between three points
+                    .attr("d", "M0,-5 L20,0 L0,5 z")
+                    .attr("fill", '#999')
+                    .attr("stroke", 'none');
+            
+                var g = svg.append("g")
+                    .attr("class", "everything");
+            
+                var link = g.append("g")
+                    .attr("class", "links_dGxqPJTR")
+                    .selectAll("line")
+                    .data(graph.links)
+                    .enter().append("line")
+                    .attr("stroke-width", function(d) { return d.width; })
+                    .attr("stroke", function(d) { return d.color; } );
+            
+                if (directed)
+                    link.attr("marker-end", "url(#end)");
+            
+                var node_g = g.append("g")
+                    .attr("class", "nodes_dGxqPJTR")
+                    .selectAll("circle")
+                    .data(graph.nodes)
+                    .enter()
+                    .append("g"); 
+            
+                var node = node_g.append("circle")
+                    .attr('id', function(d) { return d.id; })
+                    .attr("r", function(d) { return d.size; })
+                    .attr("fill", function(d) { return d.color; })
+                    .call(d3.drag()
+                        .on("start", dragstarted)
+                        .on("drag", dragged)
+                        .on("end", dragended));
+            
+                var text = node_g.append("text")
+                .attr("x", [0, -10][0])
+                .attr("y", [0, -10][1]+3)
+                .attr("id", function(d) {return d.id; })
+                .attr("class", "label_dGxqPJTR")
+                .text(function(d) { return d.id; });
+            
+                node.append("title")
+                    .text(function(d) { return d.text; });
+            
+                var zoom_handler = d3.zoom()
+                    .on("zoom", zoom_actions);
+                zoom_handler(svg);
+            
+                // attach event handler for svg export
+                d3.select('#dGxqPJTR_svg_txt').on("click", save_svg);
+            
+                simulation
+                    .nodes(graph.nodes)
+                    .on("tick", ticked);
+            
+                simulation.force("link")
+                    .links(graph.links);
+            
+                function ticked() {
+                    link.attr("x1", function(d) { return d.source.x; })
+                        .attr("y1", function(d) { return d.source.y; })
+                        .attr("x2", function(d) { return d.target.x; })
+                        .attr("y2", function(d) { return d.target.y; });
+            
+                     text.attr("transform", transform);
+            
+            
+                    text.attr("cx", function(d) { return d.x; })
+                        .attr("cy", function(d) { return d.y; });
+            
+                    node.attr("cx", function(d) { return d.x; })
+                        .attr("cy", function(d) { return d.y; });
+                }
+            
+                function transform(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                }
+            
+                function dragstarted(d) {
+                if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+                }
+            
+                function zoom_actions(){
+                    g.attr("transform", d3.event.transform)
+                }    
+            
+                function dragged(d) {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+                }
+            
+                function dragended(d) {
+                if (!d3.event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+                }
+            
+                function to_svg() {
+                    // Returns a SVG representation of the current state of the visualisation
+                    var svg  = document.getElementById('dGxqPJTR');
+                    var xml = (new XMLSerializer).serializeToString(svg);
+                    return xml;
+                }
+            
+                function save_svg() {
+                    var svg  = document.getElementById('dGxqPJTR');
+                    var xml = (new XMLSerializer).serializeToString(svg);        
+                    var blob = new Blob([xml], {type: 'text/xml'});
+                    if(window.navigator.msSaveOrOpenBlob) {
+                        window.navigator.msSaveBlob(blob, 'network.svg');
+                    }
+                    else{
+                        var elem = window.document.createElement('a');
+                        elem.href = window.URL.createObjectURL(blob);
+                        elem.download = 'network.svg';
+                        document.body.appendChild(elem);
+                        elem.click();
+                        document.body.removeChild(elem);
+                    }
+                }
+            });
+            </script></div>
+        <div>
+<pre>(0, 1)	1.0
+(0, 4)	1.0
+(2, 0)	0.5
+(3, 0)	0.5
+</pre>
+        </div>
+        </div>
+        <p>This transition matrix can be viewed as a first-order Markov chain model for paths in the underlying network topology. This probabilistic view allows us to calculate a likelihood of the first-order model, given the paths that we have observed. With <code>pathpy</code>, we can directly calculate the likelihood of a higher-order model, given a <code>Paths</code> instance.</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border"><pre>print(hon_1.likelihood(toy_paths, log=False))</pre></div>
+<div class="w3-panel w3-light-gray w3-leftbar w3-border">
+<pre>0.0625</pre></div>
+        <p>This result is particularly easy to understand for our toy example. Each path of length two corresponds to two transitions in the transition matrix of our Markov chain model. For each of the four paths of length two in toy_paths, the first transition is deterministic because nodes a and b only point to node c. However, based on the network topology, for the second step we have a choice between nodes  d  and e. Considering that we see as many transitions through edge (c,d) as we see through edge (c,e) , in a first-order model we have no reason to prefer one over the other, so each is assigned probability 0.5.</p>
+
+        <p>Hence, for each of the four observed paths we obtain a likelihood of 1⋅0.5=0.5, which yields a total likelihood for four (independent) observations of 0.54 = 0.0625.</p>
+                
+        <p>Let us compare this to the likelihood of a second-order model for our paths.</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>hon_2 = pp.HigherOrderNetwork(p, k=2)
+print(hon_2.transition_matrix())
+hon_2.likelihood(p, log=False)</pre>
+        </div>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>(1, 3)	1.0
+(2, 0)	1.0</pre></div>
+        <p>Here, the likelihood assumes its maximal value of 1, simply because all transitions in the second-order model are deterministic, i.e. we multiply 1⋅1 four times.</p>
+
+        <p>Let us now have a look at the second-order null model, which is actually a first-order model represented in the second-order space. So we should expect the same likelihood as the first-order model.</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>hon_2_null = pp.HigherOrderNetwork(p, k=2, null_model=True)
+pp.visualisation.plot(hon_2_null)
+print(hon_2.transition_matrix())
+hon_2_null.likelihood(p, log=False)</pre>
+                </div>
+                <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                        <pre>(1, 3)	1.0
+(2, 0)	1.0
+0.0625</pre></div>
+        <p>Clearly, the second-order null should have the same likelihood as the first-order model. This also shows a way to test hypotheses about the presence of higher-order correlations in paths. We can use a likelihood ratio test to compare the likelihood of the null hypothesis (i.e. a second-order representation of the first-order model) with the likelihood of an alternative hypothesis (the fitted second-order model).</p>
+        <p>But what do we learn from the fact that the likelihood of a model increases as we increase the order of the model. By itself, not much. Higher-order models are more complex than first-order models, i.e. while fitting their transition matrix we actually fit more parameters to the data. We can thus expect that such a more complex model better explains our (path) data.</p>
+
+        <p>We should remind ourselves about <a href="https://en.wikipedia.org/wiki/Occam%27s_razor">Occam's razor</a>, which states that we should favor models that make fewer assumptions. That is, in the comparison of the model likelihoods we should account for the additional complexity (or degrees of freedom) of a higher-order model over the null hypothesis of a first-order model.</p>
+        <p>In the specific case that we address, we can apply Wilk's theorem to derive an analytical expression for the p-value of the null hypothesis that second-order dependencies are absent (i.e. a first-order model is sufficient to explain the observed paths), compared to the alternative hypothesis that a second-order model is needed. The full details of this model selection approach are available in <a href="http://dl.acm.org/citation.cfm?id=3098145">this KDD paper</a>.</p>
+        <p>Let us apply this to test the hypothesis that there are significant second-order dependencies in our toy example. The test consists of three steps:
+            <ol>
+                <li>calculate the difference d between the parameters (or degrees of freedom) of a second- and a first-order model.</li>
+                <li>calculate a test statistic for the likelihood ratio test.</li>
+                <li>use the test statistic and the degrees of freedom difference to calculate a p-value for the null hypothesis</li>
+            </ol>
+        While we omit the mathematical details, this can be done in a few lines of python code:
+        </p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>from scipy.stats import chi2
+
+d = hon_2.degrees_of_freedom() - hon_1.degrees_of_freedom()
+x = - 2 * (hon_1.likelihood(p, log=True) - hon_2.likelihood(p, log=True))
+p = 1 - chi2.cdf(x, d)
+
+print('p-value of null hypothesis (first-order model) is {0}'.format(p))</pre>
+                </div>
+                <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                    <pre>p-value of null hypothesis (first-order model) is 0.018531677751199016</pre></div>
+            <p>We find a p-value of 0.019. This is intuitive, as we have only observed four paths, which is hardly enough to have strong evidence against a first-order model. Let us see what happens if we observe those same paths more often.</p>
+            <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                    <pre>p *= 10
+
+x = - 2 * (hon_1.likelihood(p, log=True) - hon_2.likelihood(p, log=True))
+p = 1 - chi2.cdf(x, d)
+
+print('p-value of null hypothesis (first-order model) is {0}'.format(p))</pre>
+                    </div>
+                    <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                            <pre>p-value of null hypothesis (first-order model) is 9.581224702515101e-14</pre></div>
+            <p>If we were to observe each of the two paths ten times more often we have stronger evidence speaking against the null hypothesis, and thus in favor of a second-order model. If we were to further increase the number of observations of the paths the p-value will further decrease.</p>
+
+            <p>Unfortunately, the example above is too simple in multiple ways: First, it only contains paths of exactly length two, thus justifying a second-order model. But real data are more complex, as we have observations of paths at multiple lengths simultaneously. Such data are likely to exhibit multiple correlation lengths at the same time.</p>
+                    
+            <p>Even more importantly, in real data the model selection will unfortunately not work as described above. In fact, we have cheated because we cannot - in general - directly compare likelihoods of models with different order. The following example highlights this problem:</p>
+            <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                    <pre>path = ('a','b','c','d','e','c','b','a','c','d','e','c','e','d','c','a')
+
+p = pp.Paths()
+p.add_path(path)
+pp.visualisation.plot(pp.Network.from_paths(p))
+
+hon_1 = pp.HigherOrderNetwork(p, k=1)
+hon_2 = pp.HigherOrderNetwork(p, k=2, null_model=True)
+hon_5 = pp.HigherOrderNetwork(p, k=5, null_model=True)
+
+print(hon_1.likelihood(p, log=False))
+print(hon_2.likelihood(p, log=False))
+print(hon_5.likelihood(p, log=False))</pre>
+                    </div>
+                    <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                            <div class="output_html rendered_html output_subarea ">
+                                    <style>
+                                        text.label_kAKTJMcn {
+                                            text-anchor: middle;
+                                            font-size: 8px;
+                                            font-family: Arial, Helvetica, sans-serif;
+                                            fill: #999999;
+                                            stroke: #ffffff;
+                                            stroke-width: 0.1px;
+                                            opacity: 1.0;
+                                        }
+                                        .links_kAKTJMcn line {
+                                        stroke-opacity: 1.0;
+                                        }
+                                        .arrows svg:path {
+                                            stroke: #666;
+                                        }
+                                        .nodes circle {
+                                        stroke: #fff;
+                                        stroke-width: 0.5px;
+                                        }
+                                    </style>
+                                    
+                                    <svg width="400" height="400" id="kAKTJMcn">        
+                                        <text x="20" y="20" font-family="sans-serif" font-size="14px" fill="#666" style="cursor: pointer" id="kAKTJMcn_svg_txt">[save svg]</text>
+                                    </svg>
+                                    
+                                    <script charset="utf-8">
+
+                            
+                                    // Helper function that waits for d3js to be loaded
+                                    require = function require(symbols, callback) {
+                                        var ms = 5;
+                                        window.setTimeout(function(t) {
+                                            if (window[symbols[0]])
+                                                callback(window[symbols[0]]);
+                                            else 
+                                                window.setTimeout(arguments.callee, ms);
+                                        }, ms);
+                                    }
+    
+                                    
+                                    // wait until d3js has been loaded
+                                    require(["d3"], function(d3) {
+                                        var svg = d3.select("#"+"kAKTJMcn"),
+                                            radius = 6,
+                                            width = +svg.attr("width"),
+                                            height = +svg.attr("height");
+                                    
+                                        var color = d3.scaleOrdinal(d3.schemeCategory20);
+                                    
+                                        var graph = {"nodes": [{"size": 5.0, "color": "#99ccff", "id": "c"}, {"size": 5.0, "color": "#99ccff", "id": "b"}, {"size": 5.0, "color": "#99ccff", "id": "e"}, {"size": 5.0, "color": "#99ccff", "id": "d"}, {"size": 5.0, "color": "#99ccff", "id": "a"}], "links": [{"weight": 0.25, "target": "c", "width": 0.5, "color": "#999999", "source": "a"}, {"weight": 0.3333333333333333, "target": "d", "width": 0.5, "color": "#999999", "source": "c"}, {"weight": 0.16666666666666666, "target": "d", "width": 0.5, "color": "#999999", "source": "e"}, {"weight": 0.3333333333333333, "target": "c", "width": 0.5, "color": "#999999", "source": "e"}, {"weight": 0.25, "target": "a", "width": 0.5, "color": "#999999", "source": "b"}, {"weight": 0.3333333333333333, "target": "e", "width": 0.5, "color": "#999999", "source": "d"}, {"weight": 0.25, "target": "b", "width": 0.5, "color": "#999999", "source": "c"}, {"weight": 0.25, "target": "c", "width": 0.5, "color": "#999999", "source": "b"}, {"weight": 0.25, "target": "a", "width": 0.5, "color": "#999999", "source": "c"}, {"weight": 0.16666666666666666, "target": "c", "width": 0.5, "color": "#999999", "source": "d"}, {"weight": 0.16666666666666666, "target": "e", "width": 0.5, "color": "#999999", "source": "c"}, {"weight": 0.25, "target": "b", "width": 0.5, "color": "#999999", "source": "a"}]};
+                                        var directed = true;
+                                    
+                                        var simulation = d3.forceSimulation()
+                                            .force("link", d3.forceLink().id(function(d) { return d.id; }).strength(function(d){return d.weight;}))
+                                            .force("charge", d3.forceManyBody().strength(-20).distanceMax(200))
+                                            .force("repelForce", d3.forceManyBody().strength(-200).distanceMax(200))
+                                            .force("center", d3.forceCenter(width / 2, height / 2))
+                                            .alphaTarget(0.0);
+                                    
+                                        svg.append("defs").selectAll("marker")
+                                            .data(["end"])
+                                        .enter().append("marker")
+                                            .attr("id", String)
+                                            .attr("viewBox", "0 -5 20 20")
+                                            .attr("refX", 34)
+                                            .attr("refY", 0)
+                                            .attr("markerWidth", 15)
+                                            .attr("markerHeight", 15)
+                                            .attr("orient", "auto")
+                                        .append("path")
+                                            // draws a filled path (triangle) between three points
+                                            .attr("d", "M0,-5 L20,0 L0,5 z")
+                                            .attr("fill", '#999')
+                                            .attr("stroke", 'none');
+                                    
+                                        var g = svg.append("g")
+                                            .attr("class", "everything");
+                                    
+                                        var link = g.append("g")
+                                            .attr("class", "links_kAKTJMcn")
+                                            .selectAll("line")
+                                            .data(graph.links)
+                                            .enter().append("line")
+                                            .attr("stroke-width", function(d) { return d.width; })
+                                            .attr("stroke", function(d) { return d.color; } );
+                                    
+                                        if (directed)
+                                            link.attr("marker-end", "url(#end)");
+                                    
+                                        var node_g = g.append("g")
+                                            .attr("class", "nodes")
+                                            .selectAll("circle")
+                                            .data(graph.nodes)
+                                            .enter()
+                                            .append("g"); 
+                                    
+                                        var node = node_g.append("circle")
+                                            .attr('id', function(d) { return d.id; })
+                                            .attr("r", function(d) { return d.size; })
+                                            .attr("fill", function(d) { return d.color; })
+                                            .call(d3.drag()
+                                                .on("start", dragstarted)
+                                                .on("drag", dragged)
+                                                .on("end", dragended));
+                                    
+                                        var text = node_g.append("text")
+                                        .attr("x", [0, -10][0])
+                                        .attr("y", [0, -10][1]+3)
+                                        .attr("id", function(d) {return d.id; })
+                                        .attr("class", "label_kAKTJMcn")
+                                        .text(function(d) { return d.id; });
+                                    
+                                        node.append("title")
+                                            .text(function(d) { return d.id; });
+                                    
+                                        var zoom_handler = d3.zoom()
+                                            .on("zoom", zoom_actions);
+                                        zoom_handler(svg);
+                                    
+                                        // attach event handler for svg export
+                                        d3.select('#kAKTJMcn_svg_txt').on("click", save_svg);
+                                    
+                                        simulation
+                                            .nodes(graph.nodes)
+                                            .on("tick", ticked);
+                                    
+                                        simulation.force("link")
+                                            .links(graph.links);
+                                    
+                                        function ticked() {
+                                            link.attr("x1", function(d) { return d.source.x; })
+                                                .attr("y1", function(d) { return d.source.y; })
+                                                .attr("x2", function(d) { return d.target.x; })
+                                                .attr("y2", function(d) { return d.target.y; });
+                                    
+                                             text.attr("transform", transform);
+                                    
+                                    
+                                            text.attr("cx", function(d) { return d.x; })
+                                                .attr("cy", function(d) { return d.y; });
+                                    
+                                            node.attr("cx", function(d) { return d.x; })
+                                                .attr("cy", function(d) { return d.y; });
+                                        }
+                                    
+                                        function transform(d) {
+                                            return "translate(" + d.x + "," + d.y + ")";
+                                        }
+                                    
+                                        function dragstarted(d) {
+                                        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                                        d.fx = d.x;
+                                        d.fy = d.y;
+                                        }
+                                    
+                                        function zoom_actions(){
+                                            g.attr("transform", d3.event.transform)
+                                        }    
+                                    
+                                        function dragged(d) {
+                                        d.fx = d3.event.x;
+                                        d.fy = d3.event.y;
+                                        }
+                                    
+                                        function dragended(d) {
+                                        if (!d3.event.active) simulation.alphaTarget(0);
+                                        d.fx = null;
+                                        d.fy = null;
+                                        }
+                                    
+                                        function to_svg() {
+                                            // Returns a SVG representation of the current state of the visualisation
+                                            var svg  = document.getElementById('kAKTJMcn');
+                                            var xml = (new XMLSerializer).serializeToString(svg);
+                                            return xml;
+                                        }
+                                    
+                                        function save_svg() {
+                                            var svg  = document.getElementById('kAKTJMcn');
+                                            var xml = (new XMLSerializer).serializeToString(svg);        
+                                            var blob = new Blob([xml], {type: 'text/xml'});
+                                            if(window.navigator.msSaveOrOpenBlob) {
+                                                window.navigator.msSaveBlob(blob, 'network.svg');
+                                            }
+                                            else{
+                                                var elem = window.document.createElement('a');
+                                                elem.href = window.URL.createObjectURL(blob);
+                                                elem.download = 'network.svg';
+                                                document.body.appendChild(elem);
+                                                elem.click();
+                                                document.body.removeChild(elem);
+                                            }
+                                        }
+                                    });
+                                    </script>
+                                    </div>
+                            <pre>1.755829903978052e-06
+3.511659807956104e-06
+2.633744855967078e-05</pre></div>
+    <p>Shouldn't the likelihoods of these three models be identical? They are not, and this is a major issue when we have data that consists of large numbers of short paths: in terms of the number of transitions that enter the likelihood calculation, a model of order k discards the first k nodes on each path. That is, a second-order model can only account for all but the first edge traversals on the path. This means that - in the general case - we actually compare likelihoods computed for different sample spaces, which is not valid. Let us highlight this by calculating the number of transitions that enter the likelihood calculation:</p>
+    <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+            <pre>print('Path consists of {0} nodes'.format(len(path)))
+print('first-order model  = ', str(len(hon_1.path_to_higher_order_nodes(path)[1:])))
+print('second-order model = ', str(len(hon_2.path_to_higher_order_nodes(path)[1:])))
+print('fifth-order model  = ', str(len(hon_5.path_to_higher_order_nodes(path)[1:])))</pre>
+            </div>
+            <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                    <pre>Path consists of 16 nodes
+first-order model  =  15
+second-order model =  14
+fifth-order model  =  11</pre></div>
+<p>To fix the issues above, we need a probabilistic generative model that can deal with large collections of (short) paths in a network. The key idea is to combine multiple higher-order network models into a single multi-layered, multi-order model. To calculate the likelihood of such a model we can use all layers, thus avoiding the problem that we discard prefixes of paths. For each path, we start the calculation at a layer of order zero, which considers the relative probabilities of nodes. We then use this model layer to calculate the probability to observe the first node on a path. For the next transition to step two, we then use a first-order model. The next transition is calculated in the second-order model and so on, until we have reached the maximum order of our multi-order model. At this point, we can transitively calculate the likelihood based on the remaining transitions of the path.</p>
+<p>The mathematical details of the method are described in this <a href="http://dl.acm.org/citation.cfm?id=3098145">KDD paper</a>. But let us move to practice. <code>pathpy</code> can directly generate, visualise, and analyse multi-order network models. Let us try this in our example:</p>
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>mog = pp.MultiOrderModel(p, max_order=2)
+print(mog)
+</pre>
+        </div>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>2018-09-04 22:52:48 [Severity.INFO]	Generating 0-th order layer ...
+2018-09-04 22:52:48 [Severity.INFO]	Generating 1-th order layer ...
+2018-09-04 22:52:48 [Severity.INFO]	Generating 2-th order layer ...
+2018-09-04 22:52:48 [Severity.INFO]	finished.
+Multi-order model (max. order = 2, DoF (paths/ngrams) = 7 / 124)
+==========================================================================
+Layer k = 0 	 6 nodes, 5 links, 120.0 paths, DoF (paths/ngrams) = 4 / 4 
+Layer k = 1 	 5 nodes, 4 links, 80.0 paths, DoF (paths/ngrams) = 1 / 20 
+Layer k = 2 	 4 nodes, 2 links, 40.0 paths, DoF (paths/ngrams) = 2 / 100 </pre></div>
+<p>We can now use the likelihood function of the class MultiOrderModel to repeat our likelihood ratio test. Rather than generating multiple MultiOrderModel instances for different hypotheses, we can directly calculate likelihoods based on different model layers within the same MultiOrderModel instance.</p>
+<div class="w3-panel w3-light-grey w3-leftbar w3-border">
+        <pre>mog = pp.MultiOrderModel(p, max_order=2)
+
+d = mog.degrees_of_freedom(max_order=2) - mog.degrees_of_freedom(max_order=1)
+x = - 2 * (mog.likelihood(p, log=True, max_order=1) 
+    - mog.likelihood(p, log=True, max_order=2))
+p = 1 - chi2.cdf(x, d)
+
+print('p value of null hypothesis that data has maximum order 1 = {0}'.format(p))</pre>
+        </div>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>p value of null hypothesis that data has maximum order 1 = 9.094947017729282e-13</pre></div>
+        <p>We find strong evidence against the null hypothesis that the paths can be explained by a first-order network model. We actually get a different p-value, as we also account for a zero-order model, i.e. we account for the relative frequencies at which nodes occur at the start of a path.</p>
+
+        <p>Rather than performing the likelihood test ourselves, we can actually simply call the method MultiOrderModel.estimate_order. it will return the maximum order among all of its layers for which the likelihood ratio test rejects the null hypothesis.</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>mog.estimate_order()</pre>
+                </div>
+                <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+<pre>Likelihood ratio test for K_opt = 2, x = 55.45177444479563
+Likelihood ratio test, d_1-d_0 = 2
+Likelihood ratio test, p = 9.094947017729282e-13
+2</pre></div>
+        <p>We now test whether this approach to learn the optimal representation of path data actually works. For this, let us generate path statistics that are in line with what we expect based on a first-order network model, and check whether the order estimation gives the right result.</p>
+        <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                <pre>random_paths = pp.Paths()
+random_paths.add_path('a,c,d', 5)
+random_paths.add_path('a,c,e', 5)
+random_paths.add_path('b,c,e', 5)
+random_paths.add_path('b,c,d', 5)
+
+mog = pp.MultiOrderModel(random_paths, max_order=2)
+print('Optimal order = ', mog.estimate_order(random_paths))</pre>
+                </div>
+                <div class="w3-panel w3-light-grey w3-leftbar w3-border">
+                        <pre>Generating 0-th order layer ...
+Generating 1-th order layer ...
+Generating 2-th order layer ...
+finished.
+Likelihood ratio test for K_opt = 2, x = -0.0
+Likelihood ratio test, d_1-d_0 = 2
+Likelihood ratio test, p = 1.0
+Optimal order =  1</pre></div>
+<p>In this example, we find no evidence against a first-order model, since all transitive paths occur with exactly the frequency that we would expect at random! Hence, in this case we do not need higher-order models to understand the causal topology of the system, which captures which nodes can directly and indirectly influence each other over time.</p>
+    </div>
+    
+        <div class="w3-third w3-container"></div>
+
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">
+      <hr>
+      &copy; Data Analytics Group, University of Zurich, 2019
+    </div>
+  </footer>
+<!-- END MAIN -->
+</div>
+
+</body>
+</html>
