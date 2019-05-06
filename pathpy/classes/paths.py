@@ -390,7 +390,7 @@ class Paths:
 
     @classmethod
     def read_file(cls, filename, separator=',', frequency=True, maxlines=sys.maxsize,
-                  max_ngram_length=sys.maxsize, expand_sub_paths=True,
+                  max_ngram_length=sys.maxsize, expand_sub_paths=True, remove_selfloops=False,
                   max_subpath_length=sys.maxsize):
         """Reads path data from a file containing multiple lines of n-grams of the form
         ``a,b,c,d,frequency`` (where frequency is optional). Each n-gram is interpreted
@@ -472,7 +472,7 @@ class Paths:
                     if len(path) > max_ngram_length:
                         path = path[:max_ngram_length]
 
-                    p.add_path(path, frequency=(0,1), expand_subpaths=expand_sub_paths)
+                    p.add_path(path, frequency=(0,1), expand_subpaths=expand_sub_paths, remove_selfloops=remove_selfloops)
                     max_length = max(max_length, len(path) - 1)
 
                 line = f.readline()
