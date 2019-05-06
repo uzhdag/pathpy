@@ -450,7 +450,7 @@ class Paths:
                         # Omit empty fields
                         v = fields[i].strip()
                         if v:
-                            path += (v,)                                         
+                            path += (v,)
                     freq = float(fields[len(fields) - 1])
                     if freq >0:
                         if len(path) <= max_ngram_length:
@@ -468,21 +468,18 @@ class Paths:
                         v = field.strip()
                         if v:
                             path += (v,)
-                    if len(path) <= max_ngram_length:
-                        p.paths[len(path) - 1][path] += (0, 1)
-                        max_length = max(max_length, len(path) - 1)
-                    else:  # cut path at max_ngram_length
-                        p.paths[max_ngram_length - 1][path[:max_ngram_length]] += (0, 1)
-                        max_length = max(max_length, max_ngram_length - 1)
+
+                    if len(path) > max_ngram_length:
+                        path = path[:max_ngram_length]
+
+                    p.add_path(path, frequency=(0,1), expand_subpaths=expand_sub_paths)
+                    max_length = max(max_length, len(path) - 1)
+
                 line = f.readline()
                 n += 1
         # end of with open()
         Log.add(
             'finished. Read ' + str(n - 1) + ' paths with maximum length ' + str(max_length))
-
-        if expand_sub_paths:
-            p.expand_subpaths()
-        Log.add('finished.')
 
         return p
 
@@ -576,7 +573,7 @@ class Paths:
                         self.paths[k][path_slice][0] += frequency
 
 
-    def add_path(self, path, frequency=1, expand_subpaths=True, separator=','):
+    def add_path(self, path, frequency=1, expand_subpaths=True, remove_selfloops=False, separator=','):
         """Adds a path to this Paths instance. The path argument can either be a list, tuple or
         a string ngram with a customisable node separator.
 
@@ -592,13 +589,16 @@ class Paths:
             path as subpath (first component) and as longest path (second component). Integer
             values x are automatically converted to (0, x). Default value is 1.
         expand_subpaths: bool
-            Whether or not to calculate subpath statistics. Default value is True.            
+            Whether or not to calculate subpath statistics. Default value is True.
+        remove_selfloops: bool
+            Whether or not to remove selfloops (e.g. repeated nodes) from paths. Default values
+            is False.
         separator: str
-            A string sepcifying the character that separates nodes in the ngram. Default is 
+            A string sepcifying the character that separates nodes in the ngram. Default is
             ','.
         Returns
-        -------    
-        """        
+        -------
+        """
         assert isinstance(path, tuple) or isinstance(path, list) or isinstance(path, str), 'Path must be tuple or ngram string.'
 
         # Turn string ngram into tuple
@@ -607,10 +607,20 @@ class Paths:
 
         assert path, 'Path must contain at least one element'
 
-        for x in path:
-            if isinstance(x, str) and self.separator in x:
+        if remove_selfloops:
+            collapsed_path = [path[0]]
+
+        for x in range(1, len(path)):
+            # Error check
+            if isinstance(path[x-1], str) and self.separator in path[x-1]:
                 raise PathpyError('Node name contains separator character. '
                                   'Choose different separator.')
+            # Test for selfloop
+            if remove_selfloops and path[x-1] != path[x]:
+                collapsed_path.append(path[x])
+
+        if remove_selfloops:
+            path = collapsed_path
 
         # Convert tuple elements to strings
         path_str = path if isinstance(path, str) else tuple(map(str, path))
