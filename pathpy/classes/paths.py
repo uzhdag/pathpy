@@ -453,6 +453,7 @@ class Paths:
                             path += (v,)
                     freq = float(fields[len(fields) - 1])
                     if freq >0:
+                        # Cut a path if it is longer than specificed maximum
                         if len(path) > max_ngram_length:
                             path = path[:max_ngram_length]
 
@@ -467,6 +468,7 @@ class Paths:
                         if v:
                             path += (v,)
 
+                    # Cut a path if it is longer than specificed maximum
                     if len(path) > max_ngram_length:
                         path = path[:max_ngram_length]
 
@@ -589,7 +591,7 @@ class Paths:
         expand_subpaths: bool
             Whether or not to calculate subpath statistics. Default value is True.
         remove_selfloops: bool
-            Whether or not to remove selfloops (e.g. repeated nodes) from paths. Default values
+            Whether or not to remove selfloops (e.g. repeated nodes) from paths. Default value
             is False.
         separator: str
             A string sepcifying the character that separates nodes in the ngram. Default is
