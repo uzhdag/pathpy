@@ -455,7 +455,7 @@ class Paths:
                     if freq >0:
                         if len(path) > max_ngram_length:
                             path = path[:max_ngram_length]
-                        p.paths[len(path) - 1][path] += (0, freq)
+
                         p.add_path(path, frequency=(0,freq), expand_subpaths=expand_sub_paths, remove_selfloops=remove_selfloops)
                         max_length = max(max_length, len(path) - 1)
                     else:
