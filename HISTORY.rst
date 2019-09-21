@@ -13,7 +13,7 @@ History
 * PyPi Release of 2.0 release version.
 
 2.0.0a (2018-08-07)
-------------------
+-------------------
 
 * First public release of 2.0 alpha on PyPI.
 
