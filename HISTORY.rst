@@ -1,6 +1,12 @@
 History
 =======
 
+2.2.0 (2019-09-21)
+------------------
+
+* Several Bug Fixes for API and visualisations
+
+
 2.0.0 (2018-08-17)
 ------------------
 
