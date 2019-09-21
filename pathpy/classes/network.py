@@ -37,7 +37,7 @@ from pathpy.utils.exceptions import PathpyError, PathpyNotImplemented
 
 class Network:
     r"""A graph or network that can be directed, undirected, unweighted or weighted
-    and whose edges can contain arbitrary attributes. This is the base class for 
+    and whose edges can contain arbitrary attributes. This is the base class for
     HigherOrderNetwork
 
     Attributes
@@ -158,14 +158,14 @@ class Network:
                 else:
                     f.write('source' + separator + 'target' + '\n')
             for edge in self.edges:
-                if weighted:       
+                if weighted:
                     f.write(str(edge[0]) + separator + str(edge[1]) + separator + str(self.edges[edge]['weight'])+'\n')
                 else:
                     f.write(str(edge[0]) + separator + str(edge[1]) + '\n')
 
     @classmethod
     def from_sqlite(cls, cursor, directed=True):
-        r"""Returns a new Network instance generated from links obtained 
+        r"""Returns a new Network instance generated from links obtained
         from an SQLite cursor. The cursor must refer to a table with at least
         two columns
 
@@ -180,8 +180,8 @@ class Network:
 
         Parameters
         ----------
-        cursor : 
-            The SQLite cursor to fetch rows from. 
+        cursor :
+            The SQLite cursor to fetch rows from.
         directed : bool
             Whether or not links should be interpreted as directed. Default is True.
 
@@ -212,7 +212,7 @@ class Network:
     @classmethod
     def from_paths(cls, paths):
         r"""Generates a weighted directed network from a Paths
-            object. The weight of directed links will correspond 
+            object. The weight of directed links will correspond
             to the statistics of (sub)-paths of length one"""
         network = cls(directed=True)
 
@@ -271,26 +271,26 @@ class Network:
 
         Parameters
         ----------
-        node_attributes : dict
+        node_attributes :
             Key-value pairs that will be stored as
             named node attributes in a dictionary. An
             attribute set via network.add_node(v, x=42) can be
             assessed via network.nodes[v]['x']. Any node in an undirected
             network will have the default attributes 'degree', 'inweight',
-            and 'outweight'. Any node in a directed network will have the 
+            and 'outweight'. Any node in a directed network will have the
             default attributes 'indegree', 'outdegree', 'inweight', and 'outweight'.
             See examples below.
 
         Examples
         --------
-            >>> network = pathpy.Network(directed=False)
-            >>> network.add_node(v)
-            >>> print(network.nodes[v])
-            >>> {'inweight': 0.0, 'outweight': 0.0, 'degree': 0}            
-            >>> network = pathpy.Network(directed=True)
-            >>> network.add_node(v)
-            >>> print(network.nodes[v])
-            >>> {'inweight': 0.0, 'outweight': 0.0, 'indegree': 0, 'outdegree': 0}
+            >>> network = Network(directed=False)
+            >>> network.add_node('a')
+            >>> print(network.nodes['a'])
+            {'inweight': 0.0, 'outweight': 0.0, 'degree': 0}
+            >>> network = Network(directed=True)
+            >>> network.add_node('a')
+            >>> print(network.nodes['a'])
+            {'inweight': 0.0, 'outweight': 0.0, 'indegree': 0, 'outdegree': 0}
         """
         if v not in self.nodes:
             self.nodes[v] = {**self.nodes[v], **node_attributes}
@@ -385,7 +385,7 @@ class Network:
 
     def add_clique(self, node_list, **edge_attributes):
         r"""
-        Adds a fully connected clique to the network. This will 
+        Adds a fully connected clique to the network. This will
         automatically create all edges between all pairs of nodes
         (without self-loops). Depending on the network type
         edges will be directed or undirected.
@@ -396,8 +396,8 @@ class Network:
             the list of nodes for which all pairs will be connected
         edge_attributes: dict
             edge attributes that will be assigned to all generated edges
-        """        
-        for v, w in itertools.combinations(node_list, 2):            
+        """
+        for v, w in itertools.combinations(node_list, 2):
             self.add_edge(v, w, **edge_attributes)
             if self.directed:
                 self.add_edge(w, v, **edge_attributes)
@@ -415,7 +415,7 @@ class Network:
             String label of the source node
         w : str
             String label of the target node
-        edge_attributes : dict
+        edge_attributes :
             Key-value pairs that will be stored as
             named edge attributes in a dictionary. An
             attribute set via network.add_edge(v, w, x=42) can be
@@ -427,12 +427,13 @@ class Network:
 
         Examples
         --------
+            >>> network = Network()
             >>> network.add_edge('a','b')
             >>> print(network.edges[('a', 'b')]['weight'])
-            >>> 1.0 
-            >>> network.add_edge('a','b', weight = 2.0)
+            1.0
+            >>> network.add_edge('a','b', weight=2.0)
             >>> print(network.edges[('a', 'b')]['weight'])
-            >>> 2.0
+            2.0
         """
 
         # Add nodes if they don't exist
@@ -515,17 +516,26 @@ class Network:
         Parameters
         ----------
         select_nodes : lambda
-            a lambda function that takes two parameters v, w corresponding to the source and 
-            target node of an edge. All edges for which the lambda function returns True will be 
+            a lambda function that takes two parameters v, w corresponding to the source and
+            target node of an edge. All edges for which the lambda function returns True will be
             selected. Default is lambda v,w: True.
         select_edges : lambda
-            a lambda function that takes a single parameter e corresponding to an edge tuple. 
-            Edge attributes can be accessed by e['attr']. All edges for which the lambda function 
+            a lambda function that takes a single parameter e corresponding to an edge tuple.
+            Edge attributes can be accessed by e['attr']. All edges for which the lambda function
             returns True will be selected.  Default is lambda e: True.
 
-        Example:
-        >>> network.find_edges(select_nodes = lambda v,w: True if v['desired_node_property'] else False, 
-                               select_edges = lambda e: True if e['desired_edge_property'] else False)
+        Examples
+        --------
+        >>> n = Network()
+        >>> n.add_node('a', age=13)
+        >>> n.add_node('b', age=10)
+        >>> n.add_edge('a', 'b', knows=True)
+        >>> n.find_edges(
+        ...     select_nodes=lambda v, w: v['age'] >= 0,
+        ...     select_edges=lambda e: e['knows']
+        ... )
+        [('a', 'b')]
+
         """
         return [e for e in self.edges if (select_nodes(self.nodes[e[0]], self.nodes[e[1]]) and select_edges(self.edges[e]))]
 
@@ -548,7 +558,7 @@ class Network:
 
 
     def node_properties(self, prop):
-        r"""Returns a list of arbitrary node properties in the network, 
+        r"""Returns a list of arbitrary node properties in the network,
         where entries have the same order as in network.nodes. If a property
         is not present for a given node, None will be added to the list.
         """
@@ -563,7 +573,7 @@ class Network:
 
     def degrees(self, mode='degree'):
         r"""Returns the sequence of node degrees in the network, where
-        entries have the same order as in network.nodes. Note that 
+        entries have the same order as in network.nodes. Note that
         if mode == 'degree' for a directed network, the degree sequence
         of the undirected network will be returned.
 
@@ -574,7 +584,7 @@ class Network:
         """
         assert mode is 'degree' or mode is 'indegree' or mode is 'outdegree', \
             'Only "degree", "indegree", or "outdegree" are supported.'
-        
+
         if self.directed and mode == 'degree':
             return self.to_undirected().degrees()
 
@@ -786,7 +796,7 @@ class Network:
         """
         from pathpy.visualisation.html import generate_html
         return generate_html(self)
-        
+
 
 
 def network_from_networkx(graph):

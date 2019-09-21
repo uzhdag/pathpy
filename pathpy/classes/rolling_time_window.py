@@ -25,6 +25,7 @@
 from pathpy.utils import Log, Severity
 from pathpy.classes import Network
 
+
 class RollingTimeWindow:
     r"""
     An iterable rolling time window that can be used to perform time slice

@@ -5,7 +5,7 @@ visualize time series data on complex networks.
 
 __author__ = """Ingo Scholtes"""
 __email__ = 'scholtes@ifi.uzh.ch'
-__version__ = '2.1.0'
+__version__ = '2.2.0'
 
 from .classes import *
 import pathpy.path_extraction
