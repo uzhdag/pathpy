@@ -23,7 +23,7 @@
 
   <div class="w3-content w3-center w3-padding-32" style="max-width:800px;margin-left:18%">
     <div class="w3-justify">
-        <h1 class="w3-text-theme">How can I take first steps with <code>pathpy</code>?</h1>
+        <h1 class="w3-text-theme">How can I analyze and visualize networks?</h1>
         <p>Once you have successfully installed <code>pathpy</code>, as a first step we can work through a basic (temporal) network analysis and visualisation example. Here, we assume that your are working in a <code>jupyter</code> notebook, but feel free to use any <code>python</code>-friendly development environment like, e.g. pyCharm or Visual Studio Code.</p>        
         <p>Assuming that you have installed <code>jupyter</code>, we first start a new notebook server. Open a terminal window and type:</p>
         <div class="w3-panel w3-black w3-leftbar w3-border">
@@ -41,7 +41,11 @@ n.add_edge('b', 'c')
 n.add_edge('c', 'd')
 n.add_edge('c', 'e')
 print(n)</pre></div>
-        <p>The <code>print</code> statement will output a default string representation of the network instance, which provides some basic aggregate statistics. To visualise this network instance, we can simply type the name of the variable in a new <code>jupyter</code> cell and execute it:</p>
+<div class="w3-panel w3-light-gray w3-leftbar w3-border">
+        <pre>Directed network
+Nodes:	5
+Links:	4</pre></div>
+        <p>The <code>print</code> statement will output a default string representation of the instance, which provides basic information on the type of the network and the number of nodes and links. To visualize this network, we can simply type the name of the variable in a new <code>jupyter</code> cell and execute it:</p>
         <div class="w3-panel w3-light-gray w3-leftbar w3-border">
         <pre>n</pre>
         </div>
@@ -435,9 +439,9 @@ pp.visualisation.plot(n, **style)</pre>
             });
         </script>
         </div>
-        <p>If you are interested in advanced visualisation features, including <code>pathpy</code>'s advanced templating mechanism that gives you the full power of CSS and JavaScript, please check this <a href="https://ingoscholtes.github.io/csh2018-tutorial/">three hour hands-on tutorial</a>.</p>
+        <p>For more advanced network analysis and visualisation features, including <code>pathpy</code>'s templating mechanism that gives you the full power of CSS and JavaScript, we refer the reader to this <a href="https://ingoscholtes.github.io/csh2018-tutorial/">three hour hands-on tutorial</a>.</p>
         </div>
-        <div class="w3-third w3-container"></div>        
+        <div class="w3-third w3-container"></div>
 
   <footer id="myFooter">
     <div class="w3-container w3-theme-l6 w3-padding-32" style="max-width:1200px">

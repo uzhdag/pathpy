@@ -802,7 +802,19 @@ def export_html_walk(network, walk, filename, **params):
     module_dir = os.path.dirname(os.path.realpath(__file__))
     html_dir = os.path.join(module_dir, os.path.pardir, 'visualisation_assets')
     params['template'] = os.path.join(html_dir, 'walk_template.html')
-    params['itinerary'] = [ fix_node_name(v) for v in walk ]
+
+    if 'max_time' not in params:
+        params['max_time'] = None
+
+    if params['max_time'] is not None:
+        tempnet = tempnet.filter_edges(lambda u, v, t: t <= params['max_time'])
+
+    if params['max_time'] is None:
+        params['itinerary'] = [ fix_node_name(v) for v in walk ]
+    else:
+        for i in range(params['max_time']):
+            params['itinerary'].append(fix_node_name(walk[i]))
+    
     if 'active_node_color' not in params:
         params['active_node_color'] = 'red'
     if 'inactive_node_color' not in params:

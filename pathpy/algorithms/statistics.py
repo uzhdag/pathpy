@@ -162,7 +162,9 @@ def generating_func(network, x, degree='degree'):
     >>> n.add_edge('e', 'f')
 
     >>> # print single value f(x)
-    >>> print(pp.statistics.generating_func(n, 0.3))
+    >>> stat = pp.statistics.generating_func(n, 0.3)
+    >>> print('{:0.3f}'.format(stat))
+    0.069
 
     >>> # plot generating function
     >>> x = np.linspace(0, 1, 20)
