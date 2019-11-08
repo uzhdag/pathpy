@@ -39,7 +39,7 @@
 </style>
 
 <svg width="$width" height="$height" id="$div_id">
-    <text x="10" y="20" font-family="sans-serif" font-size="14px" fill="red" 
+    <text x="10" y="20" font-family="sans-serif" font-size="14px" fill="red"
         id='${div_id}_time_txt'>t</text>
     <text x="120" y="20" font-family="sans-serif" font-size="14px" fill="#9999bb" style="cursor: pointer"
         id='${div_id}_start_txt'>stop</text>
@@ -52,7 +52,7 @@
 
 // Load via requireJS if available (jupyter notebook environment)
 try {
-    // Problem: require.config will raise an exception when called for the second time 
+    // Problem: require.config will raise an exception when called for the second time
     require.config({
         paths: {
             //d3: "https://d3js.org/d3.v4.min"
@@ -62,7 +62,7 @@ try {
     console.log("Detected requireJS");
 }
 catch(err){
-    // a reference error indicates that requireJS does not exist. 
+    // a reference error indicates that requireJS does not exist.
     // other errors may occur due to multiple calls to config
     if (err instanceof ReferenceError){
         console.log("Detected no requireJS");
@@ -73,7 +73,7 @@ catch(err){
             window.setTimeout(function(t) {
                 if (window[symbols[0]])
                     callback(window[symbols[0]]);
-                else 
+                else
                     window.setTimeout(arguments.callee, ms);
             }, ms);
         }
@@ -87,12 +87,12 @@ require(["d3"], function(d3) {
         });
     };
 
-    d3.selection.prototype.moveToBack = function() {  
-        return this.each(function() { 
-            var firstChild = this.parentNode.firstChild; 
-            if (firstChild) { 
-                this.parentNode.insertBefore(this, firstChild); 
-            } 
+    d3.selection.prototype.moveToBack = function() {
+        return this.each(function() {
+            var firstChild = this.parentNode.firstChild;
+            if (firstChild) {
+                this.parentNode.insertBefore(this, firstChild);
+            }
         });
     };
 
@@ -139,7 +139,7 @@ require(["d3"], function(d3) {
     var mintime = d3.min(time_stamps);
     var maxtime = d3.max(time_stamps);
     var run_status = true;
-    
+
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
         .force("charge", d3.forceManyBody().strength(-30).distanceMax(200))
@@ -180,30 +180,30 @@ require(["d3"], function(d3) {
     .attr("id", function(d) {return d.id; })
     .attr("class", "active_${div_id}")
     .text(function(d) { return d.id; });
-    
+
     node.append("title").text(function(d) { return d.id; });
 
     var zoom_handler = d3.zoom()
         .on("zoom", zoom_actions);
     zoom_handler(svg);
 
-    // build mapping to DOM objects once 
+    // build mapping to DOM objects once
     // for performance reasons
     var time_txt = d3.select('#${div_id}_time_txt');
     var edges_to_dom = {};
-    var nodes_to_dom = {};    
+    var nodes_to_dom = {};
 
-    links.forEach(function(link){    
+    links.forEach(function(link){
         edges_to_dom[link.id] = d3.select('#${div_id} #'+link.id);
     });
 
-    temporal_net.nodes.forEach(function(n){    
+    temporal_net.nodes.forEach(function(n){
         nodes_to_dom[n.id] = d3.select('#${div_id} #'+n.id);
     });
 
     // attach event handlers
     d3.select('#${div_id}_start_txt').on("click", pauseAnimation);
-    d3.select('#${div_id}_restart_txt').on("click", restartAnimation);    
+    d3.select('#${div_id}_restart_txt').on("click", restartAnimation);
 
     simulation.nodes(temporal_net.nodes).on("tick", ticked);
     // simulation.force("link").links(links);
@@ -222,15 +222,15 @@ require(["d3"], function(d3) {
         if(time > maxtime){
             run_status = false;
             clearInterval(intervl);
-            console.log('Stopped animation.')     
+            console.log('Stopped animation.')
         }
 
-       // reset all links to hidden 
+       // reset all links to hidden
        for (id in edges_to_dom){
             try {
                 // edges_to_dom[l.id].attr('class', 'links');
                 links_by_id[id].strength = hidden_link_strength;
-                edges_to_dom[id].attr('class', 'hidden_${div_id}');              
+                edges_to_dom[id].attr('class', 'hidden_${div_id}');
             }
             catch(err){
                 console.log('Error: Could not find DOM object with id ' + id);
@@ -245,7 +245,7 @@ require(["d3"], function(d3) {
                 console.log('Error: Could not find DOM object with id ' + id);
             }
         }
-        
+
         // change nodes and links in current time slice
         for (ti=Math.max(mintime, time-look_behind); ti<=time+look_ahead; ti++) {
 
@@ -268,7 +268,7 @@ require(["d3"], function(d3) {
                             console.log('Error: Could not find DOM node with id ' + node_ids[0]);
                         }
                         try {
-                            nodes_to_dom[node_ids[1]].attr('class', 'active_${div_id}').moveToFront();                            
+                            nodes_to_dom[node_ids[1]].attr('class', 'active_${div_id}').moveToFront();
                         }
                         catch(err){
                             console.log('Error: Could not find DOM node with id ' + node_ids[1]);
@@ -303,7 +303,7 @@ require(["d3"], function(d3) {
             d3.select('#${div_id}_start_txt').html('stop');
             console.log('Resumed animation.')
         }
-        
+
     }
 
     function zoom_actions(){
@@ -337,13 +337,13 @@ require(["d3"], function(d3) {
             .attr("cy", function(d) { return d.y; });
     }
 
-    
+
     function transform(d) {
         return "translate(" + d.x + "," + d.y + ")";
     }
 
     function dragstarted(d) {
-        if (!d3.event.active) 
+        if (!d3.event.active)
             simulation.alphaTarget(0.2).restart();
         d.fx = d.x;
         d.fy = d.y;
@@ -355,7 +355,7 @@ require(["d3"], function(d3) {
     }
 
     function dragended(d) {
-        if (!d3.event.active) 
+        if (!d3.event.active)
             simulation.alphaTarget(0.2);
         d.fx = null;
         d.fy = null;

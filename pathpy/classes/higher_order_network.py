@@ -67,13 +67,13 @@ class HigherOrderNetwork(Network):
             sequence of k nodes. The weight of a k-th order link captures the frequency
             of a path of length k.
         null_model: bool
-            For the default value False, link weights capture the frequencies of paths of length k 
+            For the default value False, link weights capture the frequencies of paths of length k
             in the underlying paths object. If True, link weights capture expected frequencies
             under the assumption of independent links (i.e. corresponding to a first-order
             Markov model).
         separator: str
-            The separator character to be used in higher-order node names. If this parameter 
-            is not specified, the separator character of the underlying paths object will be 
+            The separator character to be used in higher-order node names. If this parameter
+            is not specified, the separator character of the underlying paths object will be
             used.
         """
         assert not null_model or (null_model and k > 1)
@@ -134,16 +134,16 @@ class HigherOrderNetwork(Network):
                     self.add_node(w, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
                     # add weight val to directed edge (v,w)
                     self.add_edge(v, w, weight=val)
-            
+
                 # create all possible higher-order nodes
                 if k > 1:
 
                     nodes = HigherOrderNetwork.generate_possible_paths(g1, k-1)
                     for p in nodes:
-                        v = p[0]                
+                        v = p[0]
                         for l in range(1, k):
                             v = v + self.separator + p[l]
-                        
+
                         # create nodes and make sure that in- and out-weights are numpy arrays
                         if v not in self.nodes:
                             self.add_node(v, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
@@ -175,7 +175,7 @@ class HigherOrderNetwork(Network):
 
                 w = p[1]
                 for l in range(2, k + 1):
-                    w = w + self.separator + p[l]                    
+                    w = w + self.separator + p[l]
 
                 # create nodes and make sure that in- and out-weights are numpy arrays
                 self.add_node(v, inweight=_np.array([0.0, 0.0]), outweight=_np.array([0.0, 0.0]))
@@ -183,14 +183,14 @@ class HigherOrderNetwork(Network):
 
                 # In the null model, we encode a first-order Markov process in a k-th-order
                 # model. For the transition probabilities e.g. (a,b) -> (b,c) in a second-order
-                # null model, we simply use the first-order transition probabilities, i.e. P(b->c).             
+                # null model, we simply use the first-order transition probabilities, i.e. P(b->c).
                 # Note that transition_matrices are transposed (!)
                 v_1, w_1 = g1_node_mapping[p[-2]], g1_node_mapping[p[-1]]
                 p_vw = T[w_1, v_1]
 
-                # We use first-order transition probabilities to create an expected frequency 
-                # of paths of length k. For a path (a,b,c) we use the count of (a,b) and 
-                # "distribute" it to all possible paths (a,b,*) according to the first-order 
+                # We use first-order transition probabilities to create an expected frequency
+                # of paths of length k. For a path (a,b,c) we use the count of (a,b) and
+                # "distribute" it to all possible paths (a,b,*) according to the first-order
                 # transition probabilities of (b,*)
                 expected_vw = paths.paths[k-1][p[:k]].sum() * p_vw
 
@@ -331,7 +331,7 @@ class HigherOrderNetwork(Network):
         >>> from pathpy import Paths
         >>> path_tuple = ('a', 'b', 'c', 'd')
         >>> paths = Paths()
-        >>> paths.add_path_tuple(path_tuple)
+        >>> paths.add_path(path_tuple)
         >>> hon = HigherOrderNetwork(paths, separator='-')
         >>> hon.path_to_higher_order_nodes(path_tuple, k=1)
         ['a', 'b', 'c', 'd']
@@ -423,12 +423,12 @@ class HigherOrderNetwork(Network):
 
     def likelihood(self, paths, log=True):
         """
-        Calculates the likelihood of this higher-order model under the observed path 
+        Calculates the likelihood of this higher-order model under the observed path
         statistics given in paths.
         """
         if log:
             L = 0.0
-        else: 
+        else:
             L = 1.0
         T = self.transition_matrix()
         node_map = self.node_to_name_map()
@@ -450,7 +450,7 @@ class HigherOrderNetwork(Network):
                             prev = n
                         if log:
                             L += path_L * paths.paths[l][p][1]
-                        else: 
+                        else:
                             L *= path_L ** paths.paths[l][p][1]
         return L
 
