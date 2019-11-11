@@ -236,8 +236,8 @@ class HigherOrderNetwork(Network):
             # that has non-zero degree.
 
             non_zero = 0
-            for hon_node in g1.nodes:
-                if len(g1.successors[hon_node])>0:
+            for hon_node in self.nodes:
+                if len(self.successors[hon_node])>0:
                     non_zero += 1
 
 
