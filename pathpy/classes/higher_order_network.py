@@ -232,14 +232,14 @@ class HigherOrderNetwork(Network):
 
             # For the degrees of freedom, we must additionally consider that
             # rows in the transition matrix must sum to one, i.e. we have to
-            # subtract one degree of freedom for every non-zero row in the (null-model)
-            # transition matrix. In other words, we subtract one for every path of
-            # length k-1
-            # that can possibly be followed by at least one edge to a path of length k
+            # subtract one degree of freedom for every node of the k-order network
+            # that has non-zero degree.
 
-            # This can be calculated by counting the number of non-zero elements in the
-            # vector containing the row sums of A**k
-            non_zero = _np.count_nonzero((A ** k).sum(axis=0))
+            non_zero = 0
+            for hon_node in self.nodes:
+                if len(self.successors[hon_node])>0:
+                    non_zero += 1
+
 
             # The degrees of freedom of the higher-order model, under the paths
             # assumption
