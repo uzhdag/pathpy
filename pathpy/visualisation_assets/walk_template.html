@@ -15,16 +15,16 @@
         stroke: #666;
     }
     circle.active_${div_id} {
-        stroke: #222;
-        fill: $active_node_color;
+        stroke: #000000;
+        r: 15.0;
         fill-opacity: 1;
-        stroke-width: 2px;
+        stroke-width: 1px;
     }
     circle.nodes_${div_id} {
-        fill: $inactive_node_color;
-        stroke: #222;
+        stroke: #ffffff;
+        r: 9.0;
         fill-opacity: 1;
-        stroke-width: 1.5px;
+        stroke-width: 1px;
     }
 </style>
 
@@ -127,7 +127,7 @@ require(["d3"], function(d3) {
 
     var node = node_g.append("circle")
         .attr('id', function(d) { return d.id; })
-        .attr("r", function(d) { return d.size; })
+        .attr("fill", function(d) { return d.color; })
         .attr("class", "nodes_${div_id}")
         .call(d3.drag()
             .on("start", dragstarted)

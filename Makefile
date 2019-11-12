@@ -56,7 +56,7 @@ test: ## run tests quickly with the default Python
 	pytest
 
 test-all: ## run tests on every Python version with tox
-	pytest --runslow 
+	pytest --runslow
 
 coverage: ## check code coverage quickly with the default Python
 	pytest --cov pathpy \
@@ -78,9 +78,9 @@ docs: ## generate Sphinx HTML documentation, including API docs
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
-release: clean ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+release: dist ## package and upload a release
+	twine check dist/*
+	twine upload  -p $(PYPI_PASSWORD) -u $(PYPI_USER) dist/*
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist

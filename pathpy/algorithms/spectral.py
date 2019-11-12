@@ -149,7 +149,7 @@ def fiedler_vector_sparse(network, normalized=True, lanczos_vectors=15, maxiter=
     return fiedler_v
 
 
-def fiedler_vector_dense(network, lanczos_vectors=15, maxiter=20):
+def fiedler_vector_dense(network, lanczos_vectors=15, maxiter=20, map='None'):
     """Returns the (dense)Fiedler vector of the higher-order network.
     The Fiedler vector can be used for a spectral bisection of the network.
 
@@ -171,7 +171,31 @@ def fiedler_vector_dense(network, lanczos_vectors=15, maxiter=20):
     laplacian_transposed = lapl_mat.todense().transpose()
     w, v = la.eig(laplacian_transposed, right=False, left=True)
 
-    return v[:, _np.argsort(_np.absolute(w))][:, 1]
+    if map == 'None':
+        return v[:, _np.argsort(_np.absolute(w))][:, 1]
+    elif map == 'Target':
+        idx_to_node = { idx:v for v, idx in network.node_to_name_map().items() }
+        x = defaultdict(lambda: 0)
+        ev = v[:, _np.argsort(_np.absolute(w))][:, 1]
+        for s in range(len(ev)):
+            path = network.higher_order_node_to_path(idx_to_node[s])
+            print(path)
+            x[path[-1]] += ev[s]
+        return _np.array([ i for i in x.values()])
+    elif map == 'Source':
+        idx_to_node = { idx:v for v, idx in network.node_to_name_map().items() }
+        x = defaultdict(lambda: 0)
+        ev = v[:, _np.argsort(_np.absolute(w))][:, 1]
+        for s in range(len(ev)):
+            path = network.higher_order_node_to_path(idx_to_node[s])
+            print(path)
+            x[path[0]] += ev[s]
+        return _np.array([ i for i in x.values()])
+
+
+
+
+
 
 
 def algebraic_connectivity(network, lanczos_vectors=15, maxiter=20):
