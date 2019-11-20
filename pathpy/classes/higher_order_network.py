@@ -235,12 +235,18 @@ class HigherOrderNetwork(Network):
             # subtract one degree of freedom for every node of the k-order network
             # that has non-zero degree.
 
-            non_zero = 0
-            for hon_node in self.nodes:
-                if len(self.successors[hon_node])>0:
-                    non_zero += 1
-
-
+            if null_model or k==1:
+                non_zero = 0
+                for hon_node in self.nodes:
+                    if len(self.successors[hon_node])>0:
+                        non_zero += 1
+            else:
+                null_model_hon = HigherOrderNetwork(paths, k=k, null_model=True, separator=separator)
+                non_zero = 0
+                for hon_node in null_model_hon.nodes:
+                    if len(null_model_hon.successors[hon_node])>0:
+                        non_zero += 1
+                
             # The degrees of freedom of the higher-order model, under the paths
             # assumption
             self.dof_paths = paths_k - non_zero
