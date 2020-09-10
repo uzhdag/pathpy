@@ -18,7 +18,7 @@
         stroke: #000000;
         r: 15.0;
         fill-opacity: 1;
-        stroke-width: 1px;
+        stroke-width: 4px;
     }
     circle.nodes_${div_id} {
         stroke: #ffffff;
@@ -129,6 +129,7 @@ require(["d3"], function(d3) {
         .attr('id', function(d) { return d.id; })
         .attr("fill", function(d) { return d.color; })
         .attr("class", "nodes_${div_id}")
+        .attr("r", function(d) { return d.size; })
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)

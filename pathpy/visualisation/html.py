@@ -780,6 +780,8 @@ def plot_walk(network, walk, **params):
     params['plot_higher_order_nodes'] = False
     if 'ms_per_frame' not in params:
         params['ms_per_frame'] = 500
+    if 'node_size' not in params:
+        params['node_size'] = 5.0
     display(HTML(generate_html(network, **params)))
 
 
@@ -806,12 +808,10 @@ def export_html_walk(network, walk, filename, **params):
     if 'max_time' not in params:
         params['max_time'] = None
 
-    if params['max_time'] is not None:
-        tempnet = tempnet.filter_edges(lambda u, v, t: t <= params['max_time'])
-
     if params['max_time'] is None:
         params['itinerary'] = [ fix_node_name(v) for v in walk ]
     else:
+        params['itinerary'] = []
         for i in range(params['max_time']):
             params['itinerary'].append(fix_node_name(walk[i]))
     
@@ -822,6 +822,8 @@ def export_html_walk(network, walk, filename, **params):
     params['plot_higher_order_nodes'] = False
     if 'ms_per_frame' not in params:
         params['ms_per_frame'] = 500
+    if 'node_size' not in params:
+        params['node_size'] = 5.0
     html = generate_html(network, **params)
     with open(filename, 'w+') as f:
         f.write(html)
