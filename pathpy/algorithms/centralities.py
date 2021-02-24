@@ -575,7 +575,7 @@ def pagerank(network, alpha=0.85, max_iter=100, tol=1.0e-6, weighted=False):
 
     Parameters
     ----------
-    network: Netwokr
+    network: Network
     alpha: float
         damping factor
     max_iter: int
