@@ -240,6 +240,42 @@ def test_dag_from_temporal_network():
     assert sorted(dag.routes_to_node('a_5')) == sorted([['c_2', 'a_5'], ['a_1', 'b_4', 'a_5']])
 
 
+def test_generate_causal_tree():
+    """
+
+             (b,d,3)-(d,a,5)
+            /               \
+     (a,b,1)                 (a,e,6) 
+            \               /
+             (b,c,2)-(c,a,4)
+    ---------------------------------> t
+
+                 (d,2)
+                /     \          
+     (a,0)-(b,1)       (a,3)-(e,4) 
+                \     /
+                 (c,2)
+    -------------------------------> depth
+
+    """
+
+    tn = pp.TemporalNetwork()
+    tn.add_edge('a', 'b', 1)
+    tn.add_edge('b', 'c', 2)
+    tn.add_edge('b', 'd', 3)
+    tn.add_edge('c', 'a', 4)
+    tn.add_edge('d', 'a', 5)
+    tn.add_edge('a', 'e', 6)
+
+    delta = 10
+
+    dag, node_map = pp.DAG.from_temporal_network(tn, delta)
+    root = list(dag.roots)[0]
+
+    causal_tree, causal_mapping = pp.path_extraction.generate_causal_tree(dag, root, node_map)
+    assert set(causal_tree.edges.keys()) == set([('a_0', 'b_1'), ('b_1', 'd_2'), ('b_1', 'c_2'), ('d_2', 'a_3'), ('c_2', 'a_3'), ('a_3', 'e_4')])
+
+
 @pytest.mark.networkx
 def test_strong_connected_components(random_network):
     from pathpy.classes.network import network_to_networkx
