@@ -258,20 +258,17 @@ def generate_causal_tree(dag, root, node_map):
         x = '{0}_{1}'.format(node_map[v], depth)
         causal_mapping[x] = node_map[v]
 
-        if not visited[node_map[v], depth]: 
-            visited[node_map[v], depth] = True
-
         # process nodes at next level
-        for w in dag.successors[v]: 
-            # add edge to causal tree
-            y = '{0}_{1}'.format(node_map[w], depth+1)
-            if (x, y) not in edges:
-                edges.append((x, y))
-                causal_mapping[y] = node_map[w]
-            # only consider nodes that have not already
-            # been added to this level
-            if (w, depth+1) not in queue and not visited[node_map[w], depth+1]:
+        for w in dag.successors[v]:
+            if (w, depth+1) not in queue:
                 queue.append((w, depth+1))
+                # only consider nodes that have not already
+                # been added to this level
+            y = '{0}_{1}'.format(node_map[w], depth+1)
+            if not visited[x, y]:
+                # add edge to causal tree
+                edges.append((x, y))
+                visited[x, y] = True
     
     # Adding all edges at once is more efficient!
     causal_tree.add_edges(edges)
