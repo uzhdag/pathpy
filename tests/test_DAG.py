@@ -240,7 +240,7 @@ def test_dag_from_temporal_network():
     assert sorted(dag.routes_to_node('a_5')) == sorted([['c_2', 'a_5'], ['a_1', 'b_4', 'a_5']])
 
 
-def test_generate_causal_tree():
+def test_generate_causal_tree_diamond():
     """
 
              (b,d,3)-(d,a,5)
@@ -248,6 +248,7 @@ def test_generate_causal_tree():
      (a,b,1)                 (a,e,6) 
             \               /
              (b,c,2)-(c,a,4)
+
     ---------------------------------> t
 
                  (d,2)
@@ -255,6 +256,7 @@ def test_generate_causal_tree():
      (a,0)-(b,1)       (a,3)-(e,4) 
                 \     /
                  (c,2)
+
     -------------------------------> depth
 
     """
@@ -274,6 +276,39 @@ def test_generate_causal_tree():
 
     causal_tree, causal_mapping = pp.path_extraction.generate_causal_tree(dag, root, node_map)
     assert set(causal_tree.edges.keys()) == set([('a_0', 'b_1'), ('b_1', 'd_2'), ('b_1', 'c_2'), ('d_2', 'a_3'), ('c_2', 'a_3'), ('a_3', 'e_4')])
+
+
+def test_generate_causal_tree_trapezium():
+    """
+
+             (b,c,2)-(c,b,3)
+            /               \
+     (a,b,1)-----------------(b,c,4)-(c,d,5)
+
+    ---------------------------------> t
+
+                       (b,3)-(c,4)-(d,5)
+                      /
+     (a,0)-(b,1)-(c,2)-(d,3)
+               
+    -------------------------------> depth
+
+    """
+
+    tn = pp.TemporalNetwork()
+    tn.add_edge('a', 'b', 1)
+    tn.add_edge('b', 'c', 2)
+    tn.add_edge('c', 'b', 3)
+    tn.add_edge('b', 'c', 4)
+    tn.add_edge('c', 'd', 5)
+
+    delta = 10
+
+    dag, node_map = pp.DAG.from_temporal_network(tn, delta)
+    root = list(dag.roots)[0]
+
+    causal_tree, causal_mapping = pp.path_extraction.generate_causal_tree(dag, root, node_map)
+    assert set(causal_tree.edges.keys()) == set([('a_0', 'b_1'), ('b_1', 'c_2'), ('c_2', 'd_3'), ('c_2', 'b_3'), ('b_3', 'c_4'), ('c_4', 'd_5')])
 
 
 @pytest.mark.networkx
