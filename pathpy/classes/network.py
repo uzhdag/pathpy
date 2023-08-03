@@ -824,7 +824,7 @@ def network_from_networkx(graph):
 
     net = Network(directed=directed)
     for node_id in graph.nodes:
-        net.add_node(str(node_id), **graph.node[node_id])
+        net.add_node(str(node_id), **graph.nodes[node_id])
 
     for edge in graph.edges:
         net.add_edge(str(edge[0]), str(edge[1]), **graph.edges[edge])
