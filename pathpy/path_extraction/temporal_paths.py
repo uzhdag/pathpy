@@ -264,13 +264,11 @@ def generate_causal_tree(dag, root, node_map):
                 queue.append((w, depth+1))
                 # only consider nodes that have not already
                 # been added to this level
-                if not visited[node_map[w], depth+1]:
-                    # add edge to causal tree
-                    y = '{0}_{1}'.format(node_map[w], depth+1)
-                    edges.append((x, y))
-
-                    visited[node_map[w], depth+1] = True
-                    causal_mapping[y] = node_map[w]
+            y = '{0}_{1}'.format(node_map[w], depth+1)
+            if not visited[x, y]:
+                # add edge to causal tree
+                edges.append((x, y))
+                visited[x, y] = True
     
     # Adding all edges at once is more efficient!
     causal_tree.add_edges(edges)
