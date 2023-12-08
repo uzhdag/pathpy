@@ -96,12 +96,12 @@ def mean_degree(network, degree='degree'):
 
 
 def degree_dist(network, degree='degree'):
-    r"""Calculates the (in/out)-degree distribution of a directed or undirected network.
+    r"""Calculates the (in/out)-degree histogram of a directed or undirected network.
 
     Parameters
     ----------
     network:    Network
-        The network for which to calculate the degree distribution
+        The network for which to calculate the degree histogram
     """
     assert degree is 'degree' or degree is 'indegree' or degree is 'outdegree',\
             'Unknown degree property'
@@ -203,3 +203,165 @@ def molloy_reed_fraction(network, degree='degree'):
         The network in which to calculate the Molloy-Reed fraction
     """
     return degree_moment(network, k=2, degree=degree)/degree_moment(network, k=1, degree=degree)
+
+
+def get_bins(values, num_bins, log_bins=False):
+    r"""Compute (linear or logarithmic) bins for values.
+
+    NOTE: If log_bins is True, 0s should be removed from values _before_
+            calling this function.
+
+    Parameters
+    ---------
+    values: np.array
+        values to be binned
+    num_bins: int
+        number of bins to use
+    log_bins: logical
+        If True, use logarithmic bins. Default is linear bins.
+
+    Returns
+    -------
+    bins: np.array
+        edges of num_bins bins
+    """
+    min_val = values.min()
+    max_val = values.max()
+
+    if log_bins:
+        bins = _np.logspace(_np.log10(min_val), _np.log10(max_val), num_bins+1)
+    else:
+        bins = _np.linspace(min_val, max_val, num_bins+1)
+
+    return bins
+
+
+def degree_dist_binned(network, num_bins=30, degree='degree', log_bins=True, is_pmf=True):
+    r"""Take a pathpy.network object and return the degree distribution.
+
+    NOTE: Ignores singleton (degree 0) nodes.
+
+    Parameters
+    ---------
+    network: Network
+        The network to compute the degree distribution
+    num_bins: int
+        Number of bins in the histogram
+    degree: str
+        Type of degree. Options are degree (total), indegree, outdegree
+    log_bins: logical
+        Bin degrees logarithmically or linearly
+    is_pmf: logical
+        Compute probability mass function or density
+
+    Returns
+    -------
+    x: np.array
+        centers of the bins
+    y: np.array
+        Heights of the bins
+
+    """
+    assert degree in ['degree', 'indegree', 'outdegree', 'inweight', 'outweight', 'weight'],\
+            'Unknown degree property'
+
+    if network.directed:
+        if degree == 'degree':
+            degrees = _np.array([attr['indegree']+attr['outdegree'] for _,attr in network.nodes.items()])
+        elif degree == 'weight':
+            degrees = _np.array([attr['inweight']+attr['outweight'] for _,attr in network.nodes.items()])
+        else:
+            degrees = _np.array([attr[degree] for _,attr in network.nodes.items()])
+    else:
+        degrees = _np.array([attr[degree] for _,attr in network.nodes.items()])
+
+    degrees = degrees[degrees>0]
+    bins = get_bins(degrees, num_bins, log_bins)
+
+    if is_pmf:
+        y, _ = _np.histogram(degrees, bins=bins, density=False)
+        p = y/float(y.sum())
+    else:
+        p, _ = _np.histogram(degrees, bins=bins, density=True)
+
+    x = bins[1:] - _np.diff(bins)/2.0
+
+    x = x[p>0]
+    p = p[p>0]
+
+    return x, p
+
+
+def clustering_by_degree(network, num_bins=20, degree='degree', binned=True, log_bins=False):
+    r"""Compute average local clustering coefficient by degree.
+
+    NOTE: Ignores singleton (degree 0) nodes.
+
+    Parameters
+    ----------
+    network: pp.Network
+        Network (or HigherOrderNetwork) object
+    num_bins: int
+        Number of bins to use. Default 20.
+    degree: str
+        Which degree to use for binning. Default is total degree.
+    binned: logical
+        If True, bin the distribution. Default is True.
+    log_bins: logical
+        If True, use logarithmic bins. Ignored when binned=False. Default is linear bins.
+
+    Returns
+    -------
+    x: np.array
+        Centers of bins
+    y: np.array
+        Heights of bins
+
+    """
+    assert degree in ['degree', 'indegree', 'outdegree', 'inweight', 'outweight', 'weight'],\
+            'Unknown degree property'
+
+    if network.directed:
+        if degree == 'degree':
+            degrees_dict = {node:attr['indegree']+attr['outdegree'] for node, attr in network.nodes.items()}
+        elif degree == 'weight':
+            degrees_dict = {node:attr['inweight']+attr['outweight'] for node, attr in network.nodes.items()}
+        else:
+            degrees_dict = {node:attr[degree] for node, attr in network.nodes.items()}
+    else:
+        degrees_dict = {node:attr[degree] for node, attr in network.nodes.items()}
+
+    ## Get degrees
+    degrees = _np.array(list(degrees_dict.values()))
+    degrees = degrees[degrees>0]
+
+    if binned:
+        ## Get bins
+        bins = get_bins(degrees, num_bins, log_bins)
+        start = bins[:-1]
+        end = bins[1:]
+        center = start + (end-start)*0.5
+    else:
+        bins = _np.unique(degrees)
+        start = bins[:-1]
+        end = bins[1:]
+        center = start + (end-start)*0.5
+
+    cc_k = dict((k,0.0) for k in range(len(center)))
+    counts = dict((k,0.0) for k in range(len(center)))
+
+    for node, k in degrees_dict.items():
+        ## get the bin
+        index = _np.argmax((k>=start) & (k<end))
+        cc_k[index] += local_clustering_coefficient(network, node)
+        counts[index] += 1.0
+
+    x,y = [], []
+    for index,count in list(counts.items()):
+        if count > 0:
+            x.append(center[index])
+            y.append(cc_k[index]/counts[index])
+
+    x,y = _np.array(x), _np.array(y)
+    return x,y
+
